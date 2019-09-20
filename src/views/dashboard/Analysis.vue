@@ -1,7 +1,7 @@
 <template>
   <div class="main-content">
     <div class="left-map">
-      1111111111
+      111111111
     </div>
     <div class="right-info">
       <a-card style="100%" :tabList="planList" :activeTabKey="noTitleKey" @tabChange="key => onTabChange(key,'noTitleKey')">
