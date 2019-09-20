@@ -13,6 +13,9 @@ export default {
         }
     },
     methods:{
+        show(){
+            this.visible = true;
+        },
         searchRiver(val){
             console.log(val);
         },

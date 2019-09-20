@@ -15,13 +15,24 @@
             </a-col>
           </a-row>
           <div class="riverInfo">
-            
+            <div class="river_info">
+              <span>黄浦江</span>
+              <a-select defaultValue="" @change="handleChange" style="width:120px;margin-left:80px;">
+                <a-select-option value="jack">Jack</a-select-option>
+                <a-select-option value="lucy">Lucy</a-select-option>
+                <a-select-option value="disabled" disabled>Disabled</a-select-option>
+              </a-select>
+              <a-button shape="circle" icon="close" style="font-size:8px;margin-left:20px;"></a-button>
+            </div>
+            <!-- <a-tree chechable>
+
+            </a-tree> -->
           </div>
         </div>
         <div v-if="noTitleKey === 'nowPlan'">今日计划</div>
       </a-card>
     </div>
-    <add-river></add-river>
+    <add-river ref="addRiver"></add-river>
   </div>
 </template>
 
@@ -57,7 +68,10 @@ export default {
       this[type] = key
     },
     addRiverBtn(){
-      
+      this.$refs.addRiver.show()
+    },
+    handleChange(){
+
     }
   }
 }
