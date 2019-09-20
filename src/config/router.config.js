@@ -85,9 +85,9 @@ export const asyncRouterMap = [
         meta: { title: '设置', icon: 'table', permission: [ 'table' ] },
         children: [
           {
-            path: '/list/RiverManage/:pageNo([1-9]\\d*)?',
+            path: '/list/RiverManage',
             name: 'TableListWrapper',
-            hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
+            // hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
             component: () => import('@/views/list/RiverManage'),
             meta: { title: '河道管理', keepAlive: true, permission: [ 'table' ] }
           },
