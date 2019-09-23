@@ -9,7 +9,9 @@ import Viser from 'viser-vue'
 // ext library
 import VueClipboard from 'vue-clipboard2'
 import PermissionHelper from '@/utils/helper/permission'
+// 引入全局指令
 import './directives/action'
+import './directives/clickoutside'
 
 VueClipboard.config.autoSetContainer = true
 
