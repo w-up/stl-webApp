@@ -24,24 +24,33 @@ export const asyncRouterMap = [
             path: '/dashboard/analysis',
             name: 'Analysis',
             component: () => import('@/views/dashboard/Analysis'),
-            // hidden: true,
             meta: { title: '新建计划', keepAlive: false, permission: [ 'dashboard' ] }
           },
-          // {
-          //   path: '/dashboard/workplace',
-          //   name: 'Workplace',
-          //   component: () => import('@/views/dashboard/Workplace'),
-          //   hidden: true,
-          //   meta: { title: '今日计划', keepAlive: true, permission: [ 'dashboard' ] }
-          // }
         ]
       },
       // profile 监管
+      {
+        path: '/supervise',
+        name: 'supervise',
+        component: RouteView,
+        redirect: '/supervise/Supervise',
+        hideChildrenInMenu: true,
+        meta: { title: '监管', keepAlive: true, icon: 'profile', permission: [ 'dashboard' ] },
+        children: [
+          {
+            path: '/supervise/Supervise',
+            name: 'Supervise',
+            component: () => import('@/views/supervise/Supervise'),
+            meta: { title: '基础详情页', permission: [ 'dashboard' ] }
+          }
+        ]
+      },
       {
         path: '/profile',
         name: 'profile',
         component: RouteView,
         redirect: '/profile/basic',
+        hidden: true,
         hideChildrenInMenu: true,
         meta: { title: '监管', icon: 'profile', permission: [ 'profile' ] },
         children: [
@@ -56,22 +65,6 @@ export const asyncRouterMap = [
             name: 'ProfileAdvanced',
             component: () => import('@/views/profile/advanced/Advanced'),
             meta: { title: '高级详情页', permission: [ 'profile' ] }
-          }
-        ]
-      },
-      {
-        path: '/supervise',
-        name: 'supervise',
-        component: RouteView,
-        redirect: '/supervise/Supervise',
-        hideChildrenInMenu: true,
-        meta: { title: '监管1', icon: 'profile', permission: [ 'supervise' ] },
-        children: [
-          {
-            path: '/supervise/Supervise',
-            name: 'Supervise',
-            component: () => import('@/views/supervise/Supervise'),
-            meta: { title: '基础详情页', permission: [ 'supervise' ] }
           }
         ]
       },
