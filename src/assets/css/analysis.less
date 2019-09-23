@@ -1,40 +1,140 @@
-.ant-layout-content{
-    margin: 0;
-}
 .ant-card-body{
     padding: 0;
     padding-top: 15px;
-    padding-bottom: 15px;
+    // padding-bottom: 15px;
 }
 .ant-btn-circle, .ant-btn-circle-outline{
     width: 20px;
     height: 20px;
 }
-.main-content{
+.ant-tree{
+    text-align: left;
+    margin-left: 8px;
+}
+.left-date .ant-input{
+    height: 38px;
+    width: 240px;
+}
+.ant-tree li .ant-tree-node-content-wrapper{
+    width: 70%;
+    overflow: hidden;
+    text-overflow:ellipsis
+}
+
+
+
+
+.main-content{  
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 64px);
     margin: 0;
     padding:0;
 }
-.left-map{
+.left-info{
     width: 100%;
     float: left;
     margin-right: 350px;
     text-align: center;
     border: 1px solid rebeccapurple;
 }
+.left-date{
+    position: fixed;
+    z-index: 9;
+    top: 100px;
+    left: 10px;
+    // border: 1px solid goldenrod;
+}
+.left-weather{
+    position: fixed;
+    z-index: 9;
+    top: 150px;
+    left: 10px;
+}
+.left-patrol{
+    position: fixed;
+    z-index: 9;
+    top: 200px;
+    left: 10px;
+    min-width: 240px;
+    width: 240px;
+    cursor: pointer;
+    &:hover{
+        .patrol-plan{
+            display: block;
+        } 
+    }
+}
+.left-patrol-title{
+    background-color: #1890ff;
+    color: #FFFFFF;
+    width: 100%;
+    height:38px;
+    line-height: 38px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 4px;
+    margin-bottom:4px; 
+}
+.patrol-plan{
+    // min-width: 240px;
+    width:100%;
+    background-color: #FFFFFF;
+    display: none;
+}
+.riverSearchModal{
+    position: fixed;
+    z-index: 9;
+    top: 64px;
+    right: 320px;
+}
+
 .right-info{
     position: fixed;
     right: 0;
+    top: 64px;
     width: 320px;
-    text-align: center;
+    height: calc(100vh - 64px);
 }
 .riverInfo{
     width: 100%;
     margin-top: 15px;
+    text-align: center;
 }
 .river_info{
     width: 100%;
     border: 1px solid #e8e8e8;
     text-align: left;
-    padding: 8px 15px;
+    padding: 8px 0;
+    padding-left: 15px;
     display: inline-block;
 }
+.addTask_btn{
+    // width: 100%;
+    // border-left: none;
+    // border-right: none;
+    // border-radius: none;
+}
+.addPlan_foot{
+    // border-top: 1px solid #e8e8e8;
+    // padding: 10px 0;
+    text-align: center;
+    // position: absolute;
+    margin-top: 20px;
+    bottom: 0;
+    width: 100%;
+}
+.addPlan_foot span{
+    width:50%;
+    border: 1px solid #e8e8e8;
+    height: 100%;
+    line-height: 38px;
+    padding:0 20px;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+}
+.addPlan_foot span:hover{
+    box-shadow: 0 0 5px#E3E3E3;
+}
+
