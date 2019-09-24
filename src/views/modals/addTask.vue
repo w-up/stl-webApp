@@ -46,7 +46,8 @@ export default {
     data(){
         return{
            isShow:false,
-           cBtn:true
+           cBtn:true,
+           addPlan:{}
         }
     },
     methods:{
@@ -57,6 +58,9 @@ export default {
             this.isShow = false;
             this.$emit('showAddBtn',this.cBtn);
         },
+        submitPlan(){
+            
+        }
         // showBtn(){
         //     this.cBtn = true;
         // }
