@@ -5,31 +5,108 @@
       <world-map></world-map>
     </div>-->
     <!-- <div class="right">456546</div> -->
-    <div class="menu">
-      <a-list size="small" bordered :dataSource="dataItem">
-        <a-list-item slot="renderItem" slot-scope="item" @click="menuFun(item.title)">
-          <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
-            <template slot="content">
-              <p>Content</p>
-              <p>Content</p>
-            </template>
-            <template slot="title">
-              <span>Title</span>
-            </template>
-            <img :src="item.src" :alt="item.title" :title="item.title" />
-          </a-popover>
-        </a-list-item>
-      </a-list>
+    <div class="weather">
+      <img src="./img/weather.jpg" alt="">
     </div>
+    <ul class="menu">
+      <li @click="compass">
+        <img src="./img/compass.png" alt="指北针" title="指北针" />
+      </li>
+      <li>
+        <img src="./img/restoration.png" alt="复位" title="复位" />
+      </li>
+      <li>
+        <a-popover placement="left" arrowPointAtCenter trigger="click">
+          <template slot="content">
+            <a-radio-group>
+              <a-radio-button value="0">点</a-radio-button>
+              <a-radio-button value="1">线</a-radio-button>
+              <a-radio-button value="2">面</a-radio-button>
+              <a-radio-button value="3">测量</a-radio-button>
+            </a-radio-group>
+          </template>
+          <template slot="title">
+            <span>工具</span>
+          </template>
+          <img src="./img/screenshot.png" alt="工具" title="工具" />
+        </a-popover>
+      </li>
+      <li>
+        <img src="./img/max.png" alt="放大" title="放大" />
+      </li>
+      <li>
+        <img src="./img/min.png" alt="缩小" title="缩小" />
+      </li>
+      <li>
+        <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
+          <template slot="content">
+            <a-list size="small" :dataSource="dataItem">
+              <a-list-item slot="renderItem" slot-scope="item">
+                <a-row style="width: 100%;">
+                  <a-col :span="16">
+                    <span>{{item.title}}</span>
+                  </a-col>
+                  <a-col :span="8">
+                    <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                  </a-col>
+                </a-row>
+              </a-list-item>
+            </a-list>
+          </template>
+          <template slot="title">
+            <span>图像</span>
+          </template>
+          <img src="./img/map.png" alt="图像" title="图像" />
+        </a-popover>
+      </li>
+      <li>
+        <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
+          <template slot="content" style="overflow-y: scroll;">
+            <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+            <a-directory-tree multiple defaultExpandAll @select="onSelect" @expand="onExpand">
+              <a-tree-node title="查看历史数据" key="0-4"></a-tree-node>
+              <a-tree-node title="影像对比" key="0-0">
+                <a-tree-node title="双球对比" key="0-0-0" isLeaf />
+                <a-tree-node title="卷帘对比" key="0-0-1" isLeaf />
+              </a-tree-node>
+              <a-tree-node title="影像管理" key="0-1">
+                <a-tree-node title="手机照片" key="0-1-0" isLeaf />
+                <a-tree-node title="无人机照片" key="0-1-1" isLeaf />
+                <a-tree-node title="360全景图" key="0-1-2" isLeaf />
+              </a-tree-node>
+              <a-tree-node title="风险管理" key="0-2">
+                <a-tree-node title="风险地图" key="0-2-0" isLeaf />
+                <a-tree-node title="水质" key="0-2-1" isLeaf />
+                <a-tree-node title="水面漂浮物" key="0-2-2" isLeaf />
+                <a-tree-node title="河岸风险源" key="0-2-3" isLeaf />
+                <a-tree-node title="水土流失" key="0-2-4" isLeaf />
+                <a-tree-node title="水面率" key="0-2-5" isLeaf />
+                <a-tree-node title="底泥" key="0-2-6" isLeaf />
+                <a-tree-node title="专项调查点" key="0-2-7" isLeaf />
+              </a-tree-node>
+              <a-tree-node title="其他" key="0-3">
+                <a-tree-node title="河道连通性" key="0-3-0" isLeaf />
+                <a-tree-node title="水陆分布" key="0-3-1" isLeaf />
+              </a-tree-node>
+            </a-directory-tree>
+          </template>
+          <img src="./img/more.png" alt="更多" title="更多" />
+        </a-popover>
+      </li>
+    </ul>
+    <!-- 风险源信息 -->
+    <risk-source-info ref="riskInfo"></risk-source-info>
   </div>
 </template>
 
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
+import RiskSourceInfo from './modules/RiskSourceInfo'
 export default {
   name: 'Supervise',
   components: {
     // 'world-map': WorldMap
+    'risk-source-info': RiskSourceInfo
   },
   data() {
     return {
@@ -37,39 +114,25 @@ export default {
         {
           id: 0,
           src: require('../../../public/loading/option2/loading.svg'),
-          title: '指北针'
+          title: '2D影像图'
         },
         {
           id: 1,
           src: require('../../../public/loading/option2/loading.svg'),
-          title: '复位'
+          title: '卫星影像图'
         },
         {
           id: 2,
           src: require('../../../public/loading/option2/loading.svg'),
-          title: '工具'
+          title: '道路标注'
         },
         {
           id: 3,
           src: require('../../../public/loading/option2/loading.svg'),
-          title: '放大'
-        },
-        {
-          id: 4,
-          src: require('../../../public/loading/option2/loading.svg'),
-          title: '缩小'
-        },
-        {
-          id: 5,
-          src: require('../../../public/loading/option2/loading.svg'),
-          title: '图像'
-        },
-        {
-          id: 6,
-          src: require('../../../public/loading/option2/loading.svg'),
-          title: '更多'
+          title: '河道标注'
         }
       ],
+      checked: false,
       // 地图对象
       map: {},
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
@@ -194,25 +257,25 @@ export default {
       this.transferAttribute = this[v]
       this.transferAttribute.visible = true
     },
-    menuFun(index) {
-      this.dataItem.forEach((value, i) => {
-        if (index === value.title) {
-          console.log(i)
-          if (i == 0) {
-          } else if (i == 1) {
-          } else if (i == 2) {
-          } else if (i == 3) {
-          } else if (i == 4) {
-          } else if (i == 5) {
-          } else if (i == 6) {
-          }
-        }
-      })
+    // 更多
+    onSelect(keys) {
+      console.log('Trigger Select', keys)
+    },
+    onExpand() {
+      console.log('Trigger Expand')
+    },
+    // 开关
+    onChangeSwitch(checked) {
+      console.log(this.checked)
+      console.log(`a-switch to ${checked}`)
+    },
+    compass() {
+      this.$refs.riskInfo.riskInfo()
     }
   }
 }
 </script>
-<style scoped>
+<style lang="less" scoped>
 .supervise {
   position: relative;
   height: calc(100vh - 64px);
@@ -222,23 +285,36 @@ export default {
   width: 100%;
   height: 100%;
 }
+.weather {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: 200px;
+  height: 40px;
+  z-index: 2500;
+}
 .menu {
   position: fixed;
   right: 10px;
   bottom: 10px;
   width: 40px;
   z-index: 2500;
-  background: white;
-  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
-}
-
-.ant-list-bordered.ant-list-sm .ant-list-item {
+  margin: 0;
   padding: 0;
-}
-.ant-list-item img {
-  width: 40px;
-  height: 40px;
-  padding: 5px;
+  // overflow: hidden;
+  list-style-type: none;
+  li {
+    width: 100%;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
+    margin-top: 5px;
+    img {
+      width: 100%;
+      height: 40px;
+      padding: 10px;
+    }
+  }
 }
 
 .left {
