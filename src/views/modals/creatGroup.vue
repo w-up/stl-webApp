@@ -1,7 +1,7 @@
 <template>
     <div class="group_info">
         <div class="creat_btn">
-            <span class="creatBtn">创建分组</span>
+            <span class="creatBtn" @click="creatGroup">创建分组</span>
         </div>
         <div class="group_detail">
             <div class="detail_modal">
@@ -29,11 +29,11 @@
 import '../../assets/css/creatGroup.less'
 
 
-const data = [
+let data = [
   '黄浦江',
   '鸭绿江' 
 ]
-const dataTwo =[
+let dataTwo =[
   '松花江',
   '沧澜江',
   '长江'
@@ -50,6 +50,12 @@ export default {
     methods:{
         nextBtn(){
             this.ishidden = 3;
+            console.log(this.ishidden);
+            this.$emit('showPlan',3);
+            console.log(3333);
+        },
+        creatGroup(){
+
         }
     }
 }

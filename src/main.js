@@ -6,7 +6,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store/'
 import { VueAxios } from './utils/request'
-
+import iView from 'iview';
+import 'iview/dist/styles/iview.css';
 // mock
 import './mock' // 模拟数据
 
@@ -20,7 +21,7 @@ Vue.config.productionTip = false
 
 // mount axios Vue.$http and this.$http
 Vue.use(VueAxios)
-
+Vue.use(iView);
 new Vue({
   router,
   store,

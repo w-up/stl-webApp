@@ -6,6 +6,12 @@
         <a-form
           layout="inline"
         >
+          <a-form-item label="角色">
+            <a-select  style="width: 200px" placeholder="请选择" >
+              <a-select-option value="jack">超级管理员</a-select-option>
+              <a-select-option value="lucy">巡河总监</a-select-option>
+            </a-select>
+          </a-form-item>
           <a-form-item label="类型">
             <a-select  style="width: 200px" placeholder="请选择" >
               <a-select-option value="jack">外勤</a-select-option>
@@ -43,9 +49,15 @@ const columns = [
     width:80,
     dataIndex: 'key',
   }, {
-    title: '名称',
+    title: '姓名',
     dataIndex: 'name',
-  }, {
+  },{
+    title: '联系方式',
+    dataIndex: 'phone',
+  },{
+    title: '角色',
+    dataIndex: 'role',
+  },  {
     title: '类型',
     dataIndex: 'type',
   },{
@@ -65,19 +77,25 @@ export default {
       data:[
         {
           key:'001',
-          name:'超级管理员',
+          name:'张三',
+          phone:'15555555',
+          role:'超级管理员',
           type:'内业',
           state:true
         },
         {
           key:'002',
-          name:'巡河总监',
+          name:'张三',
+          phone:'15555555',
+          role:'巡河总监',
           type:'内业',
           state:false
         },
         {
           key:'003',
-          name:'基础数据维护员',
+          name:'张三',
+          phone:'15555555',
+          role:'基础数据维护员',
           type:'外勤',
           state:true
         },
@@ -90,7 +108,7 @@ export default {
   methods: {
     add(id){
       this.$router.push({
-        path: '/list/role',
+        path: '/list/staff',
         query: {
           id: id,
         }

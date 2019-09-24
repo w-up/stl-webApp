@@ -109,6 +109,12 @@ export const asyncRouterMap = [
             meta: { title: '风险源类型管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
+            path: '/list/drawManage',
+            name: 'drawManage',
+            component: () => import('@/views/list/drawManage'),
+            meta: { title: '绘制类型管理', keepAlive: true, permission: [ 'table' ] }
+          },
+          {
             path: '/list/StreetManage',
             name: 'StreetManage',
             component: () => import('@/views/list/StreetManage'),
@@ -136,7 +142,13 @@ export const asyncRouterMap = [
             path: '/list/UserRootManage',
             name: 'UserRootManage',
             component: () => import('@/views/list/UserRootManage'),
-            meta: { title: '用户权限管理', keepAlive: true, permission: [ 'table' ] }
+            meta: { title: '角色管理', keepAlive: true, permission: [ 'table' ] }
+          },
+          {
+            path: '/list/staffManage',
+            name: 'staffManage',
+            component: () => import('@/views/list/staffManage'),
+            meta: { title: '员工管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
             path: '/list/search',
@@ -168,6 +180,23 @@ export const asyncRouterMap = [
           }
         ]
       },
+<<<<<<< HEAD
+=======
+      {
+        path: '/list/staff',
+        name: 'staffAdd',
+        hidden: true,
+        component: () => import('@/views/list/modules/staffAdd'),
+        meta: { title: '添加', keepAlive: true, permission: [ 'table' ] }
+      },
+      {
+        path: '/list/role',
+        name: 'roleAdd',
+        hidden: true,
+        component: () => import('@/views/list/modules/roleAdd'),
+        meta: { title: '添加', keepAlive: true, permission: [ 'table' ] }
+      },
+>>>>>>> 66e16d59f4b073146fb87a5fbb68a9fe1cf0c5d1
       // result
       {
         path: '/result',
