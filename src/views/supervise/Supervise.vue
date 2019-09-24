@@ -291,14 +291,14 @@ export default {
   top: 10px;
   width: 200px;
   height: 40px;
-  z-index: 2500;
+  z-index: 999;
 }
 .menu {
   position: fixed;
   right: 10px;
   bottom: 10px;
   width: 40px;
-  z-index: 2500;
+  z-index: 999;
   margin: 0;
   padding: 0;
   // overflow: hidden;

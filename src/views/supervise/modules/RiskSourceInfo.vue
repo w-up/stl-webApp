@@ -25,18 +25,6 @@
         <router-link to="#111">查看详情</router-link>
       </a-col>
     </a-row>
-    <!-- <a-card style="width: 100%">
-      <a-row>
-        <a-col :span="12">
-          <p>内部编码: 4564654</p>
-          <p>准确位置: 上海xxx</p>
-          <p>面积: 4564654</p>
-          <p>首次发现时间: 4564654</p>
-          <p>河道所属: 4564654</p>
-        </a-col>
-        <a-col :span="12">col-12</a-col>
-      </a-row>
-    </a-card>-->
     <a-list
       class="comment-list"
       :header="`${data.length} 条评论`"
