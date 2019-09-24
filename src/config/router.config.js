@@ -180,23 +180,6 @@ export const asyncRouterMap = [
           }
         ]
       },
-<<<<<<< HEAD
-=======
-      {
-        path: '/list/staff',
-        name: 'staffAdd',
-        hidden: true,
-        component: () => import('@/views/list/modules/staffAdd'),
-        meta: { title: '添加', keepAlive: true, permission: [ 'table' ] }
-      },
-      {
-        path: '/list/role',
-        name: 'roleAdd',
-        hidden: true,
-        component: () => import('@/views/list/modules/roleAdd'),
-        meta: { title: '添加', keepAlive: true, permission: [ 'table' ] }
-      },
->>>>>>> 66e16d59f4b073146fb87a5fbb68a9fe1cf0c5d1
       // result
       {
         path: '/result',
