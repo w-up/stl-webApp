@@ -1,133 +1,219 @@
 <template>
-  <div class="card-list" ref="content">
-    <a-list
-      :grid="{gutter: 24, lg: 3, md: 2, sm: 1, xs: 1}"
-      :dataSource="dataSource"
+  <div >
+    <a-card >
+      <div style="display:flex;width:100%;box-sizing:border-box;">
+        <div style="width:220px">
+          <div class="boder-tree">
+            <!-- <a-directory-tree
+              multiple
+              defaultExpandAll
+              @select="onSelect"
+              @expand="onExpand"
+              :treeData="treeData"
+            >
+            </a-directory-tree> -->
+            <Tree :data="treeData" @on-select-change='select'></Tree>
+          </div>
+        </div>
+        <div style="width:100%;margin-left:20px">
+          <div v-if="treeId==true">
+            <a-button type="primary" icon="plus" @click="visible=true" style="margin-bottom:15px">添加</a-button>
+            <a-table :columns="columns" :dataSource="data" bordered>
+              <template slot="operation" slot-scope="row">
+                <a @click="handleEdit(id)">编辑</a>
+                <a-divider type="vertical" />
+                <a @click="handleSub(id)">删除</a>
+              </template>
+            </a-table>
+          </div>
+          <div v-else>
+            <a-button type="primary" icon="plus" @click="equipmentModel=true" style="margin-bottom:15px" >添加</a-button>
+            <a-table :columns="columns1" :dataSource="data1" bordered>
+              <template slot="operation" slot-scope="row">
+                <a @click="equipmentModel=true">编辑</a>
+                <a-divider type="vertical" />
+                <a @click="handleSub(id)">删除</a>
+              </template>
+            </a-table>
+          </div>
+        </div>
+      </div>
+    </a-card>
+    <a-modal
+      title=" 添加一级项目"
+      v-model="visible"
     >
-      <a-list-item slot="renderItem" slot-scope="item">
-        <template v-if="item === null">
-          <a-button class="new-btn" type="dashed">
-            <a-icon type="plus"/>
-            新增产品
-          </a-button>
-        </template>
-        <template v-else>
-          <a-card :hoverable="true">
-            <a-card-meta>
-              <a slot="title">{{ item.title }}</a>
-              <a-avatar class="card-avatar" slot="avatar" :src="item.avatar" size="large"/>
-              <div class="meta-content" slot="description">{{ item.content }}</div>
-            </a-card-meta>
-            <template class="ant-card-actions" slot="actions">
-              <a>操作一</a>
-              <a>操作二</a>
-            </template>
-          </a-card>
-        </template>
-      </a-list-item>
-    </a-list>
+      <Form ref="formValidate" :model="equipmentList" :rules="ruleValidate" :label-width="90">
+        <FormItem label="项目名称" prop="name">
+          <Input v-model="equipmentList.name" placeholder="请输入" style="width:200px"></Input>
+        </FormItem>
+      </Form>
+    </a-modal>
+    <a-modal
+      title="添加二级项目"
+      v-model="equipmentModel"
+    >
+      <Form ref="formValidate" :model="equipmentList" :rules="ruleValidate" :label-width="90">
+        <FormItem label="上级项目" prop="name">
+          <Input v-model="equipmentList.name" placeholder="请输入" style="width:200px"></Input>
+        </FormItem>
+        <FormItem label="项目名称" prop="type">
+          <Input v-model="equipmentList.type" placeholder="请输入" style="width:200px"></Input>
+        </FormItem>
+        <FormItem label="间隔周期">
+          <a-select  style="width: 200px" placeholder="请选择" >
+            <a-select-option value="si" >日</a-select-option>
+            <a-select-option value="sis" >周</a-select-option>
+            <a-select-option value="dsi" >月</a-select-option>
+          </a-select>
+        </FormItem>
+      </Form>
+    </a-modal>
   </div>
 </template>
 
 <script>
-
-const dataSource = []
-dataSource.push(null)
-for (let i = 0; i < 11; i++) {
-  dataSource.push({
-    title: 'Alipay',
-    avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-    content: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
-  })
-}
-
+const treeData = [{
+  title: '全部',
+  key: '1',
+  id:'1',
+  children: [{
+    title: '上海市',
+    key: '2-2',
+    id:'2',
+    children: [
+      { title: '黄浦区', key: '3-1',id:'3' },
+      { title: '浦东新区', key: '3-2',id:'3' },
+      { title: '静安区', key: '3-3' ,id:'3'},
+    ],
+  }, {
+    title: '四川省',
+    key: '2-3',
+    id:'2',
+    children: [
+     
+    ],
+  }],
+}]
+const columns = [
+   {
+    title: '序号',
+    width:80,
+    dataIndex: 'key',
+  }, {
+    title: '一级分类名称',
+    dataIndex: 'typeName',
+  },{
+    title: '操作',
+    scopedSlots: { customRender: 'operation' },
+    width:120,
+  }
+];
+const columns1 = [
+   {
+    title: '序号',
+    width:80,
+    dataIndex: 'key',
+  }, {
+    title: '二级分类名称',
+    dataIndex: 'typeName',
+  },{
+    title: '操作',
+    scopedSlots: { customRender: 'operation' },
+    width:120,
+  }
+];
+const data = [{
+  id:'111',
+  key: '1',
+  typeName: '上海市',
+  }, {
+    key: '2',
+    id:'222',
+    typeName: '四川省',
+}];
 export default {
-  name: 'CardList',
   data () {
     return {
-      description: '段落示意：蚂蚁金服务设计平台 ant.design，用最小的工作量，无缝接入蚂蚁金服生态， 提供跨越设计与开发的体验解决方案。',
-      linkList: [
-        { icon: 'rocket', href: '#', title: '快速开始' },
-        { icon: 'info-circle-o', href: '#', title: '产品简介' },
-        { icon: 'file-text', href: '#', title: '产品文档' }
+      treeId:true,
+      treeData,
+      columns,
+      columns1,
+      data,
+      visible:false,
+      equipmentModel:false,
+      typeList:{
+        id:'',
+        typeName:'',
+      },
+      equipmentList:{
+        name:'',
+        type:'',
+        number:'',
+      },
+      ruleValidate: {
+        name: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        type: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+      },
+      data1:[
+        {
+          id:'111',
+          key: '1',
+          number:'2',
+          typeName: '黄浦区',
+          state:true
+        },
+        {
+          key: '2',
+          id:'222',
+          number:'1',
+          typeName: '浦东新区',
+          state:true
+        },
+        {
+          key: '3',
+          id:'333',
+          number:'4',
+          typeName: '闵行区',
+          state:false
+        }
       ],
-      extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
-      dataSource
+
     }
-  }
+  },
+  watch: {
+
+  },
+  methods: {
+    select(e){
+      console.log(e);
+      if (e[0].id=='1') {
+        this.treeId=true
+      }else{
+        this.treeId=false
+      }
+    },
+    handleEdit(row){
+      this.visible=true
+      this.typeList.id=row.id
+      this.typeList.typeName=row.typeName
+    },
+    handleSub(){
+      
+    },
+
+  },
 }
 </script>
 
 <style lang="less" scoped>
-  @import "~@/components/index.less";
-
-  .card-list {
-    /deep/ .ant-card-body:hover {
-      .ant-card-meta-title>a {
-        color: @primary-color;
-      }
-    }
-
-    /deep/ .ant-card-meta-title {
-      margin-bottom: 12px;
-
-      &>a {
-        display: inline-block;
-        max-width: 100%;
-        color: rgba(0,0,0,.85);
-      }
-    }
-
-    /deep/ .meta-content {
-      position: relative;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      height: 64px;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-
-      margin-bottom: 1em;
-    }
-  }
-
-  .card-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 48px;
-  }
-
-  .ant-card-actions {
-    background: #f7f9fa;
-
-    li {
-      float: left;
-      text-align: center;
-      margin: 12px 0;
-      color: rgba(0, 0, 0, 0.45);
-      width: 50%;
-
-      &:not(:last-child) {
-        border-right: 1px solid #e8e8e8;
-      }
-
-      a {
-        color: rgba(0, 0, 0, .45);
-        line-height: 22px;
-        display: inline-block;
-        width: 100%;
-        &:hover {
-          color: @primary-color;
-        }
-      }
-    }
-  }
-
-  .new-btn {
-    background-color: #fff;
-    border-radius: 2px;
-    width: 100%;
-    height: 188px;
-  }
+.boder-tree{
+  
+  border: 1px solid #b8b8b8
+}
 
 </style>
