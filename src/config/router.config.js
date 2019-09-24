@@ -35,7 +35,7 @@ export const asyncRouterMap = [
         component: RouteView,
         redirect: '/supervise/Supervise',
         hideChildrenInMenu: true,
-        meta: { title: '监管', keepAlive: true, icon: 'profile', permission: [ 'dashboard' ] },
+        meta: { title: '监管', keepAlive: true, icon: 'eye', permission: [ 'dashboard' ] },
         children: [
           {
             path: '/supervise/Supervise',
@@ -52,7 +52,7 @@ export const asyncRouterMap = [
         redirect: '/profile/basic',
         hidden: true,
         hideChildrenInMenu: true,
-        meta: { title: '监管', icon: 'profile', permission: [ 'profile' ] },
+        meta: { title: '监管', icon: 'eye', permission: [ 'profile' ] },
         children: [
           {
             path: '/profile/basic',
@@ -75,7 +75,7 @@ export const asyncRouterMap = [
         name: 'list',
         component: PageView,
         redirect: '/list/RiverManage',
-        meta: { title: '设置', icon: 'table', permission: [ 'table' ] },
+        meta: { title: '设置', icon: 'setting', permission: [ 'table' ] },
         children: [
           {
             path: '/list/RiverManage',
@@ -168,7 +168,6 @@ export const asyncRouterMap = [
           }
         ]
       },
-
       // result
       {
         path: '/result',
