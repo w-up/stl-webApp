@@ -20,6 +20,10 @@
     overflow: hidden;
     text-overflow:ellipsis
 }
+.ant-card-body{
+    overflow-y: auto;
+}
+
 
 
 
@@ -32,28 +36,34 @@
     padding:0;
 }
 .left-info{
-    width: 100%;
-    float: left;
-    margin-right: 350px;
+    width: calc(100vw - 320px);
+    // width: 100%;
+    height: calc(100vh - 64px);
+    // float: left;
+    // margin-right: 350px;
     text-align: center;
-    border: 1px solid rebeccapurple;
+    // border: 1px solid rebeccapurple;
+}
+#map {
+    width: 100%;
+    height: 100%;
 }
 .left-date{
     position: fixed;
-    z-index: 9;
+    z-index: 999;
     top: 100px;
     left: 10px;
     // border: 1px solid goldenrod;
 }
 .left-weather{
     position: fixed;
-    z-index: 9;
+    z-index: 999;
     top: 150px;
     left: 10px;
 }
 .left-patrol{
     position: fixed;
-    z-index: 9;
+    z-index: 999;
     top: 200px;
     left: 10px;
     min-width: 240px;
@@ -84,7 +94,7 @@
 }
 .riverSearchModal{
     position: fixed;
-    z-index: 9;
+    z-index: 999;
     top: 64px;
     right: 320px;
 }
@@ -95,10 +105,41 @@
     top: 64px;
     width: 320px;
     height: calc(100vh - 64px);
+    // display: block;
+    background-color: #FFFFFF;
+}
+.right-body{
+    width: 100%;
+    height: 100%;
+}
+.right-body .ant-card{
+    width: 100%;
+    height: calc(100vh - 38px);
+    margin: 0;
+    padding: 0;
+}
+.right-body .ant-card-head{
+    position: absolute;
+    top: 0;
+    z-index:5;
+    width: 100%;
+    height: 55px;
+}
+.right-body .ant-card-body{
+    width: 100%;
+    // height: calc(100vh - 38px);
+    overflow: auto;
+    position: absolute;
+    top:55px;
+    z-index: 10;
+    bottom: 38px;
+    margin-bottom: 25px;
+}
+.right-body .ant-tabs .ant-tabs-large-bar .ant-tabs-tab{
+    width: 50%;
 }
 .riverInfo{
     width: 100%;
-    margin-top: 15px;
     text-align: center;
 }
 .river_info{
@@ -110,26 +151,27 @@
     display: inline-block;
 }
 .addTask_btn{
-    // width: 100%;
-    // border-left: none;
-    // border-right: none;
-    // border-radius: none;
+    margin-bottom: 15px;
 }
 .addPlan_foot{
     // border-top: 1px solid #e8e8e8;
     // padding: 10px 0;
     text-align: center;
-    // position: absolute;
+    position: absolute;
     margin-top: 20px;
     bottom: 0;
+    // right: -449px;
     width: 100%;
+    height: 38px;
+    line-height: 38px;
+    z-index: 200;
 }
 .addPlan_foot span{
-    width:50%;
+    width:160px;
     border: 1px solid #e8e8e8;
     height: 100%;
     line-height: 38px;
-    padding:0 20px;
+    // padding:0 20px;
     text-align: center;
     display: inline-block;
     font-size: 16px;
