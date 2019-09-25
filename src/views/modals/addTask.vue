@@ -14,7 +14,7 @@
         <a-form-item label="任务内容" :label-col="{ span: 6}" :wrapper-col="{ span: 16}">
             <a-textarea placeholder="Basic usage" :rows="4"/>
         </a-form-item>
-        <a-form-item label="位置" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }">
+        <a-form-item label="位置" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }" style="text-align:left;">
             <span style="cursor: pointer;color: #2fa0ec;font-size:12px;">选择位置（地图上选点/画线）</span>
         </a-form-item>
         <a-form-item label="任务职位" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }">
@@ -23,10 +23,10 @@
             <a-select-option value='采水样'>采水样</a-select-option>
             </a-select>
         </a-form-item>
-        <a-form-item label="是否紧急" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }">
+        <a-form-item label="是否紧急" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }" style="text-align:left;">
             <a-checkbox>紧急任务</a-checkbox>
         </a-form-item>
-        <a-form-item label="图片上传" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }">
+        <a-form-item label="图片上传" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }" style="text-align:left;">
             <a-upload name="file" :multiple="true" action="''">
             <a-button>
                 <a-icon type="upload" /> Click to Upload
@@ -57,6 +57,7 @@ export default {
         addPlanInfo(){
             this.isShow = false;
             this.$emit('showAddBtn',this.cBtn);
+            console.log(this.cBtn);
         },
         submitPlan(){
             
