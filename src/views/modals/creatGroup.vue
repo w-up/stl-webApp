@@ -8,21 +8,27 @@
                 <a-list bordered :dataSource="data">
                     <a-list-item slot="renderItem" slot-scope="item, index">{{item}}</a-list-item>
                     <div slot="header">组一
-                        <a-button shape="circle" icon="close" style="font-size:8px;margin-left:215px;"></a-button>
+                        <a-button shape="circle" icon="close" style="font-size:8px;margin-left:80%;"></a-button>
                     </div>
                 </a-list>
                 <a-list bordered :dataSource="dataTwo">
                     <a-list-item slot="renderItem" slot-scope="item, index">{{item}}</a-list-item>
                     <div slot="header">组二
-                        <a-button shape="circle" icon="close" style="font-size:8px;margin-left:215px;"></a-button>
+                        <a-button shape="circle" icon="close" style="font-size:8px;margin-left:80%;"></a-button>
+                    </div>
+                </a-list>
+                <a-list bordered :dataSource="dataTwo">
+                    <a-list-item slot="renderItem" slot-scope="item, index">{{item}}</a-list-item>
+                    <div slot="header">组二
+                        <a-button shape="circle" icon="close" style="font-size:8px;margin-left:80%;"></a-button>
                     </div>
                 </a-list>
             </div>
         </div>
-        <div class="group-foot">
+        <!-- <div class="group-foot">
             <span>取消</span>
-            <span @click="nextBtn()">下一步</span>
-        </div>
+            <span @click="nextBtn">下一步</span>
+        </div> -->
     </div>
 </template>
 <script>
@@ -44,15 +50,13 @@ export default {
         return{
             data,
             dataTwo,
-            ishidden:2
+            ishidden:3
         }
     },
     methods:{
-        nextBtn(){
-            this.ishidden = 3;
+        nextBtn(){   
+            this.$emit('showPlan',this.ishidden);
             console.log(this.ishidden);
-            this.$emit('showPlan',3);
-            console.log(3333);
         },
         creatGroup(){
 

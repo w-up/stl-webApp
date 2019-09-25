@@ -9,10 +9,19 @@
       <div class="left-weather">
         <img src="../../assets/weather.png" style="width:240px;height:38px;">
       </div>
-      <div class="left-patrol">
+      <!-- 新建计划时展示 -->
+      <div class="left-patrol" v-if="noTitleKey === 'addPlan'">
         <p class="left-patrol-title">推荐巡河方案</p>
         <div class="patrol-plan">
-          <a-tree checkable v-model="checkedPlan" @select="selectPatrol" :treeData="patrolPlanInfo"/>
+          <!-- <a-tree defaultExpandAll v-model="checkedPlan" @select="selectPatrol" :treeData="patrolPlanInfo"/> -->
+          <a-collapse v-model="activeKey">
+            <a-collapse-panel header="黄浦江" key="1" style="text-align: left">
+              <p style="margin:0;">{{text}}</p>
+            </a-collapse-panel>
+            <a-collapse-panel header="鸭绿江" key="2" :disabled='false' style="text-align: left">
+              <p style="margin:0;">{{text}}</p>
+            </a-collapse-panel>
+          </a-collapse>
         </div>
       </div>
       <search-river ref="selectPatrol" class="riverSearchModal"></search-river>
@@ -21,6 +30,7 @@
     <div class="right-info">
       <div class="right-body">
         <a-card :tabList="planList" :activeTabKey="noTitleKey" @tabChange="key => onTabChange(key,'noTitleKey')">
+          <!-- 新建计划 -->
           <div v-if="noTitleKey === 'addPlan'">
             <!-- 判断显示内容 -->
             <div v-if="ishidden == 1">
@@ -42,47 +52,128 @@
                   </a-select>
                   <a-button shape="circle" icon="close" style="font-size:8px;margin-left:15px;"></a-button>
                 </div>
-                <a-tree checkable @expand="onExpand" :expandedKeys="expandedKeys" :autoExpandParent="autoExpandParent"
-                    v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
+                <a-tree checkable defaultExpandAll v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
                 </a-tree>
-                <a-button class="addTask_btn" @click="addTaskBtn" @addPlanInfo="clearBtn">追加任务</a-button> 
-                <add-task ref="addTask"></add-task>
+                <a-button class="addTask_btn" @click="addTaskBtn" v-show="cBtn">追加任务</a-button> 
+                <add-task ref="addTask" @showAddBtn="clearBtn"></add-task>
               </div>
               <div class="riverInfo">
                 <div class="river_info">
                   <span>专向调查点</span>
                   <a-button shape="circle" icon="close" style="font-size:8px;margin-left:185px;"></a-button>
                 </div>
-                <a-tree checkable @expand="onExpand" :expandedKeys="expandedKeys" :autoExpandParent="autoExpandParent"
-                    v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
+                <a-tree checkable v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
                 </a-tree>
                 <a-button class="addTask_btn">追加任务</a-button>
               </div>   
             </div> 
-            <div v-if="ishidden == 2" @showPlan="getHidden">
+            <div v-if="ishidden == 2">
               <creat-group ref="creatGroup"></creat-group>
             </div>
-            <div v-if="ishidden == 3" >
+            <div v-if="ishidden == 3">
               <plan-list ref="planList"></plan-list>
             </div>
-            <!-- <div v-if="ishidden == $refs.creatGroup.nextBtn()">
-              新建计划
-            </div> -->
           </div>
-          <div v-if="noTitleKey === 'nowPlan'">今日计划</div>
+          <!-- 今日计划 -->
+          <div v-if="noTitleKey === 'nowPlan'">
+            <a-collapse v-model="activePlanKey">
+              <a-collapse-panel header="计划一" key="1" style="font-size:16px;">
+                <div class="planProgress">
+                  <a-row>
+                    <a-col :span="5" style="font-size:14px;">进度</a-col>
+                    <a-col :span="19"><a-progress :percent="75" class="progressSty"/></a-col>
+                  </a-row>  
+                </div>
+                <div class="planGroup">
+                  <a-collapse v-model="activeGroupKey">
+                    <a-collapse-panel header="组一" key="11" style="color:#808080;font-size:15px;">
+                      <div class="planProgress">
+                        <a-row>
+                          <a-col :span="5" style="font-size:14px;">进度</a-col>
+                          <a-col :span="19"><a-progress :percent="75" class="progressSty"/></a-col>
+                        </a-row>  
+                      </div>
+                      <a-collapse v-model="activeRiverKey" style="border-bottom:1px solid d9d9d9;">
+                        <a-collapse-panel header="黄浦江" key="111" >
+                          <div style="margin-top:10px;">
+                            <span style="padding:15px;">未完成</span>
+                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                          </div>
+                          <div class="">
+                            <span style="padding:15px;">已完成</span>
+                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                          </div>
+                          <div class="">
+                            <span style="padding:15px;">异常</span>
+                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                          </div>
+                          <div style="text-align:center;">
+                            <a-button class="addTask_btn" @click="addNewTask">追加任务</a-button>
+                          </div>
+                        </a-collapse-panel>
+                      </a-collapse>
+                    </a-collapse-panel>
+                  </a-collapse>
+                  <a-collapse v-model="activeTwo">
+                    <a-collapse-panel header="组二" key="11" style="color:#808080;font-size:15px;">
+                      <div class="planProgress">
+                        <a-row>
+                          <a-col :span="5" style="font-size:14px;">进度</a-col>
+                          <a-col :span="19"><a-progress :percent="75" class="progressSty"/></a-col>
+                        </a-row>  
+                      </div>
+                      <a-collapse v-model="activeTwo" style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;">
+                        <a-collapse-panel header="黄浦江" key="111">
+                          <div style="margin-top:10px;">
+                            <span style="padding:15px;">未完成</span>
+                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                          </div>
+                          <div class="">
+                            <span style="padding:15px;">已完成</span>
+                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                          </div>
+                          <div class="">
+                            <span style="padding:15px;">异常</span>
+                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                          </div>
+                          <div style="text-align:center;">
+                            <a-button class="addTask_btn">追加任务</a-button>
+                          </div>
+                        </a-collapse-panel>
+                      </a-collapse>
+                    </a-collapse-panel>
+                  </a-collapse>
+                </div>
+                <div style="width:100%;margin-bottom:10px;">
+                    <a-button class="groupBtn" @click="detailPlan">详情</a-button>
+                      <a-button class="groupBtn">修改时间</a-button>
+                      <a-button class="groupBtn">监管</a-button>
+                    </div>
+              </a-collapse-panel>
+            </a-collapse>
+          </div>
         </a-card>
         <div style="clear:both;"></div>
       </div>
       <!-- 底部 -->
-      <div class="addPlan_foot">
+      <div class="addPlan_foot" v-if="noTitleKey === 'addPlan'">
         <div v-if="ishidden == 1">
           <span @click="newPlan_btn">生成计划</span>
           <span>加入已有计划</span>
         </div>  
+        <div v-if="ishidden == 2">
+          <span @click="canclePlanBtn">取消</span>
+          <span @click="showPlanBtn">下一步</span>
+        </div> 
+        <div v-if="ishidden == 3">
+          <span @click="previousBtn">上一步</span>
+          <span @click="reHome">返回首页</span>
+        </div>
       </div>
       <div style="clear:both;"></div>
     </div>
-    <div style="clear:both;"></div>
+    <add-new-task ref="addNewTask"></add-new-task>
+    <plan-detail ref="planDetail"></plan-detail>
   </div>
 </template>
 
@@ -93,48 +184,21 @@ import addTask from '../modals/addTask'
 import creatGroup from '../modals/creatGroup'
 import planList from '../modals/planList'
 import addSurvey from '../modals/addSurvey'
+import addNewTask from '../modals/addNewTask'
+import planDetail from '../modals/planDetail'
 
 const treeData = [
   {
-    title: '0-0',
+    title: '无人机正射影像',
     key: '0-0',
-    children: [
-      {
-        title: '0-0-0',
-        key: '0-0-0',
-        children: [
-          { title: '0-0-0-0', key: '0-0-0-0' },
-          { title: '0-0-0-1', key: '0-0-0-1' },
-          { title: '0-0-0-2', key: '0-0-0-2' }
-        ]
-      },
-      {
-        title: '0-0-1',
-        key: '0-0-1',
-        children: [
-          { title: '0-0-1-0', key: '0-0-1-0' },
-          { title: '0-0-1-1', key: '0-0-1-1' },
-          { title: '0-0-1-2', key: '0-0-1-2' }
-        ]
-      },
-      {
-        title: '0-0-2',
-        key: '0-0-2'
-      }
-    ]
   },
   {
-    title: '0-1',
+    title: '360全景图',
     key: '0-1',
     children: [
-      { title: '0-1-0-0', key: '0-1-0-0' },
-      { title: '0-1-0-1', key: '0-1-0-1' },
-      { title: '0-1-0-2', key: '0-1-0-2' }
+      { title: '黄浦江360(一)', key: '0-1-0-0' },
+      { title: '黄浦江360(二)', key: '0-1-0-1' }
     ]
-  },
-  {
-    title: '0-2',
-    key: '0-2'
   }
 ]
 export default {
@@ -144,7 +208,9 @@ export default {
     addTask,
     creatGroup,
     planList,
-    addSurvey
+    addSurvey,
+    addNewTask,
+    planDetail
   },
   data() {
     return {
@@ -159,14 +225,18 @@ export default {
         }
       ],
       noTitleKey: 'addPlan',
-      expandedKeys: [],
-      autoExpandParent: false,
-      checkedKeys: ['0-0-0'],
+      checkedKeys: ['0-1-0-0'],
       selectedKeys: [],
       treeData,
       ishidden: 1,
       checkedPlan:[],
       cBtn:true,
+      activePlanKey:['1'],
+      activeGroupKey:['11'],
+      activeRiverKey:['111'],
+      activeKey:['1'],
+      activeTwo:[],
+       text: '当前河道方位内出现红色风险源',
       // 地图对象
       map: {},
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
@@ -176,8 +246,7 @@ export default {
           title: '黄浦江',
           key: '1',
           children: [
-            { title: '当前河道方位内出现红色风险源,推荐加入巡查计划', key: '1' },
-            { title: '当前河道方位内出现红色风险源,推荐加入巡查计划', key: '2' }
+            { title: '当前河道方位内出现红色风险源,推荐加入巡查计划', key: '1' }
           ]
         },
         {
@@ -187,10 +256,6 @@ export default {
             {
               title: '当前河道预设任务完成度滞后！其中360未完成3个、正射影像线路：A1+B2+C3未执行，推荐加入调查计划',
               key: '2'
-            },
-            {
-              title: '当前河道预设任务完成度滞后！其中360未完成3个、正射影像线路：A1+B2+C3未执行，推荐加入调查计划',
-              key: '1'
             }
           ]
         }
@@ -248,11 +313,6 @@ export default {
     },
     //右侧模块选择框修改
     handleChange() {},
-    onExpand(expandedKeys) {
-      console.log('onExpand', expandedKeys)
-      this.expandedKeys = expandedKeys
-      this.autoExpandParent = false
-    },
     onCheck(checkedKeys) {
       console.log('onCheck', checkedKeys)
       this.checkedKeys = checkedKeys
@@ -273,15 +333,40 @@ export default {
       this.cBtn = false;
     },
     clearBtn(val) {
+      console.log("............"+val);
       this.cBtn = val
     },
     //生成计划
     newPlan_btn() {
+      this.ishidden = 2
+    },
+    // getHidden(val){
+    //   console.log(val);
+    //   this.ishidden = val;
+    // },
+    canclePlanBtn(){
+      this.ishidden = 1
+    },
+    showPlanBtn(){
       this.ishidden = 3
     },
-    getHidden(val){
-      console.log(val);
-      this.ishidden = val;
+    previousBtn(){
+      this.ishidden = 2
+    },
+    reHome(){
+      this.ishidden = 1
+    },
+    //今日计划中组点击
+    selectGroup(){
+
+    },
+    //当日计划模块追加任务
+    addNewTask(){
+      this.$refs.addNewTask.showtask();
+    },
+    //当日计划模块详情按钮
+    detailPlan(){
+      this.$refs.planDetail.show();
     }
   }
 }

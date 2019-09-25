@@ -32,7 +32,11 @@
 
 <script>
 import { ArticleListContent } from '@/components'
+<<<<<<< HEAD
 // import IconText from '@/views/list/search/components/IconText'
+=======
+import IconText from '@/views/settings/search/components/IconText'
+>>>>>>> 9dd3a7bf71c6e46d45232ea7cb1303a35eb29cdb
 
 export default {
   name: 'Article',

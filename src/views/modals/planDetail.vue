@@ -1,35 +1,19 @@
 <template>
-    <div class="planList">
-        <div class="planList_info">
-            <p class="info_title" @click="clickBtn">组一</p>
-            <div class="info_body">
-                <p class="plan_title">黄浦江</p>
-                <a-tree checkable v-model="checkedKeys" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
-            </div>
-        </div>
-        <div class="planList_info">
-            <p class="info_title">组二</p>
-            <div class="info_body">
-                <p class="plan_title">黄浦江</p>
-                <a-tree checkable v-model="checkedKeys" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
-            </div>
-        </div>
-
-        <!-- 弹框 -->
-        <a-modal title="计划A" :width="600" :visible="visible" @ok="submitPlan" @cancel="cancleBtn">
+    <a-modal title="计划A" :width="600" :visible="visible" @ok="submitPlan" @cancel="cancleBtn">
             <span class="editIcon" @click="editModalTitle" v-if="editShow"><a-icon type="edit" /></span>
             <span style="position:absolute;top:12px;left:60px;" v-if="!editShow"><a-input placeholder="计划A" style="width:150px;margin-left:20px;"/></span>
+            <div class=" ">
+                <a-row style="padding-bottom:10px;">
+                    <a-col :span="4" style="font-size:15px;">下发时间:</a-col>
+                    <a-col :span="20">2019-07-02 14:30:45</a-col>
+                </a-row>
+                <a-row>
+                    <a-col :span="4" style="font-size:15px;">下发人:</a-col>
+                    <a-col :span="20">张三</a-col>
+                </a-row>
+            </div>
             <div class="modal-body">
-                <!-- <a-tabs defaultActiveKey="1" @change="changeTab">
-                    <a-tab-pane tab="组一" key="1">Content of Tab Pane 1</a-tab-pane>
-                    <a-tab-pane tab="组二" key="2" forceRender>Content of Tab Pane 2</a-tab-pane>
-                    <a-tab-pane tab="组三" key="3">Content of Tab Pane 3</a-tab-pane>
-                </a-tabs> -->
                 <a-card :tabList="planTab" :activeTabKey="noPlanTab" @tabChange="key => onTabChange(key,'noPlanTab')">
-                    <!-- <div v-if="noPlanTab === 'one'">  
-                    </div>
-                    <div v-if="noPlanTab === 'two'"></div>
-                    <div v-if="noPlanTab === 'three'"></div> --> 
                     <div class="card-info">
                         <a-form :form="planForm" @submit="submitPlan">
                             <div><span style="font-size:16px;font-weight:500;color: #1F1F1F;">人员:</span>
@@ -93,27 +77,9 @@
                     </div>                  
                 </a-card>   
             </div>
-            <!-- <div class="modal-foot">
-                <div class="foot-left" style="border-right:1px solid #e8e8e8;" @click="cancleBtn()">取消</div>
-                <div class="foot-left" @click="submitPlan">保存</div>
-            </div> -->
         </a-modal>
-    </div>
 </template>
 <script>
-import '../../assets/css/planList.less'
-
-const treeData = [{
-  title: '无人机正射影像',
-  key: '0-0',
-}, {
-  title: '360全景图',
-  key: '0-1',
-  children: [
-    { title: '黄浦江360(一)', key: '0-1-0-0' },
-    { title: '黄浦江360(二)', key: '0-1-0-1' },
-  ],
-}]
 const planTab = [{
     key: 'one',
     tab:'组一'
@@ -124,15 +90,11 @@ const planTab = [{
     key: 'three',
     tab:'组三' 
 }] 
-
 const personList = ['张三','李四','王五']
 export default {
-    name:'planList',
+    name:'planDetail',
     data(){
         return{
-            checkedKeys: ['0-1-0-0'],
-            selectedKeys: [],
-            treeData,
             visible:false,
             planTab,
             noPlanTab:'one',
@@ -147,29 +109,19 @@ export default {
                 xs:{span:24},
                 sm:{span:20},
             },
-            number:20,
+            number:3,
             editShow:true
         }
     },
-    created(){
-        this.visible = true;
-    },
-    watch: {
-        checkedKeys(val) {
-        console.log('onCheck', val)
-        }
-  },
     methods:{
-        onSelect (selectedKeys, info) {
-            console.log('onSelect', info)
-            this.selectedKeys = selectedKeys
+        show(){
+            this.visible = true;
         },
-        handleOk(e){
-            console.log(e);
+        submitPlan(){
             this.visible = false;
         },
-        clickBtn(){
-            this.visible = true;
+        cancleBtn(){
+            this.visible = false;
         },
         //卡片改变
         onTabChange(key,type){
@@ -177,7 +129,7 @@ export default {
             this[type] = key
         },
         //表单提交
-        submitPlan(e){
+        submitPlanInfo(e){
             // e.preventDefault();
             console.log(e);
             this.visible = false;
@@ -190,12 +142,6 @@ export default {
         numberChange(val){
             console.log('changed', val);
         },
-        cancleBtn(){
-            this.visible = false;
-        },
-        changeTab(key){
-
-        },
         editModalTitle(){
             console.log(this.editShow);
             this.editShow = false; 
@@ -204,6 +150,33 @@ export default {
     }
 }
 </script>
-<style lang="less" scoped>
-
+<style lang="less">
+.addTask_info{
+    width: 100%;
+    // border-top: 1px solid #e8e8e8;
+}
+.addTask_title{
+    width: 100%;
+    height: 34px;
+    line-height: 34px;
+    border:  1px solid #F5F5F5;
+    text-align: left;
+    padding-left: 15px;
+    background-color: #F5F5F5;
+}
+.ant-form-item{
+    margin-bottom: 3px;
+    // margin-bottom:0;
+}
+.detailPerson{
+    padding:10px 20px;
+    border-bottom: 1px solid #e8e8e8;
+}
+.editIcon{
+    position:absolute;top:18px;left:82px;
+    cursor: pointer;
+}
+.editIcon:hover{
+    font-size: 16px;
+}
 </style>

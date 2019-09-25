@@ -128,6 +128,20 @@ export const asyncRouterMap = [
           },
         ]
       },
+      {
+        path: '/settings/staff',
+        name: 'staffAdd',
+        hidden: true,
+        component: () => import('@/views/settings/modules/staffAdd'),
+        meta: { title: '添加', keepAlive: true, permission: [ 'table' ] }
+      },
+      {
+        path: '/settings/role',
+        name: 'roleAdd',
+        hidden: true,
+        component: () => import('@/views/settings/modules/roleAdd'),
+        meta: { title: '添加', keepAlive: true, permission: [ 'table' ] }
+      },
       // result
       {
         path: '/result',

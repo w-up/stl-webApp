@@ -90,7 +90,7 @@ export default {
   methods: {
     add(id){
       this.$router.push({
-        path: '/list/role',
+        path: '/settings/role',
         query: {
           id: id,
         }

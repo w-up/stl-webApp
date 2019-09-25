@@ -34,7 +34,10 @@
                 </a-checkbox-group>
             </FormItem>
             <FormItem label="管理范围" >
-                <Tree :data="treeData" :expand='true'></Tree>
+                <a-card style="min-height: 200px;width:300px">
+                    <a-directory-tree :treeData="treeData" ></a-directory-tree>
+                </a-card>
+                <!-- <Tree :data="treeData" :expand='true'></Tree> -->
             </FormItem>
             <FormItem >
                  <Button  style="margin-right:15px;" @click="backPage">返回</Button>
