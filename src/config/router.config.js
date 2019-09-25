@@ -45,139 +45,87 @@ export const asyncRouterMap = [
           }
         ]
       },
+      // 设置
       {
-        path: '/profile',
-        name: 'profile',
+        path: '/settings',
+        name: 'settings',
         component: RouteView,
-        redirect: '/profile/basic',
-        hidden: true,
-        hideChildrenInMenu: true,
-        meta: { title: '监管', icon: 'eye', permission: [ 'profile' ] },
+        redirect: '/settings/RiverManage',
+        meta: { title: '设置', keepAlive: true, icon: 'setting', permission: [ 'dashboard' ] },
         children: [
           {
-            path: '/profile/basic',
-            name: 'ProfileBasic',
-            component: () => import('@/views/profile/basic/Index'),
-            meta: { title: '基础详情页', permission: [ 'profile' ] }
-          },
-          {
-            path: '/profile/advanced',
-            name: 'ProfileAdvanced',
-            component: () => import('@/views/profile/advanced/Advanced'),
-            meta: { title: '高级详情页', permission: [ 'profile' ] }
-          }
-        ]
-      },
-
-      // list 设置
-      {
-        path: '/list',
-        name: 'list',
-        component: PageView,
-        redirect: '/list/RiverManage',
-        meta: { title: '设置', icon: 'setting', permission: [ 'table' ] },
-        children: [
-          {
-            path: '/list/RiverManage',
-            name: 'TableListWrapper',
+            path: '/settings/RiverManage',
+            name: 'RiverManage',
             // hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
-            component: () => import('@/views/list/RiverManage'),
+            component: () => import('@/views/settings/RiverManage'),
             meta: { title: '河道管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
-            path: '/list/TaskManage',
+            path: '/settings/TaskManage',
             name: 'TaskManage',
-            component: () => import('@/views/list/TaskManage'),
+            component: () => import('@/views/settings/TaskManage'),
             meta: { title: '任务管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
-            path: '/list/RiverPlanManage',
+            path: '/settings/RiverPlanManage',
             name: 'RiverPlanManage',
-            component: () => import('@/views/list/RiverPlanManage'),
+            component: () => import('@/views/settings/RiverPlanManage'),
             meta: { title: '巡河方案管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
-            path: '/list/DeviceManage',
+            path: '/settings/DeviceManage',
             name: 'DeviceManage',
-            component: () => import('@/views/list/DeviceManage'),
+            component: () => import('@/views/settings/DeviceManage'),
             meta: { title: '设备管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
-            path: '/list/RiskTypeManage',
+            path: '/settings/RiskTypeManage',
             name: 'RiskTypeManage',
-            component: () => import('@/views/list/RiskTypeManage'),
+            component: () => import('@/views/settings/RiskTypeManage'),
             meta: { title: '风险源类型管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
-            path: '/list/drawManage',
+            path: '/settings/drawManage',
             name: 'drawManage',
-            component: () => import('@/views/list/drawManage'),
+            component: () => import('@/views/settings/drawManage'),
             meta: { title: '绘制类型管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
-            path: '/list/StreetManage',
+            path: '/settings/StreetManage',
             name: 'StreetManage',
-            component: () => import('@/views/list/StreetManage'),
+            component: () => import('@/views/settings/StreetManage'),
             meta: { title: '街道管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
-            path: '/list/WaterPointManage',
+            path: '/settings/WaterPointManage',
             name: 'WaterPointManage',
-            component: () => import('@/views/list/WaterPointManage'),
+            component: () => import('@/views/settings/WaterPointManage'),
             meta: { title: '水质监测点管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
-            path: '/list/ProjectManage',
+            path: '/settings/ProjectManage',
             name: 'ProjectManage',
-            component: () => import('@/views/list/ProjectManage'),
+            component: () => import('@/views/settings/ProjectManage'),
             meta: { title: '项目管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
-            path: '/list/SupervisoryUnitsManage',
+            path: '/settings/SupervisoryUnitsManage',
             name: 'SupervisoryUnitsManage',
-            component: () => import('@/views/list/SupervisoryUnitsManage'),
+            component: () => import('@/views/settings/SupervisoryUnitsManage'),
             meta: { title: '督办单管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
-            path: '/list/UserRootManage',
+            path: '/settings/UserRootManage',
             name: 'UserRootManage',
-            component: () => import('@/views/list/UserRootManage'),
+            component: () => import('@/views/settings/UserRootManage'),
             meta: { title: '角色管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
-            path: '/list/staffManage',
+            path: '/settings/staffManage',
             name: 'staffManage',
-            component: () => import('@/views/list/staffManage'),
+            component: () => import('@/views/settings/staffManage'),
             meta: { title: '员工管理', keepAlive: true, permission: [ 'table' ] }
           },
-          {
-            path: '/list/search',
-            name: 'SearchList',
-            component: () => import('@/views/list/search/SearchLayout'),
-            redirect: '/list/search/article',
-            hidden: true,
-            meta: { title: '搜索列表', keepAlive: true, permission: [ 'table' ] },
-            children: [
-              {
-                path: '/list/search/article',
-                name: 'SearchArticles',
-                component: () => import('../views/list/search/Article'),
-                meta: { title: '搜索列表（文章）', permission: [ 'table' ] }
-              },
-              {
-                path: '/list/search/project',
-                name: 'SearchProjects',
-                component: () => import('../views/list/search/Projects'),
-                meta: { title: '搜索列表（项目）', permission: [ 'table' ] }
-              },
-              {
-                path: '/list/search/application',
-                name: 'SearchApplications',
-                component: () => import('../views/list/search/Applications'),
-                meta: { title: '搜索列表（应用）', permission: [ 'table' ] }
-              }
-            ]
-          }
         ]
       },
       // result
