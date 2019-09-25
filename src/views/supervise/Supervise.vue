@@ -6,7 +6,7 @@
     </div>-->
     <!-- <div class="right">456546</div> -->
     <div class="weather">
-      <img src="./img/weather.jpg" alt="">
+      <img src="./img/weather.jpg" alt />
     </div>
     <ul class="menu">
       <li @click="compass">
@@ -28,36 +28,44 @@
           <template slot="title">
             <span>工具</span>
           </template>
-          <img src="./img/screenshot.png" alt="工具" title="工具" />
+          <img src="./img/draw.png" alt="工具" title="工具" />
         </a-popover>
-      </li>
-      <li>
-        <img src="./img/max.png" alt="放大" title="放大" />
-      </li>
-      <li>
-        <img src="./img/min.png" alt="缩小" title="缩小" />
       </li>
       <li>
         <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
           <template slot="content">
-            <a-list size="small" :dataSource="dataItem">
-              <a-list-item slot="renderItem" slot-scope="item">
-                <a-row style="width: 100%;">
-                  <a-col :span="16">
-                    <span>{{item.title}}</span>
-                  </a-col>
-                  <a-col :span="8">
-                    <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
-                  </a-col>
-                </a-row>
-              </a-list-item>
-            </a-list>
+            <a-row style="width: 100%;">
+              <a-col :span="24">
+                <!-- <span>2D影像图</span> -->
+                <a-radio-group @change="onMapChange" v-model="mapType">
+                  <a-radio-button value="a">2D影像图</a-radio-button>
+                  <a-radio-button value="b">卫星影像图</a-radio-button>
+                </a-radio-group>
+              </a-col>
+            </a-row>
+            <a-row style="width: 100%; margin-top: 8px;">
+              <a-col :span="16">
+                <span>道路标注</span>
+              </a-col>
+              <a-col :span="8">
+                <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+              </a-col>
+            </a-row>
           </template>
           <template slot="title">
             <span>图像</span>
           </template>
           <img src="./img/map.png" alt="图像" title="图像" />
         </a-popover>
+      </li>
+      <li>
+        <img src="./img/screenshot.png" alt="截图" title="截图" />
+      </li>
+      <li>
+        <img src="./img/max.png" alt="放大" title="放大" />
+      </li>
+      <li>
+        <img src="./img/min.png" alt="缩小" title="缩小" />
       </li>
       <li>
         <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
@@ -125,13 +133,9 @@ export default {
           id: 2,
           src: require('../../../public/loading/option2/loading.svg'),
           title: '道路标注'
-        },
-        {
-          id: 3,
-          src: require('../../../public/loading/option2/loading.svg'),
-          title: '河道标注'
         }
       ],
+      mapType: "a",
       checked: false,
       // 地图对象
       map: {},
@@ -271,7 +275,11 @@ export default {
     },
     compass() {
       this.$refs.riskInfo.riskInfo()
-    }
+    },
+    // 图像
+    onMapChange (e) {
+      console.log(`checked = ${e.target.value}`)
+    },
   }
 }
 </script>
@@ -295,8 +303,8 @@ export default {
 }
 .menu {
   position: fixed;
-  right: 10px;
-  bottom: 10px;
+  right: 20px;
+  bottom: 20px;
   width: 40px;
   z-index: 999;
   margin: 0;
