@@ -3,7 +3,7 @@
     <a-card >
       <div style="display:flex;width:100%;box-sizing:border-box;">
         <div style="width:220px">
-          <div class="boder-tree">
+          <!-- <div class="boder-tree"> -->
             <!-- <a-directory-tree
               multiple
               defaultExpandAll
@@ -12,8 +12,11 @@
               :treeData="treeData"
             >
             </a-directory-tree> -->
-            <Tree :data="treeData" @on-select-change='select'></Tree>
-          </div>
+            <!-- <Tree :data="treeData" @on-select-change='select'></Tree>
+          </div> -->
+          <a-card style="min-height: 200px">
+            <a-directory-tree :treeData="treeData"  @select='select'></a-directory-tree>
+          </a-card>
         </div>
         <div style="width:100%;margin-left:20px">
           <div v-if="treeId==true">
@@ -190,8 +193,9 @@ export default {
   },
   methods: {
     select(e){
-      console.log(e);
-      if (e[0].id=='1') {
+      var s=e[0].substr(0,1);
+      console.log(s);
+      if (s=='1') {
         this.treeId=true
       }else{
         this.treeId=false

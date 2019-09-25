@@ -108,7 +108,7 @@ export default {
   methods: {
     add(id){
       this.$router.push({
-        path: '/list/staff',
+        path: '/settings/staff',
         query: {
           id: id,
         }
