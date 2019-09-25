@@ -199,7 +199,7 @@ export const asyncRouterMap = [
           },
           {
             path: '/account/settings',
-            name: 'settings',
+            name: 'settings1',
             component: () => import('@/views/account/settings/Index'),
             meta: { title: '个人设置', hideHeader: true, permission: [ 'user' ] },
             redirect: '/account/settings/base',
