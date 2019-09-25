@@ -70,33 +70,205 @@
       <li>
         <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
           <template slot="content" style="overflow-y: scroll;">
-            <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
-            <a-directory-tree multiple defaultExpandAll @select="onSelect" @expand="onExpand">
-              <a-tree-node title="查看历史数据" key="0-4"></a-tree-node>
-              <a-tree-node title="影像对比" key="0-0">
-                <a-tree-node title="双球对比" key="0-0-0" isLeaf />
-                <a-tree-node title="卷帘对比" key="0-0-1" isLeaf />
-              </a-tree-node>
-              <a-tree-node title="影像管理" key="0-1">
-                <a-tree-node title="手机照片" key="0-1-0" isLeaf />
-                <a-tree-node title="无人机照片" key="0-1-1" isLeaf />
-                <a-tree-node title="360全景图" key="0-1-2" isLeaf />
-              </a-tree-node>
-              <a-tree-node title="风险管理" key="0-2">
-                <a-tree-node title="风险地图" key="0-2-0" isLeaf />
-                <a-tree-node title="水质" key="0-2-1" isLeaf />
-                <a-tree-node title="水面漂浮物" key="0-2-2" isLeaf />
-                <a-tree-node title="河岸风险源" key="0-2-3" isLeaf />
-                <a-tree-node title="水土流失" key="0-2-4" isLeaf />
-                <a-tree-node title="水面率" key="0-2-5" isLeaf />
-                <a-tree-node title="底泥" key="0-2-6" isLeaf />
-                <a-tree-node title="专项调查点" key="0-2-7" isLeaf />
-              </a-tree-node>
-              <a-tree-node title="其他" key="0-3">
-                <a-tree-node title="河道连通性" key="0-3-0" isLeaf />
-                <a-tree-node title="水陆分布" key="0-3-1" isLeaf />
-              </a-tree-node>
-            </a-directory-tree>
+            <a-list size="small">
+              <a-list-item>
+                <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                  <a-col :span="18">
+                    <p style="margin:0;">查看历史数据</p>
+                  </a-col>
+                  <a-col :span="6">
+                    <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                  </a-col>
+                </a-row>
+              </a-list-item>
+              <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
+                <template slot="content">
+                  <a-list size="small">
+                    <a-list-item>
+                      <p style="margin:0;">双球对比</p>
+                    </a-list-item>
+                    <a-list-item>
+                      <p style="margin:0;">卷帘对比</p>
+                    </a-list-item>
+                  </a-list>
+                </template>
+                <template slot="title">
+                  <span>影像对比</span>
+                </template>
+                <a-list-item>
+                  <p style="margin:0;">影像对比</p>
+                </a-list-item>
+              </a-popover>
+              <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
+                <template slot="content">
+                  <a-list size="small">
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">手机照片</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">无人机照片</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">360全景图</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                  </a-list>
+                </template>
+                <template slot="title">
+                  <span>影像管理</span>
+                </template>
+                <a-list-item>
+                  <p style="margin:0;">影像管理</p>
+                </a-list-item>
+              </a-popover>
+              
+              <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
+                <template slot="content">
+                  <a-list size="small">
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">风险地图</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">水质</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">水面漂浮物</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">河岸风险源</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">水土流失</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">水面率</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item><a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">底泥</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">专项调查点</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                  </a-list>
+                </template>
+                <template slot="title">
+                  <span>风险管理</span>
+                </template>
+                <a-list-item>
+                  <p style="margin:0;">风险管理</p>
+                </a-list-item>
+              </a-popover>
+              <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
+                <template slot="content">
+                  <a-list size="small">
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">河道连通性</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">水陆分布</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                  </a-list>
+                </template>
+                <template slot="title">
+                  <span>其他</span>
+                </template>
+                <a-list-item>
+                  <p style="margin:0;">其他</p>
+                </a-list-item>
+              </a-popover>
+            </a-list>
+          </template>
+          <template slot="title">
+            <span>更多</span>
           </template>
           <img src="./img/more.png" alt="更多" title="更多" />
         </a-popover>
@@ -135,7 +307,7 @@ export default {
           title: '道路标注'
         }
       ],
-      mapType: "a",
+      mapType: 'a',
       checked: false,
       // 地图对象
       map: {},
@@ -277,9 +449,9 @@ export default {
       this.$refs.riskInfo.riskInfo()
     },
     // 图像
-    onMapChange (e) {
+    onMapChange(e) {
       console.log(`checked = ${e.target.value}`)
-    },
+    }
   }
 }
 </script>
