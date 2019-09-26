@@ -8,7 +8,7 @@ const info = (options) => {
     'name': 'admin',
     'username': 'admin',
     'password': 'ant.design',
-    'avatar': '/avatar2.jpg',
+    'avatar': '/logo.png',
     'status': 1,
     'telephone': '',
     'lastLoginIp': '27.154.74.117',
