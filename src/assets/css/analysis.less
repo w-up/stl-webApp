@@ -133,10 +133,11 @@
     // height: calc(100vh - 38px);
     overflow: auto;
     position: absolute;
-    top:55px;
+    top:48px;
     z-index: 10;
     bottom: 38px;
     margin-bottom: 25px;
+    padding-top: 0;
 }
 .right-body .ant-tabs .ant-tabs-large-bar .ant-tabs-tab{
     width: 50%;
@@ -202,12 +203,10 @@
 }
 .planGroup .ant-collapse > .ant-collapse-item > .ant-collapse-header{
     padding-left: 55px;
+    color:#1890ff;
 }
 .planGroup  .ant-collapse > .ant-collapse-item > .ant-collapse-header .arrow{
     left: 30px;
-}
-.planGroup .ant-collapse > .ant-collapse-item > .ant-collapse-header{
-    color:#808080;
 }
 .groupBtn{
     margin-top: 10px;
@@ -215,4 +214,64 @@
 }
 .ant-progress-inner{
     margin-top: -4px;
+}
+.right-body .ant-collapse{
+    border-radius: 0;
+    border: none;
+}
+.right-body .ant-collapse > .ant-collapse-item{
+    border-bottom: #FFFFFF;
+}
+.right-body .ant-collapse-content{
+    border-top: none;
+}
+.collapse_header{
+    font-size:16px;
+    background-color:#EBF5FF;
+    position: relative;
+}
+.collapse_group{
+    color:#808080;
+    font-size:15px;
+    background-color: #FFFFFF;
+    position: relative;
+}
+.collapse_header .ant-progress-line{
+    width: 60%;
+    font-size: 14px;
+    position: absolute;
+    top: 15px;
+    left: 155px;
+}
+.collapse_group .ant-progress-line{
+    width: 60%;
+    font-size: 14px;
+    position: absolute;
+    top: 15px;
+    left: 155px;
+}
+.river_group .ant-collapse > .ant-collapse-item > .ant-collapse-header{
+    padding-left: 74px;
+    color: rgba(0, 0, 0, 0.85);
+}
+.river_group .ant-collapse > .ant-collapse-item > .ant-collapse-header .arrow{
+    left: 50px;
+}
+.riverGroup_info{
+    padding:10px 15px;
+    width:100%;
+    background-color: #1890ff;
+    color: #FFFFFF;
+}
+.riverGroup_success{
+    padding:10px 15px;
+    width:100%;
+    background-color: #7ED321;
+    color:#FFFFFF ;
+}
+.riverGroup_warning{
+    padding:10px 15px;
+    width:100%;
+    background-color: #F5A623;
+    color:#FFFFFF ;
 }
