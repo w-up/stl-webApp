@@ -16,7 +16,7 @@
         </div>
 
         <!-- 弹框 -->
-        <a-modal title="计划A" :width="600" :visible="visible" @ok="submitPlan" @cancel="cancleBtn">
+        <a-modal title="计划A" :width="600" :visible="visible" @ok="submitPlan" @cancel="cancleBtn" class="modal_plan">
             <span class="editIcon" @click="editModalTitle" v-if="editShow"><a-icon type="edit" /></span>
             <span style="position:absolute;top:12px;left:60px;" v-if="!editShow"><a-input placeholder="计划A" style="width:150px;margin-left:20px;"/></span>
             <div class="modal-body">
