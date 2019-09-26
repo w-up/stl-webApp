@@ -43,7 +43,7 @@
         </a-menu>
       </a-dropdown>
       <!-- 语言选择 -->
-      <lang-select />
+      <!-- <lang-select /> -->
     </div>
   </div>
 </template>
