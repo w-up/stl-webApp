@@ -261,7 +261,10 @@ export default {
         })
       })
       */
-      this.$router.push({ name: 'analysis' })
+      // this.$router.push({ name: 'analysis' })
+      this.$router.push({
+        path: "/dashboard/analysis"
+      })
       // 延迟 1 秒显示欢迎信息
       setTimeout(() => {
         this.$notification.success({
