@@ -105,7 +105,7 @@
     position: fixed;
     z-index: 999;
     top: 64px;
-    right: 320px;
+    right: 300px;
 }
 
 .right-info{
@@ -123,7 +123,7 @@
 }
 .right-body .ant-card{
     width: 100%;
-    height: calc(100vh - 38px);
+    height: calc(100vh - 50px);
     margin: 0;
     padding: 0;
 }
@@ -187,26 +187,21 @@
     bottom: 0;
     // right: -449px;
     width: 100%;
-    height: 38px;
+    height: 50px;
     line-height: 38px;
     z-index: 200;
+    padding-bottom: 10px;
 }
-.addPlan_foot span{
-    width:50%;
-    border: 1px solid #e8e8e8;
-    height: 100%;
-    line-height: 38px;
-    // padding:0 20px;
-    text-align: center;
-    display: inline-block;
-    font-size: 16px;
-}
-.addPlan_foot span:hover{
-    box-shadow: 0 0 5px#E3E3E3;
-}
-.right-body .ant-progress-outer{
-    width: 80%;
-}
+// .addPlan_foot span{
+//     width:50%;
+//     border: 1px solid #e8e8e8;
+//     height: 100%;
+//     line-height: 38px;
+//     text-align: center;
+//     display: inline-block;
+//     font-size: 16px;
+// }
+
 .right-body .ant-collapse-content > .ant-collapse-content-box{
     padding: 0;
 }
@@ -267,21 +262,35 @@
 .collapse_header .ant-progress-line{
     width: 60%;
     font-size: 14px;
-    margin-left: 49px;
+    margin-left: 20.2%;
     // position: absolute;
     // top: 15px;
     // left: 140px;
+} 
+.collapse_header .ant-progress-outer{
+    width: 76%;
+}
+.collapse_header .ant-progress-show-info .ant-progress-outer {
+    padding-right: calc(2em + -14px);
+    margin-right: calc(-2em - -14px);
 }
 .collapse_group .ant-progress-line{
     width: 60%;
     font-size: 14px;
-    margin-left: 43px;
+    margin-left: 56px;
     // margin-left: 42px;
     // position: absolute;
     // top: 15px;
     // left: 155px;
     // z-index:999;
     // zoom: 1;
+}
+.collapse_group .ant-progress-outer{
+    width: 80%;
+}
+.collapse_group .ant-progress-show-info .ant-progress-outer {
+    padding-right: calc(2em + -14px);
+    margin-right: calc(-2em - -14px);
 }
 .progress_span .ant-progress-line{
     width: 60%;
@@ -292,6 +301,7 @@
     z-index:99999;
     // width:200px;
 }
+
 // .planGroup .ant-progress-line{
 //     width: 60%;
 //     font-size: 14px;
@@ -331,7 +341,57 @@
     width:100%;
     margin-bottom:10px;
     padding:0 10px;
+    text-align: center;
 }
 .btn_group .ant-btn{
     color:#1890ff;
+}
+.plan_personInfo{
+    width: 100%;
+}
+.plan_personInfo .ant-list-item-action > li{
+    width: 10px;
+    height: 10px;
+    background-color: #7ED321;
+    border-radius: 50%;
+}
+.plan_personInfo .ant-list-split .ant-list-item{
+    border-bottom: none;
+}
+.plan_personInfo .ant-list-item:hover{
+    background-color: #F5F5F5;
+}
+.super_weather{
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 200px;
+    height: 40px;
+    z-index: 999;
+}
+.left_riverInfo{
+    position: absolute;
+    left: 10px;
+    top: 223px;
+    width: 321px;
+    z-index: 999;
+    background-color: #FFFFFF;
+}
+.left_riverInfo .ant-tabs-nav .ant-tabs-tab{
+    width: 50%;
+}
+.rInfo_row{
+    text-align:left;
+    padding-left:20px;
+}
+.rInfo_title{
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+    margin-right: 15px;
+}
+.rInfo_info{
+    color: rgba(0, 0, 0, 0.65);
+}
+.left_riverInfo .ant-tabs .ant-tabs-top-content.ant-tabs-content-animated{
+    padding-bottom: 15px;
 }
