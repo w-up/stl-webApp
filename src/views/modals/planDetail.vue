@@ -1,8 +1,8 @@
 <template>
-    <a-modal title="计划A" :width="600" :visible="visible" @ok="submitPlan" @cancel="cancleBtn">
+    <a-modal title="计划A" :width="600" :visible="visible" @ok="submitPlan" @cancel="cancleBtn" class="palnDetail_modal">
             <span class="editIcon" @click="editModalTitle" v-if="editShow"><a-icon type="edit" /></span>
             <span style="position:absolute;top:12px;left:60px;" v-if="!editShow"><a-input placeholder="计划A" style="width:150px;margin-left:20px;"/></span>
-            <div class=" ">
+            <div class="planDetail_info">
                 <a-row style="padding-bottom:10px;">
                     <a-col :span="4" style="font-size:15px;">下发时间:</a-col>
                     <a-col :span="20">2019-07-02 14:30:45</a-col>
@@ -168,15 +168,18 @@ export default {
     margin-bottom: 3px;
     // margin-bottom:0;
 }
-.detailPerson{
-    padding:10px 20px;
-    border-bottom: 1px solid #e8e8e8;
-}
 .editIcon{
     position:absolute;top:18px;left:82px;
     cursor: pointer;
 }
 .editIcon:hover{
     font-size: 16px;
+}
+.palnDetail_modal .ant-modal-body{
+    padding:0;
+}
+.planDetail_info{
+    padding:10px 20px;
+    border-bottom: 1px solid #e8e8e8;
 }
 </style>
