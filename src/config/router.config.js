@@ -61,6 +61,12 @@ export const asyncRouterMap = [
             meta: { title: '河道管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
+            path: '/settings/StreetManage',
+            name: 'StreetManage',
+            component: () => import('@/views/settings/StreetManage'),
+            meta: { title: '街道管理', keepAlive: true, permission: [ 'table' ] }
+          },
+          {
             path: '/settings/TaskManage',
             name: 'TaskManage',
             component: () => import('@/views/settings/TaskManage'),
@@ -69,8 +75,16 @@ export const asyncRouterMap = [
           {
             path: '/settings/RiverPlanManage',
             name: 'RiverPlanManage',
+            hidden: true,
             component: () => import('@/views/settings/RiverPlanManage'),
             meta: { title: '巡河方案管理', keepAlive: true, permission: [ 'table' ] }
+          },
+          {
+            path: '/settings/WaterPointManage',
+            name: 'WaterPointManage',
+            hidden: true,
+            component: () => import('@/views/settings/WaterPointManage'),
+            meta: { title: '水质监测点管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
             path: '/settings/DeviceManage',
@@ -89,18 +103,6 @@ export const asyncRouterMap = [
             name: 'drawManage',
             component: () => import('@/views/settings/drawManage'),
             meta: { title: '绘制类型管理', keepAlive: true, permission: [ 'table' ] }
-          },
-          {
-            path: '/settings/StreetManage',
-            name: 'StreetManage',
-            component: () => import('@/views/settings/StreetManage'),
-            meta: { title: '街道管理', keepAlive: true, permission: [ 'table' ] }
-          },
-          {
-            path: '/settings/WaterPointManage',
-            name: 'WaterPointManage',
-            component: () => import('@/views/settings/WaterPointManage'),
-            meta: { title: '水质监测点管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
             path: '/settings/ProjectManage',

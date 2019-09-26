@@ -1,5 +1,6 @@
 <template>
   <div class="supervise">
+    <!-- 任务管理 -->
     <div class="left">
       <div id="map" ref="worldMap"></div>
       <!-- <world-map></world-map> -->
@@ -7,29 +8,44 @@
     <div class="right">
       <a-tabs defaultActiveKey="1" @change="callback" v-model="actionTab" class="custom_tabs">
         <a-tab-pane tab="线路任务" key="1">
-          <a-directory-tree multiple defaultExpandAll @select="onSelect" @expand="onExpand">
-            <a-tree-node title="360" key="0-0">
-              <a-tree-node title="坐标点1" key="0-0-0" isLeaf />
-              <a-tree-node title="坐标点2" key="0-0-1" isLeaf />
-            </a-tree-node>
-            <a-tree-node title="人工调查点" key="0-1">
-              <a-tree-node title="坐标点1" key="0-1-0" isLeaf />
-              <a-tree-node title="坐标点2" key="0-1-1" isLeaf />
-            </a-tree-node>
-          </a-directory-tree>
+          <section class="task_face">
+            <a-list size="small" bordered :dataSource="lineTaskList" style="margin-top: 10px;">
+              <a-list-item
+                slot="renderItem"
+                slot-scope="item, index"
+                :key="index"
+                @click="chooseLineTask(item.name)"
+                :class="{active_item: item.clicked}"
+              >
+                <a-row style="width:100%">
+                  <a-col :span="20">{{item.name}}</a-col>
+                  <a-col :span="4" style="text-align:right;">
+                    <a-popconfirm
+                      title="确定要删除吗?"
+                      @confirm="confirmDelete(item.name)"
+                      @cancel="cancelDelete"
+                      okText="确定"
+                      cancelText="取消"
+                    >
+                      <a href="#">删除</a>
+                    </a-popconfirm>
+                  </a-col>
+                </a-row>
+              </a-list-item>
+            </a-list>
+          </section>
         </a-tab-pane>
         <a-tab-pane tab="点任务" key="2" forceRender>
-          <a-directory-tree multiple defaultExpandAll @select="onSelect" @expand="onExpand" :treeData="treeData">
-          </a-directory-tree>
+          <a-directory-tree
+            multiple
+            defaultExpandAll
+            @select="onSelect"
+            @expand="onExpand"
+            :treeData="treeData"
+          ></a-directory-tree>
         </a-tab-pane>
       </a-tabs>
-      <a-popover title trigger="click" v-model="addRiverShow" class="bottom_add">
-        <template slot="content">
-          <a-button block @click="addDrawRiver">绘制</a-button>
-          <a-button block @click="addUploadRiver" style="margin-top: 10px;">上传KMZ</a-button>
-        </template>
-        <a-button type="primary" block>{{actionTab==1?"添加线路任务":"添加点任务"}}</a-button>
-      </a-popover>
+      <a-button type="primary" block class="bottom_add">{{actionTab==1?"添加线路任务":"添加点任务"}}</a-button>
     </div>
     <div class="weather">
       <!-- <img src="./img/weather.jpg" alt /> -->
@@ -55,11 +71,11 @@ const treeData = [
     children: [
       {
         title: '坐标点1',
-        key: '0-0-0',
+        key: '0-0-0'
       },
       {
         title: '坐标点2',
-        key: '0-0-1',
+        key: '0-0-1'
       },
       {
         title: '坐标点3',
@@ -87,6 +103,25 @@ export default {
     return {
       addRiverShow: false, // 气泡卡片
       actionTab: '1', //tab
+
+      lineTaskList: [
+        {
+          id: 0,
+          name: '无人机正射影像',
+          clicked: true
+        },
+        {
+          id: 1,
+          name: '无人机倾斜影像',
+          clicked: false
+        },
+        {
+          id: 2,
+          name: '无人机人工拍照',
+          clicked: false
+        }
+      ],
+      addRiverShow: false,
 
       expandedKeys: ['0-0-0', '0-0-1'],
       autoExpandParent: true,
@@ -238,8 +273,8 @@ export default {
       console.log(key)
     },
     // 树形图
-    onSelect (keys) {
-      console.log('Trigger Select', keys);
+    onSelect(keys) {
+      console.log('Trigger Select', keys)
     },
     onExpand(expandedKeys) {
       console.log('onExpand', expandedKeys)
@@ -255,6 +290,28 @@ export default {
     onSelect(selectedKeys, info) {
       console.log('onSelect', info)
       this.selectedKeys = selectedKeys
+    },
+
+    // 线路任务
+    chooseLineTask(index) {
+      this.defaultRiver = index
+      this.lineTaskList.forEach(value => {
+        if (value.name === index) {
+          value.clicked = true
+        } else {
+          value.clicked = false
+        }
+      })
+    },
+    // 河流删除
+    confirmDelete(index) {
+      console.log(index)
+      this.lineTaskList.splice(this.lineTaskList.findIndex(item => item.name === index), 1)
+      this.$message.success('删除成功')
+      this.defaultRiver = null
+    },
+    cancelDelete(e) {
+      // this.$message.error('Click on No')
     }
   }
 }
@@ -316,6 +373,11 @@ export default {
   vertical-align: top;
   padding: 10px;
   background-color: white;
+}
+.task_face {
+  width: 100%;
+  height: calc(100vh - 180px);
+  overflow: auto;
 }
 
 .ant-spin-container {
