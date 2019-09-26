@@ -3,25 +3,56 @@
     <div class="left-info">
       <!-- <img src="../../assets/map.jpg" style="width:100%;height: calc(100vh - 66px);"> -->
       <div id="map" ref="worldMap"></div>
-      <div class="left-date">
-        <a-date-picker @change="selectData" />
+      <div class="leftShow" v-if="noTitleKey === 'addPlan' || nosuperKey === 'taskCard'">
+        <div class="left-date">
+          <a-date-picker @change="selectData" />
+        </div>
+        <div class="left-weather">
+          <img src="../../assets/weather.png" style="width:240px;height:38px;">
+        </div>
+        <!-- 新建计划时展示 -->
+        <div class="left-patrol" v-if="noTitleKey === 'addPlan' || nosuperKey === 'taskCard'">
+          <p class="left-patrol-title">推荐巡河方案</p>
+          <div class="patrol-plan">
+            <!-- <a-tree defaultExpandAll v-model="checkedPlan" @select="selectPatrol" :treeData="patrolPlanInfo"/> -->
+            <a-collapse v-model="activeKey">
+              <a-collapse-panel header="黄浦江" key="1" style="text-align: left">
+                <p style="margin:0;">{{text}}</p>
+              </a-collapse-panel>
+              <a-collapse-panel header="鸭绿江" key="2" :disabled='false' style="text-align: left">
+                <p style="margin:0;">{{text}}</p>
+              </a-collapse-panel>
+            </a-collapse>
+          </div>
+        </div>
       </div>
-      <div class="left-weather">
-        <img src="../../assets/weather.png" style="width:240px;height:38px;">
-      </div>
-      <!-- 新建计划时展示 -->
-      <div class="left-patrol" v-if="noTitleKey === 'addPlan'">
-        <p class="left-patrol-title">推荐巡河方案</p>
-        <div class="patrol-plan">
-          <!-- <a-tree defaultExpandAll v-model="checkedPlan" @select="selectPatrol" :treeData="patrolPlanInfo"/> -->
-          <a-collapse v-model="activeKey">
-            <a-collapse-panel header="黄浦江" key="1" style="text-align: left">
-              <p style="margin:0;">{{text}}</p>
-            </a-collapse-panel>
-            <a-collapse-panel header="鸭绿江" key="2" :disabled='false' style="text-align: left">
-              <p style="margin:0;">{{text}}</p>
-            </a-collapse-panel>
-          </a-collapse>
+      <div v-if="nosuperKey === 'personCard'">
+        <div class="super_weather">
+          <img src="../../assets/weather.jpg" alt />
+        </div>
+        <div class="left_riverInfo">
+          <a-tabs defaultActiveKey="1" @change="changeInfo">
+            <a-tab-pane tab="水质数据" key="1">
+              <a-row class="rInfo_row">
+                <a-col :span="12">
+                  <span class="rInfo_title">水体名称&nbsp;:</span>
+                  <span class="rInfo_info">黄浦江</span>
+                </a-col>
+                <a-col :span="10" :offset="2">
+                  <span class="rInfo_info">2019-8-22 13:00</span>
+                </a-col>
+              </a-row>
+              <a-row class="rInfo_row">
+                <a-col :span="12">
+                  <span class="rInfo_title">断面名称&nbsp;:</span>
+                  <span class="rInfo_info">黄浦江</span>
+                </a-col>
+              </a-row>
+            </a-tab-pane>
+            <a-tab-pane tab="河长信息" key="2">
+              
+            </a-tab-pane>
+          </a-tabs>
         </div>
       </div>
       <search-river ref="selectPatrol" class="riverSearchModal"></search-river>
@@ -29,7 +60,8 @@
     </div>
     <div class="right-info">
       <div class="right-body">
-        <a-card :tabList="planList" :activeTabKey="noTitleKey" @tabChange="key => onTabChange(key,'noTitleKey')">
+        <!-- 首页内容展示 -->
+        <a-card :tabList="planList" :activeTabKey="noTitleKey" @tabChange="key => onTabChange(key,'noTitleKey')" v-if="firstShow">
           <!-- 新建计划 -->
           <div v-if="noTitleKey === 'addPlan'">
             <!-- 判断显示内容 -->
@@ -45,12 +77,12 @@
               <div class="riverInfo">
                 <div class="river_info">
                   <span>黄浦江</span>
-                  <a-select defaultValue="" @change="handleChange" style="width:180px;margin-left:20px;">
+                  <a-select defaultValue="" @change="handleChange" style="width:160px;margin-left:20px;">
                     <a-select-option value="jack">Jack</a-select-option>
                     <a-select-option value="lucy">Lucy</a-select-option>
                     <a-select-option value="disabled" disabled>Disabled</a-select-option>
                   </a-select>
-                  <a-button shape="circle" icon="close" style="font-size:8px;margin-left:15px;"></a-button>
+                  <a-button shape="circle" icon="close" style="font-size:8px;margin-left:8%;"></a-button>
                 </div>
                 <a-tree checkable defaultExpandAll v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
                 </a-tree>
@@ -60,7 +92,7 @@
               <div class="riverInfo">
                 <div class="river_info">
                   <span>专向调查点</span>
-                  <a-button shape="circle" icon="close" style="font-size:8px;margin-left:185px;"></a-button>
+                  <a-button shape="circle" icon="close" style="font-size:8px;margin-left:65%;"></a-button>
                 </div>
                 <a-tree checkable v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
                 </a-tree>
@@ -76,31 +108,18 @@
           </div>
           <!-- 今日计划 -->
           <div v-if="noTitleKey === 'nowPlan'">
-            <!-- <span class="progress_span">
-              <a-progress :percent="70" class="plan_progress"/>
-            </span> -->
             <a-collapse v-model="activePlanKey" class="active_plan">
               <a-collapse-panel  key="1" class="collapse_header">
-                <!-- <div class="planProgress"> -->
-                  
-                  <!-- <a-row>
-                    <a-col :span="5" style="font-size:14px;">进度</a-col>
-                    <a-col :span="19"></a-col>
-                  </a-row>   -->
-                <!-- </div> -->
                 <template slot="header">
                   <span>计划一</span><a-progress :percent="70" class="plan_progress"/>
                 </template>
                 <div class="planGroup">
-                  <!-- <span class="progress_span">
-                    <a-progress :percent="70" class="plan_progress"/>
-                  </span> -->
                   <a-collapse v-model="activeGroupKey">
                     <a-collapse-panel key="11" class="collapse_group">
                       <template slot="header">
-                        <span>计划一</span><a-progress :percent="75" class="group_progress"/>
-                      </template>
-                        <!-- <a-progress :percent="75" class="group_progress"/> -->
+                        <span>组一</span>
+                        <a-progress :percent="75" class="group_progress"/>
+                      </template>
                       <div class="river_group">
                         <a-collapse v-model="activeRiverKey" style="border-bottom:1px solid d9d9d9;">
                           <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
@@ -126,12 +145,12 @@
                       </div>
                     </a-collapse-panel>
                   </a-collapse>
-                  <!-- <span class="progress_span">
-                    <a-progress :percent="70" class="plan_progress"/>
-                  </span> -->
-                  <!-- <a-collapse v-model="activeTwo">
-                    <a-collapse-panel header="组二" key="11" class="collapse_group">
-                        <a-progress :percent="75" class="group_progress"/>
+                  <a-collapse v-model="activeTwo">
+                    <a-collapse-panel key="11" class="collapse_group">
+                      <template slot="header">
+                        <span>组二</span>
+                        <a-progress :percent="75" class="plan_progress"/>
+                      </template>
                       <div class="river_group">
                         <a-collapse v-model="activeTwo" style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;">
                           <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
@@ -156,7 +175,7 @@
                         </a-collapse>
                       </div>
                     </a-collapse-panel>
-                  </a-collapse> -->
+                  </a-collapse>
                 </div>
                 <div class="btn_group">
                   <a-row type="flex" justify="space-around">
@@ -164,22 +183,136 @@
                       <a-button class="groupBtn" @click="detailPlan">详情</a-button>
                     </a-col>
                     <a-col :span="10">
-                      <a-button class="groupBtn">修改时间</a-button>
+                      <a-button class="groupBtn" @click="supervision_btn">监管</a-button>
                     </a-col>
                   </a-row>
-                  <!-- <a-button class="groupBtn">监管</a-button> -->
                 </div>
               </a-collapse-panel>
             </a-collapse>
           </div>
         </a-card>
-        <div style="clear:both;"></div>
+        <a-card :tabList="superCard" :activeTabKey="nosuperKey" @tabChange="key => onsuperChange(key,'nosuperKey')" v-if="!firstShow">
+          <div v-if="nosuperKey === 'taskCard'">
+            <a-collapse v-model="activePlanKey" class="active_plan">
+              <a-collapse-panel  key="1" class="collapse_header">
+                <template slot="header">
+                  <span>计划一</span><a-progress :percent="70" class="plan_progress"/>
+                </template>
+                <div class="planGroup">
+                  <a-collapse v-model="activeGroupKey">
+                    <a-collapse-panel key="11" class="collapse_group">
+                      <template slot="header">
+                        <span>组一</span>
+                        <a-progress :percent="75" class="group_progress"/>
+                      </template>
+                      <div class="river_group">
+                        <a-collapse v-model="activeRiverKey" style="border-bottom:1px solid d9d9d9;">
+                          <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
+                            <div style="padding:10px 10px;">
+                              <div>
+                                <div class="riverGroup_info">未完成</div>
+                                <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                              </div>
+                              <div>
+                                <div class="riverGroup_success">已完成</div>
+                                <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                              </div>
+                              <div>
+                                <div class="riverGroup_warning">异常</div>
+                                <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                              </div>
+                            </div> 
+                            <div class="addTaskBtn">
+                              <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button>
+                            </div>
+                          </a-collapse-panel>
+                        </a-collapse>
+                      </div>
+                    </a-collapse-panel>
+                  </a-collapse>
+                  <a-collapse v-model="activeTwo">
+                    <a-collapse-panel key="11" class="collapse_group">
+                      <template slot="header">
+                        <span>组二</span>
+                        <a-progress :percent="75" class="plan_progress"/>
+                      </template>
+                      <div class="river_group">
+                        <a-collapse v-model="activeTwo" style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;">
+                          <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
+                            <div style="padding:10px 10px;">
+                              <div>
+                                <div class="riverGroup_info">未完成</div>
+                                <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                              </div>
+                              <div>
+                                <div class="riverGroup_success">已完成</div>
+                                <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                              </div>
+                              <div>
+                                <div class="riverGroup_warning">异常</div>
+                                <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                              </div>
+                            </div> 
+                            <div class="addTaskBtn">
+                              <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button>
+                            </div>
+                          </a-collapse-panel>
+                        </a-collapse>
+                      </div>
+                    </a-collapse-panel>
+                  </a-collapse>
+                </div>
+                <div class="btn_group">
+                  <a-button class="addTask_btn" @click="detailPlan">详情</a-button>
+                </div>
+              </a-collapse-panel>
+            </a-collapse>
+          </div>
+          <div v-if="nosuperKey === 'personCard'">
+            <a-collapse v-model="activePlanKey" class="active_plan">
+              <a-collapse-panel  key="1" class="collapse_header">
+                <template slot="header">
+                  <span>计划一</span><a-progress :percent="70" class="plan_progress"/>
+                </template>
+                <div class="planGroup">
+                  <a-collapse v-model="activeGroupKey">
+                    <a-collapse-panel key="11" class="collapse_group">
+                      <template slot="header">
+                        <span>组一</span>
+                        <a-progress :percent="75" class="group_progress"/>
+                      </template>
+                      <div class="plan_personInfo">
+                        <a-list bordered :dataSource="personInfo">
+                          <a-list-item slot="renderItem" slot-scope="item,index">   
+                            <a slot="actions" syle="width:10px;height:10px;border-radius:50%;background-color:green;"></a>
+                            <!-- <a-list-item-meta> -->
+                              {{item.name}}&nbsp;({{item.position}})
+                            <!-- </a-list-item-meta> -->
+                            <!-- <div><span style="border-radius:50%;background-color:green;"></span></div> -->
+                          </a-list-item>
+                        </a-list>
+                      </div>
+                    </a-collapse-panel>
+                  </a-collapse>
+                </div>
+              </a-collapse-panel>
+            </a-collapse>
+          </div>
+        </a-card>
       </div>
       <!-- 底部 -->
       <div class="addPlan_foot" v-if="noTitleKey === 'addPlan'">
         <div v-if="ishidden == 1">
-          <span @click="newPlan_btn">生成计划</span>
-          <span>加入已有计划</span>
+          <a-row type="flex" justify="space-around">
+            <a-col :span="10">
+              <a-button class="groupBtn" @click="newPlan_btn">生成计划</a-button>
+            </a-col>
+            <a-col :span="10">
+              <a-button class="groupBtn">加入已有计划</a-button>
+            </a-col>
+          </a-row>
+          <!-- <span @click="newPlan_btn">生成计划</span>
+          <span>加入已有计划</span> -->
         </div>  
         <div v-if="ishidden == 2">
           <span @click="canclePlanBtn">取消</span>
@@ -190,7 +323,6 @@
           <span @click="reHome">返回首页</span>
         </div>
       </div>
-      <div style="clear:both;"></div>
     </div>
     <add-new-task ref="addNewTask"></add-new-task>
     <plan-detail ref="planDetail"></plan-detail>
@@ -221,6 +353,21 @@ const treeData = [
     ]
   }
 ]
+
+const personInfo=[
+  {
+    name:'张三',
+    position:'飞手'
+  },
+  {
+    name:'李四',
+    position:'调查员'
+  },
+  {
+    name:'王五',
+    position:'司机'
+  },
+]
 export default {
   name: 'Analysis',
   components: {
@@ -244,7 +391,18 @@ export default {
           tab: '今日计划'
         }
       ],
+      superCard:[
+        {
+          key: 'taskCard',
+          tab: '任务'
+        },
+        {
+          key: 'personCard',
+          tab: '轨迹'
+        }
+      ],
       noTitleKey: 'addPlan',
+      nosuperKey:'taskCard',
       checkedKeys: ['0-1-0-0'],
       selectedKeys: [],
       treeData,
@@ -256,11 +414,13 @@ export default {
       activeRiverKey:['111'],
       activeKey:['1'],
       activeTwo:[],
+      personInfo,
        text: '当前河道方位内出现红色风险源',
       // 地图对象
       map: {},
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
       mapPoint: new Map(),
+      firstShow:true,
       patrolPlanInfo: [
         {
           title: '黄浦江',
@@ -327,6 +487,10 @@ export default {
       console.log(key, type)
       this[type] = key
     },
+    onsuperChange(key, type){
+      console.log(key, type)
+      this[type] = key
+    },
     //选中添加河道
     addRiverBtn() {
       this.$refs.selectPatrol.show()
@@ -387,6 +551,16 @@ export default {
     //当日计划模块详情按钮
     detailPlan(){
       this.$refs.planDetail.show();
+    },
+    //今日计划模块监管按钮
+    supervision_btn(){
+      console.log("今日计划");
+      console.log(this.firstShow);
+      this.firstShow = !this.firstShow;
+      console.log(this.firstShow);
+    },
+    changeInfo(key){
+      console.log(key)
     }
   }
 }
