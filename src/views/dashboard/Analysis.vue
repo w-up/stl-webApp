@@ -36,10 +36,10 @@
             <div v-if="ishidden == 1">
               <a-row type="flex" justify="center" style="margin-bottom:15px;margin-top:15px;">
                 <a-col :span="8">
-                  <a-button style="padding:0 22px;" @click="addRiverBtn">添加河道</a-button>
+                  <a-button style="padding:0 22px;color:#1890ff;" @click="addRiverBtn">添加河道</a-button>
                 </a-col>
                 <a-col :span="8" :offset="3">
-                  <a-button @click="$refs.addSurvey.show()">添加调查点</a-button>
+                  <a-button @click="$refs.addSurvey.show()" class="commBtn">添加调查点</a-button>
                 </a-col>
               </a-row>
               <div class="riverInfo">
@@ -54,7 +54,7 @@
                 </div>
                 <a-tree checkable defaultExpandAll v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
                 </a-tree>
-                <a-button class="addTask_btn" @click="addTaskBtn" v-show="cBtn">追加任务</a-button> 
+                <a-button class="addTask_btn commBtn" icon="plus" @click="addTaskBtn" v-show="cBtn">追加任务</a-button> 
                 <add-task ref="addTask" @showAddBtn="clearBtn"></add-task>
               </div>
               <div class="riverInfo">
@@ -64,7 +64,7 @@
                 </div>
                 <a-tree checkable v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
                 </a-tree>
-                <a-button class="addTask_btn">追加任务</a-button>
+                <a-button class="addTask_btn commBtn" icon="plus" @click="addTaskBtn" v-show="cBtn">追加任务</a-button> 
               </div>   
             </div> 
             <div v-if="ishidden == 2">
@@ -76,18 +76,30 @@
           </div>
           <!-- 今日计划 -->
           <div v-if="noTitleKey === 'nowPlan'">
-            <span class="progress_span">
+            <!-- <span class="progress_span">
               <a-progress :percent="70" class="plan_progress"/>
-            </span>
+            </span> -->
             <a-collapse v-model="activePlanKey" class="active_plan">
-              <a-collapse-panel header="计划一" key="1" class="collapse_header">
-                <!-- <a-progress :percent="70" class="plan_progress"/>   -->
-                <div class="planGroup">
-                  <span class="progress_span">
+              <a-collapse-panel  key="1" class="collapse_header">
+                <!-- <div class="planProgress"> -->
+                  
+                  <!-- <a-row>
+                    <a-col :span="5" style="font-size:14px;">进度</a-col>
+                    <a-col :span="19"></a-col>
+                  </a-row>   -->
+                <!-- </div> -->
+                <template slot="header">
+                  <span>计划一</span><a-progress :percent="70" class="plan_progress"/>
+                </template>
+                <div class="planGroup">
+                  <!-- <span class="progress_span">
                     <a-progress :percent="70" class="plan_progress"/>
-                  </span>
+                  </span> -->
                   <a-collapse v-model="activeGroupKey">
-                    <a-collapse-panel header="组一" key="11" class="collapse_group">
+                    <a-collapse-panel key="11" class="collapse_group">
+                      <template slot="header">
+                        <span>计划一</span><a-progress :percent="75" class="group_progress"/>
+                      </template>
                         <!-- <a-progress :percent="75" class="group_progress"/> -->
                       <div class="river_group">
                         <a-collapse v-model="activeRiverKey" style="border-bottom:1px solid d9d9d9;">
