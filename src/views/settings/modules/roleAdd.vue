@@ -10,6 +10,7 @@
                 <a-select  style="width: 200px" placeholder="请选择" v-model="list.type">
                     <a-select-option value="jack">外勤</a-select-option>
                     <a-select-option value="lucy">内业</a-select-option>
+                    <a-select-option value="123">外部用户</a-select-option>
                 </a-select>
             </FormItem>
             <FormItem label="名称" prop="name">
@@ -91,9 +92,11 @@ export default {
             columns,
             data:[
                 {
+                    key:'1',
                     name:'巡河计划'
                 },
                 {
+                    key:'12',
                     name:'今日计划'
                 },
             ]

@@ -22,16 +22,33 @@
                     <a-select-option value="lucy">女</a-select-option>
                 </a-select>
             </FormItem>
+            <FormItem label="类型"  >
+                <a-select  style="width: 200px" placeholder="请选择" @change="handleChange" v-model="list.type">
+                    <a-select-option value="jack">外勤</a-select-option>
+                    <a-select-option value="lucy">内业</a-select-option>
+                    <a-select-option value="123">外部用户</a-select-option>
+                </a-select>
+            </FormItem>
             <h3>权限信息</h3>
             <FormItem label="角色" >
-                <p>外勤</p>
-                <a-checkbox-group >
-                    <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
-                </a-checkbox-group>
-                <p>内业</p>
-                <a-checkbox-group >
-                    <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
-                </a-checkbox-group>
+                <div v-if="jurisdiction=='jack'">
+                    <p>外勤</p>
+                    <a-checkbox-group >
+                        <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
+                    </a-checkbox-group>
+                </div>
+                <div v-if="jurisdiction=='lucy'">
+                    <p>内业</p>
+                    <a-checkbox-group >
+                        <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
+                    </a-checkbox-group>
+                </div>
+                <div v-if="jurisdiction=='123'">
+                <p>外部用户</p>
+                    <a-checkbox-group >
+                        <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
+                    </a-checkbox-group>
+                </div>
             </FormItem>
             <FormItem label="管理范围" >
                 <a-card style="min-height: 200px;width:300px">
@@ -53,12 +70,14 @@
 export default {
     data(){
         return{
+            jurisdiction:'jack',
             list:{
                 number:'',
                 phone:'',
                 name:'',
                 password:'',
                 sex:'',
+                type:'jack',
             },  
             ruleValidate: {
                 number: [
@@ -107,6 +126,9 @@ export default {
         }
     },
     methods:{
+        handleChange(value) {
+            this.jurisdiction=value
+        },
         backPage(){
             this.$router.go(-1)
         }
