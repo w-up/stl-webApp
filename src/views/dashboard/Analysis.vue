@@ -34,7 +34,7 @@
           <div v-if="noTitleKey === 'addPlan'">
             <!-- 判断显示内容 -->
             <div v-if="ishidden == 1">
-              <a-row type="flex" justify="center" style="margin-bottom:15px;">
+              <a-row type="flex" justify="center" style="margin-bottom:15px;margin-top:15px;">
                 <a-col :span="8">
                   <a-button style="padding:0 22px;" @click="addRiverBtn">添加河道</a-button>
                 </a-col>
@@ -76,71 +76,75 @@
           </div>
           <!-- 今日计划 -->
           <div v-if="noTitleKey === 'nowPlan'">
-            <a-collapse v-model="activePlanKey">
-              <a-collapse-panel header="计划一" key="1" style="font-size:16px;">
-                <div class="planProgress">
-                  <a-row>
+            <a-collapse v-model="activePlanKey" class="active_plan">
+              <a-collapse-panel header="计划一" key="1" class="collapse_header">
+                <!-- <div class="planProgress"> -->
+                  <a-progress :percent="70" class="plan_progress"/>
+                  <!-- <a-row>
                     <a-col :span="5" style="font-size:14px;">进度</a-col>
-                    <a-col :span="19"><a-progress :percent="75" class="progressSty"/></a-col>
-                  </a-row>  
-                </div>
+                    <a-col :span="19"></a-col>
+                  </a-row>   -->
+                <!-- </div> -->
                 <div class="planGroup">
                   <a-collapse v-model="activeGroupKey">
-                    <a-collapse-panel header="组一" key="11" style="color:#808080;font-size:15px;">
-                      <div class="planProgress">
-                        <a-row>
+                    <a-collapse-panel header="组一" key="11" class="collapse_group">
+                      <!-- <div class="planProgress"> -->
+                        <a-progress :percent="75" class="group_progress"/>
+                        <!-- <a-row>
                           <a-col :span="5" style="font-size:14px;">进度</a-col>
-                          <a-col :span="19"><a-progress :percent="75" class="progressSty"/></a-col>
-                        </a-row>  
+                          <a-col :span="19"></a-col>
+                        </a-row>   -->
+                      <!-- </div> -->
+                      <div class="river_group">
+                        <a-collapse v-model="activeRiverKey" style="border-bottom:1px solid d9d9d9;">
+                          <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
+                            <div style="padding:10px 10px;">
+                              <div>
+                                <div class="riverGroup_info">未完成</div>
+                                <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                              </div>
+                              <div>
+                                <div class="riverGroup_success">已完成</div>
+                                <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                              </div>
+                              <div>
+                                <div class="riverGroup_warning">异常</div>
+                                <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                              </div>
+                              <div style="text-align:center;">
+                                <a-button class="addTask_btn" @click="addNewTask">追加任务</a-button>
+                              </div>
+                            </div>
+                           
+                          </a-collapse-panel>
+                        </a-collapse>
                       </div>
-                      <a-collapse v-model="activeRiverKey" style="border-bottom:1px solid d9d9d9;">
-                        <a-collapse-panel header="黄浦江" key="111" >
-                          <div style="margin-top:10px;">
-                            <span style="padding:15px;">未完成</span>
-                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
-                          </div>
-                          <div class="">
-                            <span style="padding:15px;">已完成</span>
-                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
-                          </div>
-                          <div class="">
-                            <span style="padding:15px;">异常</span>
-                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
-                          </div>
-                          <div style="text-align:center;">
-                            <a-button class="addTask_btn" @click="addNewTask">追加任务</a-button>
-                          </div>
-                        </a-collapse-panel>
-                      </a-collapse>
                     </a-collapse-panel>
                   </a-collapse>
                   <a-collapse v-model="activeTwo">
-                    <a-collapse-panel header="组二" key="11" style="color:#808080;font-size:15px;">
-                      <div class="planProgress">
-                        <a-row>
-                          <a-col :span="5" style="font-size:14px;">进度</a-col>
-                          <a-col :span="19"><a-progress :percent="75" class="progressSty"/></a-col>
-                        </a-row>  
+                    <a-collapse-panel header="组二" key="11" class="collapse_group">
+                        <a-progress :percent="75" class="group_progress"/>
+                      <div class="river_group">
+                        <a-collapse v-model="activeTwo" style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;">
+                          <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
+                            <div style="margin-top:10px;">
+                              <span style="padding:15px;">未完成</span>
+                              <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                            </div>
+                            <div class="">
+                              <span style="padding:15px;">已完成</span>
+                              <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                            </div>
+                            <div class="">
+                              <span style="padding:15px;">异常</span>
+                              <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                            </div>
+                            <div style="text-align:center;">
+                              <a-button class="addTask_btn">追加任务</a-button>
+                            </div>
+                          </a-collapse-panel>
+                        </a-collapse>
                       </div>
-                      <a-collapse v-model="activeTwo" style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;">
-                        <a-collapse-panel header="黄浦江" key="111">
-                          <div style="margin-top:10px;">
-                            <span style="padding:15px;">未完成</span>
-                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
-                          </div>
-                          <div class="">
-                            <span style="padding:15px;">已完成</span>
-                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
-                          </div>
-                          <div class="">
-                            <span style="padding:15px;">异常</span>
-                            <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
-                          </div>
-                          <div style="text-align:center;">
-                            <a-button class="addTask_btn">追加任务</a-button>
-                          </div>
-                        </a-collapse-panel>
-                      </a-collapse>
                     </a-collapse-panel>
                   </a-collapse>
                 </div>
