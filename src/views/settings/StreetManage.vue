@@ -339,14 +339,14 @@ export default {
 
 .left {
   position: relative;
-  width: calc(100% - 320px);
+  width: calc(100% - 300px);
   height: 100%;
   display: inline-block;
   vertical-align: top;
 }
 .right {
   position: relative;
-  width: 320px;
+  width: 300px;
   height: 100%;
   display: inline-block;
   vertical-align: top;

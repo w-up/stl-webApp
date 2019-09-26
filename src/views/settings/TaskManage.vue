@@ -2,14 +2,20 @@
   <div class="supervise">
     <!-- 任务管理 -->
     <div class="left">
-      <div id="map" ref="worldMap"></div>
+      <div id="map" ref="worldMap" @click="addTaskPoint"></div>
       <!-- <world-map></world-map> -->
     </div>
     <div class="right">
       <a-tabs defaultActiveKey="1" @change="callback" v-model="actionTab" class="custom_tabs">
         <a-tab-pane tab="线路任务" key="1">
           <section class="task_face">
-            <a-list size="small" bordered :dataSource="lineTaskList" style="margin-top: 10px;">
+            <a-list
+              size="small"
+              bordered
+              :dataSource="lineTaskList"
+              style="margin-top: 10px;"
+              v-show="!addLineShow"
+            >
               <a-list-item
                 slot="renderItem"
                 slot-scope="item, index"
@@ -33,19 +39,233 @@
                 </a-row>
               </a-list-item>
             </a-list>
+            <a-form v-show="addLineShow" style="width: 100%;">
+              <a-form-item
+                label="任务名称"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="任务内容"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="月计划次数"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="涉及线路"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="高度(m)"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="长度(m)"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="时长(min)"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="速度(km/h)"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="任务模板"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-select defaultValue placeholder="请选择" style="width: 100%">
+                  <a-select-option value="无人机">无人机</a-select-option>
+                  <a-select-option value="人工调查">人工调查</a-select-option>
+                  <a-select-option value="水质调查">水质调查</a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item
+                label="关联河道"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-select
+                  showSearch
+                  placeholder="请输入河流添加"
+                  optionFilterProp="children"
+                  style="width: 100%"
+                  @focus="handleFocus"
+                  @blur="handleBlur"
+                  @change="handleChange"
+                  :filterOption="filterOption"
+                  v-model="defaultRiver"
+                >
+                  <a-select-option
+                    :value="item.name"
+                    v-for="(item, index) in riverList"
+                    :key="index"
+                  >{{item.name}}</a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item
+                label="人员配备"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="设备配置"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="备注"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="人员职责"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+            </a-form>
           </section>
         </a-tab-pane>
         <a-tab-pane tab="点任务" key="2" forceRender>
-          <a-directory-tree
-            multiple
-            defaultExpandAll
-            @select="onSelect"
-            @expand="onExpand"
-            :treeData="treeData"
-          ></a-directory-tree>
+          <section class="task_face">
+            <a-directory-tree
+              multiple
+              defaultExpandAll
+              @select="onSelect"
+              @expand="onExpand"
+              :treeData="treeData"
+              v-show="!addPointShow"
+            ></a-directory-tree>
+            <a-form v-show="addPointShow" style="width: 100%;">
+              <a-form-item
+                label="任务名称"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="任务内容"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-textarea placeholder="请输入任务内容" :autosize="{ minRows: 2, maxRows: 6 }" />
+              </a-form-item>
+              <a-form-item
+                label="任务高度"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="任务时长(min)"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="备注"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-textarea placeholder="请输入备注信息" :autosize="{ minRows: 2, maxRows: 6 }" />
+              </a-form-item>
+              <a-form-item
+                label="任务职责"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="任务模板"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-select placeholder="请选择" style="width: 100%">
+                  <a-select-option value="无人机">无人机</a-select-option>
+                  <a-select-option value="人工调查">人工调查</a-select-option>
+                  <a-select-option value="水质调查">水质调查</a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item
+                label="人员配置"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+              <a-form-item
+                label="设备配置"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-input placeholder="input placeholder" />
+              </a-form-item>
+            </a-form>
+          </section>
         </a-tab-pane>
       </a-tabs>
-      <a-button type="primary" block class="bottom_add">{{actionTab==1?"添加线路任务":"添加点任务"}}</a-button>
+      <a-button
+        type="primary"
+        block
+        class="bottom_add"
+        @click="addTask"
+        v-show="(actionTab==1 && !addLineShow) || (actionTab==2 && !addPointShow)"
+      >{{actionTab==1?"添加线路任务":"添加点任务"}}</a-button>
+      <!-- 线路任务按钮 -->
+      <a-row
+        v-show="(actionTab==1 && addLineShow) || (actionTab==2 && addPointShow)"
+        style="width:100%;"
+        class="bottom_add"
+        type="flex"
+        justify="space-around"
+        align="middle"
+      >
+        <a-col :span="6">
+          <a-button type="primary" block @click="taskCancel">取消</a-button>
+        </a-col>
+        <a-col :span="6">
+          <a-button type="primary" block @click="taskSave">保存</a-button>
+        </a-col>
+      </a-row>
     </div>
     <div class="weather">
       <!-- <img src="./img/weather.jpg" alt /> -->
@@ -56,13 +276,22 @@
       </li>
     </ul>
     <!-- 添加河流 -->
-    <add-river ref="addRiver"></add-river>
+    <add-task-point ref="addTaskPoint"></add-task-point>
   </div>
 </template>
 
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
-import AddRiver from './modules/AddRiver.vue'
+import AddTaskPoint from './modules/AddTaskPoint.vue'
+
+const formItemLayout = {
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 }
+}
+const formTailLayout = {
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 }
+}
 
 const treeData = [
   {
@@ -94,10 +323,10 @@ const treeData = [
   }
 ]
 export default {
-  name: 'RiverManage',
+  name: 'TaskManage',
   components: {
     // 'world-map': WorldMap
-    'add-river': AddRiver
+    'add-task-point': AddTaskPoint
   },
   data() {
     return {
@@ -122,6 +351,52 @@ export default {
         }
       ],
       addRiverShow: false,
+      addLineShow: false, // 线路任务显示
+      addPointShow: false, // 点任务显示
+      // 添加线路任务
+      checkNick: false,
+      formItemLayout,
+      formTailLayout,
+      form: this.$form.createForm(this),
+
+      defaultRiver: '黄浦江',
+      riverList: [
+        {
+          id: 0,
+          name: '黄浦江',
+          clicked: true
+        },
+        {
+          id: 1,
+          name: '大治河',
+          clicked: false
+        },
+        {
+          id: 2,
+          name: '川杨河',
+          clicked: false
+        },
+        {
+          id: 3,
+          name: '蕰藻浜',
+          clicked: false
+        },
+        {
+          id: 4,
+          name: '龙华港',
+          clicked: false
+        },
+        {
+          id: 5,
+          name: '太浦河',
+          clicked: false
+        },
+        {
+          id: 6,
+          name: '太湖',
+          clicked: false
+        }
+      ],
 
       expandedKeys: ['0-0-0', '0-0-1'],
       autoExpandParent: true,
@@ -258,15 +533,9 @@ export default {
       this.transferAttribute = this[v]
       this.transferAttribute.visible = true
     },
-    // 绘制按钮
-    addDrawRiver() {
-      this.$refs.addRiver.add()
-      this.addRiverShow = false
-    },
-    // 上传按钮
-    addUploadRiver() {
-      this.$refs.addRiver.add()
-      this.addRiverShow = false
+    // 添加任务点
+    addTaskPoint() {
+      this.$refs.addTaskPoint.add()
     },
     // tab切换
     callback(key) {
@@ -303,7 +572,7 @@ export default {
         }
       })
     },
-    // 河流删除
+    // 线路任务删除
     confirmDelete(index) {
       console.log(index)
       this.lineTaskList.splice(this.lineTaskList.findIndex(item => item.name === index), 1)
@@ -312,6 +581,63 @@ export default {
     },
     cancelDelete(e) {
       // this.$message.error('Click on No')
+    },
+    // 线路任务添加
+    check() {
+      this.form.validateFields(err => {
+        if (!err) {
+          console.info('success')
+        }
+      })
+    },
+    handleChange(e) {
+      this.checkNick = e.target.checked
+      this.$nextTick(() => {
+        this.form.validateFields(['nickname'], { force: true })
+      })
+    },
+    // 添加任务按钮
+    addTask() {
+      if (this.actionTab == 1) {
+        this.addLineShow = true
+      } else if (this.actionTab == 2) {
+        this.addPointShow = true
+      }
+    },
+    // 关联河道
+    handleChange(index) {
+      console.log(`selected ${index}`)
+      this.riverList.forEach(value => {
+        if (value.name === index) {
+          value.clicked = true
+        } else {
+          value.clicked = false
+        }
+      })
+    },
+    handleBlur() {
+      console.log('blur')
+    },
+    handleFocus() {
+      console.log('focus')
+    },
+    filterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
+    // 线路任务按钮
+    taskCancel() {
+      if (this.actionTab == 1) {
+        this.addLineShow = false
+      } else if (this.actionTab == 2) {
+        this.addPointShow = false
+      }
+    },
+    taskSave() {
+      if (this.actionTab == 1) {
+        this.addLineShow = false
+      } else if (this.actionTab == 2) {
+        this.addPointShow = false
+      }
     }
   }
 }
@@ -360,14 +686,14 @@ export default {
 
 .left {
   position: relative;
-  width: calc(100% - 320px);
+  width: calc(100% - 300px);
   height: 100%;
   display: inline-block;
   vertical-align: top;
 }
 .right {
   position: relative;
-  width: 320px;
+  width: 300px;
   height: 100%;
   display: inline-block;
   vertical-align: top;
@@ -387,6 +713,9 @@ export default {
   .active_item {
     background-color: #eee;
   }
+}
+.ant-form-item {
+  margin-bottom: 0;
 }
 
 .bottom_add {
