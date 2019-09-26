@@ -75,14 +75,14 @@ export const asyncRouterMap = [
           {
             path: '/settings/RiverPlanManage',
             name: 'RiverPlanManage',
-            hidden: true,
+            // hidden: true,
             component: () => import('@/views/settings/RiverPlanManage'),
             meta: { title: '巡河方案管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
             path: '/settings/WaterPointManage',
             name: 'WaterPointManage',
-            hidden: true,
+            // hidden: true,
             component: () => import('@/views/settings/WaterPointManage'),
             meta: { title: '水质监测点管理', keepAlive: true, permission: [ 'table' ] }
           },
