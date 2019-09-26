@@ -1,7 +1,7 @@
 <template>
     <div class="group_info">
         <div class="creat_btn">
-            <span class="creatBtn" @click="creatGroup">创建分组</span>
+            <a-button class="creatBtn" @click="creatGroup">创建分组</a-button>
         </div>
         <div class="group_detail">
             <div class="detail_modal">
