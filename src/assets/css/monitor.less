@@ -42,7 +42,7 @@
     padding:0;
 }
 .left-info{
-    width: calc(100vw - 300px);
+    width: 100%;
     // width: 100%;
     height: calc(100vh - 64px);
     // float: left;
@@ -109,21 +109,22 @@
 }
 
 .right-info{
-    position: fixed;
-    right: 0;
-    top: 64px;
-    width: 300px;
+    // position: fixed;
+    // right: 0;
+    // top: 64px;
+    position: relative;
+    width: 100%;
     height: calc(100vh - 64px);
     // display: block;
     background-color: #FFFFFF;
 }
 .right-body{
     width: 100%;
-    height: 100%;
+    // height: 100%;
 }
 .right-body .ant-card{
     width: 100%;
-    height: calc(100vh - 50px);
+    height: calc(100vh - 64px);
     margin: 0;
     padding: 0;
 }
@@ -160,6 +161,7 @@
     padding-left: 15px;
     display: inline-block;
     background-color:#EBF5FF;
+    position: relative;
 }
 .addTaskBtn{
     text-align:center;
@@ -190,7 +192,7 @@
     height: 50px;
     line-height: 38px;
     z-index: 200;
-    padding-bottom: 10px;
+    // padding-bottom: 10px;
 }
 // .addPlan_foot span{
 //     width:50%;
@@ -262,6 +264,8 @@
 .collapse_header .ant-progress-line{
     width: 60%;
     font-size: 14px;
+    position: absolute;
+    right: 0;
     margin-left: 20.2%;
     // position: absolute;
     // top: 15px;
@@ -411,4 +415,10 @@
 }
 .but_type{
     right: -52%;
+}
+.delete_river{
+    position: absolute;
+    right: 0;
+    font-size:8px;
+    margin-right: 8px;
 }

@@ -128,9 +128,21 @@
                                 <div class="riverGroup_info">未完成</div>
                                 <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
                               </div>
-                              <div>
+                              <div class="">
                                 <div class="riverGroup_success">已完成</div>
-                                <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                <!-- <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree> -->
+                                <!-- <a-tree @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
+                                  <template slot="custom" slot-scope="item">
+                                    <span>{{item.title}}</span>
+                                    <a-button style="position:absolute;right:60px;">查看</a-button>
+                                  </template>
+                                </a-tree> -->
+                                <a-tree :treeData="sutreeData" class="tree_succ">
+                                    <template slot="custom" slot-scope="item">
+                                      <span>{{ item.title }}</span>
+                                      <a-button class="but_type" v-if="childNode" @click="()=> searchItme(item)">查看</a-button>
+                                    </template>
+                                  </a-tree>
                               </div>
                               <div>
                                 <div class="riverGroup_warning">异常</div>
@@ -338,6 +350,58 @@ import planList from '../modals/planList'
 import addSurvey from '../modals/addSurvey'
 import addNewTask from '../modals/addNewTask'
 import planDetail from '../modals/planDetail'
+import { BreadcrumbItem } from 'iview';
+
+const sutreeData = [
+  {
+    title: '0-0',
+    key: '0-0',
+    scopedSlots: { title: 'custom' },
+    children: [
+      {
+        title: '0-0-0',
+        key: '0-0-0',
+        scopedSlots: { title: 'custom' },
+        children: [
+          { title: '0-0-0-0', key: '0-0-0-0', scopedSlots: { title: 'custom' } },
+          { title: '0-0-0-1', key: '0-0-0-1', scopedSlots: { title: 'custom' } },
+          { title: '0-0-0-2', key: '0-0-0-2', scopedSlots: { title: 'custom' } }
+        ]
+      },
+      {
+        title: '0-0-1',
+        key: '0-0-1',
+        scopedSlots: { title: 'custom' },
+        children: [
+          { title: '0-0-1-0', key: '0-0-1-0', scopedSlots: { title: 'custom' } },
+          { title: '0-0-1-1', key: '0-0-1-1', scopedSlots: { title: 'custom' } },
+          { title: '0-0-1-2', key: '0-0-1-2', scopedSlots: { title: 'custom' } }
+        ]
+      },
+      {
+        title: '0-0-2',
+        key: '0-0-2',
+        scopedSlots: { title: 'custom' }
+      }
+    ]
+  },
+  {
+    title: '0-1',
+    key: '0-1',
+    scopedSlots: { title: 'custom' },
+    children: [
+      { title: '0-1-0-0', key: '0-1-0-0', scopedSlots: { title: 'custom' } },
+      { title: '0-1-0-1', key: '0-1-0-1', scopedSlots: { title: 'custom' } },
+      { title: '0-1-0-2', key: '0-1-0-2', scopedSlots: { title: 'custom' } }
+    ]
+  },
+  {
+    title: '0-2',
+    key: '0-2',
+    scopedSlots: { title: 'custom' }
+  }
+]
+
 
 const treeData = [
   {
@@ -406,6 +470,7 @@ export default {
       checkedKeys: ['0-1-0-0'],
       selectedKeys: [],
       treeData,
+      sutreeData,
       ishidden: 1,
       checkedPlan:[],
       cBtn:true,
@@ -421,6 +486,7 @@ export default {
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
       mapPoint: new Map(),
       firstShow:true,
+      childNode:false,
       patrolPlanInfo: [
         {
           title: '黄浦江',
@@ -486,6 +552,39 @@ export default {
     onTabChange(key, type) {
       console.log(key, type)
       this[type] = key
+      if(key == 'nowPlan'){
+        // console.log("已完成" + this.sutreeData)
+        let sutree  = this.sutreeData;
+        // this.diguiTree(sutree)
+        for(var j = 0; j< sutreeData.length; j++){
+            this.diguiTree(sutreeData[j]);
+        }
+      }
+    },
+    diguiTree(item){
+      //没有children了，所以是叶子节点
+        console.log(item);
+      //debugger;
+        if(item.children == null){
+            console.log("叶子节点：", item);
+            this.childNode = true;
+            return ;
+        }
+      //不是叶子节点，所以继续循环递归
+      for(var i = 0; i< item.children.length; i++){
+        this.diguiTree(item.children[i]);
+      }
+
+
+      // for (let i in item){
+      //   if(item[i].children == null){
+      //     this.childNode=true;
+      //     return;
+      //   }else{
+      //     console.log(item[i].children)
+      //     this.diguiTree(item[i].children)
+      //   }
+      // }
     },
     onsuperChange(key, type){
       console.log(key, type)
@@ -561,6 +660,9 @@ export default {
     },
     changeInfo(key){
       console.log(key)
+    },
+    searchItme(val){
+      console.log("选中查看按钮" + val);
     }
   }
 }
