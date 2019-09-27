@@ -11,60 +11,63 @@
     :footer="null"
   >
     <a-spin :spinning="confirmLoading">
-      <a-form class="from">
-        <a-row style="width:100%">
-          <a-col :span="24">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="任务点名称">
-              <a-input placeholder="任务点名称" />
-            </a-form-item>
+      <a-row style="width:100%" type="flex" justify="space-between" align="middle">
+        <a-col :span="6">任务点名称</a-col>
+        <a-col :span="18">
+          <a-input placeholder="任务点名称" />
+        </a-col>
+      </a-row>
+      <a-row style="width:100%;margin-top:10px;" type="flex" justify="space-between" align="top">
+        <a-col :span="6">位置信息</a-col>
+        <a-col :span="18">上海市黄浦区人民广场巴拉巴拉小魔仙28号</a-col>
+      </a-row>
+      <a-row style="width:100%;margin-top:10px;" type="flex" justify="space-between" align="top">
+        <a-col :span="6">所属河道</a-col>
+        <a-col :span="18">
+          <span>已为您匹配到相关河道, 您可以手动添加或删除河道</span>
+          <a-col :span="24" style="margin-top:10px;">
+            <a-select
+              showSearch
+              placeholder="请输入河流"
+              optionFilterProp="children"
+              style="width: 100%"
+              @focus="handleFocus"
+              @blur="handleBlur"
+              @change="handleChange"
+              :filterOption="filterOption"
+              v-model="defaultRiver"
+            >
+              <a-select-option :value="item.name" v-for="(item, index) in riverList" :key="index">
+                <a-row style="width:100%">
+                  <a-col :span="20">{{item.name}}</a-col>
+                  <a-col :span="4">
+                    <a-button
+                      size="small"
+                      shape="circle"
+                      icon="close"
+                      @click.stop="deleteRiver(item.name)"
+                    />
+                  </a-col>
+                </a-row>
+              </a-select-option>
+            </a-select>
           </a-col>
-        </a-row>
-        <a-row style="width:100%">
-          <a-col :span="24">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="位置信息">
-              <p>上海市...</p>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row style="width:100%">
-          <a-col :span="24">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属河道">
-              <a-select
-                showSearch
-                placeholder="请输入河流"
-                optionFilterProp="children"
-                style="width: 100%"
-                @focus="handleFocus"
-                @blur="handleBlur"
-                @change="handleChange"
-                :filterOption="filterOption"
-                v-model="defaultRiver"
-              >
-                <a-select-option
-                  :value="item.name"
-                  v-for="(item, index) in riverList"
-                  :key="index"
-                >{{item.name}}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row style="width:100%">
-          <a-col :span="24">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="月计划次数">
-              <a-input placeholder="请输入月计划次数" />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row style="width:100%; margin-top:10px;" type="flex" justify="space-around">
-          <a-col :span="6">
-            <a-button type="primary" block>取消</a-button>
-          </a-col>
-          <a-col :span="6">
-            <a-button type="primary" block>保存</a-button>
-          </a-col>
-        </a-row>
-      </a-form>
+        </a-col>
+      </a-row>
+      <a-row style="width:100%;margin-top:10px;" type="flex" justify="space-between" align="middle">
+        <a-col :span="6">月计划次数</a-col>
+        <a-col :span="18">
+          <a-input placeholder="请输入月计划次数" />
+        </a-col>
+      </a-row>
+      <a-row style="width:100%; margin-top:10px;" type="flex" justify="space-around">
+        <a-col :span="6">
+          <a-button type="primary" block>取消</a-button>
+        </a-col>
+        <a-col :span="6">
+          <a-button type="primary" block>保存</a-button>
+        </a-col>
+      </a-row>
     </a-spin>
   </a-modal>
 </template>
@@ -79,7 +82,7 @@ export default {
         sm: { span: 6 }
       },
       wrapperCol: {
-        xs: { span: 20 },
+        xs: { span: 6 },
         sm: { span: 18 }
       },
       defaultRiver: '黄浦江',
@@ -252,6 +255,13 @@ export default {
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
+    // 删除河道
+    deleteRiver(index) {
+      console.log(index)
+      this.riverList.splice(this.riverList.findIndex(item => item.name === index), 1)
+      this.$message.success('删除成功')
+      this.defaultRiver = null
+    }
   }
 }
 </script>
