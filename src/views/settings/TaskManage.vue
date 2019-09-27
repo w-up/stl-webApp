@@ -4,6 +4,16 @@
     <div class="left">
       <div id="map" ref="worldMap" @click="addTaskPoint"></div>
       <!-- <world-map></world-map> -->
+      <div class="mapChange">
+        <a-row style="width:100%">
+          <a-col :span="24">
+            <a-checkbox @change="onChange">水质监测点</a-checkbox>
+          </a-col>
+          <a-col :span="24">
+            <a-checkbox @change="onChange">风险源</a-checkbox>
+          </a-col>
+        </a-row>
+      </div>
     </div>
     <div class="right">
       <a-tabs defaultActiveKey="1" @change="callback" v-model="actionTab" class="custom_tabs">
@@ -445,7 +455,6 @@ export default {
         sn.parentNode.insertBefore(c, sn)
         sn.parentNode.insertBefore(s, sn);*/
     },
-    onChange() {},
     hiddenMenuChange(expandedKeys) {
       console.log('onExpand', expandedKeys)
       // if not set autoExpandParent to false, if children expanded, parent can not collapse.
@@ -560,6 +569,10 @@ export default {
       console.log('onSelect', info)
       this.selectedKeys = selectedKeys
     },
+    // 地图选项
+    onChange(e) {
+      console.log(`checked = ${e.target.checked}`)
+    },
 
     // 线路任务
     chooseLineTask(index) {
@@ -652,11 +665,18 @@ export default {
   width: 100%;
   height: 100%;
 }
+.mapChange {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  width: 120px;
+  z-index: 1500;
+}
 .weather {
   position: absolute;
   left: 10px;
   top: 10px;
-  width: 200px;
+  width: 120px;
   height: 40px;
   z-index: 999;
 }
