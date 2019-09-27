@@ -2,6 +2,16 @@
   <div class="supervise">
     <div class="left">
       <div id="map" ref="worldMap"></div>
+      <div class="mapChange">
+        <a-row style="width:100%">
+          <a-col :span="24">
+            <a-checkbox @change="onChange">正射影像</a-checkbox>
+          </a-col>
+          <a-col :span="24">
+            <a-checkbox @change="onChange">KMZ图层</a-checkbox>
+          </a-col>
+        </a-row>
+      </div>
       <!-- <world-map></world-map> -->
     </div>
     <div class="right">
@@ -226,6 +236,10 @@ export default {
     removeMapClick() {
       this.map.removeEventListener('click', this.MapClick)
     },
+    // 地图选项
+    onChange(e) {
+      console.log(`checked = ${e.target.checked}`)
+    },
     onSelect(selectedKeys, info) {
       console.log('onSelect', info)
       this.selectedKeys = selectedKeys
@@ -304,6 +318,13 @@ export default {
 #map {
   width: 100%;
   height: 100%;
+}
+.mapChange {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  width: 120px;
+  z-index: 1500;
 }
 .weather {
   position: absolute;
