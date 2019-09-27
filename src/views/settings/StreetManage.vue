@@ -2,6 +2,16 @@
   <div class="supervise">
     <div class="left">
       <div id="map" ref="worldMap"></div>
+      <div class="mapChange">
+        <a-row style="width:100%">
+          <a-col :span="24">
+            <a-checkbox @change="onChange">正射影像</a-checkbox>
+          </a-col>
+          <a-col :span="24">
+            <a-checkbox @change="onChange">KMZ图层</a-checkbox>
+          </a-col>
+        </a-row>
+      </div>
       <!-- <world-map></world-map> -->
     </div>
     <div class="right">
@@ -261,6 +271,10 @@ export default {
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
+    // 地图选项
+    onChange(e) {
+      console.log(`checked = ${e.target.checked}`)
+    },
     // 选中街道
     chooseRiver(index) {
       this.defaultRiver = index
@@ -343,6 +357,13 @@ export default {
   height: 100%;
   display: inline-block;
   vertical-align: top;
+}
+.mapChange {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  width: 120px;
+  z-index: 1500;
 }
 .right {
   position: relative;
