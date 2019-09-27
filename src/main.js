@@ -8,6 +8,7 @@ import store from './store/'
 import { VueAxios } from './utils/request'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
+import splitPane from 'vue-splitpane'
 // mock
 import './mock' // 模拟数据
 
@@ -22,6 +23,8 @@ Vue.config.productionTip = false
 // mount axios Vue.$http and this.$http
 Vue.use(VueAxios)
 Vue.use(iView);
+Vue.component('split-pane',splitPane);
+
 new Vue({
   router,
   store,
