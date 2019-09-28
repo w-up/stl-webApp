@@ -7,8 +7,8 @@
             </a-form-item>
             <a-form-item label="任务类型" :label-col="{span:6}" :wrapper-col="{span:16}">
                 <a-select>
-                <a-select-option value='无人机'>无人机</a-select-option>
-                <a-select-option value='采水样'>采水样</a-select-option>
+                    <a-select-option value='无人机'>无人机</a-select-option>
+                    <a-select-option value='采水样'>采水样</a-select-option>
                 </a-select>
             </a-form-item>
             <a-form-item label="任务内容" :label-col="{ span: 6}" :wrapper-col="{ span: 16}">
@@ -19,8 +19,8 @@
             </a-form-item>
             <a-form-item label="任务职位" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }">
                 <a-select style="width: 100%">
-                <a-select-option value='选择任务'>选择任务</a-select-option>
-                <a-select-option value='采水样'>采水样</a-select-option>
+                    <a-select-option value='选择任务'>选择任务</a-select-option>
+                    <a-select-option value='采水样'>采水样</a-select-option>
                 </a-select>
             </a-form-item>
             <a-form-item label="是否紧急" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }" style="text-align:left;">
@@ -28,9 +28,9 @@
             </a-form-item>
             <a-form-item label="图片上传" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }" style="text-align:left;">
                 <a-upload name="file" :multiple="true" action="''">
-                <a-button>
-                    <a-icon type="upload" /> Click to Upload
-                </a-button>
+                    <a-button>
+                        <a-icon type="upload" /> Click to Upload
+                    </a-button>
                 </a-upload>
             </a-form-item>
             <a-form-item :wrapper-col="{span:24}" style="text-align:center;margin-top:10px;">
