@@ -22,9 +22,7 @@
           placeholder="请输入河流"
           optionFilterProp="children"
           style="width: 100%"
-          @focus="handleFocus"
-          @blur="handleBlur"
-          @change="handleChange"
+          @change="chooseRiver"
           :filterOption="filterOption"
           v-model="defaultRiver"
           v-show="!addLineShow"
@@ -41,11 +39,21 @@
               <a-row style="width:100%">
                 <a-col :span="14">{{item.name}}</a-col>
                 <a-col :span="10" style="text-align:right;padding-right:10px;">
-                  <a-button size="small">{{item.default?"默认":"设为默认"}}</a-button>
+                  <a-button size="small" @click.stop="defaultPlan(item.name)">{{item.default?"默认":"设为默认"}}</a-button>
                 </a-col>
               </a-row>
             </template>
-            <span>{{item.name}}</span>
+            <a-directory-tree multiple defaultExpandAll @select="riverPlan" @expand="onExpand">
+              <a-tree-node title="360" key="0-0">
+                <a-tree-node title="调查点1" key="0-0-0" isLeaf />
+                <a-tree-node title="调查点2" key="0-0-1" isLeaf />
+              </a-tree-node>
+              <a-tree-node title="人工调查" key="0-1">
+                <a-tree-node title="人工调查1" key="0-1-0" isLeaf />
+                <a-tree-node title="人工调查2" key="0-1-1" isLeaf />
+              </a-tree-node>
+              <a-tree-node title="巡河线路1" key="0-2"></a-tree-node>
+            </a-directory-tree>
           </a-collapse-panel>
         </a-collapse>
         <a-form v-show="addLineShow" style="width: 100%;">
@@ -66,9 +74,7 @@
               placeholder="请输入河流添加"
               optionFilterProp="children"
               style="width: 100%"
-              @focus="handleFocus"
-              @blur="handleBlur"
-              @change="handleChange"
+              @change="chooseRiver"
               :filterOption="filterOption"
               v-model="defaultRiver"
             >
@@ -149,44 +155,55 @@ const formTailLayout = {
 import { TreeSelect } from 'ant-design-vue'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
-const treeData = [{
-  title: '360',
-  value: '0-0',
-  key: '0-0',
-  children: [{
-    title: '360调查点1',
-    value: '0-0-0',
-    key: '0-0-0',
-  },{
-    title: '360调查点2',
-    value: '0-0-1',
-    key: '0-0-1',
-  },{
-    title: '360调查点3',
-    value: '0-0-2',
-    key: '0-0-2',
-  }],
-}, {
-  title: '人工调查点',
-  value: '0-1',
-  key: '0-1',
-  children: [{
-    title: '调查点1',
-    value: '0-1-0',
-    key: '0-1-0',
-    disabled: true,
-  }, {
-    title: '调查点2',
-    value: '0-1-1',
-    key: '0-1-1',
-  }, {
-    title: '调查点3',
-    value: '0-1-2',
-    key: '0-1-2',
-  }],
-}]
+const treeData = [
+  {
+    title: '360',
+    value: '0-0',
+    key: '0-0',
+    children: [
+      {
+        title: '360调查点1',
+        value: '0-0-0',
+        key: '0-0-0'
+      },
+      {
+        title: '360调查点2',
+        value: '0-0-1',
+        key: '0-0-1'
+      },
+      {
+        title: '360调查点3',
+        value: '0-0-2',
+        key: '0-0-2'
+      }
+    ]
+  },
+  {
+    title: '人工调查点',
+    value: '0-1',
+    key: '0-1',
+    children: [
+      {
+        title: '调查点1',
+        value: '0-1-0',
+        key: '0-1-0',
+        disabled: true
+      },
+      {
+        title: '调查点2',
+        value: '0-1-1',
+        key: '0-1-1'
+      },
+      {
+        title: '调查点3',
+        value: '0-1-2',
+        key: '0-1-2'
+      }
+    ]
+  }
+]
 export default {
-  name: 'TaskManage',
+  name: 'RiverPlanManage',
   components: {
     // 'world-map': WorldMap
   },
@@ -224,9 +241,8 @@ export default {
       formTailLayout,
       form: this.$form.createForm(this),
 
-      treeData,
       SHOW_PARENT,
-      value: "",
+      value: '',
 
       defaultRiver: '黄浦江',
       riverList: [
@@ -405,48 +421,30 @@ export default {
     onChange(e) {
       console.log(`checked = ${e.target.checked}`)
     },
-
-    // 线路任务
-    chooseLineTask(index) {
-      this.defaultRiver = index
-      this.lineTaskList.forEach(value => {
+    // 选择方案详情
+    riverPlan (keys) {
+      console.log('Trigger Select', keys);
+    },
+    onExpand () {
+      console.log('Trigger Expand');
+    },
+    // 设为默认方案
+    defaultPlan(index) {
+      this.lineTaskList.forEach(value=>{
         if (value.name === index) {
-          value.clicked = true
+          value.default = true
         } else {
-          value.clicked = false
+          value.default = false
         }
       })
     },
-    // 线路任务删除
-    confirmDelete(index) {
-      console.log(index)
-      this.lineTaskList.splice(this.lineTaskList.findIndex(item => item.name === index), 1)
-      this.$message.success('删除成功')
-      this.defaultRiver = null
-    },
-    cancelDelete(e) {
-      // this.$message.error('Click on No')
-    },
-    // 线路任务添加
-    check() {
-      this.form.validateFields(err => {
-        if (!err) {
-          console.info('success')
-        }
-      })
-    },
-    handleChange(e) {
-      this.checkNick = e.target.checked
-      this.$nextTick(() => {
-        this.form.validateFields(['nickname'], { force: true })
-      })
-    },
-    // 添加任务按钮
+    
+    // 创建方案
     addTask() {
       this.addLineShow = true
     },
     // 关联河道
-    handleChange(index) {
+    chooseRiver(index) {
       console.log(`selected ${index}`)
       this.riverList.forEach(value => {
         if (value.name === index) {
@@ -455,12 +453,6 @@ export default {
           value.clicked = false
         }
       })
-    },
-    handleBlur() {
-      console.log('blur')
-    },
-    handleFocus() {
-      console.log('focus')
     },
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -472,11 +464,11 @@ export default {
     taskSave() {
       this.addLineShow = false
     },
-    // 添加方案
-    addRiverPlan (value) {
+    // 添加调查点任务
+    addRiverPlan(value) {
       console.log('onChange ', value)
       this.value = value
-    },
+    }
   }
 }
 </script>
@@ -497,37 +489,6 @@ export default {
   width: 120px;
   z-index: 1500;
 }
-.weather {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  width: 120px;
-  height: 40px;
-  z-index: 999;
-}
-.menu {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  width: 40px;
-  z-index: 999;
-  margin: 0;
-  padding: 0;
-  // overflow: hidden;
-  list-style-type: none;
-  li {
-    width: 100%;
-    background: white;
-    border-radius: 50%;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
-    margin-top: 5px;
-    img {
-      width: 100%;
-      height: 40px;
-      padding: 10px;
-    }
-  }
-}
 
 .left {
   position: relative;
@@ -547,20 +508,12 @@ export default {
 }
 .task_face {
   width: 100%;
-  height: calc(100vh - 180px);
+  height: calc(100vh - 130px);
   overflow: auto;
 }
 
-.ant-spin-container {
-  .ant-list-item:hover {
-    background-color: #eee;
-  }
-  .active_item {
-    background-color: #eee;
-  }
-}
 .ant-form-item {
-  margin-bottom: 0;
+  margin-bottom: 10px;
 }
 
 .bottom_add {

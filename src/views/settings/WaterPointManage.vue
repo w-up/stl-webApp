@@ -24,7 +24,6 @@
               bordered
               :dataSource="lineTaskList"
               style="margin-top: 10px;"
-              v-show="!addLineShow"
             >
               <a-list-item
                 slot="renderItem"
@@ -49,207 +48,39 @@
                 </a-row>
               </a-list-item>
             </a-list>
-            <a-form v-show="addLineShow" style="width: 100%;">
-              <a-form-item
-                label="任务名称"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="任务内容"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="月计划次数"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="涉及线路"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="高度(m)"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="长度(m)"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="时长(min)"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="速度(km/h)"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="任务模板"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-select defaultValue placeholder="请选择" style="width: 100%">
-                  <a-select-option value="无人机">无人机</a-select-option>
-                  <a-select-option value="人工调查">人工调查</a-select-option>
-                  <a-select-option value="水质调查">水质调查</a-select-option>
-                </a-select>
-              </a-form-item>
-              <a-form-item
-                label="关联河道"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-select
-                  showSearch
-                  placeholder="请输入河流添加"
-                  optionFilterProp="children"
-                  style="width: 100%"
-                  @focus="handleFocus"
-                  @blur="handleBlur"
-                  @change="handleChange"
-                  :filterOption="filterOption"
-                  v-model="defaultRiver"
-                >
-                  <a-select-option
-                    :value="item.name"
-                    v-for="(item, index) in riverList"
-                    :key="index"
-                  >{{item.name}}</a-select-option>
-                </a-select>
-              </a-form-item>
-              <a-form-item
-                label="人员配备"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="设备配置"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="备注"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="人员职责"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-            </a-form>
           </section>
         </a-tab-pane>
         <a-tab-pane tab="人工监测点" key="2" forceRender>
           <section class="task_face">
-            <a-directory-tree
-              multiple
-              defaultExpandAll
-              @select="onSelect"
-              @expand="onExpand"
-              :treeData="treeData"
-              v-show="!addPointShow"
-            ></a-directory-tree>
-            <a-form v-show="addPointShow" style="width: 100%;">
-              <a-form-item
-                label="任务名称"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
+            <a-list
+              size="small"
+              bordered
+              :dataSource="lineTaskList"
+              style="margin-top: 10px;"
+            >
+              <a-list-item
+                slot="renderItem"
+                slot-scope="item, index"
+                :key="index"
+                @click="chooseLineTask(item.name)"
+                :class="{active_item: item.clicked}"
               >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="任务内容"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-textarea placeholder="请输入任务内容" :autosize="{ minRows: 2, maxRows: 6 }" />
-              </a-form-item>
-              <a-form-item
-                label="任务高度"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="任务时长(min)"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="备注"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-textarea placeholder="请输入备注信息" :autosize="{ minRows: 2, maxRows: 6 }" />
-              </a-form-item>
-              <a-form-item
-                label="任务职责"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="任务模板"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-select placeholder="请选择" style="width: 100%">
-                  <a-select-option value="无人机">无人机</a-select-option>
-                  <a-select-option value="人工调查">人工调查</a-select-option>
-                  <a-select-option value="水质调查">水质调查</a-select-option>
-                </a-select>
-              </a-form-item>
-              <a-form-item
-                label="人员配置"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-              <a-form-item
-                label="设备配置"
-                :label-col="formItemLayout.labelCol"
-                :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
-            </a-form>
+                <a-row style="width:100%">
+                  <a-col :span="20">{{item.name}}</a-col>
+                  <a-col :span="4" style="text-align:right;">
+                    <a-popconfirm
+                      title="确定要删除吗?"
+                      @confirm="confirmDelete(item.name)"
+                      @cancel="cancelDelete"
+                      okText="确定"
+                      cancelText="取消"
+                    >
+                      <a href="#">删除</a>
+                    </a-popconfirm>
+                  </a-col>
+                </a-row>
+              </a-list-item>
+            </a-list>
           </section>
         </a-tab-pane>
       </a-tabs>
@@ -266,51 +97,11 @@
 </template>
 
 <script>
-// import WorldMap from "../../components/map/WorldMap.vue";
 import AddWaterPoint from './modules/AddWaterPoint.vue'
 
-const formItemLayout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 }
-}
-const formTailLayout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 }
-}
-
-const treeData = [
-  {
-    title: '360',
-    key: '0-0',
-    children: [
-      {
-        title: '坐标点1',
-        key: '0-0-0'
-      },
-      {
-        title: '坐标点2',
-        key: '0-0-1'
-      },
-      {
-        title: '坐标点3',
-        key: '0-0-2'
-      }
-    ]
-  },
-  {
-    title: '人工调查点',
-    key: '0-1',
-    children: [
-      { title: '坐标点1', key: '0-1-0-0' },
-      { title: '坐标点2', key: '0-1-0-1' },
-      { title: '坐标点3', key: '0-1-0-2' }
-    ]
-  }
-]
 export default {
   name: 'TaskManage',
   components: {
-    // 'world-map': WorldMap
     'add-water-point': AddWaterPoint
   },
   data() {
@@ -340,8 +131,6 @@ export default {
       addPointShow: false, // 点任务显示
       // 添加线路任务
       checkNick: false,
-      formItemLayout,
-      formTailLayout,
       form: this.$form.createForm(this),
 
       defaultRiver: '黄浦江',
@@ -387,7 +176,6 @@ export default {
       autoExpandParent: true,
       checkedKeys: ['0-0-0'],
       selectedKeys: [],
-      treeData,
 
       // 地图对象
       map: {},

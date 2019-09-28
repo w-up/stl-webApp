@@ -67,7 +67,7 @@
     </div>
 
     <div class="table-operator">
-      <a-button type="primary" icon="plus" @click="$refs.createModal.add()">添加</a-button>
+      <a-button type="primary" icon="plus" @click="$refs.addSupervisory.add()" style="margin-bottom: 15px;">添加</a-button>
       <!-- <a-button type="dashed" @click="tableOption">{{ optionAlertShow && '关闭' || '开启' }} 多选</a-button>
       <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -105,7 +105,7 @@
         </template>
       </span>
     </a-table>
-    <create-form ref="createModal" @ok="handleOk" />
+    <add-supervisory ref="addSupervisory" @ok="handleOk" />
     <step-by-step-modal ref="modal" @ok="handleOk" />
   </a-card>
 </template>
@@ -114,7 +114,7 @@
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
-import CreateForm from './modules/CreateForm'
+import AddSupervisory from './modules/AddSupervisory'
 import { getRoleList, getServiceList } from '@/api/manage'
 
 const statusMap = {
@@ -141,7 +141,7 @@ export default {
   components: {
     STable,
     Ellipsis,
-    CreateForm,
+    AddSupervisory,
     StepByStepModal
   },
   data() {

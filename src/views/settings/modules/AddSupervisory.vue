@@ -6,7 +6,6 @@
     :confirmLoading="confirmLoading"
     @ok="handleSubmit"
     @cancel="handleCancel"
-    :mask="false"
     :centered="true"
   >
     <a-spin :spinning="confirmLoading">
