@@ -7,10 +7,10 @@
       <div class="mapChange">
         <a-row style="width:100%">
           <a-col :span="24">
-            <a-checkbox @change="onChange">水质监测点</a-checkbox>
+            <a-checkbox @change="mapChooseItem">水质监测点</a-checkbox>
           </a-col>
           <a-col :span="24">
-            <a-checkbox @change="onChange">风险源</a-checkbox>
+            <a-checkbox @change="mapChooseItem">风险源</a-checkbox>
           </a-col>
         </a-row>
       </div>
@@ -55,63 +55,63 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入任务名称" />
               </a-form-item>
               <a-form-item
                 label="任务内容"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入任务内容" />
               </a-form-item>
               <a-form-item
                 label="月计划次数"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入月计划次数" />
               </a-form-item>
               <a-form-item
                 label="涉及线路"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入涉及线路" />
               </a-form-item>
               <a-form-item
                 label="高度(m)"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入高度" />
               </a-form-item>
               <a-form-item
                 label="长度(m)"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入长度" />
               </a-form-item>
               <a-form-item
                 label="时长(min)"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入时长" />
               </a-form-item>
               <a-form-item
                 label="速度(km/h)"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入速度" />
               </a-form-item>
               <a-form-item
                 label="任务模板"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-select defaultValue placeholder="请选择" style="width: 100%">
+                <a-select defaultValue="无人机" style="width: 100%">
                   <a-select-option value="无人机">无人机</a-select-option>
                   <a-select-option value="人工调查">人工调查</a-select-option>
                   <a-select-option value="水质调查">水质调查</a-select-option>
@@ -127,8 +127,6 @@
                   placeholder="请输入河流添加"
                   optionFilterProp="children"
                   style="width: 100%"
-                  @focus="handleFocus"
-                  @blur="handleBlur"
                   @change="handleChange"
                   :filterOption="filterOption"
                   v-model="defaultRiver"
@@ -141,32 +139,164 @@
                 </a-select>
               </a-form-item>
               <a-form-item
-                label="人员配备"
+                label="人员配置"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-row style="width:100%">
+                  <a-col :span="14" style="height:30px;">
+                    <a-checkbox @change="peopleChoose">主飞手</a-checkbox>
+                  </a-col>
+                  <a-col :span="10" style="height:30px;text-align:right;">
+                    <a-input-number
+                      size="small"
+                      :min="1"
+                      :max="100000"
+                      :defaultValue="1"
+                      @change="peopleNum"
+                      style="width: 70px;"
+                    />
+                  </a-col>
+                  <a-col :span="14" style="height:30px;">
+                    <a-checkbox @change="peopleChoose">副飞手</a-checkbox>
+                  </a-col>
+                  <a-col :span="10" style="height:30px;text-align:right;">
+                    <a-input-number
+                      size="small"
+                      :min="1"
+                      :max="100000"
+                      :defaultValue="1"
+                      @change="peopleNum"
+                      style="width: 70px;"
+                    />
+                  </a-col>
+                  <a-col :span="14" style="height:30px;">
+                    <a-checkbox @change="peopleChoose">采水员</a-checkbox>
+                  </a-col>
+                  <a-col :span="10" style="height:30px;text-align:right;">
+                    <a-input-number
+                      size="small"
+                      :min="1"
+                      :max="100000"
+                      :defaultValue="1"
+                      @change="peopleNum"
+                      style="width: 70px;"
+                    />
+                  </a-col>
+                </a-row>
               </a-form-item>
               <a-form-item
                 label="设备配置"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
+              ></a-form-item>
+              <a-collapse size="small" style="margin-top:10px;" :bordered="false">
+                <a-collapse-panel :style="customStyle">
+                  <template slot="header">
+                    <a-checkbox @change.stop="peopleChoose">无人机设备</a-checkbox>
+                  </template>
+                  <a-row style="width:100%">
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">无人机主机</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">无人机机翼</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">无人机电池</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                  </a-row>
+                </a-collapse-panel>
+                <a-collapse-panel :style="customStyle">
+                  <template slot="header">
+                    <a-checkbox @change="peopleChoose">采水设备</a-checkbox>
+                  </template>
+                  <a-row style="width:100%">
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">容器</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">手套</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">试纸</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                  </a-row>
+                </a-collapse-panel>
+              </a-collapse>
               <a-form-item
                 label="备注"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入备注" />
               </a-form-item>
               <a-form-item
                 label="人员职责"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入人员职责" />
               </a-form-item>
             </a-form>
           </section>
@@ -187,28 +317,28 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入任务名称" />
               </a-form-item>
               <a-form-item
                 label="任务内容"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-textarea placeholder="请输入任务内容" :autosize="{ minRows: 2, maxRows: 6 }" />
+                <a-textarea :autosize="{ minRows: 2, maxRows: 6 }" />
               </a-form-item>
               <a-form-item
                 label="任务高度"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入任务高度" />
               </a-form-item>
               <a-form-item
                 label="任务时长(min)"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入任务时长" />
               </a-form-item>
               <a-form-item
                 label="备注"
@@ -222,7 +352,7 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-input placeholder="请输入任务职责" />
               </a-form-item>
               <a-form-item
                 label="任务模板"
@@ -240,15 +370,147 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="input placeholder" />
+                <a-row style="width:100%">
+                  <a-col :span="14" style="height:30px;">
+                    <a-checkbox @change="peopleChoose">主飞手</a-checkbox>
+                  </a-col>
+                  <a-col :span="10" style="height:30px;text-align:right;">
+                    <a-input-number
+                      size="small"
+                      :min="1"
+                      :max="100000"
+                      :defaultValue="1"
+                      @change="peopleNum"
+                      style="width: 70px;"
+                    />
+                  </a-col>
+                  <a-col :span="14" style="height:30px;">
+                    <a-checkbox @change="peopleChoose">副飞手</a-checkbox>
+                  </a-col>
+                  <a-col :span="10" style="height:30px;text-align:right;">
+                    <a-input-number
+                      size="small"
+                      :min="1"
+                      :max="100000"
+                      :defaultValue="1"
+                      @change="peopleNum"
+                      style="width: 70px;"
+                    />
+                  </a-col>
+                  <a-col :span="14" style="height:30px;">
+                    <a-checkbox @change="peopleChoose">采水员</a-checkbox>
+                  </a-col>
+                  <a-col :span="10" style="height:30px;text-align:right;">
+                    <a-input-number
+                      size="small"
+                      :min="1"
+                      :max="100000"
+                      :defaultValue="1"
+                      @change="peopleNum"
+                      style="width: 70px;"
+                    />
+                  </a-col>
+                </a-row>
               </a-form-item>
               <a-form-item
                 label="设备配置"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
-              >
-                <a-input placeholder="input placeholder" />
-              </a-form-item>
+              ></a-form-item>
+              <a-collapse size="small" style="margin-top:10px;" :bordered="false">
+                <a-collapse-panel :style="customStyle">
+                  <template slot="header">
+                    <a-checkbox @change.stop="peopleChoose">无人机设备</a-checkbox>
+                  </template>
+                  <a-row style="width:100%">
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">无人机主机</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">无人机机翼</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">无人机电池</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                  </a-row>
+                </a-collapse-panel>
+                <a-collapse-panel :style="customStyle">
+                  <template slot="header">
+                    <a-checkbox @change="peopleChoose">采水设备</a-checkbox>
+                  </template>
+                  <a-row style="width:100%">
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">容器</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">手套</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                    <a-col :span="12" offset="4" style="height:30px;">
+                      <a-checkbox @change="peopleChoose">试纸</a-checkbox>
+                    </a-col>
+                    <a-col :span="8" style="height:30px;text-align:right;">
+                      <a-input-number
+                        size="small"
+                        :min="1"
+                        :max="100000"
+                        :defaultValue="1"
+                        @change="peopleNum"
+                        style="width: 70px;"
+                      />
+                    </a-col>
+                  </a-row>
+                </a-collapse-panel>
+              </a-collapse>
             </a-form>
           </section>
         </a-tab-pane>
@@ -407,6 +669,8 @@ export default {
           clicked: false
         }
       ],
+
+      customStyle: 'background: #fff;margin: 0;overflow: hidden', // 折叠面板样式
 
       expandedKeys: ['0-0-0', '0-0-1'],
       autoExpandParent: true,
@@ -570,10 +834,9 @@ export default {
       this.selectedKeys = selectedKeys
     },
     // 地图选项
-    onChange(e) {
+    mapChooseItem(e) {
       console.log(`checked = ${e.target.checked}`)
     },
-
     // 线路任务
     chooseLineTask(index) {
       this.defaultRiver = index
@@ -594,6 +857,14 @@ export default {
     },
     cancelDelete(e) {
       // this.$message.error('Click on No')
+    },
+    // 线路人员选择
+    peopleChoose(e) {
+      console.log(`checked = ${e.target.checked}`)
+    },
+    // 线路人员配置人数
+    peopleNum(value) {
+      console.log('changed', value)
     },
     // 线路任务添加
     check() {
@@ -627,12 +898,6 @@ export default {
           value.clicked = false
         }
       })
-    },
-    handleBlur() {
-      console.log('blur')
-    },
-    handleFocus() {
-      console.log('focus')
     },
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
