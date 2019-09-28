@@ -20,16 +20,7 @@
             <span class="editIcon" @click="editModalTitle" v-if="editShow"><a-icon type="edit" /></span>
             <span style="position:absolute;top:12px;left:60px;" v-if="!editShow"><a-input placeholder="计划A" style="width:150px;margin-left:20px;"/></span>
             <div class="modal-body">
-                <!-- <a-tabs defaultActiveKey="1" @change="changeTab">
-                    <a-tab-pane tab="组一" key="1">Content of Tab Pane 1</a-tab-pane>
-                    <a-tab-pane tab="组二" key="2" forceRender>Content of Tab Pane 2</a-tab-pane>
-                    <a-tab-pane tab="组三" key="3">Content of Tab Pane 3</a-tab-pane>
-                </a-tabs> -->
                 <a-card :tabList="planTab" :activeTabKey="noPlanTab" @tabChange="key => onTabChange(key,'noPlanTab')">
-                    <!-- <div v-if="noPlanTab === 'one'">  
-                    </div>
-                    <div v-if="noPlanTab === 'two'"></div>
-                    <div v-if="noPlanTab === 'three'"></div> --> 
                     <div class="card-info">
                         <a-form :form="planForm" @submit="submitPlan">
                             <div><span style="font-size:16px;font-weight:500;color: #1F1F1F;">人员:</span>
@@ -93,10 +84,6 @@
                     </div>                  
                 </a-card>   
             </div>
-            <!-- <div class="modal-foot">
-                <div class="foot-left" style="border-right:1px solid #e8e8e8;" @click="cancleBtn()">取消</div>
-                <div class="foot-left" @click="submitPlan">保存</div>
-            </div> -->
         </a-modal>
     </div>
 </template>
