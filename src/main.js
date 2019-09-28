@@ -9,6 +9,7 @@ import { VueAxios } from './utils/request'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 import splitPane from 'vue-splitpane'
+import draggable from 'vuedraggable'
 // mock
 import './mock' // 模拟数据
 
@@ -24,6 +25,7 @@ Vue.config.productionTip = false
 Vue.use(VueAxios)
 Vue.use(iView);
 Vue.component('split-pane',splitPane);
+Vue.component('draggable',draggable);
 
 new Vue({
   router,
