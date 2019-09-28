@@ -1,5 +1,5 @@
 <template>
-    <!-- <a-modal title="河道查询" :visible="visible" @ok="handleOk" :confirmLoading="confirmLoading" @cancel="handleCancel">
+    <!-- <a-modal title="河道查询" :visible="visible" @ok="handleOk" :confirmLoading="confirmLoading" :mask="false" @cancel="handleCancel">
         <a-input-search placeholder="请输入河道名称" @search="searchRiver"/>
     </a-modal> -->
     <div class="searchRiver" v-show="visible">
@@ -47,9 +47,9 @@ export default {
         background-color: #F5F5F5;
     }
     .closeSearch_r{
-        position: fixed;
-        top: 74px;
-        right: 330px;
+        position: absolute;
+        top:10px;
+        right: 10px;
         cursor: pointer;
     }
     .searchInfo{
