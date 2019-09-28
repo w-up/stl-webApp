@@ -28,6 +28,7 @@
               </div>
             </div>
           </div>
+          <!-- 今日计划监管页轨迹 -->
           <div v-if="nosuperKey === 'personCard'">
             <div class="super_weather">
               <img src="../../assets/weather.jpg" alt />
@@ -51,11 +52,145 @@
                     </a-col>
                   </a-row>
                 </a-tab-pane>
-                <a-tab-pane tab="河长信息" key="2">
-                  
-                </a-tab-pane>
+                <a-tab-pane tab="河长信息" key="2"></a-tab-pane>
               </a-tabs>
             </div>
+          </div>
+          <div class="map_operate">
+            <ul>
+              <li>
+                <img src="../../assets/compass.png" alt="指北针"/>
+              </li>
+              <li>
+                <img src="../../assets/restoration.png" alt="复位"/>
+              </li>
+              <li>
+                <img src="../../assets/max.png" alt="放大"/>
+              </li>
+              <li>
+                <img src="../../assets/min.png" alt="缩小"/>
+              </li>
+              <li>
+                <a-popover title="图像" placement="leftBottom" trigger="click">
+                  <template slot="content">
+                    <a-row style="width: 100%;">
+                      <a-col :span="24">
+                        <a-radio-group @change="onMapChange" v-model="mapType">
+                          <a-radio-button value="a">2D影像图</a-radio-button>
+                          <a-radio-button value="b">卫星影像图</a-radio-button>
+                        </a-radio-group>
+                      </a-col>
+                    </a-row>
+                  </template>
+                   <img src="../../assets/map.png" alt="图像"/>
+                </a-popover>
+              </li>
+              <li class="popMore">
+                <a-popover title="更多" placement="leftBottom" arrowPointAtCenter trigger="click">
+                  <template slot="content">
+                    <a-list type="small">
+                      <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
+                        <template slot="content">
+                          <a-list size="small">
+                            <a-list-item>
+                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                                <a-col :span="18"><span>风险地图</span></a-col>
+                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              </a-row>
+                            </a-list-item>
+                            <a-list-item>
+                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                                <a-col :span="18"><span>水质</span></a-col>
+                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              </a-row>
+                            </a-list-item>
+                            <a-list-item>
+                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                                <a-col :span="18"><span>水面漂浮物</span></a-col>
+                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              </a-row>
+                            </a-list-item>
+                            <a-list-item>
+                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                                <a-col :span="18"><span>河岸风险源</span></a-col>
+                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              </a-row>
+                            </a-list-item>
+                            <a-list-item>
+                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                                <a-col :span="18"><span>水土流失</span></a-col>
+                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              </a-row>
+                            </a-list-item>
+                            <a-list-item>
+                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                                <a-col :span="18"><span>水面率</span></a-col>
+                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              </a-row>
+                            </a-list-item>
+                            <a-list-item>
+                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                                <a-col :span="18"><span>底泥</span></a-col>
+                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              </a-row>
+                            </a-list-item>
+                          </a-list>
+                        </template> 
+                        <template slot="title">
+                          <span>风险管理</span>
+                        </template>
+                        <a-list-item>
+                          <a-row type="flex" justify="space-between" style="width:100%;">
+                            <a-col :span="18"><span>风险管理</span></a-col> 
+                            <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>  
+                          </a-row>
+                        </a-list-item>     
+                      </a-popover>
+                      <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
+                        <template slot="content">
+                          <a-list size="small">
+                            <a-list-item>
+                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                                <a-col :span="18"><span>Ⅰ-红色</span></a-col>
+                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              </a-row>
+                            </a-list-item>
+                            <a-list-item>
+                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                                <a-col :span="18"><span>Ⅱ-橙色</span></a-col>
+                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              </a-row>
+                            </a-list-item>
+                            <a-list-item>
+                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                                <a-col :span="18"><span>Ⅲ-黄色</span></a-col>
+                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              </a-row>
+                            </a-list-item>
+                            <a-list-item>
+                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                                <a-col :span="18"><span>Ⅳ-蓝色</span></a-col>
+                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              </a-row>
+                            </a-list-item>
+                          </a-list>
+                        </template> 
+                        <template slot="title">
+                          <span>风险等级</span>
+                        </template>
+                        <a-list-item>
+                          <a-row type="flex" justify="space-between" style="width:100%;">
+                            <a-col :span="18"><span>风险等级</span></a-col> 
+                            <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>  
+                          </a-row>
+                        </a-list-item>     
+                      </a-popover>
+                    </a-list>
+                  </template>
+                  <img src="../../assets/more.png" alt="更多"/>
+                </a-popover>
+              </li>
+            </ul>
           </div>
           <search-river ref="selectPatrol" class="riverSearchModal"></search-river>
           <add-survey ref="addSurvey" class="riverSearchModal"></add-survey>
@@ -80,13 +215,19 @@
                   </a-row>
                   <div class="riverInfo">
                     <div class="river_info">
-                      <span>黄浦江</span>
-                      <a-select defaultValue="" @change="handleChange" style="width:160px;margin-left:20px;">
-                        <a-select-option value="jack">Jack</a-select-option>
-                        <a-select-option value="lucy">Lucy</a-select-option>
-                        <a-select-option value="disabled" disabled>Disabled</a-select-option>
-                      </a-select>
-                      <a-button class="delete_river" shape="circle" icon="close" style="top:14px;"></a-button>
+                      <a-row type="flex" justify="space-between" align="middle">
+                          <a-col :span="8">黄浦江</a-col>
+                          <a-col :span="10">
+                            <a-select defaultValue="" @change="handleChange" style="width:100%;">
+                              <a-select-option value="jack">Jack</a-select-option>
+                              <a-select-option value="lucy">Lucy</a-select-option>
+                              <a-select-option value="disabled" disabled>Disabled</a-select-option>
+                            </a-select>
+                          </a-col>
+                          <a-col :span="3">
+                              <a-button shape="circle" icon="close" style="font-size:8px;"></a-button>
+                          </a-col>
+                      </a-row>
                     </div>
                     <a-tree checkable defaultExpandAll v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
                     </a-tree>
@@ -95,8 +236,12 @@
                   </div>
                   <div class="riverInfo">
                     <div class="river_info">
-                      <span>专向调查点</span>
-                      <a-button class="delete_river" shape="circle" icon="close"></a-button>
+                      <a-row type="flex" justify="space-between" align="middle">
+                          <a-col :span="10">专向调查点</a-col>
+                          <a-col :span="3">
+                              <a-button shape="circle" icon="close" style="font-size:8px;"></a-button>
+                          </a-col>
+                      </a-row>
                     </div>
                     <a-tree checkable v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
                     </a-tree>
@@ -115,14 +260,23 @@
                 <a-collapse v-model="activePlanKey" class="active_plan">
                   <a-collapse-panel  key="1" class="collapse_header">
                     <template slot="header">
-                      <span>计划一</span><a-progress :percent="70" class="plan_progress"/>
+                      <a-row type="flex" justify="space-between" align="middle">
+                          <a-col :span="8"><span>计划一</span></a-col>
+                          <a-col :span="16">
+                              <a-progress :percent="70"/>
+                          </a-col>
+                      </a-row>
                     </template>
                     <div class="planGroup">
                       <a-collapse v-model="activeGroupKey">
                         <a-collapse-panel key="11" class="collapse_group">
                           <template slot="header">
-                            <span>组一</span>
-                            <a-progress :percent="75" class="group_progress"/>
+                            <a-row type="flex" justify="space-between" align="middle">
+                                <a-col :span="8"><span>组一</span></a-col>
+                                <a-col :span="16">
+                                    <a-progress :percent="70"/>
+                                </a-col>
+                            </a-row>
                           </template>
                           <div class="river_group">
                             <a-collapse v-model="activeRiverKey" style="border-bottom:1px solid d9d9d9;">
@@ -164,8 +318,12 @@
                       <a-collapse v-model="activeTwo">
                         <a-collapse-panel key="11" class="collapse_group">
                           <template slot="header">
-                            <span>组二</span>
-                            <a-progress :percent="75" class="plan_progress"/>
+                            <a-row type="flex" justify="space-between" align="middle">
+                                <a-col :span="8"><span>组二</span></a-col>
+                                <a-col :span="16">
+                                    <a-progress :percent="70"/>
+                                </a-col>
+                            </a-row>
                           </template>
                           <div class="river_group">
                             <a-collapse v-model="activeTwo" style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;">
@@ -331,17 +489,36 @@
               <span>加入已有计划</span> -->
             </div>  
             <div v-if="ishidden == 2">
-              <span @click="canclePlanBtn">取消</span>
-              <span @click="showPlanBtn">下一步</span>
+              <a-row type="flex" justify="space-around">
+                <a-col :span="10">
+                  <a-button class="groupBtn" @click="canclePlanBtn">取消</a-button>
+                </a-col>
+                <a-col :span="10">
+                  <a-button class="groupBtn" @click="showPlanBtn">下一步</a-button>
+                </a-col>
+              </a-row>
+              <!-- <span @click="canclePlanBtn">取消</span>
+              <span @click="showPlanBtn">下一步</span> -->
             </div> 
             <div v-if="ishidden == 3">
-              <span @click="previousBtn">上一步</span>
-              <span @click="reHome">返回首页</span>
+              <a-row type="flex" justify="space-around">
+                <a-col :span="10">
+                  <a-button class="groupBtn" @click="previousBtn">上一步</a-button>
+                </a-col>
+                <a-col :span="10">
+                  <a-button class="groupBtn" @click="reHome">返回首页</a-button>
+                </a-col>
+              </a-row>
+              <!-- <span @click="previousBtn">上一步</span>
+              <span @click="reHome">返回首页</span> -->
             </div>
           </div>
         </div>
       </template>
     </split-pane>
+    <add-new-task ref="addNewTask"></add-new-task>
+    <plan-detail ref="planDetail"></plan-detail>
+    <sitution-info ref="situtionInfo"></sitution-info>
   </div>
 </template>
 
@@ -354,6 +531,7 @@ import planList from '../modals/planList'
 import addSurvey from '../modals/addSurvey'
 import addNewTask from '../modals/addNewTask'
 import planDetail from '../modals/planDetail'
+import situtionInfo from './modules/situtionInfo'
 import { BreadcrumbItem } from 'iview'
 
 const sutreeData = [
@@ -441,7 +619,8 @@ export default {
     planList,
     addSurvey,
     addNewTask,
-    planDetail
+    planDetail,
+    situtionInfo
   },
   data() {
     return {
@@ -480,6 +659,7 @@ export default {
       activeKey: ['1'],
       activeTwo: [],
       personInfo,
+      mapType:'a',
       text: '当前河道方位内出现红色风险源',
       // 地图对象
       map: {},
@@ -487,6 +667,7 @@ export default {
       mapPoint: new Map(),
       firstShow: true,
       childNode: false,
+      checked:false,
       patrolPlanInfo: [
         {
           title: '黄浦江',
@@ -561,10 +742,10 @@ export default {
     },
     diguiTree(item) {
       //没有children了，所以是叶子节点
-      console.log(item)
+      // console.log(item)
       //debugger;
       if (item.children == null) {
-        console.log('叶子节点：', item)
+        // console.log('叶子节点：', item)
         this.childNode = true
         return
       }
@@ -586,6 +767,10 @@ export default {
     onsuperChange(key, type) {
       console.log(key, type)
       this[type] = key
+    },
+    //点击滑动关闭按钮
+    onChangeSwitch(){
+
     },
     //选中添加河道
     addRiverBtn() {
@@ -620,10 +805,10 @@ export default {
     newPlan_btn() {
       this.ishidden = 2
     },
-    // getHidden(val){
-    //   console.log(val);
-    //   this.ishidden = val;
-    // },
+    //图像显示修改
+    onMapChange(){
+
+    },
     canclePlanBtn() {
       this.ishidden = 1
     },
@@ -657,7 +842,8 @@ export default {
       console.log(key)
     },
     searchItme(val) {
-      console.log('选中查看按钮' + val)
+      this.$refs.situtionInfo.show()
+      // console.log('选中查看按钮' + val)
     }
   }
 }
