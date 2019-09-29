@@ -97,7 +97,7 @@
         <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
       </span> -->
 
-      <span slot="action" slot-scope="record">
+      <span slot="action">
         <template>
           <a >编辑</a>
           <a-divider type="vertical" />
