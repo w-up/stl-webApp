@@ -8,6 +8,61 @@
     <div class="weather">
       <img src="./img/weather.jpg" alt />
     </div>
+    <div class="time_line">
+      <ul class="time_ul">
+        <li>
+          <h6 style="font-size:12px;text-align:center;">2019.09</h6>
+          <a-tooltip
+            placement="right"
+            class="time_item"
+            trigger="hover"
+            v-for="item in 30"
+            :key="item"
+          >
+            <template slot="title">
+              <span>2019.09.{{item}}</span>
+            </template>
+            <a-icon
+              type="minus"
+              class="icon_style"
+              :class="{'time_color_red':item%3 == 0,'time_color_blue':item%3 == 1,'time_color_gray':item%3 == 2}"
+            />
+            <p>{{item}}</p>
+          </a-tooltip>
+        </li>
+        <li>
+          <h6 style="font-size:12px;text-align:center;">2019.08</h6>
+          <a-tooltip
+            placement="right"
+            class="time_item"
+            trigger="hover"
+            v-for="item in 10"
+            :key="item"
+          >
+            <template slot="title">
+              <span>2019.08.{{item}}</span>
+            </template>
+            <a-icon
+              type="minus"
+              class="icon_style"
+              :class="{'time_color_red':item%3 == 0,'time_color_blue':item%3 == 1,'time_color_gray':item%3 == 2}"
+            />
+            <p>{{item}}</p>
+          </a-tooltip>
+        </li>
+      </ul>
+      <div class="time_set">
+        <a-popover placement="rightBottom" trigger="click">
+          <template slot="content">
+            <a-range-picker @change="setTime" />
+          </template>
+          <template slot="title">
+            <span>设置时间段</span>
+          </template>
+          <a-button type="primary" icon="setting" block></a-button>
+        </a-popover>
+      </div>
+    </div>
     <ul class="menu">
       <li @click="compass">
         <img src="./img/compass.png" alt="指北针" title="指北针" />
@@ -141,7 +196,7 @@
                   <p style="margin:0;">影像管理</p>
                 </a-list-item>
               </a-popover>
-              
+
               <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
                 <template slot="content">
                   <a-list size="small">
@@ -204,7 +259,8 @@
                           <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
                         </a-col>
                       </a-row>
-                    </a-list-item><a-list-item>
+                    </a-list-item>
+                    <a-list-item>
                       <a-row style="width:160px" type="flex" justify="space-between" align="middle">
                         <a-col :span="18">
                           <p style="margin:0;">底泥</p>
@@ -433,6 +489,10 @@ export default {
       this.transferAttribute = this[v]
       this.transferAttribute.visible = true
     },
+    // 设置时间段
+    setTime(date, dateString) {
+      console.log(date, dateString)
+    },
     // 更多
     onSelect(keys) {
       console.log('Trigger Select', keys)
@@ -467,12 +527,74 @@ export default {
 }
 .weather {
   position: absolute;
-  left: 10px;
+  left: 80px;
   top: 10px;
   width: 200px;
   height: 40px;
+  overflow: hidden;
   z-index: 999;
 }
+.time_line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 70px;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 1009;
+  ul {
+    width: 100%;
+    height: calc(100% - 35px);
+    overflow: auto;
+    li {
+      width: 100%;
+      position: relative;
+      .time_item {
+        width: 100%;
+        p {
+          display: none;
+          margin: 0;
+          width: 100%;
+          font-size: 12px;
+          padding: 3px 10px;
+          text-align: center;
+          cursor: default;
+        }
+        .icon_style {
+          position: relative;
+          font-size: 24px;
+          display: block;
+          width: 100%;
+        }
+      }
+      .time_item:hover {
+        p {
+          display: block;
+        }
+        .icon_style {
+          display: none;
+        }
+      }
+      .time_color_red {
+        color: red;
+      }
+      .time_color_blue {
+        color: rgb(57, 236, 66);
+      }
+      .time_color_gray {
+        color: rgb(180, 180, 180);
+      }
+    }
+  }
+  .time_set {
+    position: absolute;
+    bottom: 4px;
+    width: 100%;
+    height: 30px;
+    text-align: center;
+  }
+}
+
 .menu {
   position: fixed;
   right: 20px;
@@ -481,7 +603,6 @@ export default {
   z-index: 999;
   margin: 0;
   padding: 0;
-  // overflow: hidden;
   list-style-type: none;
   li {
     width: 100%;
