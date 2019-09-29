@@ -10,6 +10,13 @@ import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 import splitPane from 'vue-splitpane'
 import draggable from 'vuedraggable'
+import VueVideoPlayer from 'vue-video-player'
+import 'vue-video-player/src/custom-theme.css'
+import 'video.js/dist/video-js.css'
+
+
+
+
 // mock
 import './mock' // 模拟数据
 
@@ -24,6 +31,7 @@ Vue.config.productionTip = false
 // mount axios Vue.$http and this.$http
 Vue.use(VueAxios)
 Vue.use(iView);
+Vue.use(VueVideoPlayer);
 Vue.component('split-pane',splitPane);
 Vue.component('draggable',draggable);
 
