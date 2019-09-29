@@ -525,12 +525,14 @@ export default {
   background-color: rgba(255, 255, 255, 1);
   opacity: 0.9;
   overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid rgb(204, 204, 204);
   z-index: 999;
   display: flex;
   display: -webkit-flex;
   img {
-    width: 60px;
-    height: 60px;
+    width: 58px;
+    height: 58px;
   }
   h3 {
     font-size: 50px;

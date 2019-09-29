@@ -1,6 +1,6 @@
 <template>
   <div style="width:100%;height:calc(100vh - 64px);">
-    <split-pane :min-percent='25' :default-percent='81.5' split="vertical">
+    <split-pane :min-percent="25" :default-percent="81.5" split="vertical">
       <template slot="paneL">
         <div class="left-info">
           <!-- <img src="../../assets/map.jpg" style="width:100%;height: calc(100vh - 66px);"> -->
@@ -9,49 +9,18 @@
             <div class="left-date">
               <a-date-picker @change="selectData" />
             </div>
-            <div class="left-weather">
-              <!-- <img src="../../assets/weather.png" style="width:240px;height:38px;"> -->
-              <a-row>
-                <a-col :span="8">
-                  <ul>
-                    <li>晴转多云</li>
-                    <li><img src="../../assets/sun.png" style="width:50px;"/></li>
-                    <li>23℃~19℃</li>
-                  </ul>
-                </a-col>
-                <a-col :span="16" style="border-left: 1px solid #e8e8e8;">
-                  <a-row type="flex" justify="space-between" align="top">
-                    <a-col :span="14">
-                      <a-row>
-                        <a-col :span="12"><span style="font-size:30px;">24</span></a-col>
-                        <a-col :span="12">
-                          <span style="text-align:left;">
-                            <ul style="list-style: none;">
-                              <li>℃</li>
-                              <li>晴(实时)</li>
-                            </ul>
-                          </span>
-                        </a-col>
-                      </a-row>   
-                    </a-col>
-                    <a-col :span="10">
-                      <div style="width:100%;background-color:#EBF5FF;border-radius:15px;">9月16日&nbsp;星期一</div>
-                    </a-col>
-                  </a-row>
-                  <div style="">
-                      <a-row type="flex" justify="space-between" align="bottom">
-                        <a-col :span="8">风力:&nbsp;4-5级</a-col>
-                        <a-col :span="8">降雨量:&nbsp;0mm</a-col>
-                        <a-col :span="8">云量:&nbsp;--</a-col>
-                      </a-row>
-                      <a-row type="flex" justify="space-between" align="middle">
-                        <a-col :span="8">日出:&nbsp;05:38</a-col>
-                        <a-col :span="8">日落:&nbsp;17:59</a-col>
-                        <a-col :span="8">风速:&nbsp;4米/秒</a-col>
-                      </a-row>
-                  </div>
-                </a-col>
-              </a-row>
+            <!-- 天气 -->
+            <div class="weather">
+              <img src="../../assets/sun.png" alt="天气" />
+              <h3>29</h3>
+              <div class="text" style="margin-left:4px;">
+                <h5>℃ 晴(实时)</h5>
+                <p>晴转多云 24~29℃</p>
+              </div>
+              <div class="text" style="margin-left:10px;">
+                <h5>2019/10/01</h5>
+                <p>星期一</p>
+              </div>
             </div>
             <!-- 新建计划时展示 -->
             <div class="left-patrol" v-if="noTitleKey === 'addPlan' || nosuperKey === 'taskCard'">
@@ -62,7 +31,7 @@
                   <a-collapse-panel header="黄浦江" key="1" style="text-align: left">
                     <p style="margin:0;">{{text}}</p>
                   </a-collapse-panel>
-                  <a-collapse-panel header="鸭绿江" key="2" :disabled='false' style="text-align: left">
+                  <a-collapse-panel header="鸭绿江" key="2" :disabled="false" style="text-align: left">
                     <p style="margin:0;">{{text}}</p>
                   </a-collapse-panel>
                 </a-collapse>
@@ -100,16 +69,16 @@
           <div class="map_operate">
             <ul>
               <li>
-                <img src="../../assets/compass.png" alt="指北针"/>
+                <img src="../../assets/compass.png" alt="指北针" />
               </li>
               <li>
-                <img src="../../assets/restoration.png" alt="复位"/>
+                <img src="../../assets/restoration.png" alt="复位" />
               </li>
               <li>
-                <img src="../../assets/max.png" alt="放大"/>
+                <img src="../../assets/max.png" alt="放大" />
               </li>
               <li>
-                <img src="../../assets/min.png" alt="缩小"/>
+                <img src="../../assets/min.png" alt="缩小" />
               </li>
               <li>
                 <a-popover title="图像" placement="leftBottom" trigger="click">
@@ -123,7 +92,7 @@
                       </a-col>
                     </a-row>
                   </template>
-                   <img src="../../assets/map.png" alt="图像"/>
+                  <img src="../../assets/map.png" alt="图像" />
                 </a-popover>
               </li>
               <li class="popMore">
@@ -134,101 +103,208 @@
                         <template slot="content">
                           <a-list size="small">
                             <a-list-item>
-                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                                <a-col :span="18"><span>风险地图</span></a-col>
-                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              <a-row
+                                type="flex"
+                                justify="space-around"
+                                align="middle"
+                                style="width:100%;"
+                              >
+                                <a-col :span="18">
+                                  <span>风险地图</span>
+                                </a-col>
+                                <a-col :span="6">
+                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                </a-col>
                               </a-row>
                             </a-list-item>
                             <a-list-item>
-                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                                <a-col :span="18"><span>水质</span></a-col>
-                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              <a-row
+                                type="flex"
+                                justify="space-around"
+                                align="middle"
+                                style="width:100%;"
+                              >
+                                <a-col :span="18">
+                                  <span>水质</span>
+                                </a-col>
+                                <a-col :span="6">
+                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                </a-col>
                               </a-row>
                             </a-list-item>
                             <a-list-item>
-                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                                <a-col :span="18"><span>水面漂浮物</span></a-col>
-                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              <a-row
+                                type="flex"
+                                justify="space-around"
+                                align="middle"
+                                style="width:100%;"
+                              >
+                                <a-col :span="18">
+                                  <span>水面漂浮物</span>
+                                </a-col>
+                                <a-col :span="6">
+                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                </a-col>
                               </a-row>
                             </a-list-item>
                             <a-list-item>
-                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                                <a-col :span="18"><span>河岸风险源</span></a-col>
-                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              <a-row
+                                type="flex"
+                                justify="space-around"
+                                align="middle"
+                                style="width:100%;"
+                              >
+                                <a-col :span="18">
+                                  <span>河岸风险源</span>
+                                </a-col>
+                                <a-col :span="6">
+                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                </a-col>
                               </a-row>
                             </a-list-item>
                             <a-list-item>
-                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                                <a-col :span="18"><span>水土流失</span></a-col>
-                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              <a-row
+                                type="flex"
+                                justify="space-around"
+                                align="middle"
+                                style="width:100%;"
+                              >
+                                <a-col :span="18">
+                                  <span>水土流失</span>
+                                </a-col>
+                                <a-col :span="6">
+                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                </a-col>
                               </a-row>
                             </a-list-item>
                             <a-list-item>
-                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                                <a-col :span="18"><span>水面率</span></a-col>
-                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              <a-row
+                                type="flex"
+                                justify="space-around"
+                                align="middle"
+                                style="width:100%;"
+                              >
+                                <a-col :span="18">
+                                  <span>水面率</span>
+                                </a-col>
+                                <a-col :span="6">
+                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                </a-col>
                               </a-row>
                             </a-list-item>
                             <a-list-item>
-                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                                <a-col :span="18"><span>底泥</span></a-col>
-                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              <a-row
+                                type="flex"
+                                justify="space-around"
+                                align="middle"
+                                style="width:100%;"
+                              >
+                                <a-col :span="18">
+                                  <span>底泥</span>
+                                </a-col>
+                                <a-col :span="6">
+                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                </a-col>
                               </a-row>
                             </a-list-item>
                           </a-list>
-                        </template> 
+                        </template>
                         <template slot="title">
                           <span>风险管理</span>
                         </template>
                         <a-list-item>
                           <a-row type="flex" justify="space-between" style="width:100%;">
-                            <a-col :span="18"><span>风险管理</span></a-col> 
-                            <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>  
+                            <a-col :span="18">
+                              <span>风险管理</span>
+                            </a-col>
+                            <a-col :span="6">
+                              <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                            </a-col>
                           </a-row>
-                        </a-list-item>     
+                        </a-list-item>
                       </a-popover>
                       <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
                         <template slot="content">
                           <a-list size="small">
                             <a-list-item>
-                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                                <a-col :span="18"><span>Ⅰ-红色</span></a-col>
-                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              <a-row
+                                type="flex"
+                                justify="space-around"
+                                align="middle"
+                                style="width:100%;"
+                              >
+                                <a-col :span="18">
+                                  <span>Ⅰ-红色</span>
+                                </a-col>
+                                <a-col :span="6">
+                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                </a-col>
                               </a-row>
                             </a-list-item>
                             <a-list-item>
-                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                                <a-col :span="18"><span>Ⅱ-橙色</span></a-col>
-                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              <a-row
+                                type="flex"
+                                justify="space-around"
+                                align="middle"
+                                style="width:100%;"
+                              >
+                                <a-col :span="18">
+                                  <span>Ⅱ-橙色</span>
+                                </a-col>
+                                <a-col :span="6">
+                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                </a-col>
                               </a-row>
                             </a-list-item>
                             <a-list-item>
-                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                                <a-col :span="18"><span>Ⅲ-黄色</span></a-col>
-                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              <a-row
+                                type="flex"
+                                justify="space-around"
+                                align="middle"
+                                style="width:100%;"
+                              >
+                                <a-col :span="18">
+                                  <span>Ⅲ-黄色</span>
+                                </a-col>
+                                <a-col :span="6">
+                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                </a-col>
                               </a-row>
                             </a-list-item>
                             <a-list-item>
-                              <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                                <a-col :span="18"><span>Ⅳ-蓝色</span></a-col>
-                                <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>
+                              <a-row
+                                type="flex"
+                                justify="space-around"
+                                align="middle"
+                                style="width:100%;"
+                              >
+                                <a-col :span="18">
+                                  <span>Ⅳ-蓝色</span>
+                                </a-col>
+                                <a-col :span="6">
+                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                </a-col>
                               </a-row>
                             </a-list-item>
                           </a-list>
-                        </template> 
+                        </template>
                         <template slot="title">
                           <span>风险等级</span>
                         </template>
                         <a-list-item>
                           <a-row type="flex" justify="space-between" style="width:100%;">
-                            <a-col :span="18"><span>风险等级</span></a-col> 
-                            <a-col :span="6"><a-switch size="small" v-model="checked" @click="onChangeSwitch" /></a-col>  
+                            <a-col :span="18">
+                              <span>风险等级</span>
+                            </a-col>
+                            <a-col :span="6">
+                              <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                            </a-col>
                           </a-row>
-                        </a-list-item>     
+                        </a-list-item>
                       </a-popover>
                     </a-list>
                   </template>
-                  <img src="../../assets/more.png" alt="更多"/>
+                  <img src="../../assets/more.png" alt="更多" />
                 </a-popover>
               </li>
             </ul>
@@ -241,12 +317,21 @@
         <div class="right-info">
           <div class="right-body">
             <!-- 首页内容展示 -->
-            <a-card :tabList="planList" :activeTabKey="noTitleKey" @tabChange="key => onTabChange(key,'noTitleKey')" v-if="firstShow">
+            <a-card
+              :tabList="planList"
+              :activeTabKey="noTitleKey"
+              @tabChange="key => onTabChange(key,'noTitleKey')"
+              v-if="firstShow"
+            >
               <!-- 新建计划 -->
               <div v-if="noTitleKey === 'addPlan'">
                 <!-- 判断显示内容 -->
                 <div v-if="ishidden == 1">
-                  <a-row type="flex" justify="center" style="margin-bottom:15px;margin-top:15px;text-align:center;">
+                  <a-row
+                    type="flex"
+                    justify="center"
+                    style="margin-bottom:15px;margin-top:15px;text-align:center;"
+                  >
                     <a-col :span="12">
                       <a-button style="padding:0 22px;color:#1890ff;" @click="addRiverBtn">添加河道</a-button>
                     </a-col>
@@ -257,38 +342,59 @@
                   <div class="riverInfo">
                     <div class="river_info">
                       <a-row type="flex" justify="space-between" align="middle">
-                          <a-col :span="8">黄浦江</a-col>
-                          <a-col :span="10">
-                            <a-select defaultValue="" @change="handleChange" style="width:100%;">
-                              <a-select-option value="jack">Jack</a-select-option>
-                              <a-select-option value="lucy">Lucy</a-select-option>
-                              <a-select-option value="disabled" disabled>Disabled</a-select-option>
-                            </a-select>
-                          </a-col>
-                          <a-col :span="3">
-                              <a-button shape="circle" icon="close" style="font-size:8px;"></a-button>
-                          </a-col>
+                        <a-col :span="8">黄浦江</a-col>
+                        <a-col :span="10">
+                          <a-select defaultValue @change="handleChange" style="width:100%;">
+                            <a-select-option value="jack">Jack</a-select-option>
+                            <a-select-option value="lucy">Lucy</a-select-option>
+                            <a-select-option value="disabled" disabled>Disabled</a-select-option>
+                          </a-select>
+                        </a-col>
+                        <a-col :span="3">
+                          <a-button shape="circle" icon="close" style="font-size:8px;"></a-button>
+                        </a-col>
                       </a-row>
                     </div>
-                    <a-tree checkable defaultExpandAll v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
-                    </a-tree>
-                    <a-button class="addTask_btn commBtn" icon="plus" @click="addTaskBtn" v-show="cBtn">追加任务</a-button> 
+                    <a-tree
+                      checkable
+                      defaultExpandAll
+                      v-model="checkedKeys"
+                      @select="onSelect"
+                      :selectedKeys="selectedKeys"
+                      :treeData="treeData"
+                    ></a-tree>
+                    <a-button
+                      class="addTask_btn commBtn"
+                      icon="plus"
+                      @click="addTaskBtn"
+                      v-show="cBtn"
+                    >追加任务</a-button>
                     <add-task ref="addTask" @showAddBtn="clearBtn"></add-task>
                   </div>
                   <div class="riverInfo">
                     <div class="river_info">
                       <a-row type="flex" justify="space-between" align="middle">
-                          <a-col :span="10">专向调查点</a-col>
-                          <a-col :span="3">
-                              <a-button shape="circle" icon="close" style="font-size:8px;"></a-button>
-                          </a-col>
+                        <a-col :span="10">专向调查点</a-col>
+                        <a-col :span="3">
+                          <a-button shape="circle" icon="close" style="font-size:8px;"></a-button>
+                        </a-col>
                       </a-row>
                     </div>
-                    <a-tree checkable v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
-                    </a-tree>
-                    <a-button class="addTask_btn commBtn" icon="plus" @click="addTaskBtn" v-show="cBtn">追加任务</a-button> 
-                  </div>   
-                </div> 
+                    <a-tree
+                      checkable
+                      v-model="checkedKeys"
+                      @select="onSelect"
+                      :selectedKeys="selectedKeys"
+                      :treeData="treeData"
+                    ></a-tree>
+                    <a-button
+                      class="addTask_btn commBtn"
+                      icon="plus"
+                      @click="addTaskBtn"
+                      v-show="cBtn"
+                    >追加任务</a-button>
+                  </div>
+                </div>
                 <div v-if="ishidden == 2">
                   <creat-group ref="creatGroup"></creat-group>
                 </div>
@@ -299,35 +405,47 @@
               <!-- 今日计划 -->
               <div v-if="noTitleKey === 'nowPlan'">
                 <a-collapse v-model="activePlanKey" class="active_plan">
-                  <a-collapse-panel  key="1" class="collapse_header">
-                    <template slot="header">
+                  <a-collapse-panel key="1" class="collapse_header">
+                    <template slot="header">
                       <a-row type="flex" justify="space-between" align="middle">
-                          <a-col :span="8"><span>计划一</span></a-col>
-                          <a-col :span="16">
-                              <a-progress :percent="70"/>
-                          </a-col>
+                        <a-col :span="8">
+                          <span>计划一</span>
+                        </a-col>
+                        <a-col :span="16">
+                          <a-progress :percent="70" />
+                        </a-col>
                       </a-row>
-                    </template>
-                    <div class="planGroup">
+                    </template>
+                    <div class="planGroup">
                       <a-collapse v-model="activeGroupKey">
                         <a-collapse-panel key="11" class="collapse_group">
-                          <template slot="header">
+                          <template slot="header">
                             <a-row type="flex" justify="space-between" align="middle">
-                                <a-col :span="8"><span>组一</span></a-col>
-                                <a-col :span="16">
-                                    <a-progress :percent="70"/>
-                                </a-col>
+                              <a-col :span="8">
+                                <span>组一</span>
+                              </a-col>
+                              <a-col :span="16">
+                                <a-progress :percent="70" />
+                              </a-col>
                             </a-row>
                           </template>
                           <div class="river_group">
-                            <a-collapse v-model="activeRiverKey" style="border-bottom:1px solid d9d9d9;">
+                            <a-collapse
+                              v-model="activeRiverKey"
+                              style="border-bottom:1px solid d9d9d9;"
+                            >
                               <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
                                 <div style="padding:10px 10px;">
                                   <div>
                                     <div class="riverGroup_info">未完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      @select="onSelect"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="treeData"
+                                    ></a-tree>
                                   </div>
-                                  <div class="">
+                                  <div class>
                                     <div class="riverGroup_success">已完成</div>
                                     <!-- <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree> -->
                                     <!-- <a-tree @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
@@ -335,19 +453,28 @@
                                         <span>{{item.title}}</span>
                                         <a-button style="position:absolute;right:60px;">查看</a-button>
                                       </template>
-                                    </a-tree> -->
+                                    </a-tree>-->
                                     <a-tree :treeData="sutreeData" class="tree_succ">
-                                        <template slot="custom" slot-scope="item">
-                                          <span>{{ item.title }}</span>
-                                          <a-button class="but_type" v-if="childNode" @click="()=> searchItme(item)">查看</a-button>
-                                        </template>
-                                      </a-tree>
+                                      <template slot="custom" slot-scope="item">
+                                        <span>{{ item.title }}</span>
+                                        <a-button
+                                          class="but_type"
+                                          v-if="childNode"
+                                          @click="()=> searchItme(item)"
+                                        >查看</a-button>
+                                      </template>
+                                    </a-tree>
                                   </div>
                                   <div>
                                     <div class="riverGroup_warning">异常</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      @select="onSelect"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="treeData"
+                                    ></a-tree>
                                   </div>
-                                </div> 
+                                </div>
                                 <div class="addTaskBtn">
                                   <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button>
                                 </div>
@@ -358,31 +485,51 @@
                       </a-collapse>
                       <a-collapse v-model="activeTwo">
                         <a-collapse-panel key="11" class="collapse_group">
-                          <template slot="header">
-                            <a-row type="flex" justify="space-between" align="middle">
-                                <a-col :span="8"><span>组二</span></a-col>
-                                <a-col :span="16">
-                                    <a-progress :percent="70"/>
-                                </a-col>
+                          <template slot="header">
+                            <a-row type="flex" justify="space-between" align="middle">
+                              <a-col :span="8">
+                                <span>组二</span>
+                              </a-col>
+                              <a-col :span="16">
+                                <a-progress :percent="70" />
+                              </a-col>
                             </a-row>
                           </template>
                           <div class="river_group">
-                            <a-collapse v-model="activeTwo" style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;">
+                            <a-collapse
+                              v-model="activeTwo"
+                              style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;"
+                            >
                               <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
                                 <div style="padding:10px 10px;">
                                   <div>
                                     <div class="riverGroup_info">未完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      @select="onSelect"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="treeData"
+                                    ></a-tree>
                                   </div>
                                   <div>
                                     <div class="riverGroup_success">已完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      @select="onSelect"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="treeData"
+                                    ></a-tree>
                                   </div>
                                   <div>
                                     <div class="riverGroup_warning">异常</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      @select="onSelect"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="treeData"
+                                    ></a-tree>
                                   </div>
-                                </div> 
+                                </div>
                                 <div class="addTaskBtn">
                                   <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button>
                                 </div>
@@ -407,37 +554,61 @@
                 </a-collapse>
               </div>
             </a-card>
-            <a-card :tabList="superCard" :activeTabKey="nosuperKey" @tabChange="key => onsuperChange(key,'nosuperKey')" v-if="!firstShow">
+            <a-card
+              :tabList="superCard"
+              :activeTabKey="nosuperKey"
+              @tabChange="key => onsuperChange(key,'nosuperKey')"
+              v-if="!firstShow"
+            >
               <div v-if="nosuperKey === 'taskCard'">
                 <a-collapse v-model="activePlanKey" class="active_plan">
-                  <a-collapse-panel  key="1" class="collapse_header">
-                    <template slot="header">
-                      <span>计划一</span><a-progress :percent="70" class="plan_progress"/>
-                    </template>
-                    <div class="planGroup">
+                  <a-collapse-panel key="1" class="collapse_header">
+                    <template slot="header">
+                      <span>计划一</span>
+                      <a-progress :percent="70" class="plan_progress" />
+                    </template>
+                    <div class="planGroup">
                       <a-collapse v-model="activeGroupKey">
                         <a-collapse-panel key="11" class="collapse_group">
-                          <template slot="header">
-                            <span>组一</span>
-                            <a-progress :percent="75" class="group_progress"/>
+                          <template slot="header">
+                            <span>组一</span>
+                            <a-progress :percent="75" class="group_progress" />
                           </template>
                           <div class="river_group">
-                            <a-collapse v-model="activeRiverKey" style="border-bottom:1px solid d9d9d9;">
+                            <a-collapse
+                              v-model="activeRiverKey"
+                              style="border-bottom:1px solid d9d9d9;"
+                            >
                               <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
                                 <div style="padding:10px 10px;">
                                   <div>
                                     <div class="riverGroup_info">未完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      @select="onSelect"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="treeData"
+                                    ></a-tree>
                                   </div>
                                   <div>
                                     <div class="riverGroup_success">已完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      @select="onSelect"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="treeData"
+                                    ></a-tree>
                                   </div>
                                   <div>
                                     <div class="riverGroup_warning">异常</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      @select="onSelect"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="treeData"
+                                    ></a-tree>
                                   </div>
-                                </div> 
+                                </div>
                                 <div class="addTaskBtn">
                                   <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button>
                                 </div>
@@ -448,27 +619,45 @@
                       </a-collapse>
                       <a-collapse v-model="activeTwo">
                         <a-collapse-panel key="11" class="collapse_group">
-                          <template slot="header">
-                            <span>组二</span>
-                            <a-progress :percent="75" class="plan_progress"/>
+                          <template slot="header">
+                            <span>组二</span>
+                            <a-progress :percent="75" class="plan_progress" />
                           </template>
                           <div class="river_group">
-                            <a-collapse v-model="activeTwo" style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;">
+                            <a-collapse
+                              v-model="activeTwo"
+                              style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;"
+                            >
                               <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
                                 <div style="padding:10px 10px;">
                                   <div>
                                     <div class="riverGroup_info">未完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      @select="onSelect"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="treeData"
+                                    ></a-tree>
                                   </div>
                                   <div>
                                     <div class="riverGroup_success">已完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      @select="onSelect"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="treeData"
+                                    ></a-tree>
                                   </div>
                                   <div>
                                     <div class="riverGroup_warning">异常</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      @select="onSelect"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="treeData"
+                                    ></a-tree>
                                   </div>
-                                </div> 
+                                </div>
                                 <div class="addTaskBtn">
                                   <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button>
                                 </div>
@@ -486,23 +675,27 @@
               </div>
               <div v-if="nosuperKey === 'personCard'">
                 <a-collapse v-model="activePlanKey" class="active_plan">
-                  <a-collapse-panel  key="1" class="collapse_header">
-                    <template slot="header">
-                      <span>计划一</span><a-progress :percent="70" class="plan_progress"/>
-                    </template>
-                    <div class="planGroup">
+                  <a-collapse-panel key="1" class="collapse_header">
+                    <template slot="header">
+                      <span>计划一</span>
+                      <a-progress :percent="70" class="plan_progress" />
+                    </template>
+                    <div class="planGroup">
                       <a-collapse v-model="activeGroupKey">
                         <a-collapse-panel key="11" class="collapse_group">
-                          <template slot="header">
-                            <span>组一</span>
-                            <a-progress :percent="75" class="group_progress"/>
+                          <template slot="header">
+                            <span>组一</span>
+                            <a-progress :percent="75" class="group_progress" />
                           </template>
                           <div class="plan_personInfo">
                             <a-list bordered :dataSource="personInfo">
-                              <a-list-item slot="renderItem" slot-scope="item,index">   
-                                <a slot="actions" syle="width:10px;height:10px;border-radius:50%;background-color:green;"></a>
+                              <a-list-item slot="renderItem" slot-scope="item">
+                                <a
+                                  slot="actions"
+                                  syle="width:10px;height:10px;border-radius:50%;background-color:green;"
+                                ></a>
                                 <!-- <a-list-item-meta> -->
-                                  {{item.name}}&nbsp;({{item.position}})
+                                {{item.name}}&nbsp;({{item.position}})
                                 <!-- </a-list-item-meta> -->
                                 <!-- <div><span style="border-radius:50%;background-color:green;"></span></div> -->
                               </a-list-item>
@@ -528,21 +721,48 @@
                     <template slot="content">
                       <a-list size="small">
                         <a-list-item>
-                          <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                            <a-col :span="18"><span>计划一</span></a-col>
-                            <a-col :span="6"><a-icon type="plus" @click="addToPlan" class="addToPlan"/></a-col>
+                          <a-row
+                            type="flex"
+                            justify="space-around"
+                            align="middle"
+                            style="width:100%;"
+                          >
+                            <a-col :span="18">
+                              <span>计划一</span>
+                            </a-col>
+                            <a-col :span="6">
+                              <a-icon type="plus" @click="addToPlan" class="addToPlan" />
+                            </a-col>
                           </a-row>
                         </a-list-item>
                         <a-list-item>
-                          <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                            <a-col :span="18"><span>计划二</span></a-col>
-                            <a-col :span="6"><a-icon type="plus" @click="addToPlan" class="addToPlan"/></a-col>
+                          <a-row
+                            type="flex"
+                            justify="space-around"
+                            align="middle"
+                            style="width:100%;"
+                          >
+                            <a-col :span="18">
+                              <span>计划二</span>
+                            </a-col>
+                            <a-col :span="6">
+                              <a-icon type="plus" @click="addToPlan" class="addToPlan" />
+                            </a-col>
                           </a-row>
                         </a-list-item>
                         <a-list-item>
-                          <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
-                            <a-col :span="18"><span>计划三</span></a-col>
-                            <a-col :span="6"><a-icon type="plus" @click="addToPlan" class="addToPlan"/></a-col>
+                          <a-row
+                            type="flex"
+                            justify="space-around"
+                            align="middle"
+                            style="width:100%;"
+                          >
+                            <a-col :span="18">
+                              <span>计划三</span>
+                            </a-col>
+                            <a-col :span="6">
+                              <a-icon type="plus" @click="addToPlan" class="addToPlan" />
+                            </a-col>
                           </a-row>
                         </a-list-item>
                       </a-list>
@@ -552,8 +772,8 @@
                 </a-col>
               </a-row>
               <!-- <span @click="newPlan_btn">生成计划</span>
-              <span>加入已有计划</span> -->
-            </div>  
+              <span>加入已有计划</span>-->
+            </div>
             <div v-if="ishidden == 2">
               <a-row type="flex" justify="space-around">
                 <a-col :span="10">
@@ -564,8 +784,8 @@
                 </a-col>
               </a-row>
               <!-- <span @click="canclePlanBtn">取消</span>
-              <span @click="showPlanBtn">下一步</span> -->
-            </div> 
+              <span @click="showPlanBtn">下一步</span>-->
+            </div>
             <div v-if="ishidden == 3">
               <a-row type="flex" justify="space-around">
                 <a-col :span="10">
@@ -576,7 +796,7 @@
                 </a-col>
               </a-row>
               <!-- <span @click="previousBtn">上一步</span>
-              <span @click="reHome">返回首页</span> -->
+              <span @click="reHome">返回首页</span>-->
             </div>
           </div>
         </div>
@@ -728,7 +948,7 @@ export default {
       activeKey: ['1'],
       activeTwo: [],
       personInfo,
-      mapType:'a',
+      mapType: 'a',
       text: '当前河道方位内出现红色风险源',
       // 地图对象
       map: {},
@@ -736,8 +956,8 @@ export default {
       mapPoint: new Map(),
       firstShow: true,
       childNode: false,
-      checked:false,
-      undone:true,
+      checked: false,
+      undone: true,
       patrolPlanInfo: [
         {
           title: '黄浦江',
@@ -760,7 +980,7 @@ export default {
   created() {
     setTimeout(() => {
       this.loading = !this.loading
-    }, 1000);
+    }, 1000)
   },
   watch: {
     checkedKeys(val) {
@@ -803,7 +1023,7 @@ export default {
       this[type] = key
       if (key == 'nowPlan') {
         // console.log("已完成" + this.sutreeData)
-        let sutree = this.sutreeData;
+        let sutree = this.sutreeData
         this.diguiTree(sutree)
         // for (var j = 0; j < sutreeData.length; j++) {
         //   this.diguiTree(sutreeData[j])
@@ -823,11 +1043,11 @@ export default {
       //   this.diguiTree(item.children[i])
       // }
 
-      for (let i in item){
-        if(item[i].children == null){
-          this.childNode=true;
-          return;
-        }else{
+      for (let i in item) {
+        if (item[i].children == null) {
+          this.childNode = true
+          return
+        } else {
           console.log(item[i].children)
           this.diguiTree(item[i].children)
         }
@@ -838,9 +1058,7 @@ export default {
       this[type] = key
     },
     //点击滑动关闭按钮
-    onChangeSwitch(){
-
-    },
+    onChangeSwitch() {},
     //选中添加河道
     addRiverBtn() {
       this.$refs.selectPatrol.show()
@@ -875,9 +1093,7 @@ export default {
       this.ishidden = 2
     },
     //图像显示修改
-    onMapChange(){
-
-    },
+    onMapChange() {},
     canclePlanBtn() {
       this.ishidden = 1
     },
@@ -915,19 +1131,19 @@ export default {
       // console.log('选中查看按钮' + val)
     },
     //今日计划模块修改时间
-    updateTime(){
+    updateTime() {
       this.$refs.updateTime.show()
     },
     //加入已有计划
-    addToPlan(){
-      this.$message.success('加入成功');
-      this.nosuperKey = 'nowPlan';
+    addToPlan() {
+      this.$message.success('加入成功')
+      this.nosuperKey = 'nowPlan'
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .splitter-pane splitter-paneL vertical {
   width: 72%;
 }
@@ -936,5 +1152,42 @@ export default {
 }
 .splitter-pane splitter-paneR vertical {
   width: 28%;
+}
+.weather {
+  position: absolute;
+  left: 10px;
+  top: 85px;
+  width: 360px;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 1);
+  opacity: 0.9;
+  overflow: hidden;
+  z-index: 999;
+  border-radius: 4px;
+  border: 1px solid rgb(204, 204, 204);
+  display: flex;
+  display: -webkit-flex;
+  img {
+    width: 60px;
+    height: 60px;
+  }
+  h3 {
+    font-size: 50px;
+    line-height: 60px;
+    margin: 0;
+  }
+  .text {
+    h5 {
+      line-height: 30px;
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0;
+    }
+    p {
+      line-height: 30px;
+      font-size: 15px;
+      margin: 0;
+    }
+  }
 }
 </style>
