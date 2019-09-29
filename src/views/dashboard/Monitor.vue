@@ -524,7 +524,31 @@
                   <a-button class="groupBtn" @click="newPlan_btn">生成计划</a-button>
                 </a-col>
                 <a-col :span="10">
-                  <a-button class="groupBtn">加入已有计划</a-button>
+                  <a-popover title="加入计划" placement="topLeft" trigger="click" :width="100">
+                    <template slot="content">
+                      <a-list size="small">
+                        <a-list-item>
+                          <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                            <a-col :span="18"><span>计划一</span></a-col>
+                            <a-col :span="6"><a-icon type="plus" @click="addToPlan" class="addToPlan"/></a-col>
+                          </a-row>
+                        </a-list-item>
+                        <a-list-item>
+                          <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                            <a-col :span="18"><span>计划二</span></a-col>
+                            <a-col :span="6"><a-icon type="plus" @click="addToPlan" class="addToPlan"/></a-col>
+                          </a-row>
+                        </a-list-item>
+                        <a-list-item>
+                          <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                            <a-col :span="18"><span>计划三</span></a-col>
+                            <a-col :span="6"><a-icon type="plus" @click="addToPlan" class="addToPlan"/></a-col>
+                          </a-row>
+                        </a-list-item>
+                      </a-list>
+                    </template>
+                    <a-button class="groupBtn">加入已有计划</a-button>
+                  </a-popover>
                 </a-col>
               </a-row>
               <!-- <span @click="newPlan_btn">生成计划</span>
@@ -893,6 +917,11 @@ export default {
     //今日计划模块修改时间
     updateTime(){
       this.$refs.updateTime.show()
+    },
+    //加入已有计划
+    addToPlan(){
+      this.$message.success('加入成功');
+      this.nosuperKey = 'nowPlan';
     }
   }
 }
