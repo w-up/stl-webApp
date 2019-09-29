@@ -10,7 +10,48 @@
               <a-date-picker @change="selectData" />
             </div>
             <div class="left-weather">
-              <img src="../../assets/weather.png" style="width:240px;height:38px;">
+              <!-- <img src="../../assets/weather.png" style="width:240px;height:38px;"> -->
+              <a-row>
+                <a-col :span="8">
+                  <ul>
+                    <li>晴转多云</li>
+                    <li><img src="../../assets/sun.png" style="width:50px;"/></li>
+                    <li>23℃~19℃</li>
+                  </ul>
+                </a-col>
+                <a-col :span="16" style="border-left: 1px solid #e8e8e8;">
+                  <a-row type="flex" justify="space-between" align="top">
+                    <a-col :span="14">
+                      <a-row>
+                        <a-col :span="12"><span style="font-size:30px;">24</span></a-col>
+                        <a-col :span="12">
+                          <span style="text-align:left;">
+                            <ul style="list-style: none;">
+                              <li>℃</li>
+                              <li>晴(实时)</li>
+                            </ul>
+                          </span>
+                        </a-col>
+                      </a-row>   
+                    </a-col>
+                    <a-col :span="10">
+                      <div style="width:100%;background-color:#EBF5FF;border-radius:15px;">9月16日&nbsp;星期一</div>
+                    </a-col>
+                  </a-row>
+                  <div style="">
+                      <a-row type="flex" justify="space-between" align="bottom">
+                        <a-col :span="8">风力:&nbsp;4-5级</a-col>
+                        <a-col :span="8">降雨量:&nbsp;0mm</a-col>
+                        <a-col :span="8">云量:&nbsp;--</a-col>
+                      </a-row>
+                      <a-row type="flex" justify="space-between" align="middle">
+                        <a-col :span="8">日出:&nbsp;05:38</a-col>
+                        <a-col :span="8">日落:&nbsp;17:59</a-col>
+                        <a-col :span="8">风速:&nbsp;4米/秒</a-col>
+                      </a-row>
+                  </div>
+                </a-col>
+              </a-row>
             </div>
             <!-- 新建计划时展示 -->
             <div class="left-patrol" v-if="noTitleKey === 'addPlan' || nosuperKey === 'taskCard'">
@@ -357,7 +398,8 @@
                           <a-button class="groupBtn" @click="detailPlan">详情</a-button>
                         </a-col>
                         <a-col :span="10">
-                          <a-button class="groupBtn" @click="supervision_btn">监管</a-button>
+                          <a-button class="groupBtn" @click="supervision_btn" v-if="!undone">监管</a-button>
+                          <a-button class="groupBtn" @click="updateTime" v-if="undone">修改时间</a-button>
                         </a-col>
                       </a-row>
                     </div>
@@ -482,7 +524,31 @@
                   <a-button class="groupBtn" @click="newPlan_btn">生成计划</a-button>
                 </a-col>
                 <a-col :span="10">
-                  <a-button class="groupBtn">加入已有计划</a-button>
+                  <a-popover title="加入计划" placement="topLeft" trigger="click" :width="100">
+                    <template slot="content">
+                      <a-list size="small">
+                        <a-list-item>
+                          <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                            <a-col :span="18"><span>计划一</span></a-col>
+                            <a-col :span="6"><a-icon type="plus" @click="addToPlan" class="addToPlan"/></a-col>
+                          </a-row>
+                        </a-list-item>
+                        <a-list-item>
+                          <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                            <a-col :span="18"><span>计划二</span></a-col>
+                            <a-col :span="6"><a-icon type="plus" @click="addToPlan" class="addToPlan"/></a-col>
+                          </a-row>
+                        </a-list-item>
+                        <a-list-item>
+                          <a-row type="flex" justify="space-around" align="middle" style="width:100%;">
+                            <a-col :span="18"><span>计划三</span></a-col>
+                            <a-col :span="6"><a-icon type="plus" @click="addToPlan" class="addToPlan"/></a-col>
+                          </a-row>
+                        </a-list-item>
+                      </a-list>
+                    </template>
+                    <a-button class="groupBtn">加入已有计划</a-button>
+                  </a-popover>
                 </a-col>
               </a-row>
               <!-- <span @click="newPlan_btn">生成计划</span>
@@ -519,6 +585,7 @@
     <add-new-task ref="addNewTask"></add-new-task>
     <plan-detail ref="planDetail"></plan-detail>
     <sitution-info ref="situtionInfo"></sitution-info>
+    <update-time ref="updateTime"></update-time>
   </div>
 </template>
 
@@ -532,6 +599,7 @@ import addSurvey from '../modals/addSurvey'
 import addNewTask from '../modals/addNewTask'
 import planDetail from '../modals/planDetail'
 import situtionInfo from './modules/situtionInfo'
+import updateTime from './modules/updateTime'
 import { BreadcrumbItem } from 'iview'
 
 const sutreeData = [
@@ -620,7 +688,8 @@ export default {
     addSurvey,
     addNewTask,
     planDetail,
-    situtionInfo
+    situtionInfo,
+    updateTime
   },
   data() {
     return {
@@ -668,6 +737,7 @@ export default {
       firstShow: true,
       childNode: false,
       checked:false,
+      undone:true,
       patrolPlanInfo: [
         {
           title: '黄浦江',
@@ -690,7 +760,7 @@ export default {
   created() {
     setTimeout(() => {
       this.loading = !this.loading
-    }, 1000)
+    }, 1000);
   },
   watch: {
     checkedKeys(val) {
@@ -733,36 +803,35 @@ export default {
       this[type] = key
       if (key == 'nowPlan') {
         // console.log("已完成" + this.sutreeData)
-        let sutree = this.sutreeData
-        // this.diguiTree(sutree)
-        for (var j = 0; j < sutreeData.length; j++) {
-          this.diguiTree(sutreeData[j])
-        }
+        let sutree = this.sutreeData;
+        this.diguiTree(sutree)
+        // for (var j = 0; j < sutreeData.length; j++) {
+        //   this.diguiTree(sutreeData[j])
+        // }
       }
     },
     diguiTree(item) {
       //没有children了，所以是叶子节点
       // console.log(item)
       //debugger;
-      if (item.children == null) {
-        // console.log('叶子节点：', item)
-        this.childNode = true
-        return
-      }
-      //不是叶子节点，所以继续循环递归
-      for (var i = 0; i < item.children.length; i++) {
-        this.diguiTree(item.children[i])
-      }
-
-      // for (let i in item){
-      //   if(item[i].children == null){
-      //     this.childNode=true;
-      //     return;
-      //   }else{
-      //     console.log(item[i].children)
-      //     this.diguiTree(item[i].children)
-      //   }
+      // if (item.children == null) {
+      //   this.childNode = true
+      //   return
       // }
+      // //不是叶子节点，所以继续循环递归
+      // for (var i = 0; i < item.children.length; i++) {
+      //   this.diguiTree(item.children[i])
+      // }
+
+      for (let i in item){
+        if(item[i].children == null){
+          this.childNode=true;
+          return;
+        }else{
+          console.log(item[i].children)
+          this.diguiTree(item[i].children)
+        }
+      }
     },
     onsuperChange(key, type) {
       console.log(key, type)
@@ -841,9 +910,18 @@ export default {
     changeInfo(key) {
       console.log(key)
     },
-    searchItme(val) {
+    searchItme() {
       this.$refs.situtionInfo.show()
       // console.log('选中查看按钮' + val)
+    },
+    //今日计划模块修改时间
+    updateTime(){
+      this.$refs.updateTime.show()
+    },
+    //加入已有计划
+    addToPlan(){
+      this.$message.success('加入成功');
+      this.nosuperKey = 'nowPlan';
     }
   }
 }
