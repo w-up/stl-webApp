@@ -6,7 +6,16 @@
     </div>-->
     <!-- <div class="right">456546</div> -->
     <div class="weather">
-      <img src="./img/weather.jpg" alt />
+      <img src="../../assets/sun.png" alt="天气" />
+      <h3>29</h3>
+      <div class="text" style="margin-left:4px;">
+        <h5>℃ 晴(实时)</h5>
+        <p>晴转多云 24~29℃</p>
+      </div>
+      <div class="text" style="margin-left:10px;">
+        <h5>2019/10/01</h5>
+        <p>星期一</p>
+      </div>
     </div>
     <div class="time_line">
       <ul class="time_ul">
@@ -36,7 +45,7 @@
             placement="right"
             class="time_item"
             trigger="hover"
-            v-for="item in 10"
+            v-for="item in 31"
             :key="item"
           >
             <template slot="title">
@@ -382,24 +391,6 @@ export default {
       that.map = new T.Map('map')
       that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
       // this.map.TileLayerOptions({zIndex: 1});
-
-      // 初始化天气插件
-      /*        let a = d.getElementById('weather-float-he')
-        if (a) {
-          a.parentNode.removeChild(a)
-        }
-        a = d.createElement('div')
-        a.id = 'weather-float-he'
-        let b = d.getElementsByTagName('body')[0]
-        b.appendChild(a);
-        let c = d.createElement('link')
-        c.rel = 'stylesheet'
-        c.href = 'https://apip.weatherdt.com/float/static/css/tqw_widget_float.css?v=0101'
-        let s = d.createElement('script')
-        s.src = 'https://apip.weatherdt.com/float/static/js/tqw_widget_float.js?v=0101'
-        let sn = d.getElementsByTagName('script')[0]
-        sn.parentNode.insertBefore(c, sn)
-        sn.parentNode.insertBefore(s, sn);*/
     },
     onChange() {},
     hiddenMenuChange(expandedKeys) {
@@ -529,10 +520,36 @@ export default {
   position: absolute;
   left: 80px;
   top: 10px;
-  width: 200px;
-  height: 40px;
+  width: 360px;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 1);
+  opacity: 0.9;
   overflow: hidden;
   z-index: 999;
+  display: flex;
+  display: -webkit-flex;
+  img {
+    width: 60px;
+    height: 60px;
+  }
+  h3 {
+    font-size: 50px;
+    line-height: 60px;
+    margin: 0;
+  }
+  .text {
+    h5 {
+      line-height: 30px;
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0;
+    }
+    p {
+      line-height: 30px;
+      font-size: 15px;
+      margin: 0;
+    }
+  }
 }
 .time_line {
   position: absolute;
