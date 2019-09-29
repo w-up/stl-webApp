@@ -11272,8 +11272,8 @@ vue@^2.6.10:
 
 vuedraggable@^2.23.1:
   version "2.23.1"
-  resolved "https://registry.yarnpkg.com/vuedraggable/-/vuedraggable-2.23.1.tgz#6af3a17110793e3154fb8a52ce9df5109726d2ab"
-  integrity sha512-YgWnG7RC/V+nPksueT9cUGzvj7gBYqpEomazuAK5bBcImuPAeLsq0hwE5kSGItbHQpVnYdT/QX1kRR1XsjNeqw==
+  resolved "https://registry.npm.taobao.org/vuedraggable/download/vuedraggable-2.23.1.tgz#6af3a17110793e3154fb8a52ce9df5109726d2ab"
+  integrity sha1-avOhcRB5PjFU+4pSzp31EJcm0qs=
   dependencies:
     sortablejs "^1.10.0"
 
