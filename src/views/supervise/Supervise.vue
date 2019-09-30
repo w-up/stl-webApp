@@ -407,6 +407,7 @@ export default {
     },
     // 地图点击事件
     MapClick(e) {
+      console.log(e);
       const postion = []
       const that = this
       let icon = new T.Icon({
