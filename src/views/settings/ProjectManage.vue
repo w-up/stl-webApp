@@ -41,20 +41,20 @@
         </div>
       </div>
     </a-card>
-    <a-modal title=" 添加一级项目" v-model="visible">
+    <a-modal title="添加一级项目" v-model="visible">
       <Form ref="formValidate" :model="equipmentList" :rules="ruleValidate" :label-width="90">
         <FormItem label="项目名称" prop="name">
-          <Input v-model="equipmentList.name" placeholder="请输入" style="width:200px"/>
+          <Input v-model="equipmentList.name" placeholder="请输入" style="width:200px" />
         </FormItem>
       </Form>
     </a-modal>
     <a-modal title="添加二级项目" v-model="equipmentModel">
       <Form ref="formValidate" :model="equipmentList" :rules="ruleValidate" :label-width="90">
         <FormItem label="上级项目" prop="name">
-          <Input v-model="equipmentList.name" placeholder="请输入" style="width:200px"/>
+          <Input v-model="equipmentList.name" placeholder="请输入" style="width:200px" />
         </FormItem>
         <FormItem label="项目名称" prop="type">
-          <Input v-model="equipmentList.type" placeholder="请输入" style="width:200px"/>
+          <Input v-model="equipmentList.type" placeholder="请输入" style="width:200px" />
         </FormItem>
         <FormItem label="间隔周期">
           <a-select style="width: 200px" placeholder="请选择">
