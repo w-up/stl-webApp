@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="添加街道"
+    title="添加水质监测点"
     :width="800"
     :visible="visible"
     :confirmLoading="confirmLoading"
