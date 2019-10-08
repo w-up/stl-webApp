@@ -355,23 +355,6 @@ export default {
   },
   data() {
     return {
-      dataItem: [
-        {
-          id: 0,
-          src: require('../../../public/loading/option2/loading.svg'),
-          title: '2D影像图'
-        },
-        {
-          id: 1,
-          src: require('../../../public/loading/option2/loading.svg'),
-          title: '卫星影像图'
-        },
-        {
-          id: 2,
-          src: require('../../../public/loading/option2/loading.svg'),
-          title: '道路标注'
-        }
-      ],
       mapType: 'a',
       checked: false,
       // 地图对象
