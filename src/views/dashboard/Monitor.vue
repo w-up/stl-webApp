@@ -564,15 +564,27 @@
                 <a-collapse v-model="activePlanKey" class="active_plan">
                   <a-collapse-panel key="1" class="collapse_header">
                     <template slot="header">
-                      <span>计划一</span>
-                      <a-progress :percent="70" class="plan_progress" />
+                      <a-row type="flex" justify="space-between" align="middle">
+                        <a-col :span="8">
+                          <span>计划一</span>
+                        </a-col>
+                        <a-col :span="16">
+                          <a-progress :percent="70" />
+                        </a-col>
+                      </a-row>
                     </template>
                     <div class="planGroup">
                       <a-collapse v-model="activeGroupKey">
                         <a-collapse-panel key="11" class="collapse_group">
                           <template slot="header">
-                            <span>组一</span>
-                            <a-progress :percent="75" class="group_progress" />
+                            <a-row type="flex" justify="space-between" align="middle">
+                              <a-col :span="8">
+                                <span>组一</span>
+                              </a-col>
+                              <a-col :span="16">
+                                <a-progress :percent="70" />
+                              </a-col>
+                            </a-row>
                           </template>
                           <div class="river_group">
                             <a-collapse
@@ -620,8 +632,14 @@
                       <a-collapse v-model="activeTwo">
                         <a-collapse-panel key="11" class="collapse_group">
                           <template slot="header">
-                            <span>组二</span>
-                            <a-progress :percent="75" class="plan_progress" />
+                            <a-row type="flex" justify="space-between" align="middle">
+                              <a-col :span="8">
+                                <span>组二</span>
+                              </a-col>
+                              <a-col :span="16">
+                                <a-progress :percent="70" />
+                              </a-col>
+                            </a-row>
                           </template>
                           <div class="river_group">
                             <a-collapse
@@ -677,15 +695,27 @@
                 <a-collapse v-model="activePlanKey" class="active_plan">
                   <a-collapse-panel key="1" class="collapse_header">
                     <template slot="header">
-                      <span>计划一</span>
-                      <a-progress :percent="70" class="plan_progress" />
+                      <a-row type="flex" justify="space-between" align="middle">
+                        <a-col :span="8">
+                          <span>计划一</span>
+                        </a-col>
+                        <a-col :span="16">
+                          <a-progress :percent="70" />
+                        </a-col>
+                      </a-row>
                     </template>
                     <div class="planGroup">
                       <a-collapse v-model="activeGroupKey">
-                        <a-collapse-panel key="11" class="collapse_group">
+                        <a-collapse-panel key="11">
                           <template slot="header">
-                            <span>组一</span>
-                            <a-progress :percent="75" class="group_progress" />
+                            <a-row type="flex" justify="space-between" align="middle">
+                              <a-col :span="8">
+                                <span>组一</span>
+                              </a-col>
+                              <a-col :span="16">
+                                <a-progress :percent="70" />
+                              </a-col>
+                            </a-row>
                           </template>
                           <div class="plan_personInfo">
                             <a-list bordered :dataSource="personInfo">
@@ -957,7 +987,7 @@ export default {
       firstShow: true,
       childNode: false,
       checked: false,
-      undone: true,
+      undone: false,
       patrolPlanInfo: [
         {
           title: '黄浦江',
