@@ -58,7 +58,7 @@
       </a-list>
       <a-popover title trigger="click" v-model="addRiverShow" class="bottom_add">
         <template slot="content">
-          <a-button block @click="addDrawRiver">绘制</a-button>
+          <a-button block @click="addMapClick">绘制</a-button>
           <a-button block @click="addUploadRiver" style="margin-top: 10px;">上传KMZ</a-button>
         </template>
         <a-button type="primary" block>添加河道</a-button>
@@ -80,6 +80,7 @@
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
 import AddRiver from './modules/AddRiver.vue'
+
 export default {
   name: 'RiverManage',
   components: {
@@ -143,25 +144,6 @@ export default {
       let zoom = 14
       that.map = new T.Map('map')
       that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
-      // this.map.TileLayerOptions({zIndex: 1});
-
-      // 初始化天气插件
-      /*        let a = d.getElementById('weather-float-he')
-        if (a) {
-          a.parentNode.removeChild(a)
-        }
-        a = d.createElement('div')
-        a.id = 'weather-float-he'
-        let b = d.getElementsByTagName('body')[0]
-        b.appendChild(a);
-        let c = d.createElement('link')
-        c.rel = 'stylesheet'
-        c.href = 'https://apip.weatherdt.com/float/static/css/tqw_widget_float.css?v=0101'
-        let s = d.createElement('script')
-        s.src = 'https://apip.weatherdt.com/float/static/js/tqw_widget_float.js?v=0101'
-        let sn = d.getElementsByTagName('script')[0]
-        sn.parentNode.insertBefore(c, sn)
-        sn.parentNode.insertBefore(s, sn);*/
     },
     onChange() {},
     hiddenMenuChange(expandedKeys) {
@@ -173,7 +155,6 @@ export default {
     // 注册事件
     // 注册添加点击事件
     addMapClick() {
-      this.removeMapClick()
       this.map.addEventListener('click', this.MapClick)
     },
     // 地图点击事件
@@ -198,7 +179,7 @@ export default {
         fillOpacity: 0.5,
         lineStyle: 'solid'
       })
-      this.map.addOverLay(circle)
+      // this.map.addOverLay(circle)
 
       // 添加文字标注
       let labeName = '专向调查点' + (this.mapPoint.size + 1)
@@ -231,6 +212,7 @@ export default {
         // that.map.centerAndZoom(new T.LngLat(e.lnglat.lng, e.lnglat.lat));
         that.map.centerAndZoom(new T.LngLat(e.lnglat.lng + 0.01, e.lnglat.lat))
       }
+      this.removeMapClick()
     },
     // 地图删除事件
     removeMapClick() {
@@ -298,13 +280,13 @@ export default {
     },
     // 绘制按钮
     addDrawRiver() {
-      this.$refs.addRiver.add();
-      this.addRiverShow = false;
+      this.$refs.addRiver.add()
+      this.addRiverShow = false
     },
     // 上传按钮
     addUploadRiver() {
-      this.$refs.addRiver.add();
-      this.addRiverShow = false;
+      this.$refs.addRiver.add()
+      this.addRiverShow = false
     }
   }
 }

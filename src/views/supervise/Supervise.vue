@@ -76,14 +76,14 @@
       <li @click="compass">
         <img src="./img/compass.png" alt="指北针" title="指北针" />
       </li>
-      <li>
+      <li @click="setCenter">
         <img src="./img/restoration.png" alt="复位" title="复位" />
       </li>
       <li>
         <a-popover placement="left" arrowPointAtCenter trigger="click">
           <template slot="content">
             <a-radio-group>
-              <a-radio-button value="0">点</a-radio-button>
+              <a-radio-button value="0" @click="addMapClick">点</a-radio-button>
               <a-radio-button value="1">线</a-radio-button>
               <a-radio-button value="2">面</a-radio-button>
               <a-radio-button value="3">测量</a-radio-button>
@@ -125,10 +125,10 @@
       <li>
         <img src="./img/screenshot.png" alt="截图" title="截图" />
       </li>
-      <li>
+      <li @click="mapZoomIn">
         <img src="./img/max.png" alt="放大" title="放大" />
       </li>
-      <li>
+      <li @click="mapZoomOut">
         <img src="./img/min.png" alt="缩小" title="缩小" />
       </li>
       <li>
@@ -358,9 +358,7 @@ export default {
       mapType: 'a',
       checked: false,
       // 地图对象
-      map: {},
-      // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
-      mapPoint: new Map()
+      map: null,
     }
   },
   mounted() {
@@ -375,6 +373,18 @@ export default {
       that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
       // this.map.TileLayerOptions({zIndex: 1});
     },
+    setCenter() {
+      let lng = 121.095505
+      let lat = 31.21098
+      let zoom = 10
+      this.map.centerAndZoom(new T.LngLat(lng, lat), zoom)
+    },
+    mapZoomIn() {
+      this.map.zoomIn()
+    },
+    mapZoomOut() {
+      this.map.zoomOut()
+    },
     onChange() {},
     hiddenMenuChange(expandedKeys) {
       console.log('onExpand', expandedKeys)
@@ -385,12 +395,11 @@ export default {
     // 注册事件
     // 注册添加点击事件
     addMapClick() {
-      this.removeMapClick()
       this.map.addEventListener('click', this.MapClick)
     },
     // 地图点击事件
     MapClick(e) {
-      console.log(e);
+      console.log(e)
       const postion = []
       const that = this
       let icon = new T.Icon({
@@ -444,6 +453,7 @@ export default {
         // that.map.centerAndZoom(new T.LngLat(e.lnglat.lng, e.lnglat.lat));
         that.map.centerAndZoom(new T.LngLat(e.lnglat.lng + 0.01, e.lnglat.lat))
       }
+      this.removeMapClick() //添加标注点之后移除添加事件
     },
     // 地图删除事件
     removeMapClick() {
@@ -621,19 +631,7 @@ export default {
   }
 }
 
-.left {
-  /* width: calc(100% - 320px); */
-  width: 100%;
-  height: 100%;
-  background: yellow;
-  display: inline-block;
-  vertical-align: top;
-}
-.right {
-  width: 320px;
-  height: 100%;
-  background: yellowgreen;
-  display: inline-block;
-  vertical-align: top;
+.ant-col-6 {
+  text-align: right;
 }
 </style>
