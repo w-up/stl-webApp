@@ -4,7 +4,7 @@
       <template slot="paneL">
         <div class="left-info">
           <!-- <img src="../../assets/map.jpg" style="width:100%;height: calc(100vh - 66px);"> -->
-          <div id="map" ref="worldMap"></div>
+          <div id="map" class="map"></div>
           <div class="leftShow" v-if="noTitleKey === 'addPlan' || nosuperKey === 'taskCard'">
             <div class="left-date">
               <a-date-picker @change="selectData" />
@@ -841,6 +841,14 @@
 
 <script>
 import '../../assets/css/monitor.less'
+import 'ol/ol.css'
+import Map from "ol/Map"
+import View from 'ol/View'
+import TileLayer from 'ol/layer/Tile'
+import LayerGroup from 'ol/layer/Group'
+import XYZ from 'ol/source/XYZ'
+
+
 import searchRiver from '../modals/searchRiver'
 import addTask from '../modals/addTask'
 import creatGroup from '../modals/creatGroup'
@@ -1021,12 +1029,36 @@ export default {
     this.initCruisePlan()
   },
   methods: {
+    getTdLayer(lyr){
+      var url = "http://t{0-7}.tianditu.com/DataServer?T=" + lyr + "&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc"
+      var layer = new TileLayer({
+        source: new XYZ({
+          url: url
+        })
+      });
+      return layer;
+    },
     initCruisePlan() {
       const that = this
       //初始化地图控件
-      let zoom = 14
-      that.map = new T.Map('map')
-      that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      // let zoom = 14
+      // that.map = new T.Map('map')
+      // that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      var vec_c = this.getTdLayer("vec_w");
+      var cva_c = this.getTdLayer("cva_w");
+      var layerGroup = new LayerGroup({
+        layers:[vec_c,cva_c]
+      });
+      var map = new Map({
+        target:'map',
+        layers:[layerGroup],
+        view:new View({
+          projection: "EPSG:4326",
+          center: [121.495505, 31.21098],
+          zoom: 14
+        })
+      });
+      
       // this.map.TileLayerOptions({zIndex: 1});
 
       // 初始化天气插件
