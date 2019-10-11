@@ -58,7 +58,7 @@
       </a-list>
       <a-popover title trigger="click" v-model="addRiverShow" class="bottom_add">
         <template slot="content">
-          <a-button block @click="addMapClick">绘制</a-button>
+          <a-button block @click="addDrawRiver()">绘制</a-button>
           <a-button block @click="addUploadRiver" style="margin-top: 10px;">上传KMZ</a-button>
         </template>
         <a-button type="primary" block>添加河道</a-button>
@@ -130,8 +130,9 @@ export default {
       addRiverShow: false,
       // 地图对象
       map: {},
-      // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
-      mapPoint: new Map()
+      polylineHandler: '',
+      polygonTool: '', // 创建标注工具对象
+      points: []
     }
   },
   mounted() {
@@ -139,20 +140,31 @@ export default {
   },
   methods: {
     initCruisePlan() {
-      const that = this
       //初始化地图控件
       let zoom = 14
-      that.map = new T.Map('map')
-      that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      this.map = new T.Map('map')
+      this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      let config = {
+        showLabel: true,
+        color: 'blue',
+        weight: 3,
+        opacity: 0.5,
+        fillColor: '#FFFFFF',
+        fillOpacity: 0.5
+      }
+      //创建标注工具对象
+      this.polygonTool = new T.PolygonTool(this.map, config)
+
+      // this.points = []
+      // this.points.push(new T.LngLat(121.496, 31.211))
+      // this.points.push(new T.LngLat(121.497, 31.213))
+      // this.points.push(new T.LngLat(121.495, 31.216))
+      // this.points.push(new T.LngLat(121.498, 31.215))
+      // //创建线对象
+      // var line = new T.Polyline(this.points)
+      // //向地图上添加线
+      // this.map.addOverLay(line)
     },
-    onChange() {},
-    hiddenMenuChange(expandedKeys) {
-      console.log('onExpand', expandedKeys)
-      // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-      // or, you can remove all expanded children keys.
-      this.expandedKeys = expandedKeys
-    },
-    // 注册事件
     // 注册添加点击事件
     addMapClick() {
       this.map.addEventListener('click', this.MapClick)
@@ -280,11 +292,29 @@ export default {
     },
     // 绘制按钮
     addDrawRiver() {
-      this.$refs.addRiver.add()
-      this.addRiverShow = false
+      if (this.polylineHandler) this.polylineHandler.close()
+      this.polylineHandler = new T.PolylineTool(this.map)
+      this.polylineHandler.open()
+      this.polylineHandler.addEventListener('draw', this.addUploadRiver)
+      // this.polylineHandler.getDistance(LngLats => {
+      //   console.log(LngLats)
+      // })
+      // this.polylineHandler = new T.Polyline(this.map)
+
+      // var r = 0
+      // for (var k = 0; k < points.length - 1; k++) {
+      //   r += points[k].distanceTo(points[k + 1])
+      // }
+      // console.log(points);
+      // return r
+      // this.$refs.addRiver.add()
+      // this.addRiverShow = false
     },
     // 上传按钮
-    addUploadRiver() {
+    addUploadRiver(currentDistance, allPolylines) {
+      console.log("123")
+      console.log(currentDistance)
+      console.log(allPolylines)
       this.$refs.addRiver.add()
       this.addRiverShow = false
     }
