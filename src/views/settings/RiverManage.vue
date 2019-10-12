@@ -147,16 +147,6 @@ export default {
       let zoom = 14
       this.map = new T.Map('map')
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
-      let config = {
-        showLabel: true,
-        color: 'blue',
-        weight: 3,
-        opacity: 0.5,
-        fillColor: '#FFFFFF',
-        fillOpacity: 0.5
-      }
-      //创建标注工具对象
-      this.polygonTool = new T.PolygonTool(this.map, config)
     },
     // 注册添加点击事件
     addMapClick() {
@@ -285,6 +275,15 @@ export default {
     },
     // 绘制按钮
     addDrawRiver() {
+      //创建标注工具对象
+      this.polygonTool = new T.PolygonTool(this.map, {
+        showLabel: true,
+        color: 'blue',
+        weight: 3,
+        opacity: 0.5,
+        fillColor: '#FFFFFF',
+        fillOpacity: 0.3
+      })
       if (this.polylineHandler) this.polylineHandler.close()
       this.polylineHandler = new T.PolylineTool(this.map)
       this.polylineHandler.open()
@@ -293,10 +292,41 @@ export default {
         message: '提示',
         description: '请在地图上将河道绘制出来'
       })
-      this.polylineHandler.addEventListener('draw', this.addUploadRiver)
+      this.addRiverShow = false
+      this.polylineHandler.addEventListener('draw', this.addDrawRivered)
+      this.polylineHandler.addEventListener('addpoint', this.addDrawRivering)
+    },
+    addDrawRivering(e) {
+      console.log(e);
+      var latlng = e.currentLnglats[e.currentLnglats.lenght-1]
+      var label = new T.Label({
+         text: "zuobiao",
+        // text: `<span>${e.currentLnglats[e.currentLnglats.lenght-1].lng}, ${e.currentLnglats[e.currentLnglats.lenght-1].lat}</span>`,
+        position: latlng,
+        offset: new T.Point(-9, 0)
+      })
+      //创建地图文本对象
+      this.map.addOverLay(label)
+    },
+    // 绘制完成
+    addDrawRivered(e) {
+      console.log(e.currentLnglats)
+      //创建面对象
+      this.map.clearOverLays() //将之前绘制的清除
+      this.polylineHandler.clear() //清除之前绘制的多边形
+      var polygon = new T.Polygon(e.currentLnglats, {
+        color: 'blue',
+        weight: 3,
+        opacity: 0.5,
+        fillColor: '#FFFFFF',
+        fillOpacity: 0.3
+      })
+      //向地图上添加面
+      this.map.addOverLay(polygon)
+      this.$refs.addRiver.add()
     },
     // 上传按钮
-    addUploadRiver(currentDistance, allPolylines) {
+    addUploadRiver() {
       console.log('123')
       console.log(currentDistance)
       console.log(allPolylines)
@@ -333,7 +363,7 @@ export default {
   width: 300px;
   height: 40px;
   z-index: 1500;
-  p{
+  p {
     width: 100%;
     text-align: center;
     font-size: 14px;
