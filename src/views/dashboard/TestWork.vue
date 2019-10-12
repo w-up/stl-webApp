@@ -1,53 +1,123 @@
 <template>
-  <div>
-    <h2>本页面内容均为测试功能，暂不提供稳定性保证</h2>
-    <a-divider />
-    <div class="multi-tab-test">
-      <h4>多标签组件测试功能</h4>
-      <a-button @click="handleCloseCurrentTab" style="margin-right: 16px;">关闭当前页</a-button>
-      <a-button @click="handleOpenTab">打开 任务列表</a-button>
-      <a-input ref="tInput" />
+  <div style="width:100%;height:100%;">
+    <div class="main">
+      <div id="map" class="map"></div>
     </div>
-    <a-divider />
-    <div class="page-loading-test">
-      <h4>全局遮罩测试</h4>
-      <a-button @click="handleOpenLoading" style="margin-right: 16px;">打开遮罩(5s 自动关闭)</a-button>
-      <a-button @click="handleOpenLoadingCustomTip">打开遮罩(自定义提示语)</a-button>
-    </div>
+    <input id="swipe" class="swipe" type="range"/>
   </div>
 </template>
 
 <script>
+import 'ol/ol.css';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import TileLayer from 'ol/layer/Tile';
+import layerGroup from 'ol/layer/Group';
+import XYZ from "ol/source/XYZ";
+
+
 export default {
   name: 'TestWork',
+  mounted(){
+    this.initMap();
+  },
   methods: {
-    handleCloseCurrentTab () {
-      this.$multiTab.closeCurrentPage() // or this.$multiTab.close()
+    getTdLayer(lyr){
+      var url = "http://t{0-7}.tianditu.com/DataServer?T=" + lyr + "&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc"
+      var layer = new TileLayer({
+        source: new XYZ({
+          url: url
+        })
+      });
+      return layer;
     },
-    handleOpenTab () {
-      this.$multiTab.open('/features/task')
-    },
+    initMap(){
+      // var vecLayer = new TileLayer({
+      //   source: new XYZ({
+      //     url:'http://t{0-7}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      //   })
+      // });
+      // var cavLayer = new TileLayer({
+      //   source: new XYZ({
+      //     url:'http://t{0-7}.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      //   })
+      // });
+      // var imgLayer = new TileLayer({
+      //   source: new XYZ({
+      //     url:'http://t{0-7}.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      //   })
+      // }) 
+      var vec_c = this.getTdLayer("vec_w");
+      var cva_c = this.getTdLayer("cva_w");
+      var img_c = this.getTdLayer("img_w");
+     
+      var veclayerGroup = new layerGroup({
+        // layers:[vecLayer,cavLayer]
+        layers:[vec_c,cva_c]
+      });
+      var imglayerGroup = new layerGroup({
+        // layers:[imgLayer,cavLayer]
+        layers:[img_c,cva_c]
+      });
+      console.log("imglayerGroup" + imglayerGroup);
+      var map = new Map({
+        target:"map",
+        layers:[
+          imglayerGroup,veclayerGroup
+        ],
+        view: new View({
+          projection: "EPSG:4326",
+          center: [121.495505, 31.21098],
+          zoom: 14
+        })
+      });
+      var swipe = document.getElementById("swipe");
+      console.log(swipe.value);
+      console.log(vec_c);
+      vec_c.on('prerender',function(event){
+        console.log("******************************");
+        console.log("event:" +event);
+        
+        var ctx = event.context;
+        
+        var width = ctx.canvas.width * (swipe.value / 100);
+        console.log(width);
 
-    handleOpenLoading () {
-      this.$nextTick(function () {
-        console.log('this', this)
-        console.log('this.$refs.tInput', this.$refs.tInput)
-      })
-      this.$loading.show()
-      setTimeout(() => {
-        this.$loading.hide()
-      }, 5000)
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(width,0,ctx.canvas.width - width,ctx.canvas.height);
+        ctx.clip();
+      });
+      vec_c.on('postrender',function(event){
+        var ctx = event.context;
+        ctx.restore();
+      });
+      swipe.addEventListener('input',function(){
+        map.render();
+      },false);
     },
-    handleOpenLoadingCustomTip () {
-      this.$loading.show({ tip: '自定义提示语' })
-      setTimeout(() => {
-        this.$loading.hide()
-      }, 5000)
-    }
+    
   }
 }
 </script>
 
-<style scoped>
-
+<style lang="less" scoped>
+  .ol-zoom{
+    display:none;
+  }
+  .main{
+    width:100%;height:calc(100vh - 64px);
+  }
+  .map{
+    width: 100%;
+    height: 95%;
+  }
+  .swipe{
+    position: absolute;
+    bottom:10px;
+    left: 0;
+    z-index: 999;
+    width: 100%;
+  }
 </style>
+

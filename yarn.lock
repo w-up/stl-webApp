@@ -890,8 +890,8 @@
 
 "@openlayers/pepjs@^0.5.3":
   version "0.5.3"
-  resolved "https://registry.npm.taobao.org/@openlayers/pepjs/download/@openlayers/pepjs-0.5.3.tgz#298c5994cc12de5f149f841affdd8a3e506228b5"
-  integrity sha1-KYxZlMwS3l8Un4Qa/92KPlBiKLU=
+  resolved "https://registry.yarnpkg.com/@openlayers/pepjs/-/pepjs-0.5.3.tgz#298c5994cc12de5f149f841affdd8a3e506228b5"
+  integrity sha512-Bgvi5c14BS0FJWyYWWFstNEnXsB30nK8Jt8hkAAdqr7E0gDdBBWVDglF3Ub19wTxvgJ/CVHyTY6VuCtnyRzglg==
 
 "@soda/friendly-errors-webpack-plugin@^1.7.1":
   version "1.7.1"
@@ -7954,8 +7954,8 @@ obuf@^1.0.0, obuf@^1.1.2:
 
 ol@^6.0.1:
   version "6.0.1"
-  resolved "https://registry.npm.taobao.org/ol/download/ol-6.0.1.tgz#acef0f29dfbe079637eac85568efbb6394ff2bf2"
-  integrity sha1-rO8PKd++B5Y36shVaO+7Y5T/K/I=
+  resolved "https://registry.yarnpkg.com/ol/-/ol-6.0.1.tgz#acef0f29dfbe079637eac85568efbb6394ff2bf2"
+  integrity sha512-gjTziZlJWwOhPkCFW9eT0uscrWnF7DlxPutmgorDE1lYGqpLF/XTnb/5f+2ikHXay7S1EDIi/9U3ccuMeY/4HQ==
   dependencies:
     "@openlayers/pepjs" "^0.5.3"
     pbf "3.2.0"
@@ -8364,8 +8364,8 @@ path-type@^3.0.0:
 
 pbf@3.2.0:
   version "3.2.0"
-  resolved "https://registry.npm.taobao.org/pbf/download/pbf-3.2.0.tgz#e76f9f5114e395c25077ad6fe463b3507d6877fc"
-  integrity sha1-52+fURTjlcJQd61v5GOzUH1od/w=
+  resolved "https://registry.yarnpkg.com/pbf/-/pbf-3.2.0.tgz#e76f9f5114e395c25077ad6fe463b3507d6877fc"
+  integrity sha512-98Eh7rsJNJF/Im6XYMLaOW3cLnNyedlOd6hu3iWMD5I7FZGgpw8yN3vQBrmLbLodu7G784Irb9Qsv2yFrxSAGw==
   dependencies:
     ieee754 "^1.1.12"
     resolve-protobuf-schema "^2.1.0"
@@ -8415,7 +8415,7 @@ pinkie@^2.0.0:
 
 pixelworks@1.1.0:
   version "1.1.0"
-  resolved "https://registry.npm.taobao.org/pixelworks/download/pixelworks-1.1.0.tgz#1f095ad48dca8bf8a1c8258e0092031a44f22ca5"
+  resolved "https://registry.yarnpkg.com/pixelworks/-/pixelworks-1.1.0.tgz#1f095ad48dca8bf8a1c8258e0092031a44f22ca5"
   integrity sha1-Hwla1I3Ki/ihyCWOAJIDGkTyLKU=
 
 pkcs7@^0.2.3:
@@ -8929,8 +8929,8 @@ proto-list@~1.2.1:
 
 protocol-buffers-schema@^3.3.1:
   version "3.3.2"
-  resolved "https://registry.npm.taobao.org/protocol-buffers-schema/download/protocol-buffers-schema-3.3.2.tgz#00434f608b4e8df54c59e070efeefc37fb4bb859"
-  integrity sha1-AENPYItOjfVMWeBw7+78N/tLuFk=
+  resolved "https://registry.yarnpkg.com/protocol-buffers-schema/-/protocol-buffers-schema-3.3.2.tgz#00434f608b4e8df54c59e070efeefc37fb4bb859"
+  integrity sha512-Xdayp8sB/mU+sUV4G7ws8xtYMGdQnxbeIfLjyO9TZZRJdztBGhlmbI5x1qcY4TG5hBkIKGnc28i7nXxaugu88w==
 
 proxy-addr@~2.0.5:
   version "2.0.5"
@@ -9048,8 +9048,8 @@ querystringify@^2.1.1:
 
 quickselect@^2.0.0:
   version "2.0.0"
-  resolved "https://registry.npm.taobao.org/quickselect/download/quickselect-2.0.0.tgz#f19680a486a5eefb581303e023e98faaf25dd018"
-  integrity sha1-8ZaApIal7vtYEwPgI+mPqvJd0Bg=
+  resolved "https://registry.yarnpkg.com/quickselect/-/quickselect-2.0.0.tgz#f19680a486a5eefb581303e023e98faaf25dd018"
+  integrity sha512-RKJ22hX8mHe3Y6wH/N3wCM6BWtjaxIyyUIkpHOvfFnxdI4yD4tBXEBKSbriGujF6jnSVkJrffuo6vxACiSSxIw==
 
 quill-delta@^3.6.2:
   version "3.6.3"
@@ -9120,8 +9120,8 @@ raw-body@2.4.0:
 
 rbush@^3.0.0:
   version "3.0.1"
-  resolved "https://registry.npm.taobao.org/rbush/download/rbush-3.0.1.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Frbush%2Fdownload%2Frbush-3.0.1.tgz#5fafa8a79b3b9afdfe5008403a720cc1de882ecf"
-  integrity sha1-X6+op5s7mv3+UAhAOnIMwd6ILs8=
+  resolved "https://registry.yarnpkg.com/rbush/-/rbush-3.0.1.tgz#5fafa8a79b3b9afdfe5008403a720cc1de882ecf"
+  integrity sha512-XRaVO0YecOpEuIvbhbpTrZgoiI6xBlz6hnlr6EHhd+0x9ase6EmeN+hdwwUaJvLcsFFQ8iWVF1GAK1yB0BWi0w==
   dependencies:
     quickselect "^2.0.0"
 
@@ -9483,8 +9483,8 @@ resolve-from@^4.0.0:
 
 resolve-protobuf-schema@^2.1.0:
   version "2.1.0"
-  resolved "https://registry.npm.taobao.org/resolve-protobuf-schema/download/resolve-protobuf-schema-2.1.0.tgz#9ca9a9e69cf192bbdaf1006ec1973948aa4a3758"
-  integrity sha1-nKmp5pzxkrva8QBuwZc5SKpKN1g=
+  resolved "https://registry.yarnpkg.com/resolve-protobuf-schema/-/resolve-protobuf-schema-2.1.0.tgz#9ca9a9e69cf192bbdaf1006ec1973948aa4a3758"
+  integrity sha512-kI5ffTiZWmJaS/huM8wZfEMer1eRd7oJQhDuxeCLe3t7N7mX3z94CN0xPxBQxFYQTSNz9T0i+v6inKqSdK8xrQ==
   dependencies:
     protocol-buffers-schema "^3.3.1"
 
