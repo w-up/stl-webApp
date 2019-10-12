@@ -1,16 +1,27 @@
 <template>
   <div class="supervise">
     <div class="left">
-      <div id="map" ref="worldMap"></div>
-      <div class="mapChange">
-        <a-row style="width:100%">
-          <a-col :span="24">
-            <a-checkbox @change="onChange">正射影像</a-checkbox>
-          </a-col>
-          <a-col :span="24">
-            <a-checkbox @change="onChange">KMZ图层</a-checkbox>
-          </a-col>
-        </a-row>
+      <div id="map" ref="worldMap">
+        <div class="mapAlert">
+          <a-row style="width:100%">
+            <a-col :span="18">
+              <p>请在地图上将河道绘制出来</p>
+            </a-col>
+            <a-col :span="5" :offset="1">
+              <a-button>保存河道</a-button>
+            </a-col>
+          </a-row>
+        </div>
+        <div class="mapChange">
+          <a-row style="width:100%">
+            <a-col :span="24">
+              <a-checkbox @change="onChange">正射影像</a-checkbox>
+            </a-col>
+            <a-col :span="24">
+              <a-checkbox @change="onChange">KMZ图层</a-checkbox>
+            </a-col>
+          </a-row>
+        </div>
       </div>
       <!-- <world-map></world-map> -->
     </div>
@@ -64,14 +75,6 @@
         <a-button type="primary" block>添加河道</a-button>
       </a-popover>
     </div>
-    <div class="weather">
-      <!-- <img src="./img/weather.jpg" alt /> -->
-    </div>
-    <ul class="menu">
-      <li>
-        <!-- <img src="./img/compass.png" alt="指北针" title="指北针" /> -->
-      </li>
-    </ul>
     <!-- 添加河流 -->
     <add-river ref="addRiver"></add-river>
   </div>
@@ -154,16 +157,6 @@ export default {
       }
       //创建标注工具对象
       this.polygonTool = new T.PolygonTool(this.map, config)
-
-      // this.points = []
-      // this.points.push(new T.LngLat(121.496, 31.211))
-      // this.points.push(new T.LngLat(121.497, 31.213))
-      // this.points.push(new T.LngLat(121.495, 31.216))
-      // this.points.push(new T.LngLat(121.498, 31.215))
-      // //创建线对象
-      // var line = new T.Polyline(this.points)
-      // //向地图上添加线
-      // this.map.addOverLay(line)
     },
     // 注册添加点击事件
     addMapClick() {
@@ -295,24 +288,16 @@ export default {
       if (this.polylineHandler) this.polylineHandler.close()
       this.polylineHandler = new T.PolylineTool(this.map)
       this.polylineHandler.open()
+      this.polylineHandler.setTips(`<p style="padding:0px;margin:-3px 0 0;">双击完成绘制</p>`)
+      this.$notification.warning({
+        message: '提示',
+        description: '请在地图上将河道绘制出来'
+      })
       this.polylineHandler.addEventListener('draw', this.addUploadRiver)
-      // this.polylineHandler.getDistance(LngLats => {
-      //   console.log(LngLats)
-      // })
-      // this.polylineHandler = new T.Polyline(this.map)
-
-      // var r = 0
-      // for (var k = 0; k < points.length - 1; k++) {
-      //   r += points[k].distanceTo(points[k + 1])
-      // }
-      // console.log(points);
-      // return r
-      // this.$refs.addRiver.add()
-      // this.addRiverShow = false
     },
     // 上传按钮
     addUploadRiver(currentDistance, allPolylines) {
-      console.log("123")
+      console.log('123')
       console.log(currentDistance)
       console.log(allPolylines)
       this.$refs.addRiver.add()
@@ -330,46 +315,34 @@ export default {
 #map {
   width: 100%;
   height: 100%;
+  position: relative;
 }
 .mapChange {
-  position: fixed;
-  left: 10px;
+  position: absolute;
+  right: 10px;
   bottom: 10px;
+  text-align: right;
   width: 120px;
   z-index: 1500;
 }
-.weather {
+.mapAlert {
   position: absolute;
+  display: none;
   left: 10px;
-  top: 10px;
-  width: 200px;
+  bottom: 10px;
+  width: 300px;
   height: 40px;
-  z-index: 999;
-}
-.menu {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  width: 40px;
-  z-index: 999;
-  margin: 0;
-  padding: 0;
-  // overflow: hidden;
-  list-style-type: none;
-  li {
+  z-index: 1500;
+  p{
     width: 100%;
-    background: white;
-    border-radius: 50%;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
-    margin-top: 5px;
-    img {
-      width: 100%;
-      height: 40px;
-      padding: 10px;
-    }
+    text-align: center;
+    font-size: 14px;
+    line-height: 32px;
+    height: 100%;
+    background: #1890ff;
+    color: white;
   }
 }
-
 .left {
   position: relative;
   width: calc(100% - 300px);
