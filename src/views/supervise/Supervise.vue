@@ -359,6 +359,8 @@ export default {
       checked: false,
       // 地图对象
       map: null,
+      // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
+      mapPoint: new Map()
     }
   },
   mounted() {
@@ -373,26 +375,21 @@ export default {
       that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
       // this.map.TileLayerOptions({zIndex: 1});
     },
+    // 复位
     setCenter() {
       let lng = 121.095505
       let lat = 31.21098
       let zoom = 10
-      this.map.centerAndZoom(new T.LngLat(lng, lat), zoom)
+      this.map.panTo(new T.LngLat(lng, lat), zoom)
     },
+    // 放大
     mapZoomIn() {
       this.map.zoomIn()
     },
+    // 缩小
     mapZoomOut() {
       this.map.zoomOut()
     },
-    onChange() {},
-    hiddenMenuChange(expandedKeys) {
-      console.log('onExpand', expandedKeys)
-      // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-      // or, you can remove all expanded children keys.
-      this.expandedKeys = expandedKeys
-    },
-    // 注册事件
     // 注册添加点击事件
     addMapClick() {
       this.map.addEventListener('click', this.MapClick)
@@ -420,7 +417,7 @@ export default {
         fillOpacity: 0.5,
         lineStyle: 'solid'
       })
-      this.map.addOverLay(circle)
+      // this.map.addOverLay(circle)
 
       // 添加文字标注
       let labeName = '专向调查点' + (this.mapPoint.size + 1)
@@ -429,7 +426,7 @@ export default {
         position: marker.getLngLat(),
         offset: new T.Point(-56, 20)
       })
-      this.map.addOverLay(label)
+      // this.map.addOverLay(label)
 
       // 向mapPoint对象添加节点
       let mapPointChild = { marker: marker, circle: circle, label: label }
@@ -447,11 +444,10 @@ export default {
       }
 
       function MarkerClick(e) {
-        console.log('这是标注点击事件' + e)
         console.log(e)
         //设置显示地图的中心点和级别
         // that.map.centerAndZoom(new T.LngLat(e.lnglat.lng, e.lnglat.lat));
-        that.map.centerAndZoom(new T.LngLat(e.lnglat.lng + 0.01, e.lnglat.lat))
+        that.map.centerAndZoom(new T.LngLat(e.lnglat.lng, e.lnglat.lat))
       }
       this.removeMapClick() //添加标注点之后移除添加事件
     },
