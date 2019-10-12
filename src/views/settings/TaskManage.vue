@@ -2,7 +2,7 @@
   <div class="supervise">
     <!-- 任务管理 -->
     <div class="left">
-      <div id="map" ref="worldMap" @click="addTaskPoint"></div>
+      <div id="map" ref="worldMap"></div>
       <!-- <world-map></world-map> -->
       <div class="mapChange">
         <a-row style="width:100%">
@@ -76,7 +76,17 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入涉及线路" />
+                <a-upload
+                  name="file"
+                  :multiple="true"
+                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                  :headers="headers"
+                  @change="handleUpload"
+                >
+                  <a-button>
+                    <a-icon type="upload" />上传KMZ文件
+                  </a-button>
+                </a-upload>
               </a-form-item>
               <a-form-item
                 label="高度(m)"
@@ -124,6 +134,7 @@
               >
                 <a-select
                   showSearch
+                  :allowClear="true"
                   placeholder="请输入河流添加"
                   optionFilterProp="children"
                   style="width: 100%"
@@ -238,8 +249,8 @@
                   </a-row>
                 </a-collapse-panel>
                 <a-collapse-panel :style="customStyle">
-                  <template slot="header">
-                    <a-checkbox @change="peopleChoose">采水设备</a-checkbox>
+                  <template slot="header" @change.stop="peopleChoose">
+                    <a-checkbox >采水设备</a-checkbox>
                   </template>
                   <a-row style="width:100%">
                     <a-col :span="12" offset="4" style="height:30px;">
@@ -539,14 +550,6 @@
         </a-col>
       </a-row>
     </div>
-    <div class="weather">
-      <!-- <img src="./img/weather.jpg" alt /> -->
-    </div>
-    <ul class="menu">
-      <li>
-        <!-- <img src="./img/compass.png" alt="指北针" title="指北针" /> -->
-      </li>
-    </ul>
     <!-- 添加河流 -->
     <add-task-point ref="addTaskPoint"></add-task-point>
   </div>
@@ -602,6 +605,10 @@ export default {
   },
   data() {
     return {
+      headers: {
+        //上传
+        authorization: 'authorization-text'
+      },
       addRiverShow: false, // 气泡卡片
       actionTab: '1', //tab
 
@@ -681,7 +688,8 @@ export default {
       // 地图对象
       map: {},
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
-      mapPoint: new Map()
+      mapPoint: new Map(),
+      markerTool: '' // 点任务工具
     }
   },
   mounted() {
@@ -694,11 +702,11 @@ export default {
   },
   methods: {
     initCruisePlan() {
-      const that = this
       //初始化地图控件
       let zoom = 14
-      that.map = new T.Map('map')
-      that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      this.map = new T.Map('map')
+      this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      this.markerTool = new T.MarkTool(this.map, { follow: true })
       // this.map.TileLayerOptions({zIndex: 1});
 
       // 初始化天气插件
@@ -719,17 +727,34 @@ export default {
         sn.parentNode.insertBefore(c, sn)
         sn.parentNode.insertBefore(s, sn);*/
     },
-    hiddenMenuChange(expandedKeys) {
-      console.log('onExpand', expandedKeys)
-      // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-      // or, you can remove all expanded children keys.
-      this.expandedKeys = expandedKeys
+    // 上传文件
+    handleUpload(info) {
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList)
+      }
+      if (info.file.status === 'done') {
+        this.$message.success(`${info.file.name} file uploaded successfully`)
+      } else if (info.file.status === 'error') {
+        this.$message.error(`${info.file.name} file upload failed.`)
+      }
     },
     // 注册事件
     // 注册添加点击事件
-    addMapClick() {
-      this.removeMapClick()
-      this.map.addEventListener('click', this.MapClick)
+    addTaskPoint() {
+      // this.removeMapClick()
+      // this.map.addEventListener('click', this.MapClick)
+
+      this.markerTool.open()
+      this.markerTool.getMarkers()
+      for (var i = 0; i < this.markerTool.length; i++) {
+        this.markerTool[i].disableDragging()
+      }
+      this.markerTool.addEventListener("mouseup", this.addTaskPointed)
+    },
+    // 返回标注点的坐标
+    addTaskPointed(e) {
+      console.log(e);
+      // console.log(this.markerTool.getMarkControlPoint());
     },
     // 地图点击事件
     MapClick(e) {
@@ -742,7 +767,7 @@ export default {
       })
       //向地图上添加自定义标注
       // let marker = new T.Marker(new T.LngLat(postion), {icon: icon});
-      let marker = new T.Marker(new T.LngLat(e.lnglat.lng, e.lnglat.lat), { icon: icon })
+      let marker = new T.Marker(new T.LngLat(e.lnglat.lng, e.lnglat.lat), { icon: icon, title: "点击选择任务点" })
       this.map.addOverLay(marker)
       //向地图上添加圆
       let circle = new T.Circle(new T.LngLat(e.lnglat.lng, e.lnglat.lat), 1000, {
@@ -753,16 +778,16 @@ export default {
         fillOpacity: 0.5,
         lineStyle: 'solid'
       })
-      this.map.addOverLay(circle)
+      // this.map.addOverLay(circle)
 
       // 添加文字标注
-      let labeName = '专向调查点' + (this.mapPoint.size + 1)
+      let labeName = '任务点' + (this.mapPoint.size + 1)
       let label = new T.Label({
         text: `<b style="border-radius: 3px">${labeName}<b>`,
         position: marker.getLngLat(),
         offset: new T.Point(-56, 20)
       })
-      this.map.addOverLay(label)
+      // this.map.addOverLay(label)
 
       // 向mapPoint对象添加节点
       let mapPointChild = { marker: marker, circle: circle, label: label }
@@ -807,7 +832,7 @@ export default {
       this.transferAttribute.visible = true
     },
     // 添加任务点
-    addTaskPoint() {
+    addTaskPointAlert() {
       this.$refs.addTaskPoint.add()
     },
     // tab切换
@@ -850,7 +875,6 @@ export default {
     },
     // 线路任务删除
     confirmDelete(index) {
-      console.log(index)
       this.lineTaskList.splice(this.lineTaskList.findIndex(item => item.name === index), 1)
       this.$message.success('删除成功')
       this.defaultRiver = null
@@ -886,6 +910,7 @@ export default {
         this.addLineShow = true
       } else if (this.actionTab == 2) {
         this.addPointShow = true
+        this.addTaskPoint()
       }
     },
     // 关联河道
@@ -936,37 +961,6 @@ export default {
   bottom: 10px;
   width: 120px;
   z-index: 1500;
-}
-.weather {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  width: 120px;
-  height: 40px;
-  z-index: 999;
-}
-.menu {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  width: 40px;
-  z-index: 999;
-  margin: 0;
-  padding: 0;
-  // overflow: hidden;
-  list-style-type: none;
-  li {
-    width: 100%;
-    background: white;
-    border-radius: 50%;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
-    margin-top: 5px;
-    img {
-      width: 100%;
-      height: 40px;
-      padding: 10px;
-    }
-  }
 }
 
 .left {
