@@ -86,10 +86,10 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <p style="margin-top: 10px;">终点</p>
+        <p style="margin-top: 10px;">讫点</p>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="终点位置" has-feedback>
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="起点位置" has-feedback>
               <a-cascader
                 :options="options"
                 :showSearch="{filter}"
@@ -185,7 +185,7 @@
             <a-button>关闭河道</a-button>
           </a-button-group> -->
           <a-col :span="3">
-            <a-button block>取消</a-button>
+            <a-button block @click="handleCancel">取消</a-button>
           </a-col>
           <a-col :span="3">
             <a-button block>保存</a-button>
