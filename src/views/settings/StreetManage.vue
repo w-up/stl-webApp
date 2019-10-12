@@ -64,14 +64,6 @@
         <a-button type="primary" block>添加街道</a-button>
       </a-popover>
     </div>
-    <div class="weather">
-      <!-- <img src="./img/weather.jpg" alt /> -->
-    </div>
-    <ul class="menu">
-      <li>
-        <!-- <img src="./img/compass.png" alt="指北针" title="指北针" /> -->
-      </li>
-    </ul>
     <!-- 添加街道 -->
     <add-street ref="addStreet"></add-street>
   </div>
@@ -298,8 +290,15 @@ export default {
     },
     // 绘制按钮
     addDrawRiver() {
-      this.$refs.addStreet.add();
-      this.addRiverShow = false;
+      if (this.polylineHandler) this.polylineHandler.close()
+      this.polylineHandler = new T.PolylineTool(this.map)
+      this.polylineHandler.open()
+      this.polylineHandler.setTips(`<p style="padding:0px;margin:-3px 0 0;">双击完成绘制</p>`)
+      this.$notification.warning({
+        message: '提示',
+        description: '请在地图上将街道绘制出来'
+      })
+      this.polylineHandler.addEventListener('draw', this.addUploadRiver)
     },
     // 上传按钮
     addUploadRiver() {
