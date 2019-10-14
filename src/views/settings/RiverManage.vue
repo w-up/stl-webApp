@@ -48,7 +48,7 @@
           slot="renderItem"
           slot-scope="item, index"
           :key="index"
-          @click="chooseRiver(item.name)"
+          @click="chooseRiver(item.name, item.id)"
           :class="{active_item: item.clicked}"
         >
           <a-row style="width:100%">
@@ -97,22 +97,166 @@ export default {
         {
           id: 0,
           name: '黄浦江',
-          clicked: true
+          clicked: true,
+          riverData: [
+            {
+              lat: 31.21882,
+              lng: 121.50364
+            },
+            {
+              lat: 31.21265,
+              lng: 121.50227
+            },
+            {
+              lat: 31.20583,
+              lng: 121.49703
+            },
+            {
+              lat: 31.19915,
+              lng: 121.49197
+            },
+            {
+              lat: 31.19702,
+              lng: 121.49591
+            },
+            {
+              lat: 31.2164,
+              lng: 121.50759
+            },
+            {
+              lat: 31.21948,
+              lng: 121.50759
+            }
+          ]
         },
         {
           id: 1,
           name: '大治河',
-          clicked: false
+          clicked: false,
+          riverData: [
+            {
+              lat: 31.25153,
+              lng: 121.52409
+            },
+            {
+              lat: 31.25355,
+              lng: 121.53085
+            },
+            {
+              lat: 31.25858,
+              lng: 121.53934
+            },
+            {
+              lat: 31.25535,
+              lng: 121.54334
+            },
+            {
+              lat: 31.2499,
+              lng: 121.53353
+            },
+            {
+              lat: 31.24786,
+              lng: 121.52737
+            },
+            {
+              lat: 31.24682,
+              lng: 121.51709
+            },
+            {
+              lat: 31.25111,
+              lng: 121.51711
+            }
+          ]
         },
         {
           id: 2,
           name: '川杨河',
-          clicked: false
+          clicked: false,
+          riverData: [
+            {
+              lat: 31.24539,
+              lng: 121.48686
+            },
+            {
+              lat: 31.24616,
+              lng: 121.48411
+            },
+            {
+              lat: 31.2466,
+              lng: 121.4824
+            },
+            {
+              lat: 31.24612,
+              lng: 121.48051
+            },
+            {
+              lat: 31.24484,
+              lng: 121.47901
+            },
+            {
+              lat: 31.24462,
+              lng: 121.47939
+            },
+            {
+              lat: 31.24543,
+              lng: 121.48089
+            },
+            {
+              lat: 31.2459,
+              lng: 121.48261
+            },
+            {
+              lat: 31.2448,
+              lng: 121.4857
+            },
+            {
+              lat: 31.2444,
+              lng: 121.4872
+            }
+          ]
         },
         {
           id: 3,
           name: '蕰藻浜',
-          clicked: false
+          clicked: false,
+          riverData: [
+            {
+              lat: 31.21717,
+              lng: 121.51336
+            },
+            {
+              lat: 31.21691,
+              lng: 121.51454
+            },
+            {
+              lat: 31.21768,
+              lng: 121.51566
+            },
+            {
+              lat: 31.21768,
+              lng: 121.51763
+            },
+            {
+              lat: 31.21733,
+              lng: 121.51748
+            },
+            {
+              lat: 31.21739,
+              lng: 121.51568
+            },
+            {
+              lat: 31.21664,
+              lng: 121.51456
+            },
+            {
+              lat: 31.21669,
+              lng: 121.51387
+            },
+            {
+              lat: 31.21699,
+              lng: 121.51323
+            }
+          ]
         },
         {
           id: 4,
@@ -135,11 +279,23 @@ export default {
       map: {},
       polylineHandler: '',
       polygonTool: '', // 创建标注工具对象
+      polygon: '', // 多边形对象
       points: []
     }
   },
   mounted() {
     this.initCruisePlan()
+    for (const item of this.riverList) {
+      if (item.riverData !== undefined) {
+        this.setPolylineFn(item.riverData, 'blue', 3, 0.3)
+        // this.polygon.addEventListener('mouseover', this.polygonMouseover(item))
+        // this.polygon.addEventListener('mouseout', this.polygonMouseout(item))
+        this.polygon.addEventListener('click', this.polygonClick)
+        console.log(this.polygon.getLngLats())
+      }
+    }
+
+    // this.setPolylineFn(this.lineDataStr1, 'blue', 3, 0.3)
   },
   methods: {
     initCruisePlan() {
@@ -147,6 +303,11 @@ export default {
       let zoom = 14
       this.map = new T.Map('map')
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      //创建比例尺控件对象
+      //添加比例尺控件
+      this.map.addControl(new T.Control.Scale())
+      this.map.setMinZoom(4)
+      this.map.setMaxZoom(18)
     },
     // 注册添加点击事件
     addMapClick() {
@@ -253,7 +414,7 @@ export default {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
     // 选中河流
-    chooseRiver(index) {
+    chooseRiver(index, id) {
       this.defaultRiver = index
       this.riverList.forEach(value => {
         if (value.name === index) {
@@ -262,6 +423,16 @@ export default {
           value.clicked = false
         }
       })
+      if (id == 0) {
+        this.setBounds(this.lineDataStr)
+      } else if (id == 1) {
+        this.setBounds(this.lineDataStr1)
+      }
+      this.map.zoomOut()
+    },
+    setBounds(lineArr) {
+      this.map.setViewport(lineArr)
+      this.setPolylineFn(lineArr, 'red', 3, 0.3)
     },
     // 河流删除
     confirmDelete(index) {
@@ -297,33 +468,53 @@ export default {
       this.polylineHandler.addEventListener('addpoint', this.addDrawRivering)
     },
     addDrawRivering(e) {
-      console.log(e);
-      var latlng = e.currentLnglats[e.currentLnglats.lenght-1]
-      var label = new T.Label({
-         text: "zuobiao",
-        // text: `<span>${e.currentLnglats[e.currentLnglats.lenght-1].lng}, ${e.currentLnglats[e.currentLnglats.lenght-1].lat}</span>`,
-        position: latlng,
-        offset: new T.Point(-9, 0)
-      })
-      //创建地图文本对象
-      this.map.addOverLay(label)
+      console.log(e)
+      // var latlng = e.currentLnglats[e.currentLnglats.lenght-1]
+      // var label = new T.Label({
+      //    text: "zuobiao",
+      //   // text: `<span>${e.currentLnglats[e.currentLnglats.lenght-1].lng}, ${e.currentLnglats[e.currentLnglats.lenght-1].lat}</span>`,
+      //   position: latlng,
+      //   offset: new T.Point(-9, 0)
+      // })
+      // //创建地图文本对象
+      // this.map.addOverLay(label)
     },
     // 绘制完成
     addDrawRivered(e) {
+      console.log(e)
       console.log(e.currentLnglats)
       //创建面对象
-      this.map.clearOverLays() //将之前绘制的清除
+      // this.map.clearOverLays() //将之前绘制的清除
       this.polylineHandler.clear() //清除之前绘制的多边形
-      var polygon = new T.Polygon(e.currentLnglats, {
-        color: 'blue',
-        weight: 3,
-        opacity: 0.5,
-        fillColor: '#FFFFFF',
-        fillOpacity: 0.3
+      this.setPolylineFn(e.currentLnglats, 'blue', 3, 0.3)
+      this.$refs.addRiver.add()
+    },
+    // 设置绘制的多边形
+    setPolylineFn(lineData, color, weight, fillOpacity) {
+      this.polygon = new T.Polygon(lineData, {
+        color: color, //线颜色
+        weight: weight, //线宽
+        opacity: 0.5, //透明度
+        fillColor: '#FFFFFF', //填充颜色
+        fillOpacity: fillOpacity // 填充透明度
       })
       //向地图上添加面
-      this.map.addOverLay(polygon)
-      this.$refs.addRiver.add()
+      this.map.addOverLay(this.polygon)
+    },
+    // 多边形点击事件
+    polygonClick(index) {
+      console.log(index)
+      var p = index.target
+      console.log(p)
+      alert('marker的位置是' + p.getLngLat().lng + ',' + p.getLngLat().lat)
+    },
+    // 多边形鼠标进入事件
+    polygonMouseover(riverItem) {
+      console.log(riverItem.name)
+    },
+    // 多边形离开事件
+    polygonMouseout(riverItem) {
+      console.log(riverItem.name)
     },
     // 上传按钮
     addUploadRiver() {
