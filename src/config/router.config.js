@@ -23,7 +23,7 @@ export const asyncRouterMap = [
           {
             path: '/dashboard/analysis',
             name: 'Analysis',
-            component: () => import('@/views/dashboard/Monitor'),
+            component: () => import('@/views/dashboard/PanormaControl'),
             meta: { title: '新建计划', keepAlive: false, permission: [ 'dashboard' ] }
           },
         ]

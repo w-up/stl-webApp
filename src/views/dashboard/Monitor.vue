@@ -4,7 +4,7 @@
       <template slot="paneL">
         <div class="left-info">
           <!-- <img src="../../assets/map.jpg" style="width:100%;height: calc(100vh - 66px);"> -->
-          <div id="map" class="map"></div>
+          <div id="map" class="map" ></div>
           <div class="leftShow" v-if="noTitleKey === 'addPlan' || nosuperKey === 'taskCard'">
             <div class="left-date">
               <a-date-picker @change="selectData" />
@@ -1049,7 +1049,7 @@ export default {
       var layerGroup = new LayerGroup({
         layers:[vec_c,cva_c]
       });
-      var map = new Map({
+      this.map = new Map({
         target:'map',
         layers:[layerGroup],
         view:new View({

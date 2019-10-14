@@ -32,31 +32,14 @@ export default {
       return layer;
     },
     initMap(){
-      // var vecLayer = new TileLayer({
-      //   source: new XYZ({
-      //     url:'http://t{0-7}.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
-      //   })
-      // });
-      // var cavLayer = new TileLayer({
-      //   source: new XYZ({
-      //     url:'http://t{0-7}.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
-      //   })
-      // });
-      // var imgLayer = new TileLayer({
-      //   source: new XYZ({
-      //     url:'http://t{0-7}.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
-      //   })
-      // }) 
       var vec_c = this.getTdLayer("vec_w");
       var cva_c = this.getTdLayer("cva_w");
       var img_c = this.getTdLayer("img_w");
      
       var veclayerGroup = new layerGroup({
-        // layers:[vecLayer,cavLayer]
         layers:[vec_c,cva_c]
       });
       var imglayerGroup = new layerGroup({
-        // layers:[imgLayer,cavLayer]
         layers:[img_c,cva_c]
       });
       console.log("imglayerGroup" + imglayerGroup);
