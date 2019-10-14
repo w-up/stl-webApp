@@ -1,11 +1,9 @@
 <template>
     <div style="width:100%;height:100%;">
         <div class="half">
-            <!-- <h4>Road</h4> -->
             <div id="roadMap" class="map"></div>
         </div>
         <div class="half">
-            <!-- <h4>Img</h4> -->
             <div id="aerialMap" class="map"></div>
         </div>
         <div style="clear:both;"></div>
