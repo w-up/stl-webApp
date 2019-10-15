@@ -305,10 +305,30 @@ export default {
       this.map.clearOverLays() //将之前绘制的清除
       for (const item of this.riverList) {
         if (item.riverData !== undefined) {
-          this.setPolylineFn(item.riverData, 'blue', 3, 0.3)
+          this.setPolylineFn(item.riverData, 'blue', 3, 0)
           this.polygon.addEventListener('click', this.polygonClick)
+          // 文字标注
+          let latArr=[], lngArr=[];
+          for (const itemPoint of item.riverData) {
+            latArr.push(Number(itemPoint.lat))
+            lngArr.push(Number(itemPoint.lng))
+          }
+          let lat = (Math.max(...latArr) + Math.min(...latArr)) / 2
+          let lng = (Math.max(...lngArr) + Math.min(...lngArr)) / 2
+          let latlngobj = { lat: lat, lng: lng }
+          let label = new T.Label({
+            text: `<b>${item.name}<b>`,
+            position: latlngobj,
+            offset: new T.Point(-40, 0)
+          })
+          this.map.addOverLay(label)
+          label.setLngLat(latlngobj)
+          this.map.addEventListener("zoomend", this.zoomChange)
         }
       }
+    },
+    zoomChange() {
+      console.log(this.map.getZoom());
     },
     // 地图选项
     onChange(e) {
@@ -317,17 +337,6 @@ export default {
     onSelect(selectedKeys, info) {
       console.log('onSelect', info)
       this.selectedKeys = selectedKeys
-    },
-    // 弹窗点击确认事件
-    modalClick(v) {
-      this[v].click()
-    },
-    //右侧菜单列表追加任务
-    additionalTask(o) {},
-    // 打开弹窗
-    openPopup(v) {
-      this.transferAttribute = this[v]
-      this.transferAttribute.visible = true
     },
     // 搜索
     handleChange(index) {
@@ -358,7 +367,8 @@ export default {
           if (value.riverData !== undefined) {
             this.drawAllRiver()
             this.setBounds(value.riverData)
-            this.map.zoomOut()
+            // this.map.zoomOut()
+            this.map.addEventListener("zoomend", this.zoomChange)
           }
         } else {
           value.clicked = false
@@ -367,7 +377,7 @@ export default {
     },
     setBounds(lineArr) {
       this.map.setViewport(lineArr)
-      this.setPolylineFn(lineArr, 'red', 3, 0.3)
+      this.setPolylineFn(lineArr, 'red', 3, 0)
       this.polygon.addEventListener('click', this.polygonClick)
     },
     // 河流删除
@@ -423,7 +433,20 @@ export default {
       //创建面对象
       // this.map.clearOverLays() //将之前绘制的清除
       this.polylineHandler.clear() //清除之前绘制的多边形
-      this.setPolylineFn(e.currentLnglats, 'blue', 3, 0.3)
+      this.setPolylineFn(e.currentLnglats, 'blue', 3, 0)
+      console.log(e.currentPolyline.Qr.lat)
+      let lat = (e.currentPolyline.Qr.Lq.lat + e.currentPolyline.Qr.kq.lat) / 2
+      let lng = (e.currentPolyline.Qr.Lq.lng + e.currentPolyline.Qr.kq.lng) / 2
+      let latlngobj = { lat: lat, lng: lng }
+      // 文字标注
+      let label = new T.Label({
+        text: '<b>文字标注!!!<b>',
+        position: latlngobj,
+        offset: new T.Point(-40, -30)
+      })
+      this.map.addOverLay(label)
+      label.setLngLat(latlngobj)
+
       this.$refs.addRiver.add()
     },
     // 设置绘制的多边形
