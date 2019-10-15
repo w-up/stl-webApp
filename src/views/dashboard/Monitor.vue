@@ -336,7 +336,7 @@
                       <a-button style="padding:0 22px;color:#1890ff;" @click="addRiverBtn">添加河道</a-button>
                     </a-col>
                     <a-col :span="12">
-                      <a-button @click="$refs.addSurvey.show()" class="commBtn">添加调查点</a-button>
+                      <a-button @click="addSurveyPoint" class="commBtn">添加调查点</a-button>
                     </a-col>
                   </a-row>
                   <div class="riverInfo">
@@ -844,9 +844,12 @@ import '../../assets/css/monitor.less'
 import 'ol/ol.css'
 import Map from "ol/Map"
 import View from 'ol/View'
-import TileLayer from 'ol/layer/Tile'
+// import TileLayer from 'ol/layer/Tile'
 import LayerGroup from 'ol/layer/Group'
 import XYZ from 'ol/source/XYZ'
+import Draw from 'ol/interaction/Draw';
+import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
+import {OSM,Vector as VectorSource} from 'ol/source';
 
 
 import searchRiver from '../modals/searchRiver'
@@ -990,6 +993,7 @@ export default {
       text: '当前河道方位内出现红色风险源',
       // 地图对象
       map: {},
+      layer:[],
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
       mapPoint: new Map(),
       firstShow: true,
@@ -1031,33 +1035,34 @@ export default {
   methods: {
     getTdLayer(lyr){
       var url = "http://t{0-7}.tianditu.com/DataServer?T=" + lyr + "&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc"
-      var layer = new TileLayer({
+      this.layer = new TileLayer({
         source: new XYZ({
           url: url
         })
       });
-      return layer;
+      return this.layer;
     },
     initCruisePlan() {
       const that = this
       //初始化地图控件
-      // let zoom = 14
-      // that.map = new T.Map('map')
-      // that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
-      var vec_c = this.getTdLayer("vec_w");
-      var cva_c = this.getTdLayer("cva_w");
-      var layerGroup = new LayerGroup({
-        layers:[vec_c,cva_c]
-      });
-      this.map = new Map({
-        target:'map',
-        layers:[layerGroup],
-        view:new View({
-          projection: "EPSG:4326",
-          center: [121.495505, 31.21098],
-          zoom: 14
-        })
-      });
+      let zoom = 14
+      that.map = new T.Map('map')
+      that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      //openlayers引入天地图进行地图初始化渲染
+      // var vec_c = this.getTdLayer("vec_w");
+      // var cva_c = this.getTdLayer("cva_w");
+      // var layerGroup = new LayerGroup({
+      //   layers:[vec_c,cva_c]
+      // });
+      // this.map = new Map({
+      //   target:'map',
+      //   layers:[layerGroup],
+      //   view:new View({
+      //     projection: "EPSG:4326",
+      //     center: [121.495505, 31.21098],
+      //     zoom: 14
+      //   })
+      // });
       
       // this.map.TileLayerOptions({zIndex: 1});
 
@@ -1200,6 +1205,105 @@ export default {
     addToPlan() {
       this.$message.success('加入成功')
       this.nosuperKey = 'nowPlan'
+    },
+    //添加调查点
+    addSurveyPoint(){
+      this.removeMapClick();
+      this.map.addEventListener("click", this.MapClick);
+      this.$refs.addSurvey.show();
+
+      // this.layer.getSource().clear();
+      // this.map.removeLayer(this.layer);
+
+      // var vec_c = this.getTdLayer("vec_w");
+      // var cva_c = this.getTdLayer("cva_w");
+      // var veclayerGroup = new LayerGroup({
+      //     layers:[vec_c,cva_c]
+      // });
+
+      // var source = new VectorSource({wrapX:false});
+      // var vetor = new VectorLayer({
+      //   source:source
+      // });
+
+      // this.map = new Map({
+      //   layers:[vetor,source],
+      //   target:'map',
+      //   view:new View({
+      //     projection: "EPSG:4326",
+      //     center: [121.495505, 31.21098],
+      //     zoom: 14
+      //   })
+      // });
+      // var draw = new Draw({
+      //   source:source,
+      //   type:'Circle'
+      // });
+      // this.map.addInteraction(draw);
+      // this.map.addLayer(veclayerGroup);
+    },
+    // 地图点击事件
+    MapClick(e) {
+      const postion = [];
+      const that = this;
+      let icon = new T.Icon({
+        iconUrl: "http://api.tianditu.gov.cn/img/map/markerA.png",
+        iconSize: new T.Point(19, 27),
+        iconAnchor: new T.Point(10, 25)
+      });
+      //向地图上添加自定义标注
+      // let marker = new T.Marker(new T.LngLat(postion), {icon: icon});
+      let marker = new T.Marker(new T.LngLat(e.lnglat.lng, e.lnglat.lat), {icon: icon});
+      this.map.addOverLay(marker);
+      //向地图上添加圆
+      let circle = new T.Circle(new T.LngLat(e.lnglat.lng, e.lnglat.lat), 1000, {
+        color: "blue",
+        weight: 2,
+        opacity: 0.5,
+        fillColor: "#FFFFFF",
+        fillOpacity: 0.4,
+        lineStyle: "solid"
+      });
+      this.map.addOverLay(circle);
+
+      // 添加文字标注
+      var n = 0;
+      let labeName = '专向调查点' + (n + 1);
+      let label = new T.Label({
+        text: `<b style="border-radius: 3px">${labeName}<b>`,
+        position: marker.getLngLat(),
+        offset: new T.Point(-56, 20)
+      });
+      this.map.addOverLay(label);
+
+      // 向mapPoint对象添加节点
+      let mapPointChild = {marker: marker, circle: circle, label: label};
+      this.mapPoint.set(labeName, mapPointChild);
+
+
+      // 向地图注册标注点击事件
+      //移除标注的点击事件，防止多次注册
+      removeMarkerClick();
+      //注册标注的点击事件
+      marker.addEventListener("click", MarkerClick);
+
+      function removeMarkerClick() {
+        //移除标注的点击事件
+        marker.removeEventListener("click", MarkerClick);
+      }
+
+      function MarkerClick(e) {
+        console.log("这是标注点击事件" + e);
+        console.log(e);
+        //设置显示地图的中心点和级别
+        // that.map.centerAndZoom(new T.LngLat(e.lnglat.lng, e.lnglat.lat));
+        that.map.centerAndZoom(new T.LngLat(e.lnglat.lng + 0.01, e.lnglat.lat));
+      }
+
+    },
+    // 地图删除事件
+    removeMapClick() {
+      this.map.removeEventListener("click", this.MapClick);
     }
   }
 }
