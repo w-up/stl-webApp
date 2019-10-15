@@ -3,7 +3,7 @@
     <a-card >
       <a-breadcrumb style="font-size: 16px;">
         <a-breadcrumb-item>设置</a-breadcrumb-item>
-        <a-breadcrumb-item>员工管理</a-breadcrumb-item>
+        <a-breadcrumb-item>用户管理</a-breadcrumb-item>
       </a-breadcrumb>
       <a-divider style="margin: 10px 0" />
       <div>
@@ -27,19 +27,27 @@
           </a-form-item>
         </a-form>
       </div>
-      <a-button type="primary" icon="plus"  style="margin:15px 0" @click="add" >添加</a-button>
+      <a-button type="primary" icon="plus"  style="margin:15px 0" @click="add(id='')" >添加</a-button>
       <a-table :columns="columns" :dataSource="data" bordered>
         <template slot="state" slot-scope="row">
-          <a v-if="row.state==true">启用</a>
+          <a v-if="row.actived==true">启用</a>
           <a v-else>禁用</a>
         </template>
         <template slot="operation" slot-scope="row">
-          <a @click="add()">编辑</a>
+          <a @click="add(row.id)">编辑</a>
           <a-divider type="vertical" />
-          <a @click="handleSub(id)">删除</a>
+          <a-popconfirm
+            title="是否确认删除?"
+            @confirm="confirm"
+            @cancel="cancel"
+            okText="确认"
+            cancelText="取消"
+          >
+            <a @click="del(row.id)">删除</a>
+          </a-popconfirm>
           <a-divider type="vertical" />
-          <a @click="handleSub(id)" v-if="row.state==false">启用</a>
-          <a @click="handleSub(id)" v-else>禁用</a>
+          <a @click="enable(row.id)" v-if="row.actived==false">启用</a>
+          <a @click="prohibit(row.id)" v-else>禁用</a>
         </template>
       </a-table>
     </a-card>
@@ -47,6 +55,7 @@
 </template>
 
 <script>
+import { userList, userEnable,userProhibit,userDel } from '@/api/login'
 const columns = [
    {
     title: '编号',
@@ -57,7 +66,7 @@ const columns = [
     dataIndex: 'name',
   },{
     title: '联系方式',
-    dataIndex: 'phone',
+    dataIndex: 'mobile',
   },{
     title: '角色',
     dataIndex: 'role',
@@ -79,37 +88,80 @@ export default {
     return {
       columns,
       data:[
-        {
-          key:'001',
-          name:'张三',
-          phone:'15555555',
-          role:'超级管理员',
-          type:'内业',
-          state:true
-        },
-        {
-          key:'002',
-          name:'张三',
-          phone:'15555555',
-          role:'巡河总监',
-          type:'内业',
-          state:false
-        },
-        {
-          key:'003',
-          name:'张三',
-          phone:'15555555',
-          role:'基础数据维护员',
-          type:'外勤',
-          state:true
-        },
+        
       ]
     }
   },
   watch: {
 
   },
+  mounted(){
+    this.getList()
+  },
   methods: {
+    getList(){
+      var data ={
+
+      }
+      userList(data)
+        .then(res => {
+         var arr = res.data.data
+         for (let i = 0; i < arr.length; i++) {
+          arr[i].type=arr[i].type.name
+          arr[i].key=i+1
+         }
+         this.data = arr
+         console.log(arr);
+        })
+        .catch(err => {
+
+      })
+    },
+    enable(id){
+      var data ={
+        id:id
+      }
+      userEnable(data)
+        .then(res => {
+          this.$message.success('启用成功');
+          this.getList()
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message);
+      })
+    },
+    prohibit(id){
+      var data ={
+        id:id
+      }
+      userProhibit(data)
+        .then(res => {
+          this.$message.success('禁用成功');
+         this.getList()
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message);
+      })
+    },
+    del(id){
+      this.id=id
+    },
+    confirm(e) {
+      var data ={
+        id:this.id
+      }
+      userDel(data)
+        .then(res => {
+          this.$message.success('删除成功');
+          this.getList()
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message);
+      })
+    },
+    cancel(e) {
+
+    },
     add(id){
       this.$router.push({
         path: '/settings/staff',

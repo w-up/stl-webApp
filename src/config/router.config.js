@@ -126,7 +126,7 @@ export const asyncRouterMap = [
             path: '/settings/staffManage',
             name: 'staffManage',
             component: () => import('@/views/settings/staffManage'),
-            meta: { title: '员工管理', keepAlive: true, permission: [ 'table' ] }
+            meta: { title: '用户管理', keepAlive: true, permission: [ 'table' ] }
           },
         ]
       },
