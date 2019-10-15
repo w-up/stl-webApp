@@ -53,7 +53,8 @@ import NoticeIcon from '@/components/NoticeIcon'
 import { mapActions, mapGetters } from 'vuex'
 import LangSelect from '@/components/tools/LangSelect'
 import RiverSelect from '@/components/tools/RiverSelect'
-
+import { ACCESS_TOKEN } from '@/store/mutation-types'
+import Vue from 'vue'
 export default {
   name: 'UserMenu',
   components: {
@@ -71,18 +72,10 @@ export default {
         title: '提示',
         content: '真的要注销登录吗 ?',
         onOk: () => {
-          return this.Logout({})
-            .then(() => {
-              setTimeout(() => {
-                window.location.reload()
-              }, 16)
-            })
-            .catch(err => {
-              this.$message.error({
-                title: '错误',
-                description: err.message
-              })
-            })
+          Vue.ls.remove(ACCESS_TOKEN)
+          this.$router.push({
+           path: '/user/login'
+          })
         },
         onCancel() {}
       })

@@ -14,7 +14,7 @@ import { axios } from '@/utils/request'
  */
 export function login (parameter) {
   return axios({
-    url: '/auth/login',
+    url: '/server/sso/auth/login',
     method: 'post',
     data: parameter
   })
@@ -57,7 +57,7 @@ export function logout () {
 
 /**
  * get user 2step code open?
- * @param parameter {*}
+ * @param parameter {*} 
  */
 export function get2step (parameter) {
   return axios({
