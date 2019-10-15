@@ -420,7 +420,7 @@ export default {
       this.map.addOverLay(label)
       label.setLngLat(latlngobj)
 
-      this.$refs.addRiver.add()
+      this.$refs.addStreet.add()
     },
     // 设置绘制的多边形
     setPolylineFn(lineData, color, weight, fillOpacity) {
@@ -453,7 +453,7 @@ export default {
       console.log('123')
       console.log(currentDistance)
       console.log(allPolylines)
-      this.$refs.addRiver.add()
+      this.$refs.addStreet.add()
       this.addRiverShow = false
     }
   }
