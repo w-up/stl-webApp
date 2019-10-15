@@ -28,6 +28,7 @@
     <div class="right">
       <a-select
         showSearch
+        :allowClear="true"
         placeholder="请输入河流"
         optionFilterProp="children"
         style="width: 100%"
@@ -48,7 +49,7 @@
           slot="renderItem"
           slot-scope="item, index"
           :key="index"
-          @click="chooseRiver(item.name, item.id)"
+          @click.stop="chooseRiver(item.name, item.id)"
           :class="{active_item: item.clicked}"
         >
           <a-row style="width:100%">
@@ -285,17 +286,7 @@ export default {
   },
   mounted() {
     this.initCruisePlan()
-    for (const item of this.riverList) {
-      if (item.riverData !== undefined) {
-        this.setPolylineFn(item.riverData, 'blue', 3, 0.3)
-        // this.polygon.addEventListener('mouseover', this.polygonMouseover(item))
-        // this.polygon.addEventListener('mouseout', this.polygonMouseout(item))
-        this.polygon.addEventListener('click', this.polygonClick)
-        console.log(this.polygon.getLngLats())
-      }
-    }
-
-    // this.setPolylineFn(this.lineDataStr1, 'blue', 3, 0.3)
+    this.drawAllRiver()
   },
   methods: {
     initCruisePlan() {
@@ -309,70 +300,15 @@ export default {
       this.map.setMinZoom(4)
       this.map.setMaxZoom(18)
     },
-    // 注册添加点击事件
-    addMapClick() {
-      this.map.addEventListener('click', this.MapClick)
-    },
-    // 地图点击事件
-    MapClick(e) {
-      const postion = []
-      const that = this
-      let icon = new T.Icon({
-        iconUrl: 'http://api.tianditu.gov.cn/img/map/markerA.png',
-        iconSize: new T.Point(19, 27),
-        iconAnchor: new T.Point(10, 25)
-      })
-      //向地图上添加自定义标注
-      // let marker = new T.Marker(new T.LngLat(postion), {icon: icon});
-      let marker = new T.Marker(new T.LngLat(e.lnglat.lng, e.lnglat.lat), { icon: icon })
-      this.map.addOverLay(marker)
-      //向地图上添加圆
-      let circle = new T.Circle(new T.LngLat(e.lnglat.lng, e.lnglat.lat), 1000, {
-        color: 'blue',
-        weight: 2,
-        opacity: 0.5,
-        fillColor: '#FFFFFF',
-        fillOpacity: 0.5,
-        lineStyle: 'solid'
-      })
-      // this.map.addOverLay(circle)
-
-      // 添加文字标注
-      let labeName = '专向调查点' + (this.mapPoint.size + 1)
-      let label = new T.Label({
-        text: `<b style="border-radius: 3px">${labeName}<b>`,
-        position: marker.getLngLat(),
-        offset: new T.Point(-56, 20)
-      })
-      this.map.addOverLay(label)
-
-      // 向mapPoint对象添加节点
-      let mapPointChild = { marker: marker, circle: circle, label: label }
-      this.mapPoint.set(labeName, mapPointChild)
-
-      // 向地图注册标注点击事件
-      //移除标注的点击事件，防止多次注册
-      removeMarkerClick()
-      //注册标注的点击事件
-      marker.addEventListener('click', MarkerClick)
-
-      function removeMarkerClick() {
-        //移除标注的点击事件
-        marker.removeEventListener('click', MarkerClick)
+    // 绘制所有河流
+    drawAllRiver(index) {
+      this.map.clearOverLays() //将之前绘制的清除
+      for (const item of this.riverList) {
+        if (item.riverData !== undefined) {
+          this.setPolylineFn(item.riverData, 'blue', 3, 0.3)
+          this.polygon.addEventListener('click', this.polygonClick)
+        }
       }
-
-      function MarkerClick(e) {
-        console.log('这是标注点击事件' + e)
-        console.log(e)
-        //设置显示地图的中心点和级别
-        // that.map.centerAndZoom(new T.LngLat(e.lnglat.lng, e.lnglat.lat));
-        that.map.centerAndZoom(new T.LngLat(e.lnglat.lng + 0.01, e.lnglat.lat))
-      }
-      this.removeMapClick()
-    },
-    // 地图删除事件
-    removeMapClick() {
-      this.map.removeEventListener('click', this.MapClick)
     },
     // 地图选项
     onChange(e) {
@@ -419,26 +355,27 @@ export default {
       this.riverList.forEach(value => {
         if (value.name === index) {
           value.clicked = true
+          if (value.riverData !== undefined) {
+            this.drawAllRiver()
+            this.setBounds(value.riverData)
+            this.map.zoomOut()
+          }
         } else {
           value.clicked = false
         }
       })
-      if (id == 0) {
-        this.setBounds(this.lineDataStr)
-      } else if (id == 1) {
-        this.setBounds(this.lineDataStr1)
-      }
-      this.map.zoomOut()
     },
     setBounds(lineArr) {
       this.map.setViewport(lineArr)
       this.setPolylineFn(lineArr, 'red', 3, 0.3)
+      this.polygon.addEventListener('click', this.polygonClick)
     },
     // 河流删除
     confirmDelete(index) {
       console.log(index)
       this.riverList.splice(this.riverList.findIndex(item => item.name === index), 1)
       this.$message.success('删除成功')
+      this.drawAllRiver()
       this.defaultRiver = null
     },
     cancelDelete(e) {
@@ -503,10 +440,9 @@ export default {
     },
     // 多边形点击事件
     polygonClick(index) {
-      console.log(index)
-      var p = index.target
-      console.log(p)
-      alert('marker的位置是' + p.getLngLat().lng + ',' + p.getLngLat().lat)
+      console.log(index.target.Qr)
+      console.log(index.target.Qr.Lq)
+      console.log(index.target.Qr.kq)
     },
     // 多边形鼠标进入事件
     polygonMouseover(riverItem) {
