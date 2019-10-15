@@ -1,9 +1,9 @@
 <template>
 <div>
-    <a-card title="新增/编辑员工">
+    <a-card title="新增/编辑用户">
         <a-button  slot="extra" @click="backPage">返回上一页</a-button>
         <Form ref="formValidate" :model="list" :rules="ruleValidate" :label-width="90">
-            <h3>员工信息</h3>
+            <h3>用户信息</h3>
             <FormItem label="手机号" prop="phone">
                 <Input v-model="list.phone" placeholder="请输入" style="width:200px"></Input>
             </FormItem>
@@ -24,26 +24,26 @@
             </FormItem>
             <FormItem label="类型"  >
                 <a-select  style="width: 200px" placeholder="请选择" @change="handleChange" v-model="list.type">
-                    <a-select-option value="jack">外勤</a-select-option>
-                    <a-select-option value="lucy">内业</a-select-option>
-                    <a-select-option value="123">外部用户</a-select-option>
+                    <a-select-option value="worker">外勤</a-select-option>
+                    <a-select-option value="admin">内业</a-select-option>
+                    <a-select-option value="viewer">外部用户</a-select-option>
                 </a-select>
             </FormItem>
             <h3>权限信息</h3>
             <FormItem label="角色" >
-                <div v-if="jurisdiction=='jack'">
+                <div v-if="jurisdiction=='worker'">
                     <p>外勤</p>
                     <a-checkbox-group >
                         <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
                     </a-checkbox-group>
                 </div>
-                <div v-if="jurisdiction=='lucy'">
+                <div v-if="jurisdiction=='admin'">
                     <p>内业</p>
                     <a-checkbox-group >
                         <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
                     </a-checkbox-group>
                 </div>
-                <div v-if="jurisdiction=='123'">
+                <div v-if="jurisdiction=='viewer'">
                 <p>外部用户</p>
                     <a-checkbox-group >
                         <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
@@ -58,28 +58,34 @@
             </FormItem>
             <FormItem >
                  <Button  style="margin-right:15px;" @click="backPage">返回</Button>
-                <Button type="success"  style="">保存</Button>
+                <Button type="success"  style="" @click="preservation">保存</Button>
             </FormItem>
         </Form>
     </a-card >
 </div>
 </template>
-
 <script>
-
+import { userDetails, userPreservation } from '@/api/login'
 export default {
     data(){
         return{
-            jurisdiction:'jack',
+            id:this.$route.query.id,
+            jurisdiction:'worker',
             list:{
                 number:'',
                 phone:'',
                 name:'',
                 password:'',
                 sex:'',
-                type:'jack',
+                type:'worker',
             },  
             ruleValidate: {
+                phone: [
+                    { required: true, message: '不能为空', trigger: 'blur' }
+                ],
+                password: [
+                    { required: true, message: '不能为空', trigger: 'blur' }
+                ],
                 number: [
                     { required: true, message: '不能为空', trigger: 'blur' }
                 ],
@@ -125,7 +131,48 @@ export default {
             }],
         }
     },
+    mounted(){
+        this.getList()  
+    },
     methods:{
+        getList(){
+            console.log('1');
+            
+            var data ={
+                id:this.id
+            }
+            userDetails(data).then(res => {
+
+                console.log(res);
+            }).catch(err => {
+               
+                
+            })
+        },
+        preservation(){
+            this.$refs['formValidate'].validate((valid) => {
+                if (valid) {
+                    var data ={
+                        code:this.list.number,
+                        name:this.list.name,
+                        mobile:this.list.phone,
+                        type:this.list.type,
+                    }
+                    // if (this.id) {
+                    //     data.id = this.id
+                    // }
+                    userPreservation(data).then(res => {
+                        this.$message.success('成功');
+                        this.backPage()
+                    }).catch(err => {
+                        this.$message.error(err.response.data.message);
+                    })
+                } else {
+                    this.$message.error('请全部填写');
+                }
+            })
+            
+        },
         handleChange(value) {
             this.jurisdiction=value
         },

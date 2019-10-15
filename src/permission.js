@@ -16,17 +16,13 @@ router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
   to.meta && (typeof to.meta.title !== 'undefined' && setDocumentTitle(`${to.meta.title} - ${domTitle}`))
   if (Vue.ls.get(ACCESS_TOKEN)) {
-    console.log(Vue.ls.get(ACCESS_TOKEN))
+    // console.log(Vue.ls.get(ACCESS_TOKEN))
     // Vue.ls.remove(ACCESS_TOKEN)
     /* has token */
     if (to.path === '/user/login') {
       next({ path: '/dashboard/analysis' }) 
       NProgress.done()
-      console.log('222');
     } else {
-      console.log('111');
-      
-      
       if (store.getters.roles.length === 0) {
         next()
         // store

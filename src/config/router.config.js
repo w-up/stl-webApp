@@ -23,7 +23,7 @@ export const asyncRouterMap = [
           {
             path: '/dashboard/analysis',
             name: 'Analysis',
-            component: () => import('@/views/dashboard/PanormaControl'),
+            component: () => import('@/views/dashboard/Monitor'),
             meta: { title: '新建计划', keepAlive: false, permission: [ 'dashboard' ] }
           },
         ]
@@ -126,7 +126,7 @@ export const asyncRouterMap = [
             path: '/settings/staffManage',
             name: 'staffManage',
             component: () => import('@/views/settings/staffManage'),
-            meta: { title: '员工管理', keepAlive: true, permission: [ 'table' ] }
+            meta: { title: '用户管理', keepAlive: true, permission: [ 'table' ] }
           },
         ]
       },

@@ -12,6 +12,7 @@ import { axios } from '@/utils/request'
  * @param parameter
  * @returns {*}
  */
+//登录
 export function login (parameter) {
   return axios({
     url: '/server/sso/auth/login',
@@ -19,6 +20,51 @@ export function login (parameter) {
     data: parameter
   })
 }
+//用户保存
+export function userPreservation (parameter) {
+  return axios({
+    url: '/server/data/admin/user/save',
+    method: 'post',
+    data: parameter
+  })
+}
+//用户列表
+export function userList (parameter) {
+  return axios({
+    url: '/server/data/admin/user/page',
+    method: 'get',
+    data: parameter
+  })
+}
+//用户详情
+export function userDetails (parameter) {
+  return axios({
+    url: '/server/data/admin/user/detail/'+parameter.id,
+    method: 'get',
+  })
+}
+//用户启用
+export function userEnable (parameter) {
+  return axios({
+    url: '/server/data/admin/user/actived/'+parameter.id,
+    method: 'post',
+  })
+}
+//用户禁用
+export function userProhibit (parameter) {
+  return axios({
+    url: '/server/data/admin/user/inactived/'+parameter.id,
+    method: 'post',
+  })
+}
+//用户删除
+export function userDel (parameter) {
+  return axios({
+    url: '/server/data/admin/user/remove/'+parameter.id,
+    method: 'post',
+  })
+}
+
 
 export function getSmsCaptcha (parameter) {
   return axios({
