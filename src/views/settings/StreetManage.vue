@@ -85,22 +85,166 @@ export default {
         {
           id: 0,
           name: '南京东路',
-          clicked: true
+          clicked: true,
+          riverData: [
+            {
+              lat: 31.21882,
+              lng: 121.50364
+            },
+            {
+              lat: 31.21265,
+              lng: 121.50227
+            },
+            {
+              lat: 31.20583,
+              lng: 121.49703
+            },
+            {
+              lat: 31.19915,
+              lng: 121.49197
+            },
+            {
+              lat: 31.19702,
+              lng: 121.49591
+            },
+            {
+              lat: 31.2164,
+              lng: 121.50759
+            },
+            {
+              lat: 31.21948,
+              lng: 121.50759
+            }
+          ]
         },
         {
           id: 1,
           name: '南京西路',
-          clicked: false
+          clicked: false,
+          riverData: [
+            {
+              lat: 31.25153,
+              lng: 121.52409
+            },
+            {
+              lat: 31.25355,
+              lng: 121.53085
+            },
+            {
+              lat: 31.25858,
+              lng: 121.53934
+            },
+            {
+              lat: 31.25535,
+              lng: 121.54334
+            },
+            {
+              lat: 31.2499,
+              lng: 121.53353
+            },
+            {
+              lat: 31.24786,
+              lng: 121.52737
+            },
+            {
+              lat: 31.24682,
+              lng: 121.51709
+            },
+            {
+              lat: 31.25111,
+              lng: 121.51711
+            }
+          ]
         },
         {
           id: 2,
           name: '北京东路',
-          clicked: false
+          clicked: false,
+          riverData: [
+            {
+              lat: 31.24539,
+              lng: 121.48686
+            },
+            {
+              lat: 31.24616,
+              lng: 121.48411
+            },
+            {
+              lat: 31.2466,
+              lng: 121.4824
+            },
+            {
+              lat: 31.24612,
+              lng: 121.48051
+            },
+            {
+              lat: 31.24484,
+              lng: 121.47901
+            },
+            {
+              lat: 31.24462,
+              lng: 121.47939
+            },
+            {
+              lat: 31.24543,
+              lng: 121.48089
+            },
+            {
+              lat: 31.2459,
+              lng: 121.48261
+            },
+            {
+              lat: 31.2448,
+              lng: 121.4857
+            },
+            {
+              lat: 31.2444,
+              lng: 121.4872
+            }
+          ]
         },
         {
           id: 3,
           name: '北京西路',
-          clicked: false
+          clicked: false,
+          riverData: [
+            {
+              lat: 31.21717,
+              lng: 121.51336
+            },
+            {
+              lat: 31.21691,
+              lng: 121.51454
+            },
+            {
+              lat: 31.21768,
+              lng: 121.51566
+            },
+            {
+              lat: 31.21768,
+              lng: 121.51763
+            },
+            {
+              lat: 31.21733,
+              lng: 121.51748
+            },
+            {
+              lat: 31.21739,
+              lng: 121.51568
+            },
+            {
+              lat: 31.21664,
+              lng: 121.51456
+            },
+            {
+              lat: 31.21669,
+              lng: 121.51387
+            },
+            {
+              lat: 31.21699,
+              lng: 121.51323
+            }
+          ]
         },
         {
           id: 4,
@@ -112,136 +256,69 @@ export default {
           name: '浙江南路',
           clicked: false
         },
-        {
-          id: 6,
-          name: '浙江北路',
-          clicked: false
-        }
       ],
       addRiverShow: false,
       // 地图对象
       map: {},
-      // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
-      mapPoint: new Map()
+      polylineHandler: '',
+      polygonTool: '', // 创建标注工具对象
+      polygon: '', // 多边形对象
+      points: []
     }
   },
   mounted() {
-    this.initCruisePlan()
+    this.initMap()
+    this.drawAllRiver()
   },
   methods: {
-    initCruisePlan() {
-      const that = this
+    initMap() {
       //初始化地图控件
       let zoom = 14
-      that.map = new T.Map('map')
-      that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
-      // this.map.TileLayerOptions({zIndex: 1});
-
-      // 初始化天气插件
-      /*        let a = d.getElementById('weather-float-he')
-        if (a) {
-          a.parentNode.removeChild(a)
+      this.map = new T.Map('map')
+      this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      //创建比例尺控件对象
+      //添加比例尺控件
+      this.map.addControl(new T.Control.Scale())
+      this.map.setMinZoom(4)
+      this.map.setMaxZoom(18)
+    },
+    // 绘制所有河流
+    drawAllRiver(index) {
+      this.map.clearOverLays() //将之前绘制的清除
+      for (const item of this.riverList) {
+        if (item.riverData !== undefined) {
+          this.setPolylineFn(item.riverData, 'blue', 3, 0)
+          this.polygon.addEventListener('click', this.polygonClick)
+          // 文字标注
+          let latArr=[], lngArr=[];
+          for (const itemPoint of item.riverData) {
+            latArr.push(Number(itemPoint.lat))
+            lngArr.push(Number(itemPoint.lng))
+          }
+          let lat = (Math.max(...latArr) + Math.min(...latArr)) / 2
+          let lng = (Math.max(...lngArr) + Math.min(...lngArr)) / 2
+          let latlngobj = { lat: lat, lng: lng }
+          let label = new T.Label({
+            text: `<b>${item.name}<b>`,
+            position: latlngobj,
+            offset: new T.Point(-40, 0)
+          })
+          this.map.addOverLay(label)
+          label.setLngLat(latlngobj)
+          this.map.addEventListener("zoomend", this.zoomChange)
         }
-        a = d.createElement('div')
-        a.id = 'weather-float-he'
-        let b = d.getElementsByTagName('body')[0]
-        b.appendChild(a);
-        let c = d.createElement('link')
-        c.rel = 'stylesheet'
-        c.href = 'https://apip.weatherdt.com/float/static/css/tqw_widget_float.css?v=0101'
-        let s = d.createElement('script')
-        s.src = 'https://apip.weatherdt.com/float/static/js/tqw_widget_float.js?v=0101'
-        let sn = d.getElementsByTagName('script')[0]
-        sn.parentNode.insertBefore(c, sn)
-        sn.parentNode.insertBefore(s, sn);*/
-    },
-    onChange() {},
-    hiddenMenuChange(expandedKeys) {
-      console.log('onExpand', expandedKeys)
-      // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-      // or, you can remove all expanded children keys.
-      this.expandedKeys = expandedKeys
-    },
-    // 注册事件
-    // 注册添加点击事件
-    addMapClick() {
-      this.removeMapClick()
-      this.map.addEventListener('click', this.MapClick)
-    },
-    // 地图点击事件
-    MapClick(e) {
-      const postion = []
-      const that = this
-      let icon = new T.Icon({
-        iconUrl: 'http://api.tianditu.gov.cn/img/map/markerA.png',
-        iconSize: new T.Point(19, 27),
-        iconAnchor: new T.Point(10, 25)
-      })
-      //向地图上添加自定义标注
-      // let marker = new T.Marker(new T.LngLat(postion), {icon: icon});
-      let marker = new T.Marker(new T.LngLat(e.lnglat.lng, e.lnglat.lat), { icon: icon })
-      this.map.addOverLay(marker)
-      //向地图上添加圆
-      let circle = new T.Circle(new T.LngLat(e.lnglat.lng, e.lnglat.lat), 1000, {
-        color: 'blue',
-        weight: 2,
-        opacity: 0.5,
-        fillColor: '#FFFFFF',
-        fillOpacity: 0.5,
-        lineStyle: 'solid'
-      })
-      this.map.addOverLay(circle)
-
-      // 添加文字标注
-      let labeName = '专向调查点' + (this.mapPoint.size + 1)
-      let label = new T.Label({
-        text: `<b style="border-radius: 3px">${labeName}<b>`,
-        position: marker.getLngLat(),
-        offset: new T.Point(-56, 20)
-      })
-      this.map.addOverLay(label)
-
-      // 向mapPoint对象添加节点
-      let mapPointChild = { marker: marker, circle: circle, label: label }
-      this.mapPoint.set(labeName, mapPointChild)
-
-      // 向地图注册标注点击事件
-      //移除标注的点击事件，防止多次注册
-      removeMarkerClick()
-      //注册标注的点击事件
-      marker.addEventListener('click', MarkerClick)
-
-      function removeMarkerClick() {
-        //移除标注的点击事件
-        marker.removeEventListener('click', MarkerClick)
-      }
-
-      function MarkerClick(e) {
-        console.log('这是标注点击事件' + e)
-        console.log(e)
-        //设置显示地图的中心点和级别
-        // that.map.centerAndZoom(new T.LngLat(e.lnglat.lng, e.lnglat.lat));
-        that.map.centerAndZoom(new T.LngLat(e.lnglat.lng + 0.01, e.lnglat.lat))
       }
     },
-    // 地图删除事件
-    removeMapClick() {
-      this.map.removeEventListener('click', this.MapClick)
+    zoomChange() {
+      console.log(this.map.getZoom());
+    },
+    // 地图选项
+    onChange(e) {
+      console.log(`checked = ${e.target.checked}`)
     },
     onSelect(selectedKeys, info) {
       console.log('onSelect', info)
       this.selectedKeys = selectedKeys
-    },
-    // 弹窗点击确认事件
-    modalClick(v) {
-      this[v].click()
-    },
-    //右侧菜单列表追加任务
-    additionalTask(o) {},
-    // 打开弹窗
-    openPopup(v) {
-      this.transferAttribute = this[v]
-      this.transferAttribute.visible = true
     },
     // 搜索
     handleChange(index) {
@@ -263,26 +340,34 @@ export default {
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    // 地图选项
-    onChange(e) {
-      console.log(`checked = ${e.target.checked}`)
-    },
-    // 选中街道
-    chooseRiver(index) {
+    // 选中河流
+    chooseRiver(index, id) {
       this.defaultRiver = index
       this.riverList.forEach(value => {
         if (value.name === index) {
           value.clicked = true
+          if (value.riverData !== undefined) {
+            this.drawAllRiver()
+            this.setBounds(value.riverData)
+            // this.map.zoomOut()
+            this.map.addEventListener("zoomend", this.zoomChange)
+          }
         } else {
           value.clicked = false
         }
       })
     },
-    // 街道删除
+    setBounds(lineArr) {
+      this.map.setViewport(lineArr)
+      this.setPolylineFn(lineArr, 'red', 3, 0)
+      this.polygon.addEventListener('click', this.polygonClick)
+    },
+    // 河流删除
     confirmDelete(index) {
       console.log(index)
       this.riverList.splice(this.riverList.findIndex(item => item.name === index), 1)
       this.$message.success('删除成功')
+      this.drawAllRiver()
       this.defaultRiver = null
     },
     cancelDelete(e) {
@@ -290,6 +375,15 @@ export default {
     },
     // 绘制按钮
     addDrawRiver() {
+      //创建标注工具对象
+      this.polygonTool = new T.PolygonTool(this.map, {
+        showLabel: true,
+        color: 'blue',
+        weight: 3,
+        opacity: 0.5,
+        fillColor: '#FFFFFF',
+        fillOpacity: 0.3
+      })
       if (this.polylineHandler) this.polylineHandler.close()
       this.polylineHandler = new T.PolylineTool(this.map)
       this.polylineHandler.open()
@@ -298,12 +392,69 @@ export default {
         message: '提示',
         description: '请在地图上将街道绘制出来'
       })
-      this.polylineHandler.addEventListener('draw', this.addUploadRiver)
+      this.addRiverShow = false
+      this.polylineHandler.addEventListener('draw', this.addDrawRivered)
+      this.polylineHandler.addEventListener('addpoint', this.addDrawRivering)
+    },
+    addDrawRivering(e) {
+      console.log(e)
+    },
+    // 绘制完成
+    addDrawRivered(e) {
+      console.log(e)
+      console.log(e.currentLnglats)
+      //创建面对象
+      // this.map.clearOverLays() //将之前绘制的清除
+      this.polylineHandler.clear() //清除之前绘制的多边形
+      this.setPolylineFn(e.currentLnglats, 'blue', 3, 0)
+      console.log(e.currentPolyline.Qr.lat)
+      let lat = (e.currentPolyline.Qr.Lq.lat + e.currentPolyline.Qr.kq.lat) / 2
+      let lng = (e.currentPolyline.Qr.Lq.lng + e.currentPolyline.Qr.kq.lng) / 2
+      let latlngobj = { lat: lat, lng: lng }
+      // 文字标注
+      let label = new T.Label({
+        text: '<b>文字标注!!!<b>',
+        position: latlngobj,
+        offset: new T.Point(-40, -30)
+      })
+      this.map.addOverLay(label)
+      label.setLngLat(latlngobj)
+
+      this.$refs.addRiver.add()
+    },
+    // 设置绘制的多边形
+    setPolylineFn(lineData, color, weight, fillOpacity) {
+      this.polygon = new T.Polygon(lineData, {
+        color: color, //线颜色
+        weight: weight, //线宽
+        opacity: 0.5, //透明度
+        fillColor: '#FFFFFF', //填充颜色
+        fillOpacity: fillOpacity // 填充透明度
+      })
+      //向地图上添加面
+      this.map.addOverLay(this.polygon)
+    },
+    // 多边形点击事件
+    polygonClick(index) {
+      console.log(index.target.Qr)
+      console.log(index.target.Qr.Lq)
+      console.log(index.target.Qr.kq)
+    },
+    // 多边形鼠标进入事件
+    polygonMouseover(riverItem) {
+      console.log(riverItem.name)
+    },
+    // 多边形离开事件
+    polygonMouseout(riverItem) {
+      console.log(riverItem.name)
     },
     // 上传按钮
     addUploadRiver() {
-      this.$refs.addStreet.add();
-      this.addRiverShow = false;
+      console.log('123')
+      console.log(currentDistance)
+      console.log(allPolylines)
+      this.$refs.addRiver.add()
+      this.addRiverShow = false
     }
   }
 }
