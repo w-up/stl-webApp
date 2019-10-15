@@ -11,8 +11,8 @@ function resolve (dir) {
  * @returns {boolean}
  */
 function isProd () {
-  // return process.env.NODE_ENV === 'production'
-  return process.env.NODE_ENV === 'http://jleco.jl-shgroup.com'
+  return process.env.NODE_ENV === 'production'
+  // return process.env.NODE_ENV === 'http://jleco.jl-shgroup.com'
 }
 
 const assetsCDN = {
