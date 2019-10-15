@@ -49,7 +49,7 @@
             </a-input>
           </a-form-item>
         </a-tab-pane>
-        <a-tab-pane key="tab2" tab="手机号登录">
+        <!-- <a-tab-pane key="tab2" tab="手机号登录">
           <a-form-item>
             <a-input
               size="large"
@@ -84,7 +84,7 @@
               ></a-button>
             </a-col>
           </a-row>
-        </a-tab-pane>
+        </a-tab-pane> -->
       </a-tabs>
 <!-- 
       <a-form-item>

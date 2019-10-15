@@ -18,7 +18,7 @@ import 'video.js/dist/video-js.css'
 
 
 // mock
-// import './mock' // 模拟数据
+//import './mock' // 模拟数据
 
 import bootstrap from './core/bootstrap'
 import './core/use'
