@@ -49,7 +49,7 @@
             </a-input>
           </a-form-item>
         </a-tab-pane>
-        <a-tab-pane key="tab2" tab="手机号登录">
+        <!-- <a-tab-pane key="tab2" tab="手机号登录">
           <a-form-item>
             <a-input
               size="large"
@@ -84,9 +84,9 @@
               ></a-button>
             </a-col>
           </a-row>
-        </a-tab-pane>
+        </a-tab-pane> -->
       </a-tabs>
-
+<!-- 
       <a-form-item>
         <a-checkbox v-decorator="['rememberMe']">自动登录</a-checkbox>
         <router-link
@@ -94,7 +94,7 @@
           class="forge-password"
           style="float: right;"
         >忘记密码</router-link>
-      </a-form-item>
+      </a-form-item> -->
 
       <a-form-item style="margin-top:24px">
         <a-button
@@ -118,7 +118,7 @@
         <a>
           <a-icon class="item-icon" type="weibo-circle"></a-icon>
         </a>-->
-        <router-link class="register" :to="{ name: 'register' }">注册账户</router-link>
+        <!-- <router-link class="register" :to="{ name: 'register' }">注册账户</router-link> -->
       </div>
     </a-form>
 
@@ -162,13 +162,13 @@ export default {
     }
   },
   created() {
-    get2step({})
-      .then(res => {
-        this.requiredTwoStepCaptcha = res.result.stepCode
-      })
-      .catch(() => {
-        this.requiredTwoStepCaptcha = false
-      })
+    // get2step({})
+    //   .then(res => {
+    //     this.requiredTwoStepCaptcha = res.result.stepCode
+    //   })
+    //   .catch(() => {
+    //     this.requiredTwoStepCaptcha = false
+    //   })
     // this.requiredTwoStepCaptcha = true
   },
   methods: {
@@ -206,8 +206,8 @@ export default {
           console.log('login form', values)
           const loginParams = { ...values }
           delete loginParams.username
-          loginParams[!state.loginType ? 'email' : 'username'] = values.username
-          loginParams.password = md5(values.password)
+          loginParams[!state.loginType ? 'email' : 'account'] = values.username
+          loginParams.password = values.password
           Login(loginParams)
             .then(res => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))

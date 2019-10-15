@@ -35,11 +35,15 @@ const user = {
   actions: {
     // 登录
     Login ({ commit }, userInfo) {
+      console.log(userInfo);
+      
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
-          const result = response.result
-          Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-          commit('SET_TOKEN', result.token)
+          console.log(response);
+          
+          const result = response.data
+          Vue.ls.set(ACCESS_TOKEN,'Bearer '+ result.token, 7 * 24 * 60 * 60 * 1000)
+          commit('SET_TOKEN','Bearer '+ result.token)
           resolve()
         }).catch(error => {
           reject(error)
