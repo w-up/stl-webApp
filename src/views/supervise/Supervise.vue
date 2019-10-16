@@ -83,10 +83,10 @@
         <a-popover placement="left" arrowPointAtCenter trigger="click">
           <template slot="content">
             <a-radio-group>
-              <a-radio-button value="0" @click="addMapClick">点</a-radio-button>
-              <a-radio-button value="1">线</a-radio-button>
+              <a-radio-button value="0" @click="addPoint">点</a-radio-button>
+              <a-radio-button value="1" @click="addLineTool">线</a-radio-button>
               <a-radio-button value="2">面</a-radio-button>
-              <a-radio-button value="3">测量</a-radio-button>
+              <a-radio-button value="3" @click="addLineToolNum">测量</a-radio-button>
             </a-radio-group>
           </template>
           <template slot="title">
@@ -360,20 +360,28 @@ export default {
       // 地图对象
       map: null,
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
-      mapPoint: new Map()
+      mapPoint: new Map(),
+      markerTool: '', // 工具-点
+      lineTool: '', //工具-线
+      lineToolNum: '' //工具-测距
     }
   },
   mounted() {
-    this.initCruisePlan()
+    this.initMap()
   },
   methods: {
-    initCruisePlan() {
-      const that = this
+    initMap() {
       //初始化地图控件
       let zoom = 14
-      that.map = new T.Map('map')
-      that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
-      // this.map.TileLayerOptions({zIndex: 1});
+      this.map = new T.Map('map')
+      this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      this.markerTool = new T.MarkTool(this.map, { follow: true })
+      this.lineTool = new T.PolylineTool(this.map, {
+        showLabel: false
+      })
+      this.lineToolNum = new T.PolylineTool(this.map, {
+        showLabel: true
+      })
     },
     // 复位
     setCenter() {
@@ -390,85 +398,27 @@ export default {
     mapZoomOut() {
       this.map.zoomOut()
     },
-    // 注册添加点击事件
-    addMapClick() {
-      this.map.addEventListener('click', this.MapClick)
+
+    // 工具-点
+    addPoint() {
+      this.markerTool.open()
+      this.markerTool.addEventListener('mouseup', this.addPointed)
     },
-    // 地图点击事件
-    MapClick(e) {
+    // 返回标注点的坐标
+    addPointed(e) {
       console.log(e)
-      const postion = []
-      const that = this
-      let icon = new T.Icon({
-        iconUrl: 'http://api.tianditu.gov.cn/img/map/markerA.png',
-        iconSize: new T.Point(19, 27),
-        iconAnchor: new T.Point(10, 25)
-      })
-      //向地图上添加自定义标注
-      // let marker = new T.Marker(new T.LngLat(postion), {icon: icon});
-      let marker = new T.Marker(new T.LngLat(e.lnglat.lng, e.lnglat.lat), { icon: icon })
-      this.map.addOverLay(marker)
-      //向地图上添加圆
-      let circle = new T.Circle(new T.LngLat(e.lnglat.lng, e.lnglat.lat), 1000, {
-        color: 'blue',
-        weight: 2,
-        opacity: 0.5,
-        fillColor: '#FFFFFF',
-        fillOpacity: 0.5,
-        lineStyle: 'solid'
-      })
-      // this.map.addOverLay(circle)
-
-      // 添加文字标注
-      let labeName = '专向调查点' + (this.mapPoint.size + 1)
-      let label = new T.Label({
-        text: `<b style="border-radius: 3px">${labeName}<b>`,
-        position: marker.getLngLat(),
-        offset: new T.Point(-56, 20)
-      })
-      // this.map.addOverLay(label)
-
-      // 向mapPoint对象添加节点
-      let mapPointChild = { marker: marker, circle: circle, label: label }
-      this.mapPoint.set(labeName, mapPointChild)
-
-      // 向地图注册标注点击事件
-      //移除标注的点击事件，防止多次注册
-      removeMarkerClick()
-      //注册标注的点击事件
-      marker.addEventListener('click', MarkerClick)
-
-      function removeMarkerClick() {
-        //移除标注的点击事件
-        marker.removeEventListener('click', MarkerClick)
-      }
-
-      function MarkerClick(e) {
-        console.log(e)
-        //设置显示地图的中心点和级别
-        // that.map.centerAndZoom(new T.LngLat(e.lnglat.lng, e.lnglat.lat));
-        that.map.centerAndZoom(new T.LngLat(e.lnglat.lng, e.lnglat.lat))
-      }
-      this.removeMapClick() //添加标注点之后移除添加事件
+      this.$refs.riskInfo.riskInfo()
     },
-    // 地图删除事件
-    removeMapClick() {
-      this.map.removeEventListener('click', this.MapClick)
+    // 工具-线
+    addLineTool() {
+      this.lineTool.open()
+      this.lineTool.setTips(`<p style="padding:0px;margin:-3px 0 0;">单击确认起点, 双击结束绘制</p>`)
     },
-    onSelect(selectedKeys, info) {
-      console.log('onSelect', info)
-      this.selectedKeys = selectedKeys
-    },
-    // 弹窗点击确认事件
-    modalClick(v) {
-      this[v].click()
-    },
-    //右侧菜单列表追加任务
-    additionalTask(o) {},
-    // 打开弹窗
-    openPopup(v) {
-      this.transferAttribute = this[v]
-      this.transferAttribute.visible = true
+    // 工具-面
+    // 工具-测量
+    addLineToolNum() {
+      this.lineToolNum.open()
+      this.lineToolNum.setTips(`<p style="padding:0px;margin:-3px 0 0;">单击确认起点, 双击结束绘制</p>`)
     },
     // 设置时间段
     setTime(date, dateString) {
@@ -486,6 +436,7 @@ export default {
       console.log(this.checked)
       console.log(`a-switch to ${checked}`)
     },
+    // 指北针
     compass() {
       this.$refs.riskInfo.riskInfo()
     },
