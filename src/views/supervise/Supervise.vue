@@ -1,6 +1,15 @@
 <template>
-  <div class="supervise">
-    <div id="map" ref="worldMap"></div>
+  <div class="supervise"> 
+    <div id="map" ref="worldMap" v-show="showView"></div>
+    <div>
+      <div class="half">
+          <div id="roadMap" class="vmap"></div>
+      </div>
+      <div class="half">
+          <div id="aerialMap" class="vmap"></div>
+      </div>
+      <div style="clear:both;"></div>
+    </div>
     <!-- <div class="left">
       <world-map></world-map>
     </div>-->
@@ -149,7 +158,7 @@
                 <template slot="content">
                   <a-list size="small">
                     <a-list-item>
-                      <p style="margin:0;">双球对比</p>
+                      <p style="margin:0;" @click="sharedView">双球对比</p>
                     </a-list-item>
                     <a-list-item>
                       <p style="margin:0;">卷帘对比</p>
@@ -347,6 +356,14 @@
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
 import RiskSourceInfo from './modules/RiskSourceInfo'
+
+import 'ol/ol.css';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import TileLayer from 'ol/layer/Tile';
+import LayerGroup from 'ol/layer/Group';
+import XYZ from "ol/source/XYZ"; 
+
 export default {
   name: 'Supervise',
   components: {
@@ -357,6 +374,7 @@ export default {
     return {
       mapType: 'a',
       checked: false,
+      showView:true,
       // 地图对象
       map: null,
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
@@ -443,6 +461,44 @@ export default {
     // 图像
     onMapChange(e) {
       console.log(`checked = ${e.target.value}`)
+    },
+    getTdLayer(lyr){
+        var url = "http://t{0-7}.tianditu.com/DataServer?T=" + lyr + "&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc"
+        var layer = new TileLayer({
+            source: new XYZ({
+            url: url
+            })
+        });
+        return layer;
+    },
+    sharedView(){
+      this.showView = false;
+      this.showOther = false;
+      var vec_c = this.getTdLayer("vec_w");
+      var cva_c = this.getTdLayer("cva_w");
+      var img_c = this.getTdLayer("img_w");
+
+      var veclayerGroup = new LayerGroup({
+          layers:[vec_c,cva_c]
+      });
+      var imglayerGroup = new LayerGroup({
+          layers:[img_c,cva_c]
+      });
+      var view = new View({
+          projection: "EPSG:4326",
+          center: [121.495505, 31.21098],
+          zoom: 14
+      });
+      var map1 = new Map({
+          target: 'roadMap',
+          layers: [veclayerGroup],
+          view: view
+      });
+      var map2 = new Map({
+          target: 'aerialMap',
+          layers: [imglayerGroup],
+          view: view
+      });
     }
   }
 }
@@ -452,6 +508,18 @@ export default {
   position: relative;
   height: calc(100vh - 64px);
   width: 100vw;
+}
+.vmap{
+  width: 100%;
+  height: 100%;
+}
+@media (min-width: 800px) {
+    .half {
+        padding: 0 10px;
+        width: 50%;
+        height:calc(100vh - 64px);
+        float: left;
+    }
 }
 #map {
   width: 100%;
