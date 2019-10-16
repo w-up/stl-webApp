@@ -25,6 +25,9 @@ export default {
         show(){
             this.isvisible = true;
         },
+        close(){
+            this.isvisible = false;
+        },
         searchInfo(val){
             this.isvisible = false;
             console.log(val);
