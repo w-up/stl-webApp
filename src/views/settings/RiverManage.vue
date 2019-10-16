@@ -405,7 +405,7 @@ export default {
       if (this.polylineHandler) this.polylineHandler.close()
       this.polylineHandler = new T.PolylineTool(this.map)
       this.polylineHandler.open()
-      this.polylineHandler.setTips(`<p style="padding:0px;margin:-3px 0 0;">双击完成绘制</p>`)
+      this.polylineHandler.setTips(`<p style="padding:0px;margin:-3px 0 0;">单击确认起点, 双击结束绘制</p>`)
       this.$notification.warning({
         message: '提示',
         description: '请在地图上将河道绘制出来'
