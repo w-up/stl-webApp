@@ -517,10 +517,19 @@ body {
   padding: 0;
 }
 // 测距
-.tdt-label1 {
-  height: 16px;
-  padding: 0 !important;
-  opacity: 1;
-  background-color: #fff;
+.ant-layout, .ant-layout .tdt-label1 {
+  box-sizing: content-box;
+}
+.ant-layout, .ant-layout .tdt-label1 span {
+  box-sizing: content-box;
+}
+.tdt-container a {
+  box-sizing: content-box;
+}
+.tdt-container .tdt-img1, .tdt-img2, .tdt-img3 {
+  padding: 0;
+}
+.tdt-container .tdt-img2 {
+  background-position: -42px -1px;
 }
 
