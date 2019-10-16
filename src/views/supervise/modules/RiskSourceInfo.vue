@@ -161,6 +161,7 @@ export default {
   flex-wrap: wrap;
   img {
     width: 30%;
+    height: 30%;
     margin-bottom: 13px;
   }
 }
