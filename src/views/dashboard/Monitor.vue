@@ -310,7 +310,7 @@
             </ul>
           </div>
           <search-river ref="selectPatrol" class="riverSearchModal"></search-river>
-          <add-survey ref="addSurvey" class="riverSearchModal"></add-survey>
+          <add-survey ref="addSurvey" class="riverSearchModal" ></add-survey>
         </div>
       </template>
       <template slot="paneR">
@@ -342,7 +342,7 @@
                   <div class="riverInfo">
                     <div class="river_info">
                       <a-row type="flex" justify="space-between" align="middle">
-                        <a-col :span="8">黄浦江</a-col>
+                        <a-col :span="8" @click="searchMap">黄浦江</a-col>
                         <a-col :span="10">
                           <a-select defaultValue @change="handleChange" style="width:100%;">
                             <a-select-option value="jack">Jack</a-select-option>
@@ -939,6 +939,37 @@ const personInfo = [
     position: '司机'
   }
 ]
+
+const riverData = [
+  {
+    lat: 31.21882,
+    lng: 121.50364
+  },
+  {
+    lat: 31.21265,
+    lng: 121.50227
+  },
+  {
+    lat: 31.20583,
+    lng: 121.49703
+  },
+  {
+    lat: 31.19915,
+    lng: 121.49197
+  },
+  {
+    lat: 31.19702,
+    lng: 121.49591
+  },
+  {
+    lat: 31.2164,
+    lng: 121.50759
+  },
+  {
+    lat: 31.21948,
+    lng: 121.50759
+  }
+]
 export default {
   name: 'Analysis',
   components: {
@@ -996,6 +1027,11 @@ export default {
       layer:[],
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
       mapPoint: new Map(),
+      lng:'',
+      lat:'',
+      riverData,
+      polygon: '', // 多边形对象
+      markerInfo:'',//任务弹出框
       firstShow: true,
       childNode: false,
       checked: false,
@@ -1129,6 +1165,8 @@ export default {
     //选中添加河道
     addRiverBtn() {
       this.$refs.selectPatrol.show()
+      this.$refs.addSurvey.close()
+      this.clearMap()
     },
     //右侧模块选择框修改
     handleChange() {},
@@ -1209,38 +1247,10 @@ export default {
     //添加调查点
     addSurveyPoint(){
       this.removeMapClick();
+      this.clearMap()
       this.map.addEventListener("click", this.MapClick);
+      this.$refs.selectPatrol.close()
       this.$refs.addSurvey.show();
-
-      // this.layer.getSource().clear();
-      // this.map.removeLayer(this.layer);
-
-      // var vec_c = this.getTdLayer("vec_w");
-      // var cva_c = this.getTdLayer("cva_w");
-      // var veclayerGroup = new LayerGroup({
-      //     layers:[vec_c,cva_c]
-      // });
-
-      // var source = new VectorSource({wrapX:false});
-      // var vetor = new VectorLayer({
-      //   source:source
-      // });
-
-      // this.map = new Map({
-      //   layers:[vetor,source],
-      //   target:'map',
-      //   view:new View({
-      //     projection: "EPSG:4326",
-      //     center: [121.495505, 31.21098],
-      //     zoom: 14
-      //   })
-      // });
-      // var draw = new Draw({
-      //   source:source,
-      //   type:'Circle'
-      // });
-      // this.map.addInteraction(draw);
-      // this.map.addLayer(veclayerGroup);
     },
     // 地图点击事件
     MapClick(e) {
@@ -1251,10 +1261,22 @@ export default {
         iconSize: new T.Point(19, 27),
         iconAnchor: new T.Point(10, 25)
       });
-      //向地图上添加自定义标注
-      // let marker = new T.Marker(new T.LngLat(postion), {icon: icon});
+      //向地图上添加中心标注
+      this.lng = e.lnglat.lng;
+      this.lat = e.lnglat.lat;
+      console.log("坐标:" + this.lng , this.lat);
       let marker = new T.Marker(new T.LngLat(e.lnglat.lng, e.lnglat.lat), {icon: icon});
+      // let marker1   = new T.Marker(new T.LngLat(e.lnglat.lng+1, e.lnglat.lat+1));
+      console.log("marker:" +marker);
       this.map.addOverLay(marker);
+      // this.map.addOverLay(marker1);
+      var infoWin = new T.InfoWindow();
+      var sContent = "<div style='width:100px;height:100%;text-align:center;line-height:25px;'><div style='border-bottom:1px solid green;width:100%;height:100%;'>360</div>"+
+                      "<div @click='addPoint'>人工调查点</div><div>水质监测点</div></div>";
+      infoWin.setContent(sContent);
+      marker.addEventListener("click",function(){
+        marker.openInfoWindow(infoWin);
+      })
       //向地图上添加圆
       let circle = new T.Circle(new T.LngLat(e.lnglat.lng, e.lnglat.lat), 1000, {
         color: "blue",
@@ -1264,47 +1286,94 @@ export default {
         fillOpacity: 0.4,
         lineStyle: "solid"
       });
-      this.map.addOverLay(circle);
-
-      // 添加文字标注
-      var n = 0;
-      let labeName = '专向调查点' + (n + 1);
-      let label = new T.Label({
-        text: `<b style="border-radius: 3px">${labeName}<b>`,
-        position: marker.getLngLat(),
-        offset: new T.Point(-56, 20)
-      });
-      this.map.addOverLay(label);
-
-      // 向mapPoint对象添加节点
-      let mapPointChild = {marker: marker, circle: circle, label: label};
-      this.mapPoint.set(labeName, mapPointChild);
-
-
+      // this.map.addOverLay(marker);
       // 向地图注册标注点击事件
+      this.map.addOverLay(circle);
+      //禁用线编辑
+      circle.disableEdit(); 
+      this.addMorePoint();
       //移除标注的点击事件，防止多次注册
-      removeMarkerClick();
-      //注册标注的点击事件
-      marker.addEventListener("click", MarkerClick);
-
-      function removeMarkerClick() {
-        //移除标注的点击事件
-        marker.removeEventListener("click", MarkerClick);
-      }
-
-      function MarkerClick(e) {
-        console.log("这是标注点击事件" + e);
-        console.log(e);
-        //设置显示地图的中心点和级别
-        // that.map.centerAndZoom(new T.LngLat(e.lnglat.lng, e.lnglat.lat));
-        that.map.centerAndZoom(new T.LngLat(e.lnglat.lng + 0.01, e.lnglat.lat));
-      }
-
+      this.removeMapClick()
+       // function MarkerClick(e) {
+      //   console.log("这是标注点击事件" + e);
+      //   console.log(e);
+      //   that.map.centerAndZoom(new T.LngLat(e.lnglat.lng + 0.01, e.lnglat.lat));
+      // } 
     },
     // 地图删除事件
     removeMapClick() {
       this.map.removeEventListener("click", this.MapClick);
-    }
+    },
+    addPoint(){
+      this.map.removeEventListener("click", this.MapClick);
+    },
+    //清空地图
+    clearMap(){
+       this.map.clearOverLays();
+    },
+    //添加地图上任务点
+    addMorePoint(){
+      var dLng = this.lng;
+      var dLat = this.lat;
+      var data_info = [];
+      for(var i = 0;i <6; i++){
+         dLng = dLng+(0.0001 * (Math.floor(Math.random() * 10 + 1)));
+         dLat = dLat+(0.0001 * (Math.floor(Math.random() * 10 + 1)));
+         data_info[i] = [dLng,dLat,"地址:地址"+i];     
+      }
+      for(var i=0;i<data_info.length;i++){
+        var marker = new T.Marker(new T.LngLat(data_info[i][0],data_info[i][1]));
+        var content = data_info[i][2];
+        console.log("content" + content);
+        this.map.addOverLay(marker);
+        // marker.addEventListener("click",function(e){
+        //   var point = e.lnglat;
+        //   console.log(point);
+        //   marker = new T.Marker(point);
+        //   var markerInfoWin = new T.InfoWindow(content,{offset:new T.Point(0,-30)});
+        //   this.map.openInfoWindow(markerInfoWin,point);
+        // })
+      }
+    },
+    //高亮河道
+    searchMap(){
+      this.removeMapClick()
+      this.clearMap();
+     // 绘制多边形 ,'blue', 3, 0
+      this.polygon = new T.Polygon(this.riverData,{
+        color:'blue',
+        weight:3,
+        opacity:0.5,
+        fillColor:'#FFFFFF',
+        fillOpacity:0
+      });
+      this.map.addOverLay(this.polygon);
+      //添加标注点
+      this.addRiverPoint();
+    },
+    addRiverPoint(){
+      var markers = new T.Marker(new T.LngLat(121.50362,31.21880));
+      this.map.addOverLay(markers);
+      this.markerInfo = 
+        "<div style='margin:0px;'>"+
+          "<div style='line-height:30px;font-size:18px;margin-bottom:5px'>"+
+          "采集水样标本</div>"+
+          "<div style='line-height:25px;'>"+
+          "<div><span style='color:;'>任务名称</span>：水样调查"+"</div>"+
+          "<div>任务内容：现场测定：ph、溶解氧、浊度（3次）、电导率、透明度"+"</div>"+
+          "<div>位置信息：上海市徐汇区龙川北路422-5"+"</div>"+
+          "<div>备注："+
+            "<div>当月计划执行次数：5"+"</div>"+
+            "<div>当月待执行次数：2"+"</div>"+
+          "</div>"+
+          "</div>"+"</div>"
+      var content = this.markerInfo;
+      var markerInfoWin = new T.InfoWindow();
+      markerInfoWin.setContent(content);
+      markers.addEventListener("click", function () {
+          markers.openInfoWindow(markerInfoWin);
+      });
+    }   
   }
 }
 </script>
@@ -1354,6 +1423,9 @@ export default {
       font-size: 15px;
       margin: 0;
     }
+  }
+  .tdt-infowindow-content{
+    margin: 0;
   }
 }
 </style>
