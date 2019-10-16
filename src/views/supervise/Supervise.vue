@@ -438,13 +438,13 @@ export default {
     // 工具-线
     addLineTool() {
       this.lineTool.open()
-      this.lineTool.setTips(`<p style="padding:0px;margin:-3px 0 0;">单击确认起点, 双击结束绘制</p>`)
+      this.lineTool.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
     },
     // 工具-面
     // 工具-测量
     addLineToolNum() {
       this.lineToolNum.open()
-      this.lineToolNum.setTips(`<p style="padding:0px;margin:-3px 0 0;">单击确认起点, 双击结束绘制</p>`)
+      this.lineToolNum.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
     },
     // 设置时间段
     setTime(date, dateString) {
