@@ -374,7 +374,7 @@
                   <div class="riverInfo">
                     <div class="river_info">
                       <a-row type="flex" justify="space-between" align="middle">
-                        <a-col :span="10">专向调查点</a-col>
+                        <a-col :span="10" @click="searchMap">专向调查点</a-col>
                         <a-col :span="3">
                           <a-button shape="circle" icon="close" style="font-size:8px;"></a-button>
                         </a-col>
@@ -1316,7 +1316,7 @@ export default {
       var dLng = this.lng;
       var dLat = this.lat;
       var data_info = [];
-      for(var i = 0;i <6; i++){
+      for(var i = 0;i <2; i++){
          dLng = dLng+(0.0001 * (Math.floor(Math.random() * 10 + 1)));
          dLat = dLat+(0.0001 * (Math.floor(Math.random() * 10 + 1)));
          data_info[i] = [dLng,dLat,"地址:地址"+i];     
@@ -1352,7 +1352,7 @@ export default {
       this.addRiverPoint();
     },
     addRiverPoint(){
-      var markers = new T.Marker(new T.LngLat(121.50362,31.21880));
+      var markers = new T.Marker(new T.LngLat(121.50162,31.20880));
       this.map.addOverLay(markers);
       this.markerInfo = 
         "<div style='margin:0px;'>"+
