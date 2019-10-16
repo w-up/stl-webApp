@@ -120,13 +120,13 @@ export const asyncRouterMap = [
             path: '/settings/UserRootManage',
             name: 'UserRootManage',
             component: () => import('@/views/settings/UserRootManage'),
-            meta: { title: '角色管理', keepAlive: true, permission: [ 'table' ] }
+            meta: { title: '角色管理', keepAlive: false, permission: [ 'table' ] }
           },
           {
             path: '/settings/staffManage',
             name: 'staffManage',
             component: () => import('@/views/settings/staffManage'),
-            meta: { title: '用户管理', keepAlive: true, permission: [ 'table' ] }
+            meta: { title: '用户管理', keepAlive: false, permission: [ 'table' ] }
           },
         ]
       },
@@ -135,14 +135,14 @@ export const asyncRouterMap = [
         name: 'staffAdd',
         hidden: true,
         component: () => import('@/views/settings/modules/staffAdd'),
-        meta: { title: '添加', keepAlive: true, permission: [ 'table' ] }
+        meta: { title: '添加', keepAlive: false, permission: [ 'table' ] }
       },
       {
         path: '/settings/role',
         name: 'roleAdd',
         hidden: true,
         component: () => import('@/views/settings/modules/roleAdd'),
-        meta: { title: '添加', keepAlive: true, permission: [ 'table' ] }
+        meta: { title: '添加', keepAlive: false, permission: [ 'table' ] }
       },
       // result
       {

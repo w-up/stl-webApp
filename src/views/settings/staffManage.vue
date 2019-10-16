@@ -103,8 +103,7 @@ export default {
       var data ={
 
       }
-      userList(data)
-        .then(res => {
+      userList(data).then(res => {
          var arr = res.data.data
          for (let i = 0; i < arr.length; i++) {
           arr[i].type=arr[i].type.name
@@ -112,8 +111,7 @@ export default {
          }
          this.data = arr
          console.log(arr);
-        })
-        .catch(err => {
+        }).catch(err => {
 
       })
     },
@@ -121,12 +119,10 @@ export default {
       var data ={
         id:id
       }
-      userEnable(data)
-        .then(res => {
+      userEnable(data).then(res => {
           this.$message.success('启用成功');
           this.getList()
-        })
-        .catch(err => {
+        }).catch(err => {
           this.$message.error(err.response.data.message);
       })
     },
@@ -134,12 +130,10 @@ export default {
       var data ={
         id:id
       }
-      userProhibit(data)
-        .then(res => {
+      userProhibit(data).then(res => {
           this.$message.success('禁用成功');
          this.getList()
-        })
-        .catch(err => {
+        }).catch(err => {
           this.$message.error(err.response.data.message);
       })
     },
@@ -150,12 +144,10 @@ export default {
       var data ={
         id:this.id
       }
-      userDel(data)
-        .then(res => {
+      userDel(data).then(res => {
           this.$message.success('删除成功');
           this.getList()
-        })
-        .catch(err => {
+        }).catch(err => {
           this.$message.error(err.response.data.message);
       })
     },
