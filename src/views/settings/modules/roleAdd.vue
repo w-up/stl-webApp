@@ -8,9 +8,9 @@
             </FormItem>
             <FormItem label="类型" prop="type" >
                 <a-select  style="width: 200px" placeholder="请选择" v-model="list.type">
-                    <a-select-option value="jack">外勤</a-select-option>
-                    <a-select-option value="lucy">内业</a-select-option>
-                    <a-select-option value="123">外部用户</a-select-option>
+                    <a-select-option value="worker">外勤</a-select-option>
+                    <a-select-option value="admin">内业</a-select-option>
+                    <a-select-option value="viewer">外部用户</a-select-option>
                 </a-select>
             </FormItem>
             <FormItem label="名称" prop="name">
@@ -52,7 +52,7 @@
             </FormItem>
             <FormItem >
                  <Button  style="margin-right:15px;" @click="backPage">返回</Button>
-                <Button type="success"  style="">保存</Button>
+                <Button type="success"  style="" @click="preservation">保存</Button>
             </FormItem>
         </Form>
     </a-card >
@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import { roleDetails, rolePreservation } from '@/api/login'
 const columns = [{
   title: '名称',
   dataIndex: 'name',
@@ -73,6 +74,7 @@ const columns = [{
 export default {
     data(){
         return{
+            id:this.$route.query.id,
             list:{
                 number:'',
                 type:'',
@@ -102,7 +104,49 @@ export default {
             ]
         }
     },
+    mounted(){
+        if (this.$route.query.id!='') {
+
+            this.getList()
+        }
+    },
     methods:{
+        getList(){
+            var data ={
+                id:this.$route.query.id
+            }
+            roleDetails(data).then(res => {
+                var arr = res.data
+                this.list.type=arr.type.code
+                this.list.name=arr.name
+            }).catch(err => {
+               
+                
+            })
+        },
+        preservation(){
+            this.$refs['formValidate'].validate((valid) => {
+                if (valid) {
+                    var data ={
+                        // code:this.list.number,
+                        name:this.list.name,
+                        type:this.list.type,
+                    }
+                    if (this.id) {
+                        data.id = this.id
+                    }
+                    rolePreservation(data).then(res => {
+                        this.$message.success('成功');
+                        this.backPage()
+                    }).catch(err => {
+                        this.$message.error(err.response.data.message);
+                    })
+                } else {
+                    this.$message.error('请全部填写');
+                }
+            })
+            
+        },
         backPage(){
             this.$router.go(-1)
         }

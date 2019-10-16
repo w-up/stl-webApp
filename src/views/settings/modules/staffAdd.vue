@@ -132,18 +132,22 @@ export default {
         }
     },
     mounted(){
-        this.getList()  
+        
+        if (this.$route.query.id!='') {
+            this.getList()
+        }
+          
     },
     methods:{
         getList(){
-            console.log('1');
-            
             var data ={
                 id:this.id
             }
             userDetails(data).then(res => {
-
-                console.log(res);
+                var arr = res.data
+                this.list.type=arr.type.code
+                this.list.name=arr.name
+                this.list.phone=arr.mobile
             }).catch(err => {
                
                 
@@ -158,9 +162,9 @@ export default {
                         mobile:this.list.phone,
                         type:this.list.type,
                     }
-                    // if (this.id) {
-                    //     data.id = this.id
-                    // }
+                    if (this.id) {
+                        data.id = this.id
+                    }
                     userPreservation(data).then(res => {
                         this.$message.success('成功');
                         this.backPage()

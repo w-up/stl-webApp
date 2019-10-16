@@ -64,7 +64,50 @@ export function userDel (parameter) {
     method: 'post',
   })
 }
-
+//角色保存
+export function rolePreservation (parameter) {
+  return axios({
+    url: '/server/data/admin/auth/role/save',
+    method: 'post',
+    data: parameter
+  })
+}
+//角色列表
+export function roleList (parameter) {
+  return axios({
+    url: '/server/data/admin/auth/role/page',
+    method: 'get',
+    data: parameter
+  })
+}
+//角色详情
+export function roleDetails (parameter) {
+  return axios({
+    url: '/server/data/admin/auth/role/detail/'+parameter.id,
+    method: 'get',
+  })
+}
+//角色启用
+export function roleEnable (parameter) {
+  return axios({
+    url: '/server/data/admin/auth/role/actived/'+parameter.id,
+    method: 'post',
+  })
+}
+//角色禁用
+export function roleProhibit (parameter) {
+  return axios({
+    url: '/server/data/admin/auth/role/inactived/'+parameter.id,
+    method: 'post',
+  })
+}
+//角色删除
+export function roleDel (parameter) {
+  return axios({
+    url: '/server/data/admin/auth/role/remove/'+parameter.id,
+    method: 'post',
+  })
+}
 
 export function getSmsCaptcha (parameter) {
   return axios({
