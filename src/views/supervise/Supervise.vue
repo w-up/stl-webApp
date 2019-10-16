@@ -1,14 +1,21 @@
 <template>
   <div class="supervise"> 
     <div id="map" ref="worldMap" v-show="showView"></div>
-    <div>
+    <!-- <div class="showMap" v-show="!showView">
       <div class="half">
           <div id="roadMap" class="vmap"></div>
       </div>
       <div class="half">
           <div id="aerialMap" class="vmap"></div>
       </div>
-      <div style="clear:both;"></div>
+    </div> -->
+    <div class="showMap" id="showmap">
+      <div class="half">
+          <div id="roadMap" class="vmap"></div>
+      </div>
+      <div class="half">
+          <div id="aerialMap" class="vmap"></div>
+      </div>
     </div>
     <!-- <div class="left">
       <world-map></world-map>
@@ -157,8 +164,8 @@
               <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
                 <template slot="content">
                   <a-list size="small">
-                    <a-list-item>
-                      <p style="margin:0;" @click="sharedView">双球对比</p>
+                    <a-list-item @click="sharedView">
+                      <p style="margin:0;">双球对比</p>
                     </a-list-item>
                     <a-list-item>
                       <p style="margin:0;">卷帘对比</p>
@@ -386,6 +393,7 @@ export default {
   },
   mounted() {
     this.initMap()
+    // this.showMap()
   },
   methods: {
     initMap() {
@@ -471,9 +479,7 @@ export default {
         });
         return layer;
     },
-    sharedView(){
-      this.showView = false;
-      this.showOther = false;
+    showMap(){
       var vec_c = this.getTdLayer("vec_w");
       var cva_c = this.getTdLayer("cva_w");
       var img_c = this.getTdLayer("img_w");
@@ -499,6 +505,12 @@ export default {
           layers: [imglayerGroup],
           view: view
       });
+    },
+    sharedView(){
+      this.showView = false;
+      var show = document.getElementById("showmap");
+      show.style.display = "block";
+      this.showMap()
     }
   }
 }
@@ -512,6 +524,9 @@ export default {
 .vmap{
   width: 100%;
   height: 100%;
+}
+.showMap{
+  display: none;
 }
 @media (min-width: 800px) {
     .half {
