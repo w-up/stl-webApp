@@ -41,7 +41,7 @@
           <!-- 今日计划监管页轨迹 -->
           <div v-if="nosuperKey === 'personCard'">
             <div class="super_weather">
-              <img src="../../assets/weather.jpg" alt />
+              <!-- <img src="../../assets/weather.jpg" alt /> -->
             </div>
             <div class="left_riverInfo">
               <a-tabs defaultActiveKey="1" @change="changeInfo">
