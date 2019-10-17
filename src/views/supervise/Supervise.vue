@@ -536,6 +536,7 @@ export default {
     sharedView(){
       if(this.sharedChecked == true){
         this.showView = false;
+        this.swipeChecked = false;
         var layerMap = document.getElementById("layerMap");
         layerMap.style.display = "none";
         var show = document.getElementById("showmap");
