@@ -96,13 +96,13 @@ export const asyncRouterMap = [
             path: '/settings/RiskTypeManage',
             name: 'RiskTypeManage',
             component: () => import('@/views/settings/RiskTypeManage'),
-            meta: { title: '风险源类型管理', keepAlive: true, permission: [ 'table' ] }
+            meta: { title: '风险源类型管理', keepAlive: false, permission: [ 'table' ] }
           },
           {
             path: '/settings/drawManage',
             name: 'drawManage',
             component: () => import('@/views/settings/drawManage'),
-            meta: { title: '绘制类型管理', keepAlive: true, permission: [ 'table' ] }
+            meta: { title: '绘制类型管理', keepAlive: false, permission: [ 'table' ] }
           },
           {
             path: '/settings/ProjectManage',

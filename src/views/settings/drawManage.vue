@@ -9,15 +9,27 @@
       <a-button type="primary" icon="plus" style="margin-bottom:15px" @click="visible=true">添加</a-button>
       <a-table :columns="columns" :dataSource="data" bordered>
         <template slot="operation" slot-scope="row">
-          <div v-if="row.key!='001'">
-            <a @click="visible=true">编辑</a>
+          <div v-if="row.name !='风险源'">
+            <a @click="add(row.id)">编辑</a>
             <a-divider type="vertical" />
-            <a @click="handleSub(id)">删除</a>
+            <a-popconfirm
+              title="是否确认删除?"
+              @confirm="confirm"
+              @cancel="cancel"
+              okText="确认"
+              cancelText="取消"
+            >
+              <a @click="del(row.id)">删除</a>
+            </a-popconfirm>
           </div>
         </template>
       </a-table>
     </a-card>
-    <a-modal title="添加/编辑风险源" v-model="visible">
+    <a-modal title="添加/编辑风险源" v-model="visible"
+      @ok="handleOk"
+
+      @cancel="handleCancel"
+    >
       <Form ref="formValidate" :model="list" :rules="ruleValidate" :label-width="110">
         <FormItem label="绘制类型" prop="name">
           <Input v-model="list.name" placeholder="请输入" style="width:200px"/>
@@ -28,6 +40,7 @@
 </template>
 
 <script>
+import { paramList, paramSave,paramDel } from '@/api/login'
 const columns = [
   {
     title: '序号',
@@ -47,7 +60,9 @@ const columns = [
 export default {
   data() {
     return {
+      id:'',
       list: {
+        id:'',
         name: ''
       },
       ruleValidate: {
@@ -56,23 +71,79 @@ export default {
       visible: false,
       columns,
       data: [
-        {
-          key: '001',
-          name: '风险源'
-        },
-        {
-          key: '002',
-          name: '河道连通性'
-        },
-        {
-          key: '003',
-          name: '水陆分布'
-        }
+       
       ]
     }
   },
   watch: {},
-  methods: {}
+  mounted(){
+    this.getList()
+  },
+  methods: {
+    getList(){
+      var data ={
+        type:'draw_type'
+      }
+      paramList(data).then(res => {
+         var arr = res.data
+         for (let i = 0; i < arr.length; i++) {
+          arr[i].key=i+1
+         }
+         this.data = arr
+        }).catch(err => {
+
+      })
+    },
+    del(id){
+      this.id=id
+    },
+    add(id){
+      for (let i = 0; i < this.data.length; i++) {
+        if (this.data[i].id==id) {
+          this.list.name =this.data[i].name
+          break
+        }  
+      }
+      this.list.id=id
+      this.visible=true
+    },
+    confirm(e) {
+      var data ={
+        id:this.id
+      }
+      paramDel(data).then(res => {
+          this.$message.success('删除成功');
+          
+          this.getList()
+        }).catch(err => {
+          this.$message.error(err.response.data.message);
+      })
+    },
+    cancel(e) {
+
+    },
+    handleOk(e) {
+      var data ={
+        id:this.list.id,
+        type:'draw_type',
+        name:this.list.name
+      }
+      paramSave(data).then(res => {
+          this.$message.success('保存成功');
+          this.visible = false;
+          this.list.id=''
+          this.list.name=''
+          this.getList()
+        }).catch(err => {
+          this.$message.error(err.response.data.message);
+      })
+    },
+    handleCancel(e) {
+      this.list.id=''
+      this.list.name=''
+      this.visible = false;
+    },
+  }
 }
 </script>
 
