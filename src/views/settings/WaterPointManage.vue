@@ -2,7 +2,7 @@
   <div class="supervise">
     <!-- 任务管理 -->
     <div class="left">
-      <div id="map" ref="worldMap" @click="addTaskPoint"></div>
+      <div id="map" ref="worldMap"></div>
       <!-- <world-map></world-map> -->
       <div class="mapChange">
         <a-row style="width:100%">
@@ -19,17 +19,12 @@
       <a-tabs defaultActiveKey="1" @change="callback" v-model="actionTab" class="custom_tabs">
         <a-tab-pane tab="固定监测点" key="1">
           <section class="task_face">
-            <a-list
-              size="small"
-              bordered
-              :dataSource="lineTaskList"
-              style="margin-top: 10px;"
-            >
+            <a-list size="small" bordered :dataSource="fixedPointList" style="margin-top: 10px;">
               <a-list-item
                 slot="renderItem"
                 slot-scope="item, index"
                 :key="index"
-                @click="chooseLineTask(item.name)"
+                @click="fixedPoint(item.name)"
                 :class="{active_item: item.clicked}"
               >
                 <a-row style="width:100%">
@@ -37,7 +32,7 @@
                   <a-col :span="4" style="text-align:right;">
                     <a-popconfirm
                       title="确定要删除吗?"
-                      @confirm="confirmDelete(item.name)"
+                      @confirm="fixedConfirmDelete(item.name)"
                       @cancel="cancelDelete"
                       okText="确定"
                       cancelText="取消"
@@ -52,17 +47,12 @@
         </a-tab-pane>
         <a-tab-pane tab="人工监测点" key="2" forceRender>
           <section class="task_face">
-            <a-list
-              size="small"
-              bordered
-              :dataSource="lineTaskList"
-              style="margin-top: 10px;"
-            >
+            <a-list size="small" bordered :dataSource="peoplePointList" style="margin-top: 10px;">
               <a-list-item
                 slot="renderItem"
                 slot-scope="item, index"
                 :key="index"
-                @click="chooseLineTask(item.name)"
+                @click="peoplePoint(item.name)"
                 :class="{active_item: item.clicked}"
               >
                 <a-row style="width:100%">
@@ -70,7 +60,7 @@
                   <a-col :span="4" style="text-align:right;">
                     <a-popconfirm
                       title="确定要删除吗?"
-                      @confirm="confirmDelete(item.name)"
+                      @confirm="peopleConfirmDelete(item.name)"
                       @cancel="cancelDelete"
                       okText="确定"
                       cancelText="取消"
@@ -84,12 +74,7 @@
           </section>
         </a-tab-pane>
       </a-tabs>
-      <a-button
-        type="primary"
-        block
-        class="bottom_add"
-        @click="addTask"
-      >添加</a-button>
+      <a-button type="primary" block class="bottom_add" @click="addTask">添加</a-button>
     </div>
     <!-- 添加 -->
     <add-water-point ref="addWaterPoint"></add-water-point>
@@ -109,22 +94,15 @@ export default {
       addRiverShow: false, // 气泡卡片
       actionTab: '1', //tab
 
-      lineTaskList: [
-        {
-          id: 0,
-          name: '监测点1',
-          clicked: true
-        },
-        {
-          id: 1,
-          name: '监测点2',
-          clicked: false
-        },
-        {
-          id: 2,
-          name: '监测点3',
-          clicked: false
-        }
+      fixedPointList: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.21493, lng: 121.49566 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
+      ],
+      peoplePointList: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.26493, lng: 121.45566 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.27344, lng: 121.43892 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.25649, lng: 121.43712 } }
       ],
       addRiverShow: false,
       addLineShow: false, // 线路任务显示
@@ -133,50 +111,6 @@ export default {
       checkNick: false,
       form: this.$form.createForm(this),
 
-      defaultRiver: '黄浦江',
-      riverList: [
-        {
-          id: 0,
-          name: '黄浦江',
-          clicked: true
-        },
-        {
-          id: 1,
-          name: '大治河',
-          clicked: false
-        },
-        {
-          id: 2,
-          name: '川杨河',
-          clicked: false
-        },
-        {
-          id: 3,
-          name: '蕰藻浜',
-          clicked: false
-        },
-        {
-          id: 4,
-          name: '龙华港',
-          clicked: false
-        },
-        {
-          id: 5,
-          name: '太浦河',
-          clicked: false
-        },
-        {
-          id: 6,
-          name: '太湖',
-          clicked: false
-        }
-      ],
-
-      expandedKeys: ['0-0-0', '0-0-1'],
-      autoExpandParent: true,
-      checkedKeys: ['0-0-0'],
-      selectedKeys: [],
-
       // 地图对象
       map: {},
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
@@ -184,231 +118,129 @@ export default {
     }
   },
   mounted() {
-    this.initCruisePlan()
-  },
-  watch: {
-    checkedKeys(val) {
-      console.log('onCheck', val)
-    }
+    this.initMap()
   },
   methods: {
-    initCruisePlan() {
-      const that = this
+    initMap() {
       //初始化地图控件
       let zoom = 14
-      that.map = new T.Map('map')
-      that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
-      // this.map.TileLayerOptions({zIndex: 1});
-
-      // 初始化天气插件
-      /*        let a = d.getElementById('weather-float-he')
-        if (a) {
-          a.parentNode.removeChild(a)
-        }
-        a = d.createElement('div')
-        a.id = 'weather-float-he'
-        let b = d.getElementsByTagName('body')[0]
-        b.appendChild(a);
-        let c = d.createElement('link')
-        c.rel = 'stylesheet'
-        c.href = 'https://apip.weatherdt.com/float/static/css/tqw_widget_float.css?v=0101'
-        let s = d.createElement('script')
-        s.src = 'https://apip.weatherdt.com/float/static/js/tqw_widget_float.js?v=0101'
-        let sn = d.getElementsByTagName('script')[0]
-        sn.parentNode.insertBefore(c, sn)
-        sn.parentNode.insertBefore(s, sn);*/
+      this.map = new T.Map('map')
+      this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      this.markerTool = new T.MarkTool(this.map, { follow: true })
+      this.allPointTask(this.fixedPointList)
     },
-    hiddenMenuChange(expandedKeys) {
-      console.log('onExpand', expandedKeys)
-      // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-      // or, you can remove all expanded children keys.
-      this.expandedKeys = expandedKeys
+    allPointTask(pointLists) {
+      this.map.clearOverLays()
+      for (const item of pointLists) {
+        this.drawAllPoint(item.latlng)
+      }
     },
-    // 注册事件
-    // 注册添加点击事件
-    addMapClick() {
-      this.removeMapClick()
-      this.map.addEventListener('click', this.MapClick)
-    },
-    // 地图点击事件
-    MapClick(e) {
-      const postion = []
-      const that = this
-      let icon = new T.Icon({
-        iconUrl: 'http://api.tianditu.gov.cn/img/map/markerA.png',
-        iconSize: new T.Point(19, 27),
-        iconAnchor: new T.Point(10, 25)
-      })
-      //向地图上添加自定义标注
-      // let marker = new T.Marker(new T.LngLat(postion), {icon: icon});
-      let marker = new T.Marker(new T.LngLat(e.lnglat.lng, e.lnglat.lat), { icon: icon })
+    // 添加标注图片
+    drawAllPoint(latlng) {
+      let marker = new T.Marker(latlng)
       this.map.addOverLay(marker)
-      //向地图上添加圆
-      let circle = new T.Circle(new T.LngLat(e.lnglat.lng, e.lnglat.lat), 1000, {
-        color: 'blue',
-        weight: 2,
-        opacity: 0.5,
-        fillColor: '#FFFFFF',
-        fillOpacity: 0.5,
-        lineStyle: 'solid'
-      })
-      this.map.addOverLay(circle)
-
-      // 添加文字标注
-      let labeName = '专向调查点' + (this.mapPoint.size + 1)
-      let label = new T.Label({
-        text: `<b style="border-radius: 3px">${labeName}<b>`,
-        position: marker.getLngLat(),
-        offset: new T.Point(-56, 20)
-      })
-      this.map.addOverLay(label)
-
-      // 向mapPoint对象添加节点
-      let mapPointChild = { marker: marker, circle: circle, label: label }
-      this.mapPoint.set(labeName, mapPointChild)
-
-      // 向地图注册标注点击事件
-      //移除标注的点击事件，防止多次注册
-      removeMarkerClick()
-      //注册标注的点击事件
-      marker.addEventListener('click', MarkerClick)
-
-      function removeMarkerClick() {
-        //移除标注的点击事件
-        marker.removeEventListener('click', MarkerClick)
-      }
-
-      function MarkerClick(e) {
-        console.log('这是标注点击事件' + e)
-        console.log(e)
-        //设置显示地图的中心点和级别
-        // that.map.centerAndZoom(new T.LngLat(e.lnglat.lng, e.lnglat.lat));
-        that.map.centerAndZoom(new T.LngLat(e.lnglat.lng + 0.01, e.lnglat.lat))
+      marker.addEventListener('click', this.taskPointClick)
+      marker.addEventListener('mouseover', this.taskPointClick)
+      marker.addEventListener('mouseout	', this.taskPointClick)
+    },
+    // 任务点点击移入移出事件
+    taskPointClick(index) {
+      if (this.actionTab == 1) {
+        for (const item of this.fixedPointList) {
+          if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+            item.clicked = true
+          } else {
+            item.clicked = false
+          }
+        }
+      } else {
+        for (const item of this.peoplePointList) {
+          if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+            item.clicked = true
+          } else {
+            item.clicked = false
+          }
+        }
       }
     },
-    // 地图删除事件
-    removeMapClick() {
-      this.map.removeEventListener('click', this.MapClick)
-    },
-    onSelect(selectedKeys, info) {
-      console.log('onSelect', info)
-      this.selectedKeys = selectedKeys
-    },
-    // 弹窗点击确认事件
-    modalClick(v) {
-      this[v].click()
-    },
-    //右侧菜单列表追加任务
-    additionalTask(o) {},
-    // 打开弹窗
-    openPopup(v) {
-      this.transferAttribute = this[v]
-      this.transferAttribute.visible = true
-    },
-    // 添加任务点
+    // 注册添加点击事件
     addTaskPoint() {
-      this.$refs.addTaskPoint.add()
+      this.markerTool.open()
+      this.markerTool.getMarkers()
+      for (var i = 0; i < this.markerTool.length; i++) {
+        this.markerTool[i].disableDragging()
+      }
+      this.markerTool.addEventListener('mouseup', this.addTaskPointed)
     },
+    // 返回标注点的坐标
+    addTaskPointed(e) {
+      this.$refs.addWaterPoint.add()
+      console.log(e)
+    },
+
     // tab切换
     callback(key) {
-      console.log(key)
+      this.map.clearOverLays()
+      if (key == 1) {
+        this.allPointTask(this.fixedPointList)
+      } else {
+        this.allPointTask(this.peoplePointList)
+      }
     },
-    // 树形图
-    onSelect(keys) {
-      console.log('Trigger Select', keys)
-    },
-    onExpand(expandedKeys) {
-      console.log('onExpand', expandedKeys)
-      // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-      // or, you can remove all expanded children keys.
-      this.expandedKeys = expandedKeys
-      this.autoExpandParent = false
-    },
-    onCheck(checkedKeys) {
-      console.log('onCheck', checkedKeys)
-      this.checkedKeys = checkedKeys
-    },
-    onSelect(selectedKeys, info) {
-      console.log('onSelect', info)
-      this.selectedKeys = selectedKeys
-    },
+
     // 地图选项
     onChange(e) {
       console.log(`checked = ${e.target.checked}`)
     },
-
-    // 线路任务
-    chooseLineTask(index) {
+    // 固定监测点
+    fixedPoint(index) {
       this.defaultRiver = index
-      this.lineTaskList.forEach(value => {
+      this.fixedPointList.forEach(value => {
         if (value.name === index) {
           value.clicked = true
+          let arr = []
+          arr.push(value.latlng)
+          this.map.setViewport(arr)
         } else {
           value.clicked = false
         }
       })
     },
-    // 线路任务删除
-    confirmDelete(index) {
-      console.log(index)
-      this.lineTaskList.splice(this.lineTaskList.findIndex(item => item.name === index), 1)
+    // 人工监测点
+    peoplePoint(index) {
+      this.defaultRiver = index
+      this.peoplePointList.forEach(value => {
+        if (value.name === index) {
+          value.clicked = true
+          let arr = []
+          arr.push(value.latlng)
+          this.map.setViewport(arr)
+        } else {
+          value.clicked = false
+        }
+      })
+    },
+    // 固定监测点删除
+    fixedConfirmDelete(index) {
+      this.fixedPointList.splice(this.fixedPointList.findIndex(item => item.name === index), 1)
+      this.$message.success('删除成功')
+      this.defaultRiver = null
+    },
+    // 人工监测点删除
+    peopleConfirmDelete(index) {
+      this.peoplePointList.splice(this.peoplePointList.findIndex(item => item.name === index), 1)
       this.$message.success('删除成功')
       this.defaultRiver = null
     },
     cancelDelete(e) {
       // this.$message.error('Click on No')
     },
-    // 线路任务添加
-    check() {
-      this.form.validateFields(err => {
-        if (!err) {
-          console.info('success')
-        }
-      })
-    },
-    handleChange(e) {
-      this.checkNick = e.target.checked
-      this.$nextTick(() => {
-        this.form.validateFields(['nickname'], { force: true })
-      })
-    },
     // 添加任务按钮
     addTask() {
-      this.$refs.addWaterPoint.add();
-    },
-    // 关联河道
-    handleChange(index) {
-      console.log(`selected ${index}`)
-      this.riverList.forEach(value => {
-        if (value.name === index) {
-          value.clicked = true
-        } else {
-          value.clicked = false
-        }
-      })
-    },
-    handleBlur() {
-      console.log('blur')
-    },
-    handleFocus() {
-      console.log('focus')
-    },
-    filterOption(input, option) {
-      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
-    },
-    // 线路任务按钮
-    taskCancel() {
       if (this.actionTab == 1) {
-        this.addLineShow = false
-      } else if (this.actionTab == 2) {
-        this.addPointShow = false
-      }
-    },
-    taskSave() {
-      if (this.actionTab == 1) {
-        this.addLineShow = false
-      } else if (this.actionTab == 2) {
-        this.addPointShow = false
+        this.addTaskPoint()
+      } else {
+        this.addTaskPoint()
       }
     }
   }
