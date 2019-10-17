@@ -108,6 +108,31 @@ export function roleDel (parameter) {
     method: 'post',
   })
 }
+//风险源，绘制类型列表
+export function paramList (parameter) {
+  return axios({
+    url: '/server/data/admin/param/list?type='+parameter.type,
+    method: 'get',
+  })
+}
+//风险源，绘制类型保存
+export function paramSave (parameter) {
+  return axios({
+    url: '/server/data/admin/param/save',
+    method: 'post',
+    data: parameter
+  })
+}
+//风险源，绘制类型删除
+export function paramDel (parameter) {
+  return axios({
+    url: '/server/data/admin/param/remove/'+parameter.id,
+    method: 'post',
+  })
+}
+
+
+
 
 export function getSmsCaptcha (parameter) {
   return axios({

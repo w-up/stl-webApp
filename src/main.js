@@ -13,7 +13,8 @@ import draggable from 'vuedraggable'
 import VueVideoPlayer from 'vue-video-player'
 import 'vue-video-player/src/custom-theme.css'
 import 'video.js/dist/video-js.css'
-
+import Viewer from 'v-viewer'
+import 'viewerjs/dist/viewer.css'
 
 
 
@@ -32,6 +33,11 @@ Vue.config.productionTip = false
 Vue.use(VueAxios)
 Vue.use(iView);
 Vue.use(VueVideoPlayer);
+Vue.use(Viewer, {
+  defaultOptions: {
+    zIndex: 9999
+  }
+})
 Vue.component('split-pane',splitPane);
 Vue.component('draggable',draggable);
 

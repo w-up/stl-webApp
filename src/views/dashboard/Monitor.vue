@@ -1166,7 +1166,38 @@ export default {
     addRiverBtn() {
       this.$refs.selectPatrol.show()
       this.$refs.addSurvey.close()
-      this.clearMap()
+      // this.clearMap();
+      this.searchMap();
+      this.addTaskPoint();
+    },
+    addTaskPoint(){
+      for(var i=0;i < this.riverData.length;i++){
+        console.log(this.riverData[i].lng,this.riverData[i].lat)
+        var lnglat = new T.LngLat(this.riverData[i].lng,this.riverData[i].lat);  
+        var marker = new T.Marker(lnglat);
+        this.map.addOverLay(marker);
+        this.showPosition(marker);
+        console.log(marker + "**********" + i);
+      }
+    },
+    showPosition(marker){
+       marker.addEventListener("click",function(){
+          console.log(marker);
+          var html = "<div style='margin:0px;'>"+
+          "<div style='line-height:30px;font-size:18px;margin-bottom:5px'>"+
+          "采集水样标本</div>"+
+          "<div style='line-height:25px;'>"+
+          "<div><span style='color:;'>任务名称</span>：水样调查"+"</div>"+
+          "<div>任务内容：现场测定：ph、溶解氧、浊度（3次）、电导率、透明度"+"</div>"+
+          "<div>位置信息：上海市徐汇区龙川北路422-5"+"</div>"+
+          "<div>备注："+
+            "<div>当月计划执行次数：5"+"</div>"+
+            "<div>当月待执行次数：2"+"</div>"+
+          "</div>"+
+          "</div>"+"</div>";
+          var infoWin = new T.InfoWindow(html);
+          marker.openInfoWindow(infoWin);
+        });      
     },
     //右侧模块选择框修改
     handleChange() {},
@@ -1315,6 +1346,8 @@ export default {
     addMorePoint(){
       var dLng = this.lng;
       var dLat = this.lat;
+      var marker1;
+      var content;
       var data_info = [];
       for(var i = 0;i <2; i++){
          dLng = dLng+(0.0001 * (Math.floor(Math.random() * 10 + 1)));
@@ -1322,18 +1355,30 @@ export default {
          data_info[i] = [dLng,dLat,"地址:地址"+i];     
       }
       for(var i=0;i<data_info.length;i++){
-        var marker = new T.Marker(new T.LngLat(data_info[i][0],data_info[i][1]));
-        var content = data_info[i][2];
-        console.log("content" + content);
-        this.map.addOverLay(marker);
-        // marker.addEventListener("click",function(e){
-        //   var point = e.lnglat;
-        //   console.log(point);
-        //   marker = new T.Marker(point);
-        //   var markerInfoWin = new T.InfoWindow(content,{offset:new T.Point(0,-30)});
-        //   this.map.openInfoWindow(markerInfoWin,point);
-        // })
+        marker1 = new T.Marker(new T.LngLat(data_info[i][0],data_info[i][1]));
+        content = data_info[i][2];
+        this.map.addOverLay(marker1);
+
+        marker1.addEventListener("click",function(e){
+          var point = e.lnglat;
+          marker1 = new T.Marker(point);
+          var markerInfoWin = new T.InfoWindow(content,{offset:new T.Point(0,-30)});
+          marker1.openInfoWindow(markerInfoWin,point);
+        })
+        // this.addClickHandler(content,marker1);
       }
+    },
+    addClickHandler(content,marker){
+      marker.addEventListener("click",function(e){
+          this.openInfo(content,e);
+        })
+    },
+    openInfo(){
+      var point = e.lnglat;
+      console.log(point);
+      marker1 = new T.Marker(point);
+      var markerInfoWin = new T.InfoWindow(content);
+      marker1.openInfoWindow(markerInfoWin,point);
     },
     //高亮河道
     searchMap(){
@@ -1349,9 +1394,10 @@ export default {
       });
       this.map.addOverLay(this.polygon);
       //添加标注点
-      this.addRiverPoint();
+      // this.addRiverPoint();
+      this.addTaskPoint();
     },
-    addRiverPoint(){
+    addRiverPoint(){  
       var markers = new T.Marker(new T.LngLat(121.50162,31.20880));
       this.map.addOverLay(markers);
       this.markerInfo = 
