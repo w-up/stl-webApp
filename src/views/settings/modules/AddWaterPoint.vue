@@ -8,14 +8,14 @@
     @cancel="handleCancel"
     :mask="true"
     :centered="true"
-    :footer=null
+    :footer="null"
   >
     <a-spin :spinning="confirmLoading">
       <a-form class="from">
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="名称">
-              <a-input placeholder="名称" />
+              <a-input placeholder="名称" v-model="pointInfo.name"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -46,12 +46,12 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="经度">
-              <a-input readOnly placeholder="经度" />
+              <a-input readOnly placeholder="经度" v-model="pointInfo.latlng.lng"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="纬度">
-              <a-input :disabled="true" placeholder="纬度" />
+              <a-input readOnly placeholder="纬度" v-model="pointInfo.latlng.lat"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -143,6 +143,10 @@
 <script>
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 export default {
+  props: {
+    //接收父组件传来的值
+    pointInfo: Object,
+  },
   data() {
     return {
       labelCol: {
@@ -161,35 +165,45 @@ export default {
         authorization: 'authorization-text'
       },
 
-      options: [{
-        value: 'zhejiang',
-        label: 'Zhejiang',
-        children: [{
-          value: 'hangzhou',
-          label: 'Hangzhou',
-          children: [{
-            value: 'xihu',
-            label: 'West Lake',
-          }, {
-            value: 'xiasha',
-            label: 'Xia Sha',
-            disabled: true,
-          }],
-        }],
-      }, {
-        value: 'jiangsu',
-        label: 'Jiangsu',
-        children: [{
-          value: 'nanjing',
-          label: 'Nanjing',
-          children: [{
-            value: 'zhonghuamen',
-            label: 'Zhong Hua men',
-          }],
-        }],
-      }],
-      
-
+      options: [
+        {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [
+            {
+              value: 'hangzhou',
+              label: 'Hangzhou',
+              children: [
+                {
+                  value: 'xihu',
+                  label: 'West Lake'
+                },
+                {
+                  value: 'xiasha',
+                  label: 'Xia Sha',
+                  disabled: true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          value: 'jiangsu',
+          label: 'Jiangsu',
+          children: [
+            {
+              value: 'nanjing',
+              label: 'Nanjing',
+              children: [
+                {
+                  value: 'zhonghuamen',
+                  label: 'Zhong Hua men'
+                }
+              ]
+            }
+          ]
+        }
+      ],
       form: this.$form.createForm(this)
     }
   },
@@ -198,9 +212,13 @@ export default {
       return OPTIONS.filter(o => !this.selectedItems.includes(o))
     }
   },
+  mounted() {
+    console.log(this.pointInfo);
+  },
   methods: {
     add() {
       this.visible = true
+      console.log(this.pointInfo);
     },
     // 添加河流
     addRiver(value) {
@@ -249,11 +267,11 @@ export default {
     },
     // 选择地址
     onChange(value, selectedOptions) {
-      console.log(value, selectedOptions);
+      console.log(value, selectedOptions)
     },
     filter(inputValue, path) {
-      return (path.some(option => (option.label).toLowerCase().indexOf(inputValue.toLowerCase()) > -1));
-    },
+      return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+    }
   }
 }
 </script>
