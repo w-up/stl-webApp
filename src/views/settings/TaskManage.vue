@@ -349,14 +349,6 @@
                 </a-list>
               </a-collapse-panel>
             </a-collapse>
-            <a-directory-tree
-              multiple
-              defaultExpandAll
-              @select="onSelect"
-              @expand="onExpand"
-              :treeData="treeData"
-              v-show="!addPointShow"
-            ></a-directory-tree>
             <a-form v-show="addPointShow" style="width: 100%;">
               <a-form-item
                 label="任务名称"
@@ -593,6 +585,7 @@
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
 import AddTaskPoint from './modules/AddTaskPoint.vue'
+import { setUserProjection } from 'ol/proj'
 
 const formItemLayout = {
   labelCol: { span: 8 },
@@ -602,36 +595,6 @@ const formTailLayout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 }
 }
-
-const treeData = [
-  {
-    title: '360',
-    key: '0-0',
-    children: [
-      {
-        title: '坐标点1',
-        key: '0-0-0'
-      },
-      {
-        title: '坐标点2',
-        key: '0-0-1'
-      },
-      {
-        title: '坐标点3',
-        key: '0-0-2'
-      }
-    ]
-  },
-  {
-    title: '人工调查点',
-    key: '0-1',
-    children: [
-      { title: '坐标点1', key: '0-1-0-0' },
-      { title: '坐标点2', key: '0-1-0-1' },
-      { title: '坐标点3', key: '0-1-0-2' }
-    ]
-  }
-]
 export default {
   name: 'TaskManage',
   components: {
@@ -651,17 +614,32 @@ export default {
         {
           id: 0,
           name: '无人机正射影像',
-          clicked: true
+          clicked: true,
+          lintData: [
+            { lat: 31.21493, lng: 121.49566 },
+            { lat: 31.22344, lng: 121.47892 },
+            { lat: 31.20649, lng: 121.47712 }
+          ]
         },
         {
           id: 1,
           name: '无人机倾斜影像',
-          clicked: false
+          clicked: false,
+          lintData: [
+            { lat: 31.20752, lng: 121.51531 },
+            { lat: 31.20186, lng: 121.50759 },
+            { lat: 31.19944, lng: 121.52106 }
+          ]
         },
         {
           id: 2,
           name: '无人机人工拍照',
-          clicked: false
+          clicked: false,
+          lintData: [
+            { lat: 31.21564, lng: 121.42895 },
+            { lat: 31.22873, lng: 121.47788 },
+            { lat: 31.26706, lng: 121.47677 }
+          ]
         }
       ],
 
@@ -715,12 +693,6 @@ export default {
 
       customStyle: 'background: #fff;margin: 0;overflow: hidden', // 折叠面板样式
 
-      expandedKeys: ['0-0-0', '0-0-1'],
-      autoExpandParent: true,
-      checkedKeys: ['0-0-0'],
-      selectedKeys: [],
-      treeData,
-
       pointTaskList: [
         //任务点
         {
@@ -745,8 +717,6 @@ export default {
 
       // 地图对象
       map: {},
-      // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
-      mapPoint: new Map(),
       markerTool: '' // 点任务工具
     }
   },
@@ -765,7 +735,7 @@ export default {
       this.map = new T.Map('map')
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
       this.markerTool = new T.MarkTool(this.map, { follow: true })
-      this.allPointTask()
+      this.allLineTask()
     },
     // 上传文件
     handleUpload(info) {
@@ -778,8 +748,59 @@ export default {
         this.$message.error(`${info.file.name} file upload failed.`)
       }
     },
+    // 添加所有的线
+    allLineTask() {
+      this.map.clearOverLays()
+      for (const item of this.lineTaskList) {
+        this.drawAllLine(item.lintData)
+      }
+    },
+    // 绘制线
+    drawAllLine(points) {
+      let polyline = new T.Polyline(points)
+      this.map.addOverLay(polyline)
+      polyline.addEventListener('click', this.taskLineClick)
+      // polyline.addEventListener('mouseover', this.taskLineClick)
+      // polyline.addEventListener('mouseout	', this.taskLineClick)
+    },
+    // 移入移出点击事件
+    taskLineClick(index) {
+      let arr = []
+      arr.push(index.target.Qr.Lq.lat)
+      arr.push(index.target.Qr.kq.lat)
+      arr.push(index.target.Qr.Lq.lng)
+      arr.push(index.target.Qr.kq.lng)
+      let result = '',
+        resultArr = []
+      for (let i = 0; i < this.lineTaskList.length; i++) {
+        // console.log(this.lineTaskList[i])
+        result = this.lineTaskList[i].lintData.findIndex(item => {
+          // console.log(item)
+          // console.log(item.lat)
+          return index.target.Qr.Lq.lat == item.lat
+        })
+        resultArr.push(result)
+      }
+      let res = ''
+      for (const item of resultArr) {
+        res = resultArr.findIndex(item => {
+          // console.log(item)
+          // console.log(item.lat)
+          return item != -1
+        })
+      }
+
+      // console.log(this.lineTaskList.findIndex(index.target.Qr.Lq.lat))
+      // console.log(index.target.Qr.Lq.lat)
+      // console.log(index.target.Qr.kq.lat)
+      // console.log(index.target.Qr.Lq.lng)
+      // console.log(index.target.Qr.kq.lng)
+    },
+    // 查找函数
+    findIndex(index) {},
     // 添加所有的标注点
     allPointTask() {
+      this.map.clearOverLays()
       for (const item of this.pointTaskList) {
         for (const point of item.pointList) {
           this.drawAllPoint(point.latlng)
@@ -794,10 +815,8 @@ export default {
       marker.addEventListener('mouseover', this.taskPointClick)
       marker.addEventListener('mouseout	', this.taskPointClick)
     },
-    // 任务点点击事件
+    // 任务点点击移入移出事件
     taskPointClick(index) {
-      // console.log(index.lnglat.lat)
-      // console.log(index.lnglat.lng)
       for (const item of this.pointTaskList) {
         for (const point of item.pointList) {
           if (index.lnglat.lat === point.latlng.lat && index.lnglat.lng === point.latlng.lng) {
@@ -848,7 +867,7 @@ export default {
             if (index === point.name) {
               point.clicked = true
               console.log(point.latlng)
-              let arr = [];
+              let arr = []
               arr.push(point.latlng)
               this.map.setViewport(arr)
               // this.map.zoomOut()
@@ -866,6 +885,12 @@ export default {
     // tab切换
     callback(key) {
       console.log(key)
+      this.map.clearOverLays()
+      if (key == 1) {
+        this.allLineTask()
+      } else {
+        this.allPointTask()
+      }
     },
     // 树形图
     onSelect(keys) {
@@ -896,10 +921,23 @@ export default {
       this.lineTaskList.forEach(value => {
         if (value.name === index) {
           value.clicked = true
+          this.allLineTask()
+          this.drawLine(value.lintData, "red", 3)
         } else {
           value.clicked = false
         }
       })
+    },
+    // 高亮线
+    drawLine(points, color, weight) {
+      this.map.setViewport(points)
+      let line = new T.Polyline(points, {
+        color: color, //线颜色
+        weight: weight, //线宽
+        opacity: 0.5, //透明度
+      })
+      //向地图上添加线
+      this.map.addOverLay(line)
     },
     // 线路任务删除
     confirmDelete(index) {
@@ -910,6 +948,7 @@ export default {
     cancelDelete(e) {
       // this.$message.error('Click on No')
     },
+
     // 线路人员选择
     peopleChoose(e) {
       console.log(`checked = ${e.target.checked}`)
