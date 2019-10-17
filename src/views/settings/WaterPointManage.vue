@@ -77,7 +77,7 @@
       <a-button type="primary" block class="bottom_add" @click="addTask">添加</a-button>
     </div>
     <!-- 添加 -->
-    <add-water-point ref="addWaterPoint"></add-water-point>
+    <add-water-point ref="addWaterPoint" :pointInfo="pointInfo"></add-water-point>
   </div>
 </template>
 
@@ -114,7 +114,8 @@ export default {
       // 地图对象
       map: {},
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
-      mapPoint: new Map()
+      mapPoint: new Map(),
+      pointInfo: {} // 点信息
     }
   },
   mounted() {
@@ -140,11 +141,11 @@ export default {
       let marker = new T.Marker(latlng)
       this.map.addOverLay(marker)
       marker.addEventListener('click', this.taskPointClick)
-      marker.addEventListener('mouseover', this.taskPointClick)
-      marker.addEventListener('mouseout	', this.taskPointClick)
+      marker.addEventListener('mouseover', this.taskPointMouse)
+      marker.addEventListener('mouseout	', this.taskPointMouse)
     },
     // 任务点点击移入移出事件
-    taskPointClick(index) {
+    taskPointMouse(index) {
       if (this.actionTab == 1) {
         for (const item of this.fixedPointList) {
           if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
@@ -163,13 +164,34 @@ export default {
         }
       }
     },
+    // 任务点点击事件
+    taskPointClick(index) {
+      console.log(index.lnglat.lat, index.lnglat.lng)
+      this.$refs.addWaterPoint.add()
+      if (this.actionTab == 1) {
+        for (const item of this.fixedPointList) {
+          if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+            item.clicked = true
+            this.pointInfo = item
+          } else {
+            item.clicked = false
+          }
+        }
+      } else {
+        for (const item of this.peoplePointList) {
+          if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+            item.clicked = true
+            this.pointInfo = item
+          } else {
+            item.clicked = false
+          }
+        }
+      }
+    },
     // 注册添加点击事件
     addTaskPoint() {
       this.markerTool.open()
       this.markerTool.getMarkers()
-      for (var i = 0; i < this.markerTool.length; i++) {
-        this.markerTool[i].disableDragging()
-      }
       this.markerTool.addEventListener('mouseup', this.addTaskPointed)
     },
     // 返回标注点的坐标
@@ -231,14 +253,17 @@ export default {
     },
     // 固定监测点删除
     fixedConfirmDelete(index) {
+      console.log(index)
       this.fixedPointList.splice(this.fixedPointList.findIndex(item => item.name === index), 1)
       this.$message.success('删除成功')
+      this.allPointTask(this.fixedPointList)
       this.defaultRiver = null
     },
     // 人工监测点删除
     peopleConfirmDelete(index) {
       this.peoplePointList.splice(this.peoplePointList.findIndex(item => item.name === index), 1)
       this.$message.success('删除成功')
+      this.allPointTask(this.peoplePointList)
       this.defaultRiver = null
     },
     cancelDelete(e) {
