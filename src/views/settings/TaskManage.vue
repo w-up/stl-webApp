@@ -922,7 +922,7 @@ export default {
         if (value.name === index) {
           value.clicked = true
           this.allLineTask()
-          this.drawLine(value.lintData, "red", 3)
+          this.drawLine(value.lintData, 'red', 3)
         } else {
           value.clicked = false
         }
@@ -934,7 +934,7 @@ export default {
       let line = new T.Polyline(points, {
         color: color, //线颜色
         weight: weight, //线宽
-        opacity: 0.5, //透明度
+        opacity: 0.5 //透明度
       })
       //向地图上添加线
       this.map.addOverLay(line)
