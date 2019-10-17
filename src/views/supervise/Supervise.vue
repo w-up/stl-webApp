@@ -1,5 +1,5 @@
 <template>
-  <div class="supervise"> 
+  <div class="supervise">
     <div id="map" ref="worldMap" v-show="showView"></div>
     <!-- <div class="showMap" v-show="!showView">
       <div class="half">
@@ -8,20 +8,20 @@
       <div class="half">
           <div id="aerialMap" class="vmap"></div>
       </div>
-    </div> -->
+    </div>-->
     <div class="showMap" id="showmap">
       <div class="half">
-          <div id="roadMap" class="vmap"></div>
+        <div id="roadMap" class="vmap"></div>
       </div>
       <div class="half">
-          <div id="aerialMap" class="vmap"></div>
+        <div id="aerialMap" class="vmap"></div>
       </div>
     </div>
     <div id="layerMap" class="layerMap">
       <div class="main">
         <div id="lmap" class="lmap"></div>
       </div>
-      <input id="swipe" class="swipe" type="range"/>
+      <input id="swipe" class="swipe" type="range" />
     </div>
     <!-- <div class="left">
       <world-map></world-map>
@@ -107,7 +107,7 @@
             <a-radio-group>
               <a-radio-button value="0" @click="addPoint">点</a-radio-button>
               <a-radio-button value="1" @click="addLineTool">线</a-radio-button>
-              <a-radio-button value="2">面</a-radio-button>
+              <a-radio-button value="2" @click="addPolygonTool">面</a-radio-button>
               <a-radio-button value="3" @click="addLineToolNum">测量</a-radio-button>
             </a-radio-group>
           </template>
@@ -176,7 +176,13 @@
                           <p style="margin:0;">双球对比</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" checkedChildren="开" unCheckedChildren="关" v-model="sharedChecked" @click="sharedView" />
+                          <a-switch
+                            size="small"
+                            checkedChildren="开"
+                            unCheckedChildren="关"
+                            v-model="sharedChecked"
+                            @click="sharedView"
+                          />
                         </a-col>
                       </a-row>
                       <!-- <p style="margin:0;">双球对比</p> -->
@@ -187,7 +193,13 @@
                           <p style="margin:0;">卷帘对比</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" checkedChildren="开" unCheckedChildren="关" v-model="swipeChecked" @click="layerSwipe" />
+                          <a-switch
+                            size="small"
+                            checkedChildren="开"
+                            unCheckedChildren="关"
+                            v-model="swipeChecked"
+                            @click="layerSwipe"
+                          />
                         </a-col>
                       </a-row>
                       <!-- <p style="margin:0;">卷帘对比</p> -->
@@ -386,12 +398,12 @@
 // import WorldMap from "../../components/map/WorldMap.vue";
 import RiskSourceInfo from './modules/RiskSourceInfo'
 
-import 'ol/ol.css';
-import Map from 'ol/Map';
-import View from 'ol/View';
-import TileLayer from 'ol/layer/Tile';
-import LayerGroup from 'ol/layer/Group';
-import XYZ from "ol/source/XYZ"; 
+import 'ol/ol.css'
+import Map from 'ol/Map'
+import View from 'ol/View'
+import TileLayer from 'ol/layer/Tile'
+import LayerGroup from 'ol/layer/Group'
+import XYZ from 'ol/source/XYZ'
 
 export default {
   name: 'Supervise',
@@ -403,9 +415,9 @@ export default {
     return {
       mapType: 'a',
       checked: false,
-      sharedChecked:false,
-      swipeChecked:false,
-      showView:true,
+      sharedChecked: false,
+      swipeChecked: false,
+      showView: true,
       // 地图对象
       map: null,
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
@@ -466,6 +478,17 @@ export default {
       this.lineTool.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
     },
     // 工具-面
+    addPolygonTool() {
+      let polygonTool = new T.PolygonTool(this.map, {
+        showLabel: true,
+        color: 'blue',
+        weight: 3,
+        opacity: 0.5,
+        fillColor: '#FFFFFF',
+        fillOpacity: 0.5
+      })
+      polygonTool.open();
+    },
     // 工具-测量
     addLineToolNum() {
       this.lineToolNum.open()
@@ -495,115 +518,118 @@ export default {
     onMapChange(e) {
       console.log(`checked = ${e.target.value}`)
     },
-    getTdLayer(lyr){
-        var url = "http://t{0-7}.tianditu.com/DataServer?T=" + lyr + "&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc"
-        var layer = new TileLayer({
-            source: new XYZ({
-            url: url
-            })
-        });
-        return layer;
+    getTdLayer(lyr) {
+      var url =
+        'http://t{0-7}.tianditu.com/DataServer?T=' + lyr + '&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      var layer = new TileLayer({
+        source: new XYZ({
+          url: url
+        })
+      })
+      return layer
     },
-    showMap(){
+    showMap() {
       // this.map.removeLayer(map1);
       // this.map.removeLayer(map2);
-      var vec_c = this.getTdLayer("vec_w");
-      var cva_c = this.getTdLayer("cva_w");
-      var img_c = this.getTdLayer("img_w");
+      var vec_c = this.getTdLayer('vec_w')
+      var cva_c = this.getTdLayer('cva_w')
+      var img_c = this.getTdLayer('img_w')
 
       var veclayerGroup = new LayerGroup({
-          layers:[vec_c,cva_c]
-      });
+        layers: [vec_c, cva_c]
+      })
       var imglayerGroup = new LayerGroup({
-          layers:[img_c,cva_c]
-      });
+        layers: [img_c, cva_c]
+      })
       var view = new View({
-          projection: "EPSG:4326",
-          center: [121.495505, 31.21098],
-          zoom: 14
-      });
+        projection: 'EPSG:4326',
+        center: [121.495505, 31.21098],
+        zoom: 14
+      })
       var map1 = new Map({
-          target: 'roadMap',
-          layers: [veclayerGroup],
-          view: view
-      });
+        target: 'roadMap',
+        layers: [veclayerGroup],
+        view: view
+      })
       var map2 = new Map({
-          target: 'aerialMap',
-          layers: [imglayerGroup],
-          view: view
-      });
+        target: 'aerialMap',
+        layers: [imglayerGroup],
+        view: view
+      })
     },
-    sharedView(){
-      if(this.sharedChecked == true){
-        this.showView = false;
-        this.swipeChecked = false;
-        var layerMap = document.getElementById("layerMap");
-        layerMap.style.display = "none";
-        var show = document.getElementById("showmap");
-        show.style.display = "block";
+    sharedView() {
+      if (this.sharedChecked == true) {
+        this.showView = false
+        this.swipeChecked = false
+        var layerMap = document.getElementById('layerMap')
+        layerMap.style.display = 'none'
+        var show = document.getElementById('showmap')
+        show.style.display = 'block'
         this.showMap()
       }
-      if(this.sharedChecked == false){
-        var show = document.getElementById("showmap");
-        show.style.display = "none";
-        this.showView = true;
-      } 
+      if (this.sharedChecked == false) {
+        var show = document.getElementById('showmap')
+        show.style.display = 'none'
+        this.showView = true
+      }
     },
-    showSwipeMap(){
-      var vec_c = this.getTdLayer("vec_w");
-      var cva_c = this.getTdLayer("cva_w");
-      var img_c = this.getTdLayer("img_w");
+    showSwipeMap() {
+      var vec_c = this.getTdLayer('vec_w')
+      var cva_c = this.getTdLayer('cva_w')
+      var img_c = this.getTdLayer('img_w')
 
       var veclayerGroup = new LayerGroup({
-        layers:[vec_c,cva_c]
-      });
+        layers: [vec_c, cva_c]
+      })
       var imglayerGroup = new LayerGroup({
-        layers:[img_c,cva_c]
-      });
+        layers: [img_c, cva_c]
+      })
 
       var lmap = new Map({
-        target:"lmap",
-        layers:[
-          imglayerGroup,veclayerGroup
-        ],
+        target: 'lmap',
+        layers: [imglayerGroup, veclayerGroup],
         view: new View({
-          projection: "EPSG:4326",
+          projection: 'EPSG:4326',
           center: [121.495505, 31.21098],
           zoom: 14
         })
-      });
-      var swipe = document.getElementById("swipe");
-      vec_c.on('prerender',function(event){     
-        var ctx = event.context;  
-        var width = ctx.canvas.width * (swipe.value / 100);
+      })
+      var swipe = document.getElementById('swipe')
+      vec_c.on('prerender', function(event) {
+        var ctx = event.context
+        var width = ctx.canvas.width * (swipe.value / 100)
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(width,0,ctx.canvas.width - width,ctx.canvas.height);
-        ctx.clip();
-      });
-      vec_c.on('postrender',function(event){
-        var ctx = event.context;
-        ctx.restore();
-      });
-      swipe.addEventListener('input',function(){
-        lmap.render();
-      },false);
+        ctx.save()
+        ctx.beginPath()
+        ctx.rect(width, 0, ctx.canvas.width - width, ctx.canvas.height)
+        ctx.clip()
+      })
+      vec_c.on('postrender', function(event) {
+        var ctx = event.context
+        ctx.restore()
+      })
+      swipe.addEventListener(
+        'input',
+        function() {
+          lmap.render()
+        },
+        false
+      )
     },
-    layerSwipe(){
-      if(this.swipeChecked == true){
-        this.showView = false;
-        this.sharedChecked = false;
-        var show = document.getElementById("showmap");
-        show.style.display = "none";
-        var layerMap = document.getElementById("layerMap");
-        layerMap.style.display = "block";
+    layerSwipe() {
+      if (this.swipeChecked == true) {
+        this.showView = false
+        this.sharedChecked = false
+        var show = document.getElementById('showmap')
+        show.style.display = 'none'
+        var layerMap = document.getElementById('layerMap')
+        layerMap.style.display = 'block'
         this.showSwipeMap()
       }
-      if(this.swipeChecked == false){
-        var layerMap = document.getElementById("layerMap");
-        layerMap.style.display = "none";
-        this.showView = true;
+      if (this.swipeChecked == false) {
+        var layerMap = document.getElementById('layerMap')
+        layerMap.style.display = 'none'
+        this.showView = true
       }
     }
   }
@@ -615,38 +641,38 @@ export default {
   height: calc(100vh - 64px);
   width: 100vw;
 }
-.vmap{
+.vmap {
   width: 100%;
   height: 100%;
 }
-.showMap{
+.showMap {
   display: none;
 }
-.main{
-  width:100%;
-  height:calc(100vh - 64px);
+.main {
+  width: 100%;
+  height: calc(100vh - 64px);
 }
-.layerMap{
+.layerMap {
   display: none;
 }
-.lmap{
+.lmap {
   width: 100%;
   height: 95%;
 }
-.swipe{
+.swipe {
   position: absolute;
-  bottom:10px;
+  bottom: 10px;
   left: 0;
   z-index: 999;
   width: 100%;
 }
 @media (min-width: 800px) {
-    .half {
-        padding: 0 10px;
-        width: 50%;
-        height:calc(100vh - 64px);
-        float: left;
-    }
+  .half {
+    padding: 0 10px;
+    width: 50%;
+    height: calc(100vh - 64px);
+    float: left;
+  }
 }
 #map {
   width: 100%;
