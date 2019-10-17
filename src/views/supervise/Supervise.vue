@@ -17,6 +17,12 @@
           <div id="aerialMap" class="vmap"></div>
       </div>
     </div>
+    <div id="layerMap" class="layerMap">
+      <div class="main">
+        <div id="lmap" class="lmap"></div>
+      </div>
+      <input id="swipe" class="swipe" type="range"/>
+    </div>
     <!-- <div class="left">
       <world-map></world-map>
     </div>-->
@@ -164,11 +170,27 @@
               <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
                 <template slot="content">
                   <a-list size="small">
-                    <a-list-item @click="sharedView">
-                      <p style="margin:0;">双球对比</p>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">双球对比</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" checkedChildren="开" unCheckedChildren="关" v-model="sharedChecked" @click="sharedView" />
+                        </a-col>
+                      </a-row>
+                      <!-- <p style="margin:0;">双球对比</p> -->
                     </a-list-item>
                     <a-list-item>
-                      <p style="margin:0;">卷帘对比</p>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">卷帘对比</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" checkedChildren="开" unCheckedChildren="关" v-model="swipeChecked" @click="layerSwipe" />
+                        </a-col>
+                      </a-row>
+                      <!-- <p style="margin:0;">卷帘对比</p> -->
                     </a-list-item>
                   </a-list>
                 </template>
@@ -381,6 +403,8 @@ export default {
     return {
       mapType: 'a',
       checked: false,
+      sharedChecked:false,
+      swipeChecked:false,
       showView:true,
       // 地图对象
       map: null,
@@ -394,6 +418,7 @@ export default {
   mounted() {
     this.initMap()
     // this.showMap()
+    // this.showSwipeMap()
   },
   methods: {
     initMap() {
@@ -480,6 +505,8 @@ export default {
         return layer;
     },
     showMap(){
+      // this.map.removeLayer(map1);
+      // this.map.removeLayer(map2);
       var vec_c = this.getTdLayer("vec_w");
       var cva_c = this.getTdLayer("cva_w");
       var img_c = this.getTdLayer("img_w");
@@ -507,10 +534,76 @@ export default {
       });
     },
     sharedView(){
-      this.showView = false;
-      var show = document.getElementById("showmap");
-      show.style.display = "block";
-      this.showMap()
+      if(this.sharedChecked == true){
+        this.showView = false;
+        var layerMap = document.getElementById("layerMap");
+        layerMap.style.display = "none";
+        var show = document.getElementById("showmap");
+        show.style.display = "block";
+        this.showMap()
+      }
+      if(this.sharedChecked == false){
+        var show = document.getElementById("showmap");
+        show.style.display = "none";
+        this.showView = true;
+      } 
+    },
+    showSwipeMap(){
+      var vec_c = this.getTdLayer("vec_w");
+      var cva_c = this.getTdLayer("cva_w");
+      var img_c = this.getTdLayer("img_w");
+
+      var veclayerGroup = new LayerGroup({
+        layers:[vec_c,cva_c]
+      });
+      var imglayerGroup = new LayerGroup({
+        layers:[img_c,cva_c]
+      });
+
+      var lmap = new Map({
+        target:"lmap",
+        layers:[
+          imglayerGroup,veclayerGroup
+        ],
+        view: new View({
+          projection: "EPSG:4326",
+          center: [121.495505, 31.21098],
+          zoom: 14
+        })
+      });
+      var swipe = document.getElementById("swipe");
+      vec_c.on('prerender',function(event){     
+        var ctx = event.context;  
+        var width = ctx.canvas.width * (swipe.value / 100);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(width,0,ctx.canvas.width - width,ctx.canvas.height);
+        ctx.clip();
+      });
+      vec_c.on('postrender',function(event){
+        var ctx = event.context;
+        ctx.restore();
+      });
+      swipe.addEventListener('input',function(){
+        lmap.render();
+      },false);
+    },
+    layerSwipe(){
+      if(this.swipeChecked == true){
+        this.showView = false;
+        this.sharedChecked = false;
+        var show = document.getElementById("showmap");
+        show.style.display = "none";
+        var layerMap = document.getElementById("layerMap");
+        layerMap.style.display = "block";
+        this.showSwipeMap()
+      }
+      if(this.swipeChecked == false){
+        var layerMap = document.getElementById("layerMap");
+        layerMap.style.display = "none";
+        this.showView = true;
+      }
     }
   }
 }
@@ -527,6 +620,24 @@ export default {
 }
 .showMap{
   display: none;
+}
+.main{
+  width:100%;
+  height:calc(100vh - 64px);
+}
+.layerMap{
+  display: none;
+}
+.lmap{
+  width: 100%;
+  height: 95%;
+}
+.swipe{
+  position: absolute;
+  bottom:10px;
+  left: 0;
+  z-index: 999;
+  width: 100%;
 }
 @media (min-width: 800px) {
     .half {
