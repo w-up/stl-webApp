@@ -129,10 +129,10 @@
         </a-row>
         <a-row style="width:100%; margin-top:10px;" type="flex" justify="space-around">
           <a-col :span="4">
-            <a-button type="primary" block>取消</a-button>
+            <a-button type="primary" block @click="handleCancel">取消</a-button>
           </a-col>
           <a-col :span="4">
-            <a-button type="primary" block>保存</a-button>
+            <a-button type="primary" block @click="handleCancel">保存</a-button>
           </a-col>
         </a-row>
       </a-form>
