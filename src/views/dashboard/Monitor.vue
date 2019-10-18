@@ -724,10 +724,7 @@
                                   slot="actions"
                                   syle="width:10px;height:10px;border-radius:50%;background-color:green;"
                                 ></a>
-                                <!-- <a-list-item-meta> -->
                                 {{item.name}}&nbsp;({{item.position}})
-                                <!-- </a-list-item-meta> -->
-                                <!-- <div><span style="border-radius:50%;background-color:green;"></span></div> -->
                               </a-list-item>
                             </a-list>
                           </div>
@@ -801,8 +798,6 @@
                   </a-popover>
                 </a-col>
               </a-row>
-              <!-- <span @click="newPlan_btn">生成计划</span>
-              <span>加入已有计划</span>-->
             </div>
             <div v-if="ishidden == 2">
               <a-row type="flex" justify="space-around">
@@ -813,8 +808,6 @@
                   <a-button class="groupBtn" @click="showPlanBtn">下一步</a-button>
                 </a-col>
               </a-row>
-              <!-- <span @click="canclePlanBtn">取消</span>
-              <span @click="showPlanBtn">下一步</span>-->
             </div>
             <div v-if="ishidden == 3">
               <a-row type="flex" justify="space-around">
@@ -825,17 +818,30 @@
                   <a-button class="groupBtn" @click="reHome">返回首页</a-button>
                 </a-col>
               </a-row>
-              <!-- <span @click="previousBtn">上一步</span>
-              <span @click="reHome">返回首页</span>-->
             </div>
           </div>
         </div>
       </template>
     </split-pane>
+    <!-- 弹框 -->
     <add-new-task ref="addNewTask"></add-new-task>
     <plan-detail ref="planDetail"></plan-detail>
     <sitution-info ref="situtionInfo"></sitution-info>
     <update-time ref="updateTime"></update-time>
+    <communication ref="communication"></communication>
+    <!-- 河道信息弹框 -->
+    <a-modal :visible="infoVisible" :closable="false" :mask="false" :width="400" class="cmModal">
+        <template slot="title">
+            <span>河道信息</span>
+        </template>
+        <div>
+          <p>河道总长：320km</p>
+        </div>
+        <template slot="footer">
+          <a-button key="" @click="showCancel">取消</a-button>
+          <a-button key="submit" type="primary" @click="showOk">添加</a-button>
+        </template>
+    </a-modal>
   </div>
 </template>
 
@@ -861,6 +867,7 @@ import addNewTask from '../modals/addNewTask'
 import planDetail from '../modals/planDetail'
 import situtionInfo from './modules/situtionInfo'
 import updateTime from './modules/updateTime'
+import communication from './modules/communication'
 import { BreadcrumbItem } from 'iview'
 
 const sutreeData = [
@@ -981,7 +988,8 @@ export default {
     addNewTask,
     planDetail,
     situtionInfo,
-    updateTime
+    updateTime,
+    communication
   },
   data() {
     return {
@@ -1032,6 +1040,7 @@ export default {
       riverData,
       polygon: '', // 多边形对象
       markerInfo:'',//任务弹出框
+      infoVisible:false,
       firstShow: true,
       childNode: false,
       checked: false,
@@ -1132,6 +1141,7 @@ export default {
         //   this.diguiTree(sutreeData[j])
         // }
       }
+      this.clearMap();
     },
     diguiTree(item) {
       //没有children了，所以是叶子节点
@@ -1158,7 +1168,61 @@ export default {
     },
     onsuperChange(key, type) {
       console.log(key, type)
-      this[type] = key
+      this[type] = key;
+      this.clearMap();
+      console.log("key" + key);
+      if(key == 'taskCard'){
+        this.loadPoint();
+      }
+      if(key == 'personCard'){
+        this.cardTrack();
+      }
+    },
+    //任务模块任务点
+    loadPoint(){
+      //随机标注点
+      var bounds = this.map.getBounds();
+      console.log("bounds" + bounds);
+      var ref = this.$refs;
+      var sw = bounds.getSouthWest();
+      var ne = bounds.getNorthEast();
+      var lngSpan = Math.abs(sw.lng - ne.lng);
+      var latSpan = Math.abs(ne.lat - sw.lat);
+      for(var i = 0; i < 25;i++){
+        var point = new T.LngLat(sw.lng + lngSpan * (Math.random() * 0.7),ne.lat - latSpan * (Math.random() * 0.7));
+        var marker = new T.Marker(point);
+        this.map.addOverLay(marker);
+        marker.addEventListener("click",function(){
+          ref.communication.show()
+        })
+      }
+    },
+    //车辆轴迹
+    cardTrack(){
+      // var carTrack = new T.CarTrack(this.map,{
+      //   interval:5,
+      //   speed:10,
+      //   dynamicLine:true,
+      //   polylinestyle:{color:"#2C64A7",weight:5,opacity:0.9},
+      //   Datas:datas.features.map(function(obj,i){
+      //     var coordinates = obj.geometry.coordinates;
+      //     var lnlat = new T.LngLat(coordinates[0],coordinates[1]);
+      //     return lnlat;
+      //   })
+      // })
+      var lineconfig={ 
+          color: "#2C64A7",            //线的颜色
+          weight: 5,               //线的宽度
+          opacity: 0.9,             //线的透明度
+          lineStyle:"solid"        //线的样式
+      };
+      var points = new Array();
+      points[0]=new T.LngLat(121.495505, 31.21098);
+      points[1]=new T.LngLat(121.485505, 31.21038);
+      points[2]=new T.LngLat(121.475505, 31.21098);
+      var line = new T.Polyline(points,lineconfig);//创建线条的对象
+      //向地图上添加线
+      this.map.addOverLay(line);
     },
     //点击滑动关闭按钮
     onChangeSwitch() {},
@@ -1166,9 +1230,10 @@ export default {
     addRiverBtn() {
       this.$refs.selectPatrol.show()
       this.$refs.addSurvey.close()
-      // this.clearMap();
+      this.clearMap();
       this.searchMap();
-      this.addTaskPoint();
+      this.showOk();
+      // this.addTaskPoint();
     },
     addTaskPoint(){
       for(var i=0;i < this.riverData.length;i++){
@@ -1251,13 +1316,17 @@ export default {
     //当日计划模块详情按钮
     detailPlan() {
       this.$refs.planDetail.show()
+      // this.$refs.communication.show()
     },
     //今日计划模块监管按钮
     supervision_btn() {
       console.log('今日计划')
       console.log(this.firstShow)
       this.firstShow = !this.firstShow
-      console.log(this.firstShow)
+      console.log(this.firstShow);
+      if(this.firstShow == false){
+        this.loadPoint();
+      }  
     },
     changeInfo(key) {
       console.log(key)
@@ -1273,7 +1342,7 @@ export default {
     //加入已有计划
     addToPlan() {
       this.$message.success('加入成功')
-      this.nosuperKey = 'nowPlan'
+      this.noTitleKey = 'nowPlan'
     },
     //添加调查点
     addSurveyPoint(){
@@ -1419,7 +1488,13 @@ export default {
       markers.addEventListener("click", function () {
           markers.openInfoWindow(markerInfoWin);
       });
-    }   
+    },
+    showOk(){
+      this.infoVisible = true;
+    }, 
+    showCancel(){
+      this.infoVisible = false;
+    }  
   }
 }
 </script>
