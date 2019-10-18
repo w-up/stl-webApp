@@ -145,7 +145,7 @@ const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 export default {
   props: {
     //接收父组件传来的值
-    pointInfo: Object,
+    pointInfo: { id: Number, name: String, clicked: Boolean, latlng: { lat: Number, lng: Number } },
   },
   data() {
     return {
@@ -213,12 +213,10 @@ export default {
     }
   },
   mounted() {
-    console.log(this.pointInfo);
   },
   methods: {
     add() {
       this.visible = true
-      console.log(this.pointInfo);
     },
     // 添加河流
     addRiver(value) {

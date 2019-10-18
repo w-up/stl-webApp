@@ -115,7 +115,7 @@ export default {
       map: {},
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
       mapPoint: new Map(),
-      pointInfo: {} // 点信息
+      pointInfo: { id: Number, name: String, clicked: Boolean, latlng: { lat: Number, lng: Number } }// 点信息
     }
   },
   mounted() {
