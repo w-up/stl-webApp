@@ -618,7 +618,9 @@ export default {
           lintData: [
             { lat: 31.21493, lng: 121.49566 },
             { lat: 31.22344, lng: 121.47892 },
-            { lat: 31.20649, lng: 121.47712 }
+            { lat: 31.20649, lng: 121.47712 },
+            { lat: 31.20469, lng: 121.47482 },
+            { lat: 31.21469, lng: 121.51482 }
           ]
         },
         {
@@ -628,7 +630,8 @@ export default {
           lintData: [
             { lat: 31.20752, lng: 121.51531 },
             { lat: 31.20186, lng: 121.50759 },
-            { lat: 31.19944, lng: 121.52106 }
+            { lat: 31.19944, lng: 121.52106 },
+            { lat: 31.19944, lng: 121.53106 }
           ]
         },
         {
@@ -772,8 +775,10 @@ export default {
       arr.push(index.target.Qr.kq.lng)
       let result = '',
         resultArr = []
+      arr.forEach((item, value)=>{
+        console.log(item, value)
+      })
       for (let i = 0; i < this.lineTaskList.length; i++) {
-        // console.log(this.lineTaskList[i])
         result = this.lineTaskList[i].lintData.findIndex(item => {
           // console.log(item)
           // console.log(item.lat)
@@ -781,6 +786,7 @@ export default {
         })
         resultArr.push(result)
       }
+      console.log(resultArr)
       let res = ''
       for (const item of resultArr) {
         res = resultArr.findIndex(item => {
@@ -788,6 +794,14 @@ export default {
           // console.log(item.lat)
           return item != -1
         })
+      }
+      console.log(res)
+      for (const item of this.lineTaskList) {
+        if (item.id == res) {
+          item.clicked = true
+        } else {
+          item.clicked = false
+        }
       }
 
       // console.log(this.lineTaskList.findIndex(index.target.Qr.Lq.lat))
