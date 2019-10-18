@@ -163,7 +163,7 @@
                     <p style="margin:0;">查看历史数据</p>
                   </a-col>
                   <a-col :span="6">
-                    <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                    <a-switch size="small" v-model="historyData" @click="onHistoryData" />
                   </a-col>
                 </a-row>
               </a-list-item>
@@ -222,7 +222,7 @@
                           <p style="margin:0;">手机照片</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="phonePhoto" @click="onPhonePhoto" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -232,7 +232,7 @@
                           <p style="margin:0;">无人机照片</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="UAVPhoto" @click="onUAVPhoto" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -255,7 +255,6 @@
                   <p style="margin:0;">影像管理</p>
                 </a-list-item>
               </a-popover>
-
               <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
                 <template slot="content">
                   <a-list size="small">
@@ -265,7 +264,7 @@
                           <p style="margin:0;">风险地图</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="riskMap" @click="onRiskMap" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -275,7 +274,7 @@
                           <p style="margin:0;">水质</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="waterQuality" @click="onWaterQuality" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -285,7 +284,7 @@
                           <p style="margin:0;">水面漂浮物</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="waterFlotage" @click="onWaterFlotage" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -295,7 +294,7 @@
                           <p style="margin:0;">河岸风险源</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="riverRisk" @click="onRiverRisk" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -305,7 +304,7 @@
                           <p style="margin:0;">水土流失</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="waterLandLoss" @click="onWaterLandLoss" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -315,7 +314,7 @@
                           <p style="margin:0;">水面率</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="waterRatio" @click="onWaterRatio" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -325,7 +324,7 @@
                           <p style="margin:0;">底泥</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="bottomMud" @click="onBottomMud" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -335,7 +334,7 @@
                           <p style="margin:0;">专项调查点</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="surveyPoint" @click="onSurveyPoint" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -357,7 +356,7 @@
                           <p style="margin:0;">河道连通性</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="riverLink" @click="onRiverLink" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -367,7 +366,7 @@
                           <p style="margin:0;">水陆分布</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="landAndWater" @click="onLandAndWater" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -420,11 +419,43 @@ export default {
       showView: true,
       // 地图对象
       map: null,
-      // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
-      mapPoint: new Map(),
+
       markerTool: '', // 工具-点
       lineTool: '', //工具-线
-      lineToolNum: '' //工具-测距
+      lineToolNum: '', //工具-测距
+
+      historyData: false, // 历史数据
+      phonePhoto: false, // 手机照片
+      phonePhotoTool: '', // 手机照片工具
+      UAVPhoto: false, // 无人机照片
+      UAVPhotoTool: '', // 无人机照片工具
+      historyPointList: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.21493, lng: 121.49566 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
+      ],
+      phonePhotoList: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.22493, lng: 121.51566 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24344, lng: 121.49892 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22649, lng: 121.49712 } }
+      ],
+      UAVPhotoList: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.24493, lng: 121.52566 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.25344, lng: 121.50892 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.23649, lng: 121.50712 } }
+      ],
+
+      riskMap: false, // 风险地图
+      waterQuality: false, // 水质
+      waterFlotage: false, // 水质漂浮物
+      riverRisk: false, // 河岸风险源
+      waterLandLoss: false, // 水土流失
+      waterRatio: false, // 水面率
+      bottomMud: false, // 底泥
+      surveyPoint: false, // 专项调查点
+
+      riverLink: false, // 河道连通性
+      landAndWater: false // 水陆分布
     }
   },
   mounted() {
@@ -438,6 +469,15 @@ export default {
       let zoom = 14
       this.map = new T.Map('map')
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      //添加比例尺控件
+      this.map.addControl(new T.Control.Scale())
+      this.map.setMinZoom(4)
+      this.map.setMaxZoom(18)
+
+      // this.phonePhotoTool = new T.MarkTool(this.map, { follow: true })
+      // this.UAVPhotoTool = new T.MarkTool(this.map, { follow: true })
+      this.phonePhotoTool = new T.Marker()
+      this.UAVPhotoTool = new T.Marker()
       this.markerTool = new T.MarkTool(this.map, { follow: true })
       this.lineTool = new T.PolylineTool(this.map, {
         showLabel: false
@@ -487,7 +527,7 @@ export default {
         fillColor: '#FFFFFF',
         fillOpacity: 0.5
       })
-      polygonTool.open();
+      polygonTool.open()
     },
     // 工具-测量
     addLineToolNum() {
@@ -517,6 +557,134 @@ export default {
     // 图像
     onMapChange(e) {
       console.log(`checked = ${e.target.value}`)
+    },
+    // 更多-历史数据
+    onHistoryData() {
+      if (this.historyData) {
+        this.allPointTask(this.historyPointList)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 手机照片
+    onPhonePhoto() {
+      if (this.phonePhoto) {
+        this.allPointTask(this.phonePhotoList, this.phonePhotoTool)
+        console.log(this.phonePhotoTool)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 无人机照片
+    onUAVPhoto() {
+      if (this.UAVPhoto) {
+        this.allPointTask(this.UAVPhotoList, this.UAVPhotoTool)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 风险地图
+    onRiskMap() {
+      if (this.riskMap) {
+        this.allPointTask(this.historyPointList)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 水质
+    onWaterQuality() {
+      if (this.waterQuality) {
+        this.allPointTask(this.historyPointList)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 水质漂浮物
+    onWaterFlotage() {
+      if (this.waterFlotage) {
+        this.allPointTask(this.historyPointList)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 河岸风险源
+    onRiverRisk() {
+      if (this.riverRisk) {
+        this.allPointTask(this.historyPointList)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 水土流失
+    onWaterLandLoss() {
+      if (this.waterLandLoss) {
+        this.allPointTask(this.historyPointList)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 水面率
+    onWaterRatio() {
+      if (this.waterRatio) {
+        this.allPointTask(this.historyPointList)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 底泥
+    onBottomMud() {
+      if (this.bottomMud) {
+        this.allPointTask(this.historyPointList)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 专项调查点
+    onSurveyPoint() {
+      if (this.surveyPoint) {
+        this.allPointTask(this.historyPointList)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 河道连通性
+    onRiverLink() {
+      if (this.riverLink) {
+        this.allPointTask(this.historyPointList)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+    // 水陆分布
+    onLandAndWater() {
+      if (this.landAndWater) {
+        this.allPointTask(this.historyPointList)
+      } else {
+        this.map.clearOverLays() //地图清空
+      }
+    },
+
+    allPointTask(pointLists, tool) {
+      this.map.clearOverLays()
+      for (const item of pointLists) {
+        this.drawAllPoint(item.latlng, tool)
+        console.log(this)
+        console.log(tool)
+      }
+    },
+    // 添加标注图片
+    drawAllPoint(latlng, tool) {
+      tool = new T.Marker(latlng)
+      this.map.addOverLay(tool)
+      tool.addEventListener('click', this.taskPointClick)
+    },
+    // 任务点点击事件
+    taskPointClick(index) {
+      for (const item of this.historyPointList) {
+        if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+          console.log(index.lnglat.lat, index.lnglat.lng)
+        }
+      }
     },
     getTdLayer(lyr) {
       var url =
