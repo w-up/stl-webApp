@@ -43,6 +43,9 @@ export default {
         }
     },
     methods:{
+        show(){
+            this.visible = true;
+        },
         cmtHandle(){
             this.visible = false;
         }
