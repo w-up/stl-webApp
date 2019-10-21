@@ -17,6 +17,7 @@
     <div class="right">
       <a-select
         showSearch
+        :allowClear="true"
         placeholder="请输入街道"
         optionFilterProp="children"
         style="width: 100%"
@@ -86,176 +87,89 @@ export default {
           id: 0,
           name: '南京东路',
           clicked: true,
-          riverData: [
-            {
-              lat: 31.21882,
-              lng: 121.50364
-            },
-            {
-              lat: 31.21265,
-              lng: 121.50227
-            },
-            {
-              lat: 31.20583,
-              lng: 121.49703
-            },
-            {
-              lat: 31.19915,
-              lng: 121.49197
-            },
-            {
-              lat: 31.19702,
-              lng: 121.49591
-            },
-            {
-              lat: 31.2164,
-              lng: 121.50759
-            },
-            {
-              lat: 31.21948,
-              lng: 121.50759
-            }
+          lineData: [
+            { lat: 31.21882, lng: 121.50364 },
+            { lat: 31.21265, lng: 121.50227 },
+            { lat: 31.20583, lng: 121.49703 },
+            { lat: 31.19915, lng: 121.49197 },
+            { lat: 31.19702, lng: 121.49591 },
+            { lat: 31.2164, lng: 121.50757 },
+            { lat: 31.21948, lng: 121.50758 }
+            // { lat: 31.2164, lng: 121.50759 },
+            // { lat: 31.21948, lng: 121.50759 }
           ]
         },
         {
           id: 1,
           name: '南京西路',
           clicked: false,
-          riverData: [
-            {
-              lat: 31.25153,
-              lng: 121.52409
-            },
-            {
-              lat: 31.25355,
-              lng: 121.53085
-            },
-            {
-              lat: 31.25858,
-              lng: 121.53934
-            },
-            {
-              lat: 31.25535,
-              lng: 121.54334
-            },
-            {
-              lat: 31.2499,
-              lng: 121.53353
-            },
-            {
-              lat: 31.24786,
-              lng: 121.52737
-            },
-            {
-              lat: 31.24682,
-              lng: 121.51709
-            },
-            {
-              lat: 31.25111,
-              lng: 121.51711
-            }
+          lineData: [
+            { lat: 31.25153, lng: 121.52409 },
+            { lat: 31.25355, lng: 121.53085 },
+            { lat: 31.25858, lng: 121.53934 },
+            { lat: 31.25535, lng: 121.54334 },
+            { lat: 31.2499, lng: 121.53353 },
+            { lat: 31.24786, lng: 121.52737 },
+            { lat: 31.24682, lng: 121.51709 },
+            { lat: 31.25111, lng: 121.51711 }
           ]
         },
         {
           id: 2,
-          name: '北京东路',
+          name: '南京步行街',
           clicked: false,
-          riverData: [
-            {
-              lat: 31.24539,
-              lng: 121.48686
-            },
-            {
-              lat: 31.24616,
-              lng: 121.48411
-            },
-            {
-              lat: 31.2466,
-              lng: 121.4824
-            },
-            {
-              lat: 31.24612,
-              lng: 121.48051
-            },
-            {
-              lat: 31.24484,
-              lng: 121.47901
-            },
-            {
-              lat: 31.24462,
-              lng: 121.47939
-            },
-            {
-              lat: 31.24543,
-              lng: 121.48089
-            },
-            {
-              lat: 31.2459,
-              lng: 121.48261
-            },
-            {
-              lat: 31.2448,
-              lng: 121.4857
-            },
-            {
-              lat: 31.2444,
-              lng: 121.4872
-            }
+          lineData: [
+            { lat: 31.24539, lng: 121.48686 },
+            { lat: 31.24616, lng: 121.48411 },
+            { lat: 31.2466, lng: 121.4824 },
+            { lat: 31.24612, lng: 121.48051 },
+            { lat: 31.24484, lng: 121.47901 },
+            { lat: 31.24462, lng: 121.47939 },
+            { lat: 31.24543, lng: 121.48089 },
+            { lat: 31.2459, lng: 121.48261 },
+            { lat: 31.2448, lng: 121.4857 },
+            { lat: 31.2444, lng: 121.4872 }
           ]
         },
         {
           id: 3,
-          name: '北京西路',
+          name: '浙江中路',
           clicked: false,
-          riverData: [
-            {
-              lat: 31.21717,
-              lng: 121.51336
-            },
-            {
-              lat: 31.21691,
-              lng: 121.51454
-            },
-            {
-              lat: 31.21768,
-              lng: 121.51566
-            },
-            {
-              lat: 31.21768,
-              lng: 121.51763
-            },
-            {
-              lat: 31.21733,
-              lng: 121.51748
-            },
-            {
-              lat: 31.21739,
-              lng: 121.51568
-            },
-            {
-              lat: 31.21664,
-              lng: 121.51456
-            },
-            {
-              lat: 31.21669,
-              lng: 121.51387
-            },
-            {
-              lat: 31.21699,
-              lng: 121.51323
-            }
+          lineData: [
+            { lat: 31.21717, lng: 121.51336 },
+            { lat: 31.21691, lng: 121.51454 },
+            { lat: 31.21768, lng: 121.51566 },
+            { lat: 31.21768, lng: 121.51763 },
+            { lat: 31.21733, lng: 121.51748 },
+            { lat: 31.21739, lng: 121.51568 },
+            { lat: 31.21664, lng: 121.51456 },
+            { lat: 31.21669, lng: 121.51387 },
+            { lat: 31.21699, lng: 121.51323 }
           ]
         },
         {
           id: 4,
-          name: '南京路步行街',
-          clicked: false
+          name: '河南南路',
+          clicked: false,
+          lineData: [
+            { lat: 31.21493, lng: 121.49566 },
+            { lat: 31.22344, lng: 121.47892 },
+            { lat: 31.20649, lng: 121.47712 },
+            { lat: 31.20469, lng: 121.47482 },
+            { lat: 31.21469, lng: 121.51482 }
+          ]
         },
         {
           id: 5,
-          name: '浙江南路',
-          clicked: false
-        },
+          name: '北京西路',
+          clicked: false,
+          lineData: [
+            { lat: 31.20752, lng: 121.51531 },
+            { lat: 31.20186, lng: 121.50759 },
+            { lat: 31.19944, lng: 121.52106 },
+            { lat: 31.19944, lng: 121.53106 }
+          ]
+        }
       ],
       addRiverShow: false,
       // 地图对象
@@ -286,12 +200,13 @@ export default {
     drawAllRiver(index) {
       this.map.clearOverLays() //将之前绘制的清除
       for (const item of this.riverList) {
-        if (item.riverData !== undefined) {
-          this.setPolylineFn(item.riverData, 'blue', 3, 0)
+        if (item.lineData !== undefined) {
+          this.setPolylineFn(item.lineData, 'blue', 3, 0)
           this.polygon.addEventListener('click', this.polygonClick)
           // 文字标注
-          let latArr=[], lngArr=[];
-          for (const itemPoint of item.riverData) {
+          let latArr = [],
+            lngArr = []
+          for (const itemPoint of item.lineData) {
             latArr.push(Number(itemPoint.lat))
             lngArr.push(Number(itemPoint.lng))
           }
@@ -305,12 +220,12 @@ export default {
           })
           this.map.addOverLay(label)
           label.setLngLat(latlngobj)
-          this.map.addEventListener("zoomend", this.zoomChange)
+          this.map.addEventListener('zoomend', this.zoomChange)
         }
       }
     },
     zoomChange() {
-      console.log(this.map.getZoom());
+      console.log(this.map.getZoom())
     },
     // 地图选项
     onChange(e) {
@@ -346,11 +261,11 @@ export default {
       this.riverList.forEach(value => {
         if (value.name === index) {
           value.clicked = true
-          if (value.riverData !== undefined) {
+          if (value.lineData !== undefined) {
             this.drawAllRiver()
-            this.setBounds(value.riverData)
+            this.setBounds(value.lineData)
             // this.map.zoomOut()
-            this.map.addEventListener("zoomend", this.zoomChange)
+            this.map.addEventListener('zoomend', this.zoomChange)
           }
         } else {
           value.clicked = false
@@ -436,9 +351,61 @@ export default {
     },
     // 多边形点击事件
     polygonClick(index) {
-      console.log(index.target.Qr)
-      console.log(index.target.Qr.Lq)
-      console.log(index.target.Qr.kq)
+      this.$refs.addStreet.add()
+      let arr = [],
+        findIndex1 = '',
+        findIndex2 = '',
+        findIndex3 = '',
+        findIndex4 = ''
+      arr.push(index.target.Qr.Lq.lat)
+      arr.push(index.target.Qr.kq.lat)
+      arr.push(index.target.Qr.Lq.lng)
+      arr.push(index.target.Qr.kq.lng)
+      // console.log(arr);
+
+      findIndex1 = this.findIndexLocal(arr[0], 'lat', this.riverList)
+      findIndex2 = this.findIndexLocal(arr[1], 'lat', this.riverList)
+      findIndex3 = this.findIndexLocal(arr[2], 'lng', this.riverList)
+      findIndex4 = this.findIndexLocal(arr[3], 'lng', this.riverList)
+      // console.log(findIndex1, findIndex2,findIndex3,findIndex4)
+      if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
+        for (const item of this.riverList) {
+          if (item.id == findIndex1) {
+            item.clicked = true
+          } else {
+            item.clicked = false
+          }
+        }
+      }
+    },
+    // 查找函数 value:要查的坐标, latlng:查的是lng经度还是lat纬度, lineDataArr:被查询的数组
+    findIndexLocal(value, latlng, lineDataArr) {
+      let result = '', // 查询结果
+        resultArr = [], // 查询结果数组
+        res = '' // 返回列表的第几个
+      if (latlng == 'lat') {
+        // 纬度
+        for (let i = 0; i < lineDataArr.length; i++) {
+          result = lineDataArr[i].lineData.findIndex(item => {
+            return value == item.lat
+          })
+          resultArr.push(result)
+        }
+      } else {
+        // 经度
+        for (let i = 0; i < lineDataArr.length; i++) {
+          result = lineDataArr[i].lineData.findIndex(item => {
+            return value == item.lng
+          })
+          resultArr.push(result)
+        }
+      }
+      for (const item of resultArr) {
+        res = resultArr.findIndex(item => {
+          return item != -1
+        })
+      }
+      return res
     },
     // 多边形鼠标进入事件
     polygonMouseover(riverItem) {
