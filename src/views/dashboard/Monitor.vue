@@ -923,12 +923,126 @@ const sutreeData = [
 const treeData = [
   {
     title: '无人机正射影像',
-    key: '0-0'
+    key: '0-0',
+    riverData: [
+      {
+        lat: 31.24539,
+        lng: 121.48686
+      },
+      {
+        lat: 31.24616,
+        lng: 121.48411
+      },
+      {
+        lat: 31.2466,
+        lng: 121.4824
+      },
+      {
+        lat: 31.24612,
+        lng: 121.48051
+      },
+      {
+        lat: 31.24484,
+        lng: 121.47901
+      },
+      {
+        lat: 31.24462,
+        lng: 121.47939
+      },
+      {
+        lat: 31.24543,
+        lng: 121.48089
+      },
+      {
+        lat: 31.2459,
+        lng: 121.48261
+      },
+      {
+        lat: 31.2448,
+        lng: 121.4857
+      },
+      {
+        lat: 31.2444,
+        lng: 121.4872
+      }
+    ]
   },
   {
     title: '360全景图',
     key: '0-1',
-    children: [{ title: '黄浦江360(一)', key: '0-1-0-0' }, { title: '黄浦江360(二)', key: '0-1-0-1' }]
+    children: [
+      { 
+        title: '黄浦江360(一)',
+        key: '0-1-0-0',
+        riverData: [
+            {
+              lat: 31.21882,
+              lng: 121.50364
+            },
+            {
+              lat: 31.21265,
+              lng: 121.50227
+            },
+            {
+              lat: 31.20583,
+              lng: 121.49703
+            },
+            {
+              lat: 31.19915,
+              lng: 121.49197
+            },
+            {
+              lat: 31.19702,
+              lng: 121.49591
+            },
+            {
+              lat: 31.2164,
+              lng: 121.50759
+            },
+            {
+              lat: 31.21948,
+              lng: 121.50759
+            }
+          ] 
+      },
+      { 
+        title: '黄浦江360(二)',
+        key: '0-1-0-1',
+        riverData: [
+            {
+              lat: 31.25153,
+              lng: 121.52409
+            },
+            {
+              lat: 31.25355,
+              lng: 121.53085
+            },
+            {
+              lat: 31.25858,
+              lng: 121.53934
+            },
+            {
+              lat: 31.25535,
+              lng: 121.54334
+            },
+            {
+              lat: 31.2499,
+              lng: 121.53353
+            },
+            {
+              lat: 31.24786,
+              lng: 121.52737
+            },
+            {
+              lat: 31.24682,
+              lng: 121.51709
+            },
+            {
+              lat: 31.25111,
+              lng: 121.51711
+            }
+          ] 
+      }]
   }
 ]
 
@@ -1070,6 +1184,7 @@ export default {
     }, 1000)
   },
   watch: {
+    //选中树节点
     checkedKeys(val) {
       console.log('onCheck', val)
     }
@@ -1109,6 +1224,7 @@ export default {
       //   })
       // });
       
+      //*************************暂费***************************** */
       // this.map.TileLayerOptions({zIndex: 1});
 
       // 初始化天气插件
@@ -1131,10 +1247,8 @@ export default {
     },
     //选中添加河道或今日计划面板
     onTabChange(key, type) {
-      console.log(key, type)
       this[type] = key
       if (key == 'nowPlan') {
-        // console.log("已完成" + this.sutreeData)
         let sutree = this.sutreeData
         this.diguiTree(sutree)
         // for (var j = 0; j < sutreeData.length; j++) {
@@ -1161,16 +1275,13 @@ export default {
           this.childNode = true
           return
         } else {
-          console.log(item[i].children)
           this.diguiTree(item[i].children)
         }
       }
     },
     onsuperChange(key, type) {
-      console.log(key, type)
       this[type] = key;
       this.clearMap();
-      console.log("key" + key);
       if(key == 'taskCard'){
         this.loadPoint();
       }
@@ -1181,17 +1292,16 @@ export default {
     //任务模块任务点
     loadPoint(){
       //随机标注点
-      var bounds = this.map.getBounds();
-      console.log("bounds" + bounds);
-      var ref = this.$refs;
-      var sw = bounds.getSouthWest();
-      var ne = bounds.getNorthEast();
-      var lngSpan = Math.abs(sw.lng - ne.lng);
-      var latSpan = Math.abs(ne.lat - sw.lat);
+      var bounds = this.map.getBounds()
+      var ref = this.$refs
+      var sw = bounds.getSouthWest()
+      var ne = bounds.getNorthEast()
+      var lngSpan = Math.abs(sw.lng - ne.lng)
+      var latSpan = Math.abs(ne.lat - sw.lat)
       for(var i = 0; i < 25;i++){
-        var point = new T.LngLat(sw.lng + lngSpan * (Math.random() * 0.7),ne.lat - latSpan * (Math.random() * 0.7));
-        var marker = new T.Marker(point);
-        this.map.addOverLay(marker);
+        var point = new T.LngLat(sw.lng + lngSpan * (Math.random() * 0.7),ne.lat - latSpan * (Math.random() * 0.7))
+        var marker = new T.Marker(point)
+        this.map.addOverLay(marker)
         marker.addEventListener("click",function(){
           ref.communication.show()
         })
@@ -1199,55 +1309,45 @@ export default {
     },
     //车辆轴迹
     cardTrack(){
-      // var carTrack = new T.CarTrack(this.map,{
-      //   interval:5,
-      //   speed:10,
-      //   dynamicLine:true,
-      //   polylinestyle:{color:"#2C64A7",weight:5,opacity:0.9},
-      //   Datas:datas.features.map(function(obj,i){
-      //     var coordinates = obj.geometry.coordinates;
-      //     var lnlat = new T.LngLat(coordinates[0],coordinates[1]);
-      //     return lnlat;
-      //   })
-      // })
       var lineconfig={ 
           color: "#2C64A7",            //线的颜色
           weight: 5,               //线的宽度
           opacity: 0.9,             //线的透明度
           lineStyle:"solid"        //线的样式
       };
-      var points = new Array();
-      points[0]=new T.LngLat(121.495505, 31.21098);
-      points[1]=new T.LngLat(121.485505, 31.21038);
-      points[2]=new T.LngLat(121.475505, 31.21098);
-      var line = new T.Polyline(points,lineconfig);//创建线条的对象
+      var points = new Array()
+      points[0]=new T.LngLat(121.495505, 31.21098)
+      points[1]=new T.LngLat(121.485505, 31.21038)
+      points[2]=new T.LngLat(121.475505, 31.21098)
+      var line = new T.Polyline(points,lineconfig)  //创建线条的对象
       //向地图上添加线
-      this.map.addOverLay(line);
+      this.map.addOverLay(line)
     },
     //点击滑动关闭按钮
     onChangeSwitch() {},
-    //选中添加河道
+    //添加河道按钮事件
     addRiverBtn() {
       this.$refs.selectPatrol.show()
       this.$refs.addSurvey.close()
-      this.clearMap();
-      this.searchMap();
-      this.showOk();
+      this.clearMap()
+      console.log(this.riverData)
+      //描绘河道
+      this.searchMap()
+      // this.showOk()
       // this.addTaskPoint();
     },
+    //添加任务点
     addTaskPoint(){
       for(var i=0;i < this.riverData.length;i++){
-        console.log(this.riverData[i].lng,this.riverData[i].lat)
-        var lnglat = new T.LngLat(this.riverData[i].lng,this.riverData[i].lat);  
-        var marker = new T.Marker(lnglat);
-        this.map.addOverLay(marker);
-        this.showPosition(marker);
-        console.log(marker + "**********" + i);
+        var lnglat = new T.LngLat(this.riverData[i].lng,this.riverData[i].lat)
+        var marker = new T.Marker(lnglat)
+        this.map.addOverLay(marker)
+        this.showPosition(marker)
       }
     },
+    //地图上信息弹框
     showPosition(marker){
        marker.addEventListener("click",function(){
-          console.log(marker);
           var html = "<div style='margin:0px;'>"+
           "<div style='line-height:30px;font-size:18px;margin-bottom:5px'>"+
           "采集水样标本</div>"+
@@ -1260,20 +1360,30 @@ export default {
             "<div>当月待执行次数：2"+"</div>"+
           "</div>"+
           "</div>"+"</div>";
-          var infoWin = new T.InfoWindow(html);
-          marker.openInfoWindow(infoWin);
+          var infoWin = new T.InfoWindow(html)
+          marker.openInfoWindow(infoWin)
         });      
     },
     //右侧模块选择框修改
     handleChange() {},
+    //选中树节点内容
     onCheck(checkedKeys) {
       console.log('onCheck', checkedKeys)
       this.checkedKeys = checkedKeys
     },
-    //河道计划选择
+    //河道计划点击事件
     onSelect(selectedKeys, info) {
-      console.log('onSelect', info)
+      this.clearMap()
       this.selectedKeys = selectedKeys
+      var info = info.node.dataRef
+      if(info.children){
+        for(var i = 0; i< info.children.length;i++){
+          this.map.setZoom("13")
+          this.positionArea(info.children[i].riverData)
+        }
+      }else{
+        this.positionArea(info.riverData)
+      }
     },
     //日期选择
     selectData(date, dateString) {
@@ -1352,7 +1462,7 @@ export default {
       this.$refs.selectPatrol.close()
       this.$refs.addSurvey.show();
     },
-    // 地图点击事件
+    // 添加调查点事件
     MapClick(e) {
       const postion = [];
       const that = this;
@@ -1366,10 +1476,9 @@ export default {
       this.lat = e.lnglat.lat;
       console.log("坐标:" + this.lng , this.lat);
       let marker = new T.Marker(new T.LngLat(e.lnglat.lng, e.lnglat.lat), {icon: icon});
-      // let marker1   = new T.Marker(new T.LngLat(e.lnglat.lng+1, e.lnglat.lat+1));
       console.log("marker:" +marker);
       this.map.addOverLay(marker);
-      // this.map.addOverLay(marker1);
+
       var infoWin = new T.InfoWindow();
       var sContent = "<div style='width:100px;height:100%;text-align:center;line-height:25px;'><div style='border-bottom:1px solid green;width:100%;height:100%;'>360</div>"+
                       "<div @click='addPoint'>人工调查点</div><div>水质监测点</div></div>";
@@ -1388,19 +1497,14 @@ export default {
       });
       // this.map.addOverLay(marker);
       // 向地图注册标注点击事件
-      this.map.addOverLay(circle);
+      this.map.addOverLay(circle)
+      this.addMorePoint();
       //禁用线编辑
       circle.disableEdit(); 
-      this.addMorePoint();
       //移除标注的点击事件，防止多次注册
       this.removeMapClick()
-       // function MarkerClick(e) {
-      //   console.log("这是标注点击事件" + e);
-      //   console.log(e);
-      //   that.map.centerAndZoom(new T.LngLat(e.lnglat.lng + 0.01, e.lnglat.lat));
-      // } 
     },
-    // 地图删除事件
+    // 地图删除指定事件
     removeMapClick() {
       this.map.removeEventListener("click", this.MapClick);
     },
@@ -1411,7 +1515,7 @@ export default {
     clearMap(){
        this.map.clearOverLays();
     },
-    //添加地图上任务点
+    //显示地图上调查点内任务点
     addMorePoint(){
       var dLng = this.lng;
       var dLat = this.lat;
@@ -1442,18 +1546,19 @@ export default {
           this.openInfo(content,e);
         })
     },
+    //添加信息弹框
     openInfo(){
-      var point = e.lnglat;
-      console.log(point);
-      marker1 = new T.Marker(point);
-      var markerInfoWin = new T.InfoWindow(content);
-      marker1.openInfoWindow(markerInfoWin,point);
+      var point = e.lnglat
+      marker1 = new T.Marker(point)
+      var markerInfoWin = new T.InfoWindow(content)
+      marker1.openInfoWindow(markerInfoWin,point)
     },
     //高亮河道
     searchMap(){
       this.removeMapClick()
-      this.clearMap();
-     // 绘制多边形 ,'blue', 3, 0
+      this.clearMap()
+      var infoVisible = this.infoVisible
+     // 绘制多边形
       this.polygon = new T.Polygon(this.riverData,{
         color:'blue',
         weight:3,
@@ -1461,14 +1566,15 @@ export default {
         fillColor:'#FFFFFF',
         fillOpacity:0
       });
-      this.map.addOverLay(this.polygon);
-      //添加标注点
-      // this.addRiverPoint();
-      this.addTaskPoint();
+      this.map.addOverLay(this.polygon)
+      this.polygon.addEventListener('click',this.showOk)
+      //显示河道标注点及信息
+      this.addTaskPoint()
     },
+    //添加标注点及信息框
     addRiverPoint(){  
-      var markers = new T.Marker(new T.LngLat(121.50162,31.20880));
-      this.map.addOverLay(markers);
+      var markers = new T.Marker(new T.LngLat(121.50162,31.20880))
+      this.map.addOverLay(markers)
       this.markerInfo = 
         "<div style='margin:0px;'>"+
           "<div style='line-height:30px;font-size:18px;margin-bottom:5px'>"+
@@ -1482,12 +1588,34 @@ export default {
             "<div>当月待执行次数：2"+"</div>"+
           "</div>"+
           "</div>"+"</div>"
-      var content = this.markerInfo;
-      var markerInfoWin = new T.InfoWindow();
-      markerInfoWin.setContent(content);
+      var content = this.markerInfo
+      var markerInfoWin = new T.InfoWindow()
+      markerInfoWin.setContent(content)
       markers.addEventListener("click", function () {
-          markers.openInfoWindow(markerInfoWin);
+          markers.openInfoWindow(markerInfoWin)
       });
+    },
+    //描绘多边形
+    setPolygonLine(layerData,color,weighe,fillOpacity){
+      this.polygon = new T.Polygon(layerData,{
+        color: color,
+        weight: weighe,
+        opacity:0.5,
+        fillColor:'#FFFFFF',
+        fillOpacity:fillOpacity
+      });
+      this.map.addOverLay(this.polygon)
+    },
+    //定位到选中地
+    positionArea(val){
+      // this.clearMap();
+      this.map.setViewport(val)
+      this.setPolygonLine(val, 'red', 3, 0)
+      this.polygon.addEventListener('click', this.polygonClick) 
+    },
+    //多边形点击事件
+    polygonClick(index){
+
     },
     showOk(){
       this.infoVisible = true;
