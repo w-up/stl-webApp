@@ -615,7 +615,7 @@ export default {
           id: 0,
           name: '无人机正射影像',
           clicked: true,
-          lintData: [
+          lineData: [
             { lat: 31.21493, lng: 121.49566 },
             { lat: 31.22344, lng: 121.47892 },
             { lat: 31.20649, lng: 121.47712 },
@@ -627,7 +627,7 @@ export default {
           id: 1,
           name: '无人机倾斜影像',
           clicked: false,
-          lintData: [
+          lineData: [
             { lat: 31.20752, lng: 121.51531 },
             { lat: 31.20186, lng: 121.50759 },
             { lat: 31.19944, lng: 121.52106 },
@@ -638,7 +638,7 @@ export default {
           id: 2,
           name: '无人机人工拍照',
           clicked: false,
-          lintData: [
+          lineData: [
             { lat: 31.21564, lng: 121.42895 },
             { lat: 31.22873, lng: 121.47788 },
             { lat: 31.26706, lng: 121.47677 }
@@ -755,7 +755,7 @@ export default {
     allLineTask() {
       this.map.clearOverLays()
       for (const item of this.lineTaskList) {
-        this.drawAllLine(item.lintData)
+        this.drawAllLine(item.lineData)
       }
     },
     // 绘制线
@@ -764,7 +764,7 @@ export default {
       this.map.addOverLay(polyline)
       polyline.addEventListener('click', this.taskLineClick)
       // polyline.addEventListener('mouseover', this.taskLineClick)
-      // polyline.addEventListener('mouseout	', this.taskLineClick)
+      // polyline.addEventListener('mouseout', this.taskLineClick)
     },
     // 移入移出点击事件
     taskLineClick(index) {
@@ -773,45 +773,54 @@ export default {
       arr.push(index.target.Qr.kq.lat)
       arr.push(index.target.Qr.Lq.lng)
       arr.push(index.target.Qr.kq.lng)
-      let result = '',
-        resultArr = []
-      arr.forEach((item, value)=>{
-        console.log(item, value)
-      })
-      for (let i = 0; i < this.lineTaskList.length; i++) {
-        result = this.lineTaskList[i].lintData.findIndex(item => {
-          // console.log(item)
-          // console.log(item.lat)
-          return index.target.Qr.Lq.lat == item.lat
-        })
-        resultArr.push(result)
+
+      let findIndex1 = '',
+        findIndex2 = '',
+        findIndex3 = '',
+        findIndex4 = ''
+      findIndex1 = this.findIndex(arr[0], 'lat', this.lineTaskList)
+      findIndex2 = this.findIndex(arr[1], 'lat', this.lineTaskList)
+      findIndex3 = this.findIndex(arr[2], 'lng', this.lineTaskList)
+      findIndex4 = this.findIndex(arr[3], 'lng', this.lineTaskList)
+      if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
+        for (const item of this.lineTaskList) {
+          if (item.id == findIndex1) {
+            item.clicked = true
+          } else {
+            item.clicked = false
+          }
+        }
       }
-      console.log(resultArr)
-      let res = ''
+    },
+    // 查找函数 value:要查的坐标, latlng:查的是lng经度还是lat纬度, lineDataArr:被查询的数组
+    findIndex(value, latlng, lineDataArr) {
+      let result = '', // 查询结果
+        resultArr = [], // 查询结果数组
+        res = '' // 返回列表的第几个
+      if (latlng == 'lat') {
+        // 纬度
+        for (let i = 0; i < lineDataArr.length; i++) {
+          result = lineDataArr[i].lineData.findIndex(item => {
+            return value == item.lat
+          })
+          resultArr.push(result)
+        }
+      } else {
+        // 经度
+        for (let i = 0; i < lineDataArr.length; i++) {
+          result = lineDataArr[i].lineData.findIndex(item => {
+            return value == item.lng
+          })
+          resultArr.push(result)
+        }
+      }
       for (const item of resultArr) {
         res = resultArr.findIndex(item => {
-          // console.log(item)
-          // console.log(item.lat)
           return item != -1
         })
       }
-      console.log(res)
-      for (const item of this.lineTaskList) {
-        if (item.id == res) {
-          item.clicked = true
-        } else {
-          item.clicked = false
-        }
-      }
-
-      // console.log(this.lineTaskList.findIndex(index.target.Qr.Lq.lat))
-      // console.log(index.target.Qr.Lq.lat)
-      // console.log(index.target.Qr.kq.lat)
-      // console.log(index.target.Qr.Lq.lng)
-      // console.log(index.target.Qr.kq.lng)
+      return res
     },
-    // 查找函数
-    findIndex(index) {},
     // 添加所有的标注点
     allPointTask() {
       this.map.clearOverLays()
@@ -936,7 +945,7 @@ export default {
         if (value.name === index) {
           value.clicked = true
           this.allLineTask()
-          this.drawLine(value.lintData, 'red', 3)
+          this.drawLine(value.lineData, 'red', 3)
         } else {
           value.clicked = false
         }
@@ -952,6 +961,9 @@ export default {
       })
       //向地图上添加线
       this.map.addOverLay(line)
+      line.addEventListener('click', this.taskLineClick)
+      // line.addEventListener('mouseover', this.taskLineClick)
+      // line.addEventListener('mouseout	', this.taskLineClick)
     },
     // 线路任务删除
     confirmDelete(index) {
