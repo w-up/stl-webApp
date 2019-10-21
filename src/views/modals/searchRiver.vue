@@ -6,17 +6,35 @@
         <p class="searchTitle">河道查询 </p>
         <span class="closeSearch_r" @click="close"><a-icon type="close" /></span>
         <div class="searchInfo">
-            <a-input placeholder="请输入河道名称" style="text-align:left;width: 240px;"/>
-            <a-button shape="circle" icon="search" class="searchRiverBtn"/>
+            <!-- <a-input placeholder="请输入河道名称" style="text-align:left;width: 240px;"/>
+            <a-button shape="circle" icon="search" class="searchRiverBtn"/> -->
+            <a-select
+                :showArrow="false"
+                :value="value"
+                placeholder="黄浦江"
+                style="width: 90%"
+                :filterOption="false"
+                @search="fetchUser"
+                @change="handleChange"
+                :notFoundContent="null"
+            >
+                <!-- <a-spin v-if="loading" size="small" /> -->
+                <a-select-option v-for="d in riverData" :key="d.value">{{d.text}}</a-select-option>
+            </a-select>
         </div> 
     </div>
 </template>
 <script>
+
 export default {
     name:'searchRiver',
     data(){
         return{
             visible:false,
+            riverData: [{text:'黄浦江',value:'huang'},{text:'松花江',value:'song'},{text:'长江',value:'chang'}],
+            value: [],
+            // loading:true
+            // fetching: false
         }
     },
     methods:{
@@ -29,6 +47,14 @@ export default {
         searchRiver(value){
             console.log(value);
             this.visible = false;
+        },
+        fetchUser(value) {
+            console.log('fetching user', value);
+            this.riverData = this.riverData;
+            // this.loading = false;
+        },
+        handleChange(value) {
+
         }
     }
 }
