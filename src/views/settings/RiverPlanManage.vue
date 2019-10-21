@@ -43,7 +43,10 @@
                 </a-col>
               </a-row>
             </template>
-            <a-directory-tree multiple defaultExpandAll @select="riverPlan" @expand="onExpand">
+            <a-tree defaultExpandAll @select="onSelect" :selectedKeys="selectedKeys"
+              :treeData="treeData"
+            ></a-tree>
+            <!-- <a-directory-tree multiple defaultExpandAll @select="riverPlan" @expand="onExpand">
               <a-tree-node title="360" key="0-0">
                 <a-tree-node title="调查点1" key="0-0-0" isLeaf />
                 <a-tree-node title="调查点2" key="0-0-1" isLeaf />
@@ -53,7 +56,7 @@
                 <a-tree-node title="人工调查2" key="0-1-1" isLeaf />
               </a-tree-node>
               <a-tree-node title="巡河线路1" key="0-2"></a-tree-node>
-            </a-directory-tree>
+            </a-directory-tree> -->
           </a-collapse-panel>
         </a-collapse>
         <a-form v-show="addLineShow" style="width: 100%;">
@@ -152,6 +155,8 @@ const formTailLayout = {
   wrapperCol: { span: 16 }
 }
 
+
+
 import { TreeSelect } from 'ant-design-vue'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
@@ -164,17 +169,123 @@ const treeData = [
       {
         title: '360调查点1',
         value: '0-0-0',
-        key: '0-0-0'
+        key: '0-0-0',
+        riverData: [
+          {
+            lat: 31.24539,
+            lng: 121.48686
+          },
+          {
+            lat: 31.24616,
+            lng: 121.48411
+          },
+          {
+            lat: 31.2466,
+            lng: 121.4824
+          },
+          {
+            lat: 31.24612,
+            lng: 121.48051
+          },
+          {
+            lat: 31.24484,
+            lng: 121.47901
+          },
+          {
+            lat: 31.24462,
+            lng: 121.47939
+          },
+          {
+            lat: 31.24543,
+            lng: 121.48089
+          },
+          {
+            lat: 31.2459,
+            lng: 121.48261
+          },
+          {
+            lat: 31.2448,
+            lng: 121.4857
+          },
+          {
+            lat: 31.2444,
+            lng: 121.4872
+          }
+        ]
       },
       {
         title: '360调查点2',
         value: '0-0-1',
-        key: '0-0-1'
+        key: '0-0-1',
+        riverData: [
+          {
+            lat: 31.21882,
+            lng: 121.50364
+          },
+          {
+            lat: 31.21265,
+            lng: 121.50227
+          },
+          {
+            lat: 31.20583,
+            lng: 121.49703
+          },
+          {
+            lat: 31.19915,
+            lng: 121.49197
+          },
+          {
+            lat: 31.19702,
+            lng: 121.49591
+          },
+          {
+            lat: 31.2164,
+            lng: 121.50759
+          },
+          {
+            lat: 31.21948,
+            lng: 121.50759
+          }
+        ] 
       },
       {
         title: '360调查点3',
         value: '0-0-2',
-        key: '0-0-2'
+        key: '0-0-2',
+        riverData: [
+          {
+            lat: 31.25153,
+            lng: 121.52409
+          },
+          {
+            lat: 31.25355,
+            lng: 121.53085
+          },
+          {
+            lat: 31.25858,
+            lng: 121.53934
+          },
+          {
+            lat: 31.25535,
+            lng: 121.54334
+          },
+          {
+            lat: 31.2499,
+            lng: 121.53353
+          },
+          {
+            lat: 31.24786,
+            lng: 121.52737
+          },
+          {
+            lat: 31.24682,
+            lng: 121.51709
+          },
+          {
+            lat: 31.25111,
+            lng: 121.51711
+          }
+        ] 
       }
     ]
   },
@@ -187,17 +298,34 @@ const treeData = [
         title: '调查点1',
         value: '0-1-0',
         key: '0-1-0',
-        disabled: true
+        riverData: [
+          {
+            lat: 31.24539,
+            lng: 121.48686
+          }
+        ]
       },
       {
         title: '调查点2',
         value: '0-1-1',
-        key: '0-1-1'
+        key: '0-1-1',
+        riverData: [
+          {
+            lat: 31.21882,
+            lng: 121.50364
+          }
+        ]
       },
       {
         title: '调查点3',
         value: '0-1-2',
-        key: '0-1-2'
+        key: '0-1-2',
+        riverData: [
+          {
+            lat: 31.25153,
+            lng: 121.52409
+          }
+        ]
       }
     ]
   }
@@ -403,8 +531,64 @@ export default {
       this.map.removeEventListener('click', this.MapClick)
     },
     onSelect(selectedKeys, info) {
-      console.log('onSelect', info)
       this.selectedKeys = selectedKeys
+      var info = info.node.dataRef
+      this.clearLays()
+      if(info.children){
+        for(var i = 0; i< info.children.length;i++){
+          if(info.children[i].riverData.length > 1){
+            console.log(info.children[i].riverData)
+            this.positionArea(info.children[i].riverData)
+            this.map.setZoom("13")
+          }
+          if(info.children[i].riverData.length == 1){
+            this.map.setZoom("10")
+            this.setMarkerInfo(info.children[i].riverData)
+          }     
+        }
+      }else{
+        if(info.riverData.length > 1){
+          this.positionArea(info.riverData)
+        }
+        if(info.riverData.length == 1){
+          this.map.setZoom("14")
+          this.setMarkerInfo(info.riverData)
+        }
+      }
+    },
+    //定位到选中地
+    positionArea(val){
+      this.map.setViewport(val)
+      this.setPolygonLine(val, 'red', 3, 0)
+      this.polygon.addEventListener('click', this.polygonClick);  
+    },
+    //绘制多边形
+    setPolygonLine(layerData,color,weighe,fillOpacity){
+      this.polygon = new T.Polygon(layerData,{
+        color: color,
+        weight: weighe,
+        opacity:0.5,
+        fillColor:'#FFFFFF',
+        fillOpacity:fillOpacity
+      });
+      this.map.addOverLay(this.polygon)
+    },
+    //绘制标注点
+    setMarkerInfo(riverData){
+      this.map.setViewport(riverData)
+      this.map.setZoom("14")
+      for(var i = 0;i< riverData.length;i++){
+        var lng = riverData[i].lng
+        var lat = riverData[i].lat
+        var point = new T.LngLat(lng,lat)
+        var marker = new T.Marker(point)
+        this.map.addOverLay(marker)
+        var markerInfo = new T.InfoWindow("信息窗口")
+        marker.addEventListener("click",function(){
+          marker.openInfoWindow(markerInfo)
+        })
+      }
+      
     },
     // 弹窗点击确认事件
     modalClick(v) {
@@ -468,6 +652,10 @@ export default {
     addRiverPlan(value) {
       console.log('onChange ', value)
       this.value = value
+    },
+    //清楚覆盖物
+    clearLays(){
+      this.map.clearOverLays()
     }
   }
 }
