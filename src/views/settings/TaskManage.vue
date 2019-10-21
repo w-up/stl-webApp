@@ -38,7 +38,7 @@
                   <a-col :span="4" style="text-align:right;">
                     <a-popconfirm
                       title="确定要删除吗?"
-                      @confirm="confirmDelete(item.name)"
+                      @confirm="confirmLineDelete(item.name)"
                       @cancel="cancelDelete"
                       okText="确定"
                       cancelText="取消"
@@ -314,20 +314,22 @@
         </a-tab-pane>
         <a-tab-pane tab="点任务" key="2" forceRender>
           <section class="task_face">
-            <a-collapse
-              defaultActiveKey="1"
-              accordion
-              @change="chooseTask"
-              style="margin-top:10px;"
-            >
+            <a-collapse defaultActiveKey="1" accordion style="margin-top:10px;">
               <a-collapse-panel
-                :header="item.name"
                 v-show="!addPointShow"
                 v-for="item in pointTaskList"
                 :key="item.id"
                 :style="customStyle"
                 class="custom_list"
               >
+                <template slot="header">
+                  <a-row style="width:100%">
+                    <a-col :span="15">{{item.name}}</a-col>
+                    <a-col :span="8" style="text-align:right;" :pull="1">
+                      <a-button size="small" type="primary" @click="chooseTask(item.id)">添加点</a-button>
+                    </a-col>
+                  </a-row>
+                </template>
                 <a-list
                   size="small"
                   :bordered="false"
@@ -343,7 +345,18 @@
                     style="padding: 10px 16px;"
                   >
                     <a-row style="width:100%">
-                      <a-col :span="24">{{point.name}}</a-col>
+                      <a-col :span="17">{{point.name}}</a-col>
+                      <a-col :span="6" style="text-align:right;">
+                        <a-popconfirm
+                          title="确定要删除吗?"
+                          @confirm="confirmPiontDelete(item.id, point.name)"
+                          @cancel="cancelDelete"
+                          okText="确定"
+                          cancelText="取消"
+                        >
+                          <a href="#">删除</a>
+                        </a-popconfirm>
+                      </a-col>
                     </a-row>
                   </a-list-item>
                 </a-list>
@@ -404,6 +417,17 @@
                 </a-select>
               </a-form-item>
               <a-form-item
+                label="任务图标"
+                :label-col="formItemLayout.labelCol"
+                :wrapper-col="formItemLayout.wrapperCol"
+              >
+                <a-select placeholder="请选择" style="width: 100%">
+                  <a-select-option value="图标1">图标1</a-select-option>
+                  <a-select-option value="图标2">图标2</a-select-option>
+                  <a-select-option value="图标3">图标3</a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item
                 label="人员配置"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
@@ -458,7 +482,8 @@
               <a-collapse size="small" style="margin-top:10px;" :bordered="false">
                 <a-collapse-panel :style="customStyle">
                   <template slot="header">
-                    <a-checkbox @change.stop="peopleChoose">无人机设备</a-checkbox>
+                    <!-- <a-checkbox @change.stop="peopleChoose">无人机设备</a-checkbox> -->
+                    无人机设备
                   </template>
                   <a-row style="width:100%">
                     <a-col :span="12" offset="4" style="height:30px;">
@@ -504,7 +529,8 @@
                 </a-collapse-panel>
                 <a-collapse-panel :style="customStyle">
                   <template slot="header">
-                    <a-checkbox @change="peopleChoose">采水设备</a-checkbox>
+                    <!-- <a-checkbox @change="peopleChoose">采水设备</a-checkbox> -->
+                    采水设备
                   </template>
                   <a-row style="width:100%">
                     <a-col :span="12" offset="4" style="height:30px;">
@@ -614,7 +640,7 @@ export default {
         {
           id: 0,
           name: '无人机正射影像',
-          clicked: true,
+          clicked: false,
           lineData: [
             { lat: 31.21493, lng: 121.49566 },
             { lat: 31.22344, lng: 121.47892 },
@@ -768,16 +794,16 @@ export default {
     },
     // 移入移出点击事件
     taskLineClick(index) {
-      let arr = []
+      let arr = [],
+        findIndex1 = '',
+        findIndex2 = '',
+        findIndex3 = '',
+        findIndex4 = ''
       arr.push(index.target.Qr.Lq.lat)
       arr.push(index.target.Qr.kq.lat)
       arr.push(index.target.Qr.Lq.lng)
       arr.push(index.target.Qr.kq.lng)
 
-      let findIndex1 = '',
-        findIndex2 = '',
-        findIndex3 = '',
-        findIndex4 = ''
       findIndex1 = this.findIndex(arr[0], 'lat', this.lineTaskList)
       findIndex2 = this.findIndex(arr[1], 'lat', this.lineTaskList)
       findIndex3 = this.findIndex(arr[2], 'lng', this.lineTaskList)
@@ -901,6 +927,15 @@ export default {
         }
       }
     },
+    // 删除任务点
+    confirmPiontDelete(id, index) {
+      for (const item of this.pointTaskList) {
+        if (item.id === id) {
+          item.pointList.splice(item.pointList.findIndex(value => value.name === index), 1)
+          this.allPointTask()
+        }
+      }
+    },
     // 添加任务点
     addTaskPointAlert() {
       this.$refs.addTaskPoint.add()
@@ -966,8 +1001,9 @@ export default {
       // line.addEventListener('mouseout	', this.taskLineClick)
     },
     // 线路任务删除
-    confirmDelete(index) {
+    confirmLineDelete(index) {
       this.lineTaskList.splice(this.lineTaskList.findIndex(item => item.name === index), 1)
+      this.allLineTask()
       this.$message.success('删除成功')
       this.defaultRiver = null
     },
