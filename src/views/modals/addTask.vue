@@ -15,7 +15,7 @@
                 <a-textarea placeholder="Basic usage" :rows="4"/>
             </a-form-item>
             <a-form-item label="位置" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }" style="text-align:left;">
-                <span style="cursor: pointer;color: #2fa0ec;font-size:12px;">选择位置（地图上选点/画线）</span>
+                <span style="cursor: pointer;color: #2fa0ec;font-size:12px;" @click="chooseLocation">选择位置（地图上选点/画线）</span>
             </a-form-item>
             <a-form-item label="任务职位" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }">
                 <a-select style="width: 100%">
@@ -34,7 +34,7 @@
                 </a-upload>
             </a-form-item>
             <a-form-item :wrapper-col="{span:24}" style="text-align:center;margin-top:10px;">
-                <a-button style="display:inline-block;width:40%;margin-right:10px;">取消</a-button>
+                <a-button @click="cancleBtn" style="display:inline-block;width:40%;margin-right:10px;">取消</a-button>
                 <a-button type="primary" @click="addPlanInfo" style="display:inline-block;width:40%;">添加</a-button>
             </a-form-item>
         </a-form>
@@ -47,24 +47,30 @@ export default {
         return{
            isShow:false,
            cBtn:true,
-           addPlan:{}
+           addPlan:{},
+           lineTool:''
         }
     },
     methods:{
         show(){
             this.isShow = true;
         },
+        cancle(){
+            this.isShow = false;
+        },
         addPlanInfo(){
             this.isShow = false;
-            this.$emit('showAddBtn',this.cBtn);
-            console.log(this.cBtn);
         },
         submitPlan(){
             
+        },
+        //画线
+        chooseLocation(){
+            this.$emit('chooseLocation')
+        },
+        cancleBtn(){
+            this.$emit('cancleBtn')
         }
-        // showBtn(){
-        //     this.cBtn = true;
-        // }
     }
 }
 </script>
