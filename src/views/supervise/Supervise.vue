@@ -163,7 +163,7 @@
                     <p style="margin:0;">查看历史数据</p>
                   </a-col>
                   <a-col :span="6">
-                    <a-switch size="small" v-model="historyData" @click="onHistoryData" />
+                    <a-switch size="small" v-model="historyData" />
                   </a-col>
                 </a-row>
               </a-list-item>
@@ -222,7 +222,7 @@
                           <p style="margin:0;">手机照片</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="phonePhoto" @click="onPhonePhoto" />
+                          <a-switch size="small" v-model="phonePhoto" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -232,7 +232,7 @@
                           <p style="margin:0;">无人机照片</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="UAVPhoto" @click="onUAVPhoto" />
+                          <a-switch size="small" v-model="UAVPhoto" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -429,33 +429,137 @@ export default {
       phonePhotoTool: '', // 手机照片工具
       UAVPhoto: false, // 无人机照片
       UAVPhotoTool: '', // 无人机照片工具
-      historyPointList: [
+      historyPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.21493, lng: 121.49566 } },
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
       ],
-      phonePhotoList: [
+      phonePhotoPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.22493, lng: 121.51566 } },
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24344, lng: 121.49892 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22649, lng: 121.49712 } }
       ],
-      UAVPhotoList: [
+      UAVPhotoPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.24493, lng: 121.52566 } },
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.25344, lng: 121.50892 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.23649, lng: 121.50712 } }
       ],
 
       riskMap: false, // 风险地图
+      riskMapPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.23493, lng: 121.51566 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24344, lng: 121.49892 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22649, lng: 121.49712 } }
+      ],
       waterQuality: false, // 水质
+      waterQualityPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.24235, lng: 121.52235 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.25335, lng: 121.50335 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.23435, lng: 121.50445 } }
+      ],
       waterFlotage: false, // 水质漂浮物
+      waterFlotagePoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.22222, lng: 121.52222 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.23555, lng: 121.50555 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22333, lng: 121.51333 } }
+      ],
       riverRisk: false, // 河岸风险源
+      riverRiskPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.20333, lng: 121.49999 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.21666, lng: 121.48666 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22999, lng: 121.47333 } }
+      ],
       waterLandLoss: false, // 水土流失
+      waterLandLossPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.09999, lng: 121.50333 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.16666, lng: 121.48333 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.05555, lng: 121.49666 } }
+      ],
       waterRatio: false, // 水面率
+      waterRatioPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.26023, lng: 121.50565 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.23960, lng: 121.51640 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22994, lng: 121.50955 } }
+      ],
       bottomMud: false, // 底泥
+      bottomMudPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.23564, lng: 121.51066 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24315, lng: 121.49606 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.23668, lng: 121.49656 } }
+      ],
       surveyPoint: false, // 专项调查点
+      surveyPointPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.23941, lng: 121.50384 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24682, lng: 121.49964 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.25364, lng: 121.51648 } }
+      ],
 
       riverLink: false, // 河道连通性
-      landAndWater: false // 水陆分布
+      riverLinkPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.23841, lng: 121.516833 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24611, lng: 121.49364 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.26000, lng: 121.51684 } }
+      ],
+      landAndWater: false, // 水陆分布
+      landAndWaterPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.25031, lng: 121.51681 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24304, lng: 121.49392 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.26450, lng: 121.49356 } }
+      ],
+    }
+  },
+  watch: {
+    // 历史数据
+    historyData() {
+      this.watchAllSwitch()
+    },
+    // 手机照片
+    phonePhoto() {
+      this.watchAllSwitch()
+    },
+    // 无人机照片
+    UAVPhoto() {
+      this.watchAllSwitch()
+    },
+    // 风险地图
+    riskMap() {
+      this.watchAllSwitch()
+    },
+    // 水质
+    waterQuality() {
+      this.watchAllSwitch()
+    },
+    // 水质漂浮物
+    waterFlotage() {
+      this.watchAllSwitch()
+    },
+    // 河岸风险源
+    riverRisk() {
+      this.watchAllSwitch()
+    },
+    // 水土流失
+    waterLandLoss() {
+      this.watchAllSwitch()
+    },
+    // 水面率
+    waterRatio() {
+      this.watchAllSwitch()
+    },
+    // 底泥
+    bottomMud() {
+      this.watchAllSwitch()
+    },
+    // 专项调查点
+    surveyPoint() {
+      this.watchAllSwitch()
+    },
+    // 河道连通性
+    riverLink() {
+      this.watchAllSwitch()
+    },
+    // 水陆分布
+    landAndWater() {
+      this.watchAllSwitch()
     }
   },
   mounted() {
@@ -560,117 +664,124 @@ export default {
     },
     // 更多-历史数据
     onHistoryData() {
+      console.log(this.historyData)
       if (this.historyData) {
-        this.allPointTask(this.historyPointList)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.historyPoints)
       }
     },
     // 手机照片
     onPhonePhoto() {
       if (this.phonePhoto) {
-        this.allPointTask(this.phonePhotoList, this.phonePhotoTool)
+        this.allPointTask(this.phonePhotoPoints, this.phonePhotoTool)
         console.log(this.phonePhotoTool)
-      } else {
-        this.map.clearOverLays() //地图清空
       }
     },
     // 无人机照片
     onUAVPhoto() {
       if (this.UAVPhoto) {
-        this.allPointTask(this.UAVPhotoList, this.UAVPhotoTool)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.UAVPhotoPoints, this.UAVPhotoTool)
       }
     },
     // 风险地图
     onRiskMap() {
       if (this.riskMap) {
-        this.allPointTask(this.historyPointList)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.riskMapPoints)
       }
     },
     // 水质
     onWaterQuality() {
       if (this.waterQuality) {
-        this.allPointTask(this.historyPointList)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.waterQualityPoints)
       }
     },
     // 水质漂浮物
     onWaterFlotage() {
       if (this.waterFlotage) {
-        this.allPointTask(this.historyPointList)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.waterFlotagePoints)
       }
     },
     // 河岸风险源
     onRiverRisk() {
       if (this.riverRisk) {
-        this.allPointTask(this.historyPointList)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.riverRiskPoints)
       }
     },
     // 水土流失
     onWaterLandLoss() {
       if (this.waterLandLoss) {
-        this.allPointTask(this.historyPointList)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.waterLandLossPoints)
       }
     },
     // 水面率
     onWaterRatio() {
       if (this.waterRatio) {
-        this.allPointTask(this.historyPointList)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.waterRatioPoints)
       }
     },
     // 底泥
     onBottomMud() {
       if (this.bottomMud) {
-        this.allPointTask(this.historyPointList)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.bottomMudPoints)
       }
     },
     // 专项调查点
     onSurveyPoint() {
       if (this.surveyPoint) {
-        this.allPointTask(this.historyPointList)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.surveyPointPoints)
       }
     },
     // 河道连通性
     onRiverLink() {
       if (this.riverLink) {
-        this.allPointTask(this.historyPointList)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.riverLinkPoints)
       }
     },
     // 水陆分布
     onLandAndWater() {
       if (this.landAndWater) {
-        this.allPointTask(this.historyPointList)
-      } else {
-        this.map.clearOverLays() //地图清空
+        this.allPointTask(this.landAndWaterPoints)
       }
+    },
+    // 监听所有的开关属性
+    watchAllSwitch() {
+      this.map.clearOverLays()
+      // 历史数据
+      this.onHistoryData()
+      // 手机照片
+      this.onPhonePhoto()
+      // 无人机照片
+      this.onUAVPhoto()
+      // 风险地图
+      this.onRiskMap()
+      // 水质
+      this.onWaterQuality()
+      // 水质漂浮物
+      this.onWaterFlotage()
+      // 河岸风险源
+      this.onRiverRisk()
+      // 水土流失
+      this.onWaterLandLoss()
+      // 水面率
+      this.onWaterRatio()
+      // 底泥
+      this.onBottomMud()
+      // 专项调查点
+      this.onSurveyPoint()
+      // 河道连通性
+      this.onRiverLink()
+      // 水陆分布
+      this.onLandAndWater()
     },
 
     allPointTask(pointLists, tool) {
-      this.map.clearOverLays()
+      // this.map.clearOverLays()
+      console.log(pointLists)
+      // let arr = []
       for (const item of pointLists) {
+        // arr.push(item.latlng)
         this.drawAllPoint(item.latlng, tool)
-        console.log(this)
-        console.log(tool)
       }
+      // this.map.setViewport(arr)
     },
     // 添加标注图片
     drawAllPoint(latlng, tool) {
@@ -680,7 +791,7 @@ export default {
     },
     // 任务点点击事件
     taskPointClick(index) {
-      for (const item of this.historyPointList) {
+      for (const item of this.historyPoints) {
         if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
           console.log(index.lnglat.lat, index.lnglat.lng)
         }
