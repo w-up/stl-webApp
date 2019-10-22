@@ -369,7 +369,7 @@
                       @click="addTaskBtn"
                       v-show="cBtn"
                     >追加任务</a-button>
-                    <add-task ref="addTask" @showAddBtn="clearBtn"></add-task>
+                    <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask"></add-task>
                   </div>
                   <div class="riverInfo">
                     <div class="river_info">
@@ -820,6 +820,11 @@
               </a-row>
             </div>
           </div>
+          <div class="addPlan_foot" v-if="!firstShow">
+            <div v-if="ishidden == 4">
+              <a-button style="width:90%;color:#1890ff;" @click="returnPre" >返回上一级</a-button>
+            </div>
+          </div>
         </div>
       </template>
     </split-pane>
@@ -1091,6 +1096,21 @@ const riverData = [
     lng: 121.50759
   }
 ]
+
+const cardData = [
+  {
+    lat:31.21098,
+    lng:121.495505
+  },
+  {
+    lat:31.21038,
+    lng:121.485505
+  },
+  {
+    lat:31.21098,
+    lng:121.475505
+  }
+]
 export default {
   name: 'Analysis',
   components: {
@@ -1133,6 +1153,7 @@ export default {
       selectedKeys: [],
       treeData,
       sutreeData,
+      cardData, //车辆轴迹位置信息
       ishidden: 1,
       checkedPlan: [],
       cBtn: true,
@@ -1149,7 +1170,8 @@ export default {
       layer:[],
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
       mapPoint: new Map(),
-      lng:'',
+      lineTool: '', //工具-线
+      lng:'', //坐标点
       lat:'',
       riverData,
       polygon: '', // 多边形对象
@@ -1248,28 +1270,16 @@ export default {
     //选中添加河道或今日计划面板
     onTabChange(key, type) {
       this[type] = key
+      if(key == 'addPlan'){
+        this.ishidden = 1
+      }
       if (key == 'nowPlan') {
         let sutree = this.sutreeData
         this.diguiTree(sutree)
-        // for (var j = 0; j < sutreeData.length; j++) {
-        //   this.diguiTree(sutreeData[j])
-        // }
       }
       this.clearMap();
     },
     diguiTree(item) {
-      //没有children了，所以是叶子节点
-      // console.log(item)
-      //debugger;
-      // if (item.children == null) {
-      //   this.childNode = true
-      //   return
-      // }
-      // //不是叶子节点，所以继续循环递归
-      // for (var i = 0; i < item.children.length; i++) {
-      //   this.diguiTree(item.children[i])
-      // }
-
       for (let i in item) {
         if (item[i].children == null) {
           this.childNode = true
@@ -1315,13 +1325,22 @@ export default {
           opacity: 0.9,             //线的透明度
           lineStyle:"solid"        //线的样式
       };
-      var points = new Array()
-      points[0]=new T.LngLat(121.495505, 31.21098)
-      points[1]=new T.LngLat(121.485505, 31.21038)
-      points[2]=new T.LngLat(121.475505, 31.21098)
-      var line = new T.Polyline(points,lineconfig)  //创建线条的对象
+      var line = new T.Polyline(this.cardData,lineconfig)  //创建线条的对象
       //向地图上添加线
       this.map.addOverLay(line)
+      this.addIcon()
+      this.addTaskPoint(this.cardData)
+    },
+    //添加车辆起点图标
+    addIcon(){
+      var startIcon = "http://lbs.tianditu.gov.cn/images/bus/start.png";	//起点图标
+      var icon = new T.Icon({
+        iconUrl:startIcon,
+        iconSize:new T.Point(44, 34),
+        iconAnchor: new T.Point(12, 31)
+      })
+      var marker = new T.Marker(new T.LngLat(121.495505, 31.21098),{icon: icon});
+      this.map.addOverLay(marker);
     },
     //点击滑动关闭按钮
     onChangeSwitch() {},
@@ -1337,9 +1356,9 @@ export default {
       // this.addTaskPoint();
     },
     //添加任务点
-    addTaskPoint(){
-      for(var i=0;i < this.riverData.length;i++){
-        var lnglat = new T.LngLat(this.riverData[i].lng,this.riverData[i].lat)
+    addTaskPoint(riverData){
+      for(var i=0;i < riverData.length;i++){
+        var lnglat = new T.LngLat(riverData[i].lng,riverData[i].lat)
         var marker = new T.Marker(lnglat)
         this.map.addOverLay(marker)
         this.showPosition(marker)
@@ -1378,7 +1397,7 @@ export default {
       var info = info.node.dataRef
       if(info.children){
         for(var i = 0; i< info.children.length;i++){
-          this.map.setZoom("13")
+          this.map.setZoom("12")
           this.positionArea(info.children[i].riverData)
         }
       }else{
@@ -1394,10 +1413,19 @@ export default {
     addTaskBtn() {
       this.$refs.addTask.show()
       this.cBtn = false
+      // this.$refs.addTask.chooseLocation()
     },
-    clearBtn(val) {
-      console.log('............' + val)
-      this.cBtn = val
+    //追加任务画线
+    addLineTool(){
+      console.log("我是父组件，调用了子组件的方法")
+      this.lineTool = new T.PolylineTool(this.map)
+      this.lineTool.open()
+      this.lineTool.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
+    },
+    //取消追加任务
+    cancelAddTask(){
+      this.clearMap()
+      this.$refs.addTask.cancle()
     },
     //生成计划
     newPlan_btn() {
@@ -1405,17 +1433,27 @@ export default {
     },
     //图像显示修改
     onMapChange() {},
+    //底部取消按钮
     canclePlanBtn() {
       this.ishidden = 1
     },
+    //底部下一步按钮
     showPlanBtn() {
       this.ishidden = 3
     },
+    //底部上一步按钮
     previousBtn() {
       this.ishidden = 2
     },
+    //返回首页
     reHome() {
       this.ishidden = 1
+    },
+    //底部返回上一级按钮
+    returnPre(){
+      this.clearMap()
+      this.firstShow = true 
+      this.nosuperKey = 'taskCard' 
     },
     //今日计划中组点击
     selectGroup() {},
@@ -1432,9 +1470,13 @@ export default {
     supervision_btn() {
       console.log('今日计划')
       console.log(this.firstShow)
-      this.firstShow = !this.firstShow
+      this.firstShow = !this.firstShow 
       console.log(this.firstShow);
+      // if(this.firstShow == true){
+      //   this.ishidden == 1
+      // }
       if(this.firstShow == false){
+        this.ishidden = 4
         this.loadPoint();
       }  
     },
@@ -1567,9 +1609,10 @@ export default {
         fillOpacity:0
       });
       this.map.addOverLay(this.polygon)
+      this.map.setViewport(this.riverData)
       this.polygon.addEventListener('click',this.showOk)
       //显示河道标注点及信息
-      this.addTaskPoint()
+      this.addTaskPoint(this.riverData)
     },
     //添加标注点及信息框
     addRiverPoint(){  
@@ -1611,11 +1654,11 @@ export default {
       // this.clearMap();
       this.map.setViewport(val)
       this.setPolygonLine(val, 'red', 3, 0)
-      this.polygon.addEventListener('click', this.polygonClick) 
+      // val.addEventListener('click', this.polygonClick) 
     },
     //多边形点击事件
     polygonClick(index){
-
+      
     },
     showOk(){
       this.infoVisible = true;
