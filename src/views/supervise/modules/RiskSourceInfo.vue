@@ -1,12 +1,12 @@
 <template>
   <a-modal
     title="风险源信息"
-    :width="360"
+    :width="450"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleSubmit"
     @cancel="handleCancel"
-    :mask="false"
+    :mask="true"
     :centered="true"
     class="comment_model"
     :bodyStyle="{margin: 0, left:0}"
@@ -14,19 +14,21 @@
   >
     <a-row>
       <a-col :span="12">
-        <p>内部编码: 4564654</p>
-        <p>准确位置: 上海xxx</p>
-        <p>面积: 4564654</p>
+        <p>内部编码: CDSCD</p>
+        <p>准确位置: 上海黄浦区九江</p>
+        <p>面积: 45646平方公里</p>
       </a-col>
       <a-col :span="12">
         <p>风险源类别: 4564654</p>
-        <p>首次发现时间: 4564654</p>
-        <p>河道所属: 4564654</p>
-        <router-link to="#111">查看详情</router-link>
+        <p>首次发现时间: 2019-06-06</p>
+        <p>河道所属: 黄浦江</p>
+        <router-link to="#111">
+          <a-button type="primary" ghost size="small">查看详情</a-button>
+        </router-link>
       </a-col>
     </a-row>
     <a-list
-      class="comment-list"
+      class="comment-list custom_comment"
       :header="`${data.length} 条评论`"
       itemLayout="horizontal"
       :dataSource="data"
@@ -35,16 +37,14 @@
       <a-list-item slot="renderItem" slot-scope="item" class="comment_list">
         <a-comment :author="item.author" :avatar="item.avatar">
           <div class="comment_level">
-            <p>I 级</p>
-            <span>存在</span>
+            <p
+              :class="{'danger_level0': item.dangerLevel == 0, 'danger_level1': item.dangerLevel == 1,'danger_level2': item.dangerLevel == 2}"
+            >{{item.dangerDescribe}}</p>
+            <span>{{item.dangerContent}}</span>
           </div>
-          <template slot="actions"></template>
-          <p slot="content">{{item.content}}</p>
+          <p slot="content" style="ma">{{item.content}}</p>
           <div class="comment_img">
-            <img src="../../../../public/avatar2.jpg" alt />
-            <img src="../../../../public/avatar2.jpg" alt />
-            <img src="../../../../public/avatar2.jpg" alt />
-            <img src="../../../../public/avatar2.jpg" alt />
+            <img v-for="img in item.imgList" :key="img.id" :src="img.url" :alt="img.alt" />
           </div>
           <a-tooltip slot="datetime" :title="item.datetime">
             <span>{{item.datetime}}</span>
@@ -65,20 +65,57 @@ export default {
 
       data: [
         {
-          actions: ['Reply to'],
-          author: '张三',
+          author: '李白',
           avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
           content: '管理建议: 持续监督.',
-          datetime: '2019-10-01'
+          dangerLevel: 2,
+          dangerDescribe: 'II 级',
+          dangerContent: '存在',
+          datetime: '2019-10-29',
+          imgList: [
+            {
+              id: 0,
+              url: require('../../../../public/avatar2.jpg'),
+              alt: '风险图片'
+            },
+            {
+              id: 1,
+              url: require('../../../../public/avatar2.jpg'),
+              alt: '风险图片'
+            },
+            {
+              id: 2,
+              url: require('../../../../public/avatar2.jpg'),
+              alt: '风险图片'
+            },
+            {
+              id: 3,
+              url: require('../../../../public/avatar2.jpg'),
+              alt: '风险图片'
+            }
+          ]
+        },
+        {
+          author: '王昭君',
+          avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+          content: '管理建议: 暂无风险.',
+          dangerLevel: 0,
+          dangerDescribe: '0 级',
+          dangerContent: '不存在',
+          datetime: '2019-10-01',
+          imgList: [
+            {
+              id: 0,
+              url: require('../../../../public/avatar2.jpg'),
+              alt: '风险图片'
+            },
+            {
+              id: 1,
+              url: require('../../../../public/avatar2.jpg'),
+              alt: '风险图片'
+            }
+          ]
         }
-        // {
-        //   actions: ['Reply to'],
-        //   author: 'Han Solo',
-        //   avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-        //   content:
-        //     'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-        //   datetime: '222days'
-        // }
       ]
     }
   },
@@ -136,6 +173,10 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+p {
+  margin: 0 10px 0 0;
+  text-align: justify;
+}
 .comment_level {
   p {
     display: inline-block;
@@ -147,6 +188,15 @@ export default {
     border-radius: 4px;
     color: white;
     margin: 0 6px 6px 0;
+  }
+  .danger_level0 {
+    background-color: #52c41a;
+  }
+  .danger_level1 {
+    background-color: #faad14;
+  }
+  .danger_level2 {
+    background-color: #f5222d;
   }
   span {
     font-size: 14px;
@@ -160,9 +210,12 @@ export default {
   -webkit-justify-content: space-between;
   flex-wrap: wrap;
   img {
-    width: 30%;
-    height: 30%;
-    margin-bottom: 13px;
+    width: 80px;
+    height: 80px;
+    margin: 0 10px 10px 0;
+  }
+  img:nth-last-child(1) {
+    margin: 0;
   }
 }
 </style>
