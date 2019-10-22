@@ -122,7 +122,6 @@
           <template slot="content">
             <a-row style="width: 100%;">
               <a-col :span="24">
-                <!-- <span>2D影像图</span> -->
                 <a-radio-group @change="onMapChange" v-model="mapType">
                   <a-radio-button value="a">2D影像图</a-radio-button>
                   <a-radio-button value="b">卫星影像图</a-radio-button>
@@ -656,7 +655,7 @@ export default {
     },
     // 指北针
     compass() {
-      this.$refs.riskInfo.riskInfo()
+      
     },
     // 图像
     onMapChange(e) {
@@ -794,6 +793,7 @@ export default {
       for (const item of this.historyPoints) {
         if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
           console.log(index.lnglat.lat, index.lnglat.lng)
+          this.$refs.riskInfo.riskInfo()
         }
       }
     },
@@ -942,7 +942,7 @@ export default {
   position: absolute;
   bottom: 10px;
   left: 0;
-  z-index: 999;
+  z-index: 888;
   width: 100%;
 }
 @media (min-width: 800px) {
@@ -968,7 +968,7 @@ export default {
   overflow: hidden;
   border-radius: 4px;
   border: 1px solid rgb(204, 204, 204);
-  z-index: 999;
+  z-index: 888;
   display: flex;
   display: -webkit-flex;
   img {
@@ -1001,7 +1001,7 @@ export default {
   width: 70px;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.9);
-  z-index: 1009;
+  z-index: 888;
   ul {
     width: 100%;
     height: calc(100% - 35px);
