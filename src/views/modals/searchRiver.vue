@@ -9,12 +9,14 @@
             <!-- <a-input placeholder="请输入河道名称" style="text-align:left;width: 240px;"/>
             <a-button shape="circle" icon="search" class="searchRiverBtn"/> -->
             <a-select
-                :showArrow="false"
+                showSearch
                 :value="value"
                 placeholder="黄浦江"
                 style="width: 90%"
+                :showArrow="false"
+                :defaultActiveFirstOption="false"
                 :filterOption="false"
-                @search="fetchUser"
+                @search="handleSearch"
                 @change="handleChange"
                 :notFoundContent="null"
             >
@@ -32,7 +34,7 @@ export default {
         return{
             visible:false,
             riverData: [{text:'黄浦江',value:'huang'},{text:'松花江',value:'song'},{text:'长江',value:'chang'}],
-            value: [],
+            value: undefined,
             // loading:true
             // fetching: false
         }
@@ -48,13 +50,13 @@ export default {
             console.log(value);
             this.visible = false;
         },
-        fetchUser(value) {
+        handleSearch(value) {
             console.log('fetching user', value);
             this.riverData = this.riverData;
-            // this.loading = false;
         },
         handleChange(value) {
-
+            this.value = value;
+            // this.riverData = this.riverData;
         }
     }
 }
