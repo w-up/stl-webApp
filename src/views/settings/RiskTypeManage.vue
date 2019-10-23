@@ -28,24 +28,40 @@
         </template>
       </a-table>
     </a-card>
-    <a-modal title="添加/编辑风险源" v-model="visible">
+    <a-modal title="添加/编辑风险源" v-model="visible"
+      @ok="upload2"
+      @cancel="handleCancel"
+    >
       <a-form>
         <a-form-item label="风险源类型名称" :label-col="{ span: 7 }" :wrapper-col="{ span: 16 }">
-          <a-input placeholder="请输入风险源类型名称"/>
+          <a-input placeholder="请输入风险源类型名称" v-model="list.name"/>
         </a-form-item>
-        <!-- <a-form-item label="标注样式" :label-col="{ span: 7 }" :wrapper-col="{ span: 16 }">
-          <Upload
-            :before-upload="handleUpload"
-            action="//jsonplaceholder.typicode.com/posts/">
-            <Button icon="ios-cloud-upload-outline">Select the file to upload</Button>
-          </Upload>
-        </a-form-item> -->
+        <a-form-item label="标注样式" :label-col="{ span: 7 }" :wrapper-col="{ span: 16 }">
+            <Upload
+              multiple
+              ref="upload2"
+              action="/server/data/admin/param/save"
+              :before-upload="handleUpload"
+              :data="list"
+              :headers="headers"
+              :show-upload-list="false"
+              name="icon"
+              :on-success="handleSuccess1"
+              :on-format-error="handleFormatError"
+              :on-error="handleError"
+            ><Button>添加</Button></Upload>
+            <viewer >
+                <img  :src="attachmentJpg" alt="" style="height:70px;">
+            </viewer >
+        </a-form-item>
       </a-form>
     </a-modal>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { paramList, paramSave,paramDel } from '@/api/login'
 const columns = [
   {
@@ -70,10 +86,14 @@ const columns = [
 export default {
   data() {
     return {
+      file:null,
+      loadingStatus:false,
+      attachmentJpg:'',
       id:'',
       list: {
         name: '',
-        style: ''
+        id:'',
+        type:'risk_source_type'
       },
       ruleValidate: {
         name: [{ required: true, message: '不能为空', trigger: 'blur' }]
@@ -81,26 +101,17 @@ export default {
       visible: false,
       columns,
       data: [
-        {
-          key: '001',
-          name: '超级管理员',
-          type: '内业'
-        },
-        {
-          key: '002',
-          name: '巡河总监',
-          type: '内业'
-        },
-        {
-          key: '003',
-          name: '基础数据维护员',
-          type: '外勤'
-        }
-      ]
+       
+      ],
+      headers: {
+        Authorization: '',
+        'X-TENANT-ID': 'jl:jlgis@2019' 
+      },
     }
   },
   mounted(){
     this.getList()
+    this.headers.Authorization=Vue.ls.get(ACCESS_TOKEN)
   },
   methods: {
     getList(){
@@ -117,10 +128,28 @@ export default {
 
       })
     },
+    handleOk(e) {
+      // paramSave(data).then(res => {
+      //     this.$message.success('保存成功');
+      //     this.visible = false;
+      //     this.list.id=''
+      //     this.list.name=''
+      //     this.getList()
+      //   }).catch(err => {
+      //     this.$message.error(err.response.data.message);
+      // })
+    },
+    handleCancel(e) {
+      this.file=null
+      this.loadingStatus=false
+      this.visible = false;
+      this.attachmentJpg=''
+    },
     add(id){
       for (let i = 0; i < this.data.length; i++) {
         if (this.data[i].id==id) {
           this.list.name =this.data[i].name
+          this.attachmentJpg = this.data[i].icon
           break
         }  
       }
@@ -144,12 +173,57 @@ export default {
     cancel(e) {
 
     },
-    deleteItem(index) {
-      console.log(index)
-    }
+    upload2 (row) {
+        if (this.file==null) {
+          var data = this.list
+          paramSave(data).then(res => {
+              this.$message.success('保存成功');
+              this.visible = false;
+              this.list.id=''
+              this.list.name=''
+              this.attachmentJpg=''
+              this.getList()
+          }).catch(err => {
+              this.$message.error(err.response.data.message);
+          })
+        }else{
+          this.loadingStatus = true;
+          this.$refs.upload2.post(this.file);
+          setTimeout(() => {
+              this.file = null;
+              this.attachmentJpg=''
+              this.loadingStatus = false;
+              this.visible = false;
+              this.getList()
+          }, 1500);
+        }
+    },
+    handleUpload (file) {
+      this.file = file;
+      this.attachmentJpg = window.URL.createObjectURL(file)
+      return false;
+    },
+    handleSuccess1(response){
+        if(response.success === true){
+            this.$Message.success('成功！');
+        }else{
+            this.$Message.error('失败！');
+        }
+    },
+    handleFormatError(file){
+        this.$Message.error('文件格式不正确');
+    },
+    handleError(err){
+        console.log(err);
+        
+        this.$Message.error("数据导入失败！")
+    },
   }
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less" >
+.ant-form input[type='file'] {
+  display: none; 
+}
 </style>

@@ -9,11 +9,11 @@
       <div style="display:flex;width:100%;box-sizing:border-box;">
         <div style="width:250px">
           <a-card style="min-height: 200px">
-            <a-directory-tree :treeData="treeData" @select="select"></a-directory-tree>
+            <el-tree :data="treeData"  @node-click="select"></el-tree>
           </a-card>
         </div>
         <div style="width:100%;margin-left:20px">
-          <div v-if="treeId==true">
+          <div v-if="treeId=='1'">
             <a-button type="primary" icon="plus" @click="visible=true" style="margin-bottom:15px">添加</a-button>
             <a-table :columns="columns" :dataSource="data" bordered>
               <template slot="operation" slot-scope="item">
@@ -23,7 +23,17 @@
               </template>
             </a-table>
           </div>
-          <div v-else>
+          <div v-if="treeId=='2'">
+            <a-button type="primary" icon="plus" @click="visible=true" style="margin-bottom:15px">添加</a-button>
+            <a-table :columns="columns2" :dataSource="data" bordered>
+              <template slot="operation" slot-scope="item">
+                <a @click="handleEdit(item.key)">编辑</a>
+                <a-divider type="vertical" />
+                <a @click="handleSub(item.key)">删除</a>
+              </template>
+            </a-table>
+          </div>
+          <div v-if="treeId=='3'">
             <p style="color: #333; font-weight: 900;font-size: 16px;">筛选查询</p>
             <div>
               <a-input placeholder="请输入设备名称" style="width:200px;margin:0  10px 0 0" />
@@ -53,10 +63,13 @@
         </div>
       </div>
     </a-card>
-    <a-modal title="添加以及设备类型" v-model="visible">
+    <a-modal title="添加以及设备类型" v-model="visible"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
       <a-form :form="form">
         <a-form-item label="设备名称" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
-          <a-input v-model="typeList.typeName" />
+          <a-input v-model="typeList.name" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -103,31 +116,8 @@
 </template>
 
 <script>
-const treeData = [
-  {
-    title: '全部',
-    key: '1',
-    id: '1',
-    children: [
-      {
-        title: '无人机类型',
-        key: '2-2',
-        id: '2',
-        children: [
-          { title: '无人机', key: '3-1', id: '3' },
-          { title: '无人机螺旋桨', key: '3-2', id: '3' },
-          { title: '无人机电池', key: '3-3', id: '3' }
-        ]
-      },
-      {
-        title: '采水样类型',
-        key: '2-3',
-        id: '2',
-        children: []
-      }
-    ]
-  }
-]
+import { structureEquipment, equipmentTypeList,equipmentTypeSave,equipmentTypeDel,equipmentNewsList,equipmentNewsSave,equipmentNewsDel } from '@/api/login'
+const treeData = []
 const columns = [
   {
     title: '序号',
@@ -136,7 +126,23 @@ const columns = [
   },
   {
     title: '一级类型名称',
-    dataIndex: 'typeName'
+    dataIndex: 'name'
+  },
+  {
+    title: '操作',
+    scopedSlots: { customRender: 'operation' },
+    width: 120
+  }
+]
+const columns2 = [
+  {
+    title: '序号',
+    width: 80,
+    dataIndex: 'key'
+  },
+  {
+    title: '二级类型名称',
+    dataIndex: 'name'
   },
   {
     title: '操作',
@@ -152,11 +158,11 @@ const columns1 = [
   },
   {
     title: '设备名称',
-    dataIndex: 'typeName'
+    dataIndex: 'name'
   },
   {
     title: '数量',
-    dataIndex: 'number'
+    dataIndex: 'code'
   },
   {
     title: '状态',
@@ -169,31 +175,24 @@ const columns1 = [
     width: 170
   }
 ]
-const data = [
-  {
-    id: '111',
-    key: '1',
-    typeName: '无人机类型'
-  },
-  {
-    key: '2',
-    id: '222',
-    typeName: '采水样类型'
-  }
-]
 export default {
   data() {
     return {
-      treeId: true,
+      oneID:'',
+      parentId:'0',
+      treeId: '1',
+      typeId:'',
       treeData,
+      treeData1:[],
       columns,
       columns1,
-      data,
+      columns2,
+      data:[],
       visible: false,
       equipmentModel: false,
       typeList: {
         id: '',
-        typeName: ''
+        name: ''
       },
       equipmentList: {
         name: '',
@@ -205,27 +204,7 @@ export default {
         type: [{ required: true, message: '不能为空', trigger: 'blur' }]
       },
       data1: [
-        {
-          id: '111',
-          key: '1',
-          number: '2',
-          typeName: '无人机1',
-          state: true
-        },
-        {
-          key: '2',
-          id: '222',
-          number: '1',
-          typeName: '无人机2',
-          state: true
-        },
-        {
-          key: '3',
-          id: '333',
-          number: '4',
-          typeName: '无人机2',
-          state: false
-        }
+       
       ],
       uavList: [
         {
@@ -275,20 +254,124 @@ export default {
     }
   },
   watch: {},
+  mounted(){
+    this.getList()
+  },
   methods: {
-    select(e) {
-      var s = e[0].substr(0, 1)
-      console.log(s)
-      if (s == '1') {
-        this.treeId = true
-      } else {
-        this.treeId = false
+    getList(){
+      this.treeData=[{
+        label: '全部',
+        id: '0',
+        code:'1',
+        children: [
+        
+        ]
+      }]
+      var data ={
+        id:this.parentId
       }
+      equipmentTypeList(data).then(res => {
+        var sz = res.data
+        for (let i = 0; i < sz.length; i++) {
+          sz[i].key=i+1
+        }
+        this.data=sz
+        
+      }).catch(err => {
+
+      })
+      equipmentTypeList(data).then(res => {
+        var arr =res.data
+        for (let i = 0; i < arr.length; i++) {
+          arr[i].key=i+1
+          arr[i].code='2'
+          arr[i].label=arr[i].name
+          arr[i].children=[]
+          this.treeData[0].children.push(arr[i])
+        }
+      }).catch(err => {
+
+      })
     },
-    handleEdit(row) {
-      this.visible = true
-      this.typeList.id = row.id
-      this.typeList.typeName = row.typeName
+    campList(){
+      var data={
+        id:this.typeId
+      }
+      // equipmentNewsList(data).then(res => {
+      //    var arr = res.data
+      //    for (let i = 0; i < arr.length; i++) {
+      //      arr[i].key=i+1
+      //      arr[i].state=true
+      //    }
+      //    this.data1=arr
+      //   }).catch(err => {
+
+      // })
+    },
+    handleOk(e) {
+      var data ={
+        parentId:this.typeList.id,
+        name:this.typeList.name
+      }
+      equipmentTypeSave(data).then(res => {
+          this.$message.success('保存成功');
+          this.visible = false;
+          this.equipmentList.id=''
+          this.equipmentList.name=''
+          this.getList()
+        }).catch(err => {
+          this.$message.error(err.response.data.message);
+      })
+    },
+    handleCancel(e) {
+      this.equipmentList.id=''
+      this.equipmentList.name=''
+      this.visible = false;
+    },
+    twoGetList(){
+      this.treeData=this.treeData1
+      var data={
+        id:this.typeList.id
+      }
+      equipmentTypeList(data).then(res => {
+         var arr = res.data
+        for (let i = 0; i < arr.length; i++) {
+          arr[i].key=i+1
+        }
+        this.data=arr
+        }).catch(err => {
+
+      })
+      // equipmentTypeList(data).then(res => {
+      //    var arr = res.data
+      //   for (let i = 0; i < arr.length; i++) {
+      //     arr[i].key=i+1
+      //     arr[i].code='3'
+      //     arr[i].label=arr[i].name
+      //     arr[i].children=[]
+      //   }
+      //   for (let i = 0; i < arr.length; i++) {
+      //     this.treeData[0].children.push(arr[i])
+      //   }
+      //   //  this.data=arr
+      //   // // console.log(arr);
+        
+      //   }).catch(err => {
+
+      // })
+    },
+    select(e) {
+      if (e.code=='1') {
+        this.treeId='1'
+      }else if(e.code=='2') {
+        this.treeId='2'
+        this.typeList.id=e.id
+        this.twoGetList()
+        // this.equipmentList.name=e.name
+        // this.equipmentList.typeId=e.id
+        // this.id=e.id
+        // this.newList()
+      }
     },
     handleSub() {}
   }

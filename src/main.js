@@ -8,6 +8,8 @@ import store from './store/'
 import { VueAxios } from './utils/request'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 import splitPane from 'vue-splitpane'
 import draggable from 'vuedraggable'
 import VueVideoPlayer from 'vue-video-player'
@@ -33,6 +35,7 @@ Vue.config.productionTip = false
 Vue.use(VueAxios)
 Vue.use(iView);
 Vue.use(VueVideoPlayer);
+Vue.use(ElementUI);
 Vue.use(Viewer, {
   defaultOptions: {
     zIndex: 9999
