@@ -434,7 +434,10 @@
                               v-model="activeRiverKey"
                               style="border-bottom:1px solid d9d9d9;"
                             >
-                              <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
+                              <a-collapse-panel key="111" class="collapse_river">
+                                <template slot="header">
+                                  <div @click="searchMap">黄浦江</div>
+                                </template>
                                 <div style="padding:10px 10px;">
                                   <div>
                                     <div class="riverGroup_info">未完成</div>
@@ -447,21 +450,15 @@
                                   </div>
                                   <div class>
                                     <div class="riverGroup_success">已完成</div>
-                                    <!-- <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData"></a-tree> -->
-                                    <!-- <a-tree @select="onSelect" :selectedKeys="selectedKeys" :treeData="treeData">
-                                      <template slot="custom" slot-scope="item">
-                                        <span>{{item.title}}</span>
-                                        <a-button style="position:absolute;right:60px;">查看</a-button>
-                                      </template>
-                                    </a-tree>-->
-                                    <a-tree :treeData="sutreeData" class="tree_succ">
+                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys"
+                                      :treeData="treeData" class="tree_succ">
                                       <template slot="custom" slot-scope="item">
                                         <span>{{ item.title }}</span>
-                                        <a-button
+                                        <!-- <a-button
                                           class="but_type"
                                           v-if="childNode"
                                           @click="()=> searchItme(item)"
-                                        >查看</a-button>
+                                        >查看</a-button> -->
                                       </template>
                                     </a-tree>
                                   </div>
@@ -591,7 +588,10 @@
                               v-model="activeRiverKey"
                               style="border-bottom:1px solid d9d9d9;"
                             >
-                              <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
+                              <a-collapse-panel key="111" class="collapse_river">
+                                <template slot="header">
+                                  <div @click="searchMap">黄浦江</div>
+                                </template>
                                 <div style="padding:10px 10px;">
                                   <div>
                                     <div class="riverGroup_info">未完成</div>
@@ -718,7 +718,21 @@
                             </a-row>
                           </template>
                           <div class="plan_personInfo">
-                            <a-list bordered :dataSource="personInfo">
+                            <a-checkbox-group @change="onChange">
+                              <a-row>
+                                <a-col class="person_check" :span="24" v-for="(item,index) in personInfo" :key="index">
+                                  <a-row type="flex" justify="space-around" align="middle">
+                                    <a-col :span="20">
+                                      <a-checkbox class="checkboxClass" :value="item.id" >{{item.name}}&nbsp;({{item.position}})</a-checkbox>
+                                    </a-col>
+                                    <a-col :span="4" style="line-height:30px;">
+                                      <div style="line-height:30px;width:10px;height:10px;border-radius:50%;background-color:green;"></div>
+                                    </a-col>
+                                  </a-row> 
+                                </a-col>
+                              </a-row>
+                            </a-checkbox-group>
+                            <!-- <a-list bordered :dataSource="personInfo">
                               <a-list-item slot="renderItem" slot-scope="item">
                                 <a
                                   slot="actions"
@@ -726,7 +740,7 @@
                                 ></a>
                                 {{item.name}}&nbsp;({{item.position}})
                               </a-list-item>
-                            </a-list>
+                            </a-list> -->
                           </div>
                         </a-collapse-panel>
                       </a-collapse>
@@ -737,7 +751,7 @@
             </a-card>
           </div>
           <!-- 底部 -->
-          <div class="addPlan_foot" v-if="noTitleKey === 'addPlan'">
+          <div class="addPlan_foot" v-show="noTitleKey === 'addPlan'">
             <div v-if="ishidden == 1">
               <a-row type="flex" justify="space-around">
                 <a-col :span="10">
@@ -853,7 +867,7 @@
 <script>
 import '../../assets/css/monitor.less'
 import 'ol/ol.css'
-import Map from "ol/Map"
+// import Map from "ol/Map"
 import View from 'ol/View'
 // import TileLayer from 'ol/layer/Tile'
 import LayerGroup from 'ol/layer/Group'
@@ -926,143 +940,66 @@ const sutreeData = [
 ]
 
 const treeData = [
-  {
-    title: '无人机正射影像',
-    key: '0-0',
-    riverData: [
-      {
-        lat: 31.24539,
-        lng: 121.48686
-      },
-      {
-        lat: 31.24616,
-        lng: 121.48411
-      },
-      {
-        lat: 31.2466,
-        lng: 121.4824
-      },
-      {
-        lat: 31.24612,
-        lng: 121.48051
-      },
-      {
-        lat: 31.24484,
-        lng: 121.47901
-      },
-      {
-        lat: 31.24462,
-        lng: 121.47939
-      },
-      {
-        lat: 31.24543,
-        lng: 121.48089
-      },
-      {
-        lat: 31.2459,
-        lng: 121.48261
-      },
-      {
-        lat: 31.2448,
-        lng: 121.4857
-      },
-      {
-        lat: 31.2444,
-        lng: 121.4872
-      }
-    ]
-  },
-  {
-    title: '360全景图',
+  { 
+    title: '人工调查点',
+    value: '0-1',
     key: '0-1',
     children: [
-      { 
-        title: '黄浦江360(一)',
-        key: '0-1-0-0',
+      {
+        title: '调查点1',
+        value: '0-1-0',
+        key: '0-1-0',
         riverData: [
-            {
-              lat: 31.21882,
-              lng: 121.50364
-            },
-            {
-              lat: 31.21265,
-              lng: 121.50227
-            },
-            {
-              lat: 31.20583,
-              lng: 121.49703
-            },
-            {
-              lat: 31.19915,
-              lng: 121.49197
-            },
-            {
-              lat: 31.19702,
-              lng: 121.49591
-            },
-            {
-              lat: 31.2164,
-              lng: 121.50759
-            },
-            {
-              lat: 31.21948,
-              lng: 121.50759
-            }
-          ] 
+          {
+            lat: 31.24539,
+            lng: 121.48686
+          }
+        ]
       },
-      { 
-        title: '黄浦江360(二)',
-        key: '0-1-0-1',
+      {
+        title: '调查点2',
+        value: '0-1-1',
+        key: '0-1-1',
         riverData: [
-            {
-              lat: 31.25153,
-              lng: 121.52409
-            },
-            {
-              lat: 31.25355,
-              lng: 121.53085
-            },
-            {
-              lat: 31.25858,
-              lng: 121.53934
-            },
-            {
-              lat: 31.25535,
-              lng: 121.54334
-            },
-            {
-              lat: 31.2499,
-              lng: 121.53353
-            },
-            {
-              lat: 31.24786,
-              lng: 121.52737
-            },
-            {
-              lat: 31.24682,
-              lng: 121.51709
-            },
-            {
-              lat: 31.25111,
-              lng: 121.51711
-            }
-          ] 
-      }]
+          {
+            lat: 31.21882,
+            lng: 121.50364
+          }
+        ]
+      },
+      {
+        title: '调查点3',
+        value: '0-1-2',
+        key: '0-1-2',
+        riverData: [
+          {
+            lat: 31.25153,
+            lng: 121.52409
+          }
+        ]
+      }
+    ]
   }
 ]
 
 const personInfo = [
   {
+    id: 1,
     name: '张三',
-    position: '飞手'
+    position: '飞手',
+    point:{lat:31.21098,lng:121.495505}
   },
   {
+    id: 2,
     name: '李四',
-    position: '调查员'
+    position: '调查员',
+    point:{lat:31.21038,lng:121.485505}
   },
   {
+    id: 3,
     name: '王五',
-    position: '司机'
+    position: '司机',
+    point:{lat:31.21098,lng:121.475505}
   }
 ]
 
@@ -1094,6 +1031,21 @@ const riverData = [
   {
     lat: 31.21948,
     lng: 121.50759
+  }
+]
+
+const LineData = [
+  {
+    lat: 31.21842,
+    lng: 121.50458
+  },
+  {
+    lat: 31.21265,
+    lng: 121.50427
+  },
+  {
+    lat: 31.20583,
+    lng: 121.49903
   }
 ]
 
@@ -1149,10 +1101,11 @@ export default {
       ],
       noTitleKey: 'addPlan',
       nosuperKey: 'taskCard',
-      checkedKeys: ['0-1-0-0'],
+      checkedKeys: [],
       selectedKeys: [],
       treeData,
       sutreeData,
+      LineData,  //模拟河道内任务点数据
       cardData, //车辆轴迹位置信息
       ishidden: 1,
       checkedPlan: [],
@@ -1181,6 +1134,7 @@ export default {
       childNode: false,
       checked: false,
       undone: false,
+      mapMarkers: new Map(),
       patrolPlanInfo: [
         {
           title: '黄浦江',
@@ -1276,6 +1230,9 @@ export default {
       if (key == 'nowPlan') {
         let sutree = this.sutreeData
         this.diguiTree(sutree)
+
+        // var btm = document.getElementsByClassName('.right-body .ant-card-body');
+        // btm.style.bottom = '0'
       }
       this.clearMap();
     },
@@ -1290,118 +1247,29 @@ export default {
       }
     },
     onsuperChange(key, type) {
-      this[type] = key;
-      this.clearMap();
+      this[type] = key
+      this.clearMap()
       if(key == 'taskCard'){
-        this.loadPoint();
+        this.loadPoint()
       }
       if(key == 'personCard'){
-        this.cardTrack();
-      }
-    },
-    //任务模块任务点
-    loadPoint(){
-      //随机标注点
-      var bounds = this.map.getBounds()
-      var ref = this.$refs
-      var sw = bounds.getSouthWest()
-      var ne = bounds.getNorthEast()
-      var lngSpan = Math.abs(sw.lng - ne.lng)
-      var latSpan = Math.abs(ne.lat - sw.lat)
-      for(var i = 0; i < 25;i++){
-        var point = new T.LngLat(sw.lng + lngSpan * (Math.random() * 0.7),ne.lat - latSpan * (Math.random() * 0.7))
-        var marker = new T.Marker(point)
-        this.map.addOverLay(marker)
-        marker.addEventListener("click",function(){
-          ref.communication.show()
-        })
-      }
-    },
-    //车辆轴迹
-    cardTrack(){
-      var lineconfig={ 
-          color: "#2C64A7",            //线的颜色
-          weight: 5,               //线的宽度
-          opacity: 0.9,             //线的透明度
-          lineStyle:"solid"        //线的样式
-      };
-      var line = new T.Polyline(this.cardData,lineconfig)  //创建线条的对象
-      //向地图上添加线
-      this.map.addOverLay(line)
-      this.addIcon()
-      this.addTaskPoint(this.cardData)
-    },
-    //添加车辆起点图标
-    addIcon(){
-      var startIcon = "http://lbs.tianditu.gov.cn/images/bus/start.png";	//起点图标
-      var icon = new T.Icon({
-        iconUrl:startIcon,
-        iconSize:new T.Point(44, 34),
-        iconAnchor: new T.Point(12, 31)
-      })
-      var marker = new T.Marker(new T.LngLat(121.495505, 31.21098),{icon: icon});
-      this.map.addOverLay(marker);
-    },
-    //点击滑动关闭按钮
-    onChangeSwitch() {},
-    //添加河道按钮事件
-    addRiverBtn() {
-      this.$refs.selectPatrol.show()
-      this.$refs.addSurvey.close()
-      this.clearMap()
-      console.log(this.riverData)
-      //描绘河道
-      this.searchMap()
-      // this.showOk()
-      // this.addTaskPoint();
-    },
-    //添加任务点
-    addTaskPoint(riverData){
-      for(var i=0;i < riverData.length;i++){
-        var lnglat = new T.LngLat(riverData[i].lng,riverData[i].lat)
-        var marker = new T.Marker(lnglat)
-        this.map.addOverLay(marker)
-        this.showPosition(marker)
-      }
-    },
-    //地图上信息弹框
-    showPosition(marker){
-       marker.addEventListener("click",function(){
-          var html = "<div style='margin:0px;'>"+
-          "<div style='line-height:30px;font-size:18px;margin-bottom:5px'>"+
-          "采集水样标本</div>"+
-          "<div style='line-height:25px;'>"+
-          "<div><span style='color:;'>任务名称</span>：水样调查"+"</div>"+
-          "<div>任务内容：现场测定：ph、溶解氧、浊度（3次）、电导率、透明度"+"</div>"+
-          "<div>位置信息：上海市徐汇区龙川北路422-5"+"</div>"+
-          "<div>备注："+
-            "<div>当月计划执行次数：5"+"</div>"+
-            "<div>当月待执行次数：2"+"</div>"+
-          "</div>"+
-          "</div>"+"</div>";
-          var infoWin = new T.InfoWindow(html)
-          marker.openInfoWindow(infoWin)
-        });      
-    },
-    //右侧模块选择框修改
-    handleChange() {},
-    //选中树节点内容
-    onCheck(checkedKeys) {
-      console.log('onCheck', checkedKeys)
-      this.checkedKeys = checkedKeys
-    },
-    //河道计划点击事件
-    onSelect(selectedKeys, info) {
-      this.clearMap()
-      this.selectedKeys = selectedKeys
-      var info = info.node.dataRef
-      if(info.children){
-        for(var i = 0; i< info.children.length;i++){
-          this.map.setZoom("12")
-          this.positionArea(info.children[i].riverData)
+        this.cardTrack()
+        // console.log(this.personInfo.length)
+        for(var i = 0;i< this.personInfo.length;i++){
+          console.log(this.personInfo[i].point)
+          // this.addTaskPoint(this.personInfo[i].point)
         }
-      }else{
-        this.positionArea(info.riverData)
+        //默认全部选中  当页面渲染完成时执行
+        setTimeout(function(){
+          var cbArr = document.getElementsByClassName("checkboxClass")
+          console.log("长度啊啊啊啊啊", cbArr.length)
+          for(var i = 0; i< cbArr.length; i++){
+            console.log(cbArr[i])
+            cbArr[i].click()
+          }
+        },500)
+        
+        // this.addTaskPoint(this.cardData)
       }
     },
     //日期选择
@@ -1415,17 +1283,12 @@ export default {
       this.cBtn = false
       // this.$refs.addTask.chooseLocation()
     },
-    //追加任务画线
-    addLineTool(){
-      console.log("我是父组件，调用了子组件的方法")
-      this.lineTool = new T.PolylineTool(this.map)
-      this.lineTool.open()
-      this.lineTool.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
-    },
-    //取消追加任务
-    cancelAddTask(){
-      this.clearMap()
-      this.$refs.addTask.cancle()
+    //右侧模块选择框修改
+    handleChange() {},
+    //选中树节点内容
+    onCheck(checkedKeys) {
+      console.log('onCheck', checkedKeys)
+      this.checkedKeys = checkedKeys
     },
     //生成计划
     newPlan_btn() {
@@ -1495,6 +1358,201 @@ export default {
     addToPlan() {
       this.$message.success('加入成功')
       this.noTitleKey = 'nowPlan'
+    },
+    showOk(){
+      this.infoVisible = true;
+    }, 
+    showCancel(){
+      this.infoVisible = false;
+    },
+    onChange(checkedValues){
+      console.log('checked = ', checkedValues)
+      this.checkPoint(checkedValues)
+    },
+    checkPoint(vals){            
+      for(var i = 0;i<this.personInfo.length;i++){
+        var item = this.personInfo[i];
+        if(this.isExistInArr(vals, item.id)){//当前节点被选中
+          //判断当前节点是否已经存在于地图上
+          if(!this.mapMarkers.has(item.id)){
+            //new一个marker，并以键值形式存储，以备后续操作
+            var lnglat = new T.LngLat(item.point.lng,item.point.lat)
+            var marker = new T.Marker(lnglat)
+            this.map.addOverLay(marker)
+            //存放当前marker
+            this.mapMarkers.set(item.id, marker)
+          }
+
+        }else{//当前节点被取消勾选
+          if(this.mapMarkers.has(item.id)){
+            //从地图删除
+            this.map.removeOverLay(this.mapMarkers.get(item.id))
+            //同时从暂存的mapMarkers中删除
+            this.mapMarkers.delete(item.id)
+          }
+        }
+      }
+      console.log("当前markers=================：", this.mapMarkers.keys())
+      console.log("当前markers000000000000000000：", this.mapMarkers.values())
+      // for(var i = 0;i<this.personInfo.length;i++){
+      //   if(checkedValues[i] == i){
+      //       // console.log("checked:" + i);
+      //       this.addTaskPoint(this.personInfo[i].point)
+      //   }else{
+      //     var lng = this.personInfo[i].point.lng
+      //     var lat = this.personInfo[i].point.lat
+      //     console.log(lng + ":::" + lat)
+      //     var lnglat = new T.LngLat(lng,lat)
+      //     var marker = new T.Marker(lnglat)
+      //     this.map.removeOverLay(marker)
+      //   }
+      // }
+    },
+    isExistInArr(arr, item){
+      for(var i = 0; i< arr.length; i++){
+        if(arr[i] == item){
+          return true;
+        }
+      }
+      return false;
+    },
+    isExistInMarkers(){
+
+    },
+    //********************************地图操作事件***************************************** */
+    //任务模块任务点
+    loadPoint(){
+      //随机标注点
+      var bounds = this.map.getBounds()
+      var ref = this.$refs
+      var sw = bounds.getSouthWest()
+      var ne = bounds.getNorthEast()
+      var lngSpan = Math.abs(sw.lng - ne.lng)
+      var latSpan = Math.abs(ne.lat - sw.lat)
+      for(var i = 0; i < 25;i++){
+        var point = new T.LngLat(sw.lng + lngSpan * (Math.random() * 0.7),ne.lat - latSpan * (Math.random() * 0.7))
+        var marker = new T.Marker(point)
+        this.map.addOverLay(marker)
+        marker.addEventListener("click",function(){
+          ref.communication.show()
+        })
+      }
+    },
+    //车辆轴迹
+    cardTrack(){
+      var lineconfig={ 
+          color: "#2C64A7",            //线的颜色
+          weight: 5,               //线的宽度
+          opacity: 0.9,             //线的透明度
+          lineStyle:"solid"        //线的样式
+      };
+      var line = new T.Polyline(this.cardData,lineconfig)  //创建线条的对象
+      //向地图上添加线
+      this.map.addOverLay(line)
+      this.addIcon()
+    },
+    //添加车辆起点图标
+    addIcon(){
+      var startIcon = "http://lbs.tianditu.gov.cn/images/bus/start.png";	//起点图标
+      var icon = new T.Icon({
+        iconUrl:startIcon,
+        iconSize:new T.Point(44, 34),
+        iconAnchor: new T.Point(12, 31)
+      })
+      var marker = new T.Marker(new T.LngLat(121.495505, 31.21098),{icon: icon});
+      this.map.addOverLay(marker);
+    },
+    //点击滑动关闭按钮
+    onChangeSwitch() {},
+    //添加河道按钮事件
+    addRiverBtn() {
+      this.$refs.selectPatrol.show()
+      this.$refs.addSurvey.close()
+      this.clearMap()
+      console.log(this.riverData)
+      //描绘河道
+      this.searchMap()
+      // this.showOk()
+      // this.addTaskPoint();
+    },
+    //添加任务点
+    addTaskPoint(riverData){
+      // console.log(riverData.length)
+      if(riverData.length != undefined){
+        for(var i=0;i < riverData.length;i++){
+          var lnglat = new T.LngLat(riverData[i].lng,riverData[i].lat)
+          var marker = new T.Marker(lnglat)
+          this.map.addOverLay(marker)
+          this.showPosition(marker)
+        }
+      }else{
+        var lnglat = new T.LngLat(riverData.lng,riverData.lat)
+        var marker = new T.Marker(lnglat)
+        this.map.addOverLay(marker)
+        this.showPosition(marker)
+      } 
+    },
+    //地图上信息弹框
+    showPosition(marker){
+       marker.addEventListener("click",function(){
+          var html = "<div style='margin:0px;'>"+
+          "<div style='line-height:30px;font-size:18px;margin-bottom:5px'>"+
+          "采集水样标本</div>"+
+          "<div style='line-height:25px;'>"+
+          "<div><span style='color:;'>任务名称</span>：水样调查"+"</div>"+
+          "<div>任务内容：现场测定：ph、溶解氧、浊度（3次）、电导率、透明度"+"</div>"+
+          "<div>位置信息：上海市徐汇区龙川北路422-5"+"</div>"+
+          "<div>备注："+
+            "<div>当月计划执行次数：5"+"</div>"+
+            "<div>当月待执行次数：2"+"</div>"+
+          "</div>"+
+          "</div>"+"</div>";
+          var infoWin = new T.InfoWindow(html)
+          marker.openInfoWindow(infoWin)
+        });      
+    },
+    //河道计划点击事件
+    onSelect(selectedKeys, info) {
+      this.clearMap()
+      this.selectedKeys = selectedKeys
+      var info = info.node.dataRef
+      if(info.children){
+        for(var i = 0; i< info.children.length;i++){
+           if(info.children[i].riverData.length > 1){
+            console.log(info.children[i].riverData)
+            this.map.setZoom("12")
+            // this.positionArea(info.children[i].riverData)
+            this.addPolyLine(info.children[i].riverData)
+          }
+          if(info.children[i].riverData.length == 1){
+            this.map.setZoom("12")
+            this.addTaskPoint(info.children[i].riverData)
+          } 
+        }
+      }else{
+        if(info.riverData.length > 1){
+          // this.positionArea(info.riverData)
+          this.addPolyLine(info.children[i].riverData)
+        }
+        if(info.riverData.length == 1){  
+          this.map.setViewport(info.riverData) 
+          this.map.setZoom("13")       
+          this.addTaskPoint(info.riverData) 
+        }        
+      }
+    }, 
+    //追加任务画线
+    addLineTool(){
+      console.log("我是父组件，调用了子组件的方法")
+      this.lineTool = new T.PolylineTool(this.map)
+      this.lineTool.open()
+      this.lineTool.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
+    },
+    //取消追加任务
+    cancelAddTask(){
+      this.clearMap()
+      this.$refs.addTask.cancle()
+      this.cBtn = true
     },
     //添加调查点
     addSurveyPoint(){
@@ -1612,7 +1670,7 @@ export default {
       this.map.setViewport(this.riverData)
       this.polygon.addEventListener('click',this.showOk)
       //显示河道标注点及信息
-      this.addTaskPoint(this.riverData)
+      this.addTaskPoint(this.LineData)
     },
     //添加标注点及信息框
     addRiverPoint(){  
@@ -1660,12 +1718,11 @@ export default {
     polygonClick(index){
       
     },
-    showOk(){
-      this.infoVisible = true;
-    }, 
-    showCancel(){
-      this.infoVisible = false;
-    }  
+    //描绘线  
+    addPolyLine(lineData){
+      var lines = new T.PolyLine(lineData)
+      this.map.addOverLay(lines)
+    } 
   }
 }
 </script>
