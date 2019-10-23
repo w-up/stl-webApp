@@ -225,7 +225,20 @@ export function projectNewsDel (parameter) {
     method: 'post',
   })
 }
-
+//设备类型树列表
+// export function typeTreeList (parameter) {
+//   return axios({
+//     url: '/server/data/admin/project/info/remove/'+parameter.id,
+//     method: 'post',
+//   })
+// }
+//河道列表
+export function getRiverList () {
+  return axios({
+    url: '/server/data/admin/river/page',
+    method: 'get',
+  })
+}
 export function getSmsCaptcha (parameter) {
   return axios({
     url: api.SendSms,
