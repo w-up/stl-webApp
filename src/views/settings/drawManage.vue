@@ -27,7 +27,6 @@
     </a-card>
     <a-modal title="添加/编辑风险源" v-model="visible"
       @ok="handleOk"
-
       @cancel="handleCancel"
     >
       <Form ref="formValidate" :model="list" :rules="ruleValidate" :label-width="110">

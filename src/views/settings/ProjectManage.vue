@@ -9,7 +9,7 @@
       <div style="display:flex;width:100%;box-sizing:border-box;">
         <div style="width:220px">
           <a-card style="min-height: 200px">
-            <a-directory-tree :treeData="treeData" @select="select"></a-directory-tree>
+            <el-tree :data="treeData"  @node-click="select"></el-tree>
           </a-card>
         </div>
         <div style="width:100%;margin-left:20px">
@@ -17,9 +17,17 @@
             <a-button type="primary" icon="plus" @click="visible=true" style="margin-bottom:15px">添加</a-button>
             <a-table :columns="columns" :dataSource="data" bordered>
               <template slot="operation" slot-scope="row">
-                <a @click="handleEdit(row.id)">编辑</a>
+                <a @click="add(row.id,row.name)">编辑</a>
                 <a-divider type="vertical" />
-                <a @click="handleSub(row.id)">删除</a>
+                <a-popconfirm
+                  title="是否确认删除?"
+                  @confirm="confirm('1')"
+                  @cancel="cancel"
+                  okText="确认"
+                  cancelText="取消"
+                >
+                  <a @click="del(row.id)">删除</a>
+                </a-popconfirm>
               </template>
             </a-table>
           </div>
@@ -32,35 +40,49 @@
             >添加</a-button>
             <a-table :columns="columns1" :dataSource="data1" bordered>
               <template slot="operation" slot-scope="row">
-                <a @click="equipmentModel=true">编辑</a>
+                <a @click="add1(row.id,row.name,row.interval.code)">编辑</a>
                 <a-divider type="vertical" />
-                <a @click="handleSub(row.id)">删除</a>
+                <a-popconfirm
+                  title="是否确认删除?"
+                  @confirm="confirm('2')"
+                  @cancel="cancel"
+                  okText="确认"
+                  cancelText="取消"
+                >
+                  <a @click="del(row.id)">删除</a>
+                </a-popconfirm>
               </template>
             </a-table>
           </div>
         </div>
       </div>
     </a-card>
-    <a-modal title="添加一级项目" v-model="visible">
+    <a-modal title="添加一级项目" v-model="visible"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
       <Form ref="formValidate" :model="equipmentList" :rules="ruleValidate" :label-width="90">
         <FormItem label="项目名称" prop="name">
           <Input v-model="equipmentList.name" placeholder="请输入" style="width:200px" />
         </FormItem>
       </Form>
     </a-modal>
-    <a-modal title="添加二级项目" v-model="equipmentModel">
+    <a-modal title="添加二级项目" v-model="equipmentModel"
+      @ok="handleOk1"
+      @cancel="handleCancel1"
+    >
       <Form ref="formValidate" :model="equipmentList" :rules="ruleValidate" :label-width="90">
         <FormItem label="上级项目" prop="name">
-          <Input v-model="equipmentList.name" placeholder="请输入" style="width:200px" />
+          <Input v-model="equipmentList.name" disabled placeholder="请输入" style="width:200px" />
         </FormItem>
         <FormItem label="项目名称" prop="type">
           <Input v-model="equipmentList.type" placeholder="请输入" style="width:200px" />
         </FormItem>
         <FormItem label="间隔周期">
-          <a-select style="width: 200px" placeholder="请选择">
-            <a-select-option value="si">日</a-select-option>
-            <a-select-option value="sis">周</a-select-option>
-            <a-select-option value="dsi">月</a-select-option>
+          <a-select style="width: 200px" placeholder="请选择"  v-model="equipmentList.number">
+            <a-select-option value="day">日</a-select-option>
+            <a-select-option value="week">周</a-select-option>
+            <a-select-option value="month">月</a-select-option>
           </a-select>
         </FormItem>
       </Form>
@@ -69,31 +91,8 @@
 </template>
 
 <script>
-const treeData = [
-  {
-    title: '全部',
-    key: '1',
-    id: '1',
-    children: [
-      {
-        title: '上海市',
-        key: '2-2',
-        id: '2',
-        children: [
-          { title: '黄浦区', key: '3-1', id: '3' },
-          { title: '浦东新区', key: '3-2', id: '3' },
-          { title: '静安区', key: '3-3', id: '3' }
-        ]
-      },
-      {
-        title: '四川省',
-        key: '2-3',
-        id: '2',
-        children: []
-      }
-    ]
-  }
-]
+import {  projectTypeList,projectTypeSave,projectTypeDel,projectNewsList,projectNewsSave,projectNewsDel } from '@/api/login'
+const treeData = []
 const columns = [
   {
     title: '序号',
@@ -102,7 +101,7 @@ const columns = [
   },
   {
     title: '一级分类名称',
-    dataIndex: 'typeName'
+    dataIndex: 'name'
   },
   {
     title: '操作',
@@ -118,7 +117,7 @@ const columns1 = [
   },
   {
     title: '二级分类名称',
-    dataIndex: 'typeName'
+    dataIndex: 'name'
   },
   {
     title: '操作',
@@ -126,26 +125,15 @@ const columns1 = [
     width: 120
   }
 ]
-const data = [
-  {
-    id: '111',
-    key: '1',
-    typeName: '上海市'
-  },
-  {
-    key: '2',
-    id: '222',
-    typeName: '四川省'
-  }
-]
 export default {
   data() {
     return {
+      id:'',
       treeId: true,
       treeData,
       columns,
       columns1,
-      data,
+      data:[],
       visible: false,
       equipmentModel: false,
       typeList: {
@@ -153,49 +141,168 @@ export default {
         typeName: ''
       },
       equipmentList: {
+        id:'',
         name: '',
         type: '',
-        number: ''
+        number: '',
+        typeId:'',
       },
       ruleValidate: {
         name: [{ required: true, message: '不能为空', trigger: 'blur' }],
         type: [{ required: true, message: '不能为空', trigger: 'blur' }]
       },
       data1: [
-        {
-          id: '111',
-          key: '1',
-          number: '2',
-          typeName: '黄浦区',
-          state: true
-        },
-        {
-          key: '2',
-          id: '222',
-          number: '1',
-          typeName: '浦东新区',
-          state: true
-        },
-        {
-          key: '3',
-          id: '333',
-          number: '4',
-          typeName: '闵行区',
-          state: false
-        }
+        
       ]
     }
   },
-  watch: {},
+  mounted(){
+    this.getList()
+  },
   methods: {
-    select(e) {
-      var s = e[0].substr(0, 1)
-      console.log(s)
-      if (s == '1') {
-        this.treeId = true
-      } else {
-        this.treeId = false
+    getList(){
+      this.treeData=[{
+        label: '全部',
+        id: '0',
+        code:'1',
+        children: [
+        
+        ]
+      }]
+      var data={
+        id:'0'
       }
+      projectTypeList(data).then(res => {
+         var arr = res.data
+        for (let i = 0; i < arr.length; i++) {
+           arr[i].key=i+1
+           arr[i].code='2'
+           arr[i].label=arr[i].name
+        }
+        for (let i = 0; i < arr.length; i++) {
+          this.treeData[0].children.push(arr[i])
+        }
+         console.log(arr);
+         this.data=arr
+        }).catch(err => {
+
+      })
+    },
+    add(id,name){
+      this.equipmentList.id=id
+      this.equipmentList.name=name
+      this.visible = true;
+    },
+    handleOk(e) {
+      var data ={
+        id:this.equipmentList.id,
+        name:this.equipmentList.name
+      }
+      projectTypeSave(data).then(res => {
+          this.$message.success('保存成功');
+          this.visible = false;
+          this.equipmentList.id=''
+          this.equipmentList.name=''
+          this.getList()
+        }).catch(err => {
+          this.$message.error(err.response.data.message);
+      })
+    },
+    handleCancel(e) {
+      this.equipmentList.id=''
+      this.equipmentList.name=''
+      this.visible = false;
+    },
+    add1(id,name,code){
+      this.equipmentList.id=id
+      this.equipmentList.type=name
+      this.equipmentList.number=code
+      this.equipmentModel = true;
+    },
+    handleOk1(e) {
+      var data ={
+        id:this.equipmentList.id,
+        name:this.equipmentList.type,
+        interval:this.equipmentList.number,
+        typeId:this.equipmentList.typeId
+      }
+      projectNewsSave(data).then(res => {
+          this.$message.success('保存成功');
+          this.equipmentModel = false;
+          this.equipmentList.id=''
+          this.newList()
+        }).catch(err => {
+          this.$message.error(err.response.data.message);
+      })
+    },
+    handleCancel1(e) {
+      this.equipmentList.id=''
+      this.equipmentModel = false;
+    },
+    newList(){
+      var data={
+        id:this.id
+      }
+      projectNewsList(data).then(res => {
+        var arr = res.data
+        for (let i = 0; i < arr.length; i++) {
+           arr[i].key=i+1
+           arr[i].code='3'
+           arr[i].label=arr[i].name
+        }
+        this.data1=arr
+        // var children=this.treeData[0].children
+        // for (let i = 0; i < children.length; i++) {
+        //   if (children[i].id==this.id) {
+        //     children[i].children=new Array()
+        //     for (let a = 0; a < arr.length; a++) {
+        //       children[i].children.push(arr[a])
+        //     }
+        //   }
+        // }
+        }).catch(err => {
+
+      })
+    },
+    select(e) {
+      // console.log(this.treeData);
+      // console.log(e);
+      if (e.code=='1') {
+        this.treeId=true
+      }else if(e.code=='2') {
+        this.treeId=false
+        this.equipmentList.name=e.name
+        this.equipmentList.typeId=e.id
+        this.id=e.id
+        this.newList()
+      }
+    },
+    del(id){
+      this.id1=id
+    },
+    confirm(e) {
+      var data ={
+        id:this.id1
+      }
+      if (e=='1') {
+         projectTypeDel(data).then(res => {
+          this.$message.success('删除成功');
+          this.getList()
+        }).catch(err => {
+          this.$message.error(err.response.data.message);
+        })
+      }else{
+        projectNewsDel(data).then(res => {
+          this.$message.success('删除成功');
+          this.newList()
+        }).catch(err => {
+          this.$message.error(err.response.data.message);
+        })
+      }
+     
+    },
+    cancel(e) {
+
     },
     handleEdit(row) {
       this.visible = true

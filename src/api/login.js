@@ -130,9 +130,101 @@ export function paramDel (parameter) {
     method: 'post',
   })
 }
-
-
-
+//设备管理结构列表
+export function structureEquipment (parameter) {
+  return axios({
+    url: '/server/data/admin/device/structure',
+    method: 'get',
+  })
+}
+//设备类型列表
+export function equipmentTypeList (parameter) {
+  return axios({
+    url: '/server/data/admin/device/type/list?parentId='+parameter.id,
+    method: 'get',
+  })
+}
+//设备类型保存
+export function equipmentTypeSave (parameter) {
+  return axios({
+    url: '/server/data/admin/device/type/save',
+    method: 'post',
+    data:parameter
+  })
+}
+//设备类型删除
+export function equipmentTypeDel (parameter) {
+  return axios({
+    url: '/server/data/admin/device/type/remove/'+parameter.id,
+    method: 'post',
+  })
+}
+//设备信息列表
+export function equipmentNewsList (parameter) {
+  return axios({
+    url: '/server/data/admin/device/info/page?typeId='+parameter.id,
+    method: 'get',
+  })
+}
+//设备信息保存
+export function equipmentNewsSave (parameter) {
+  return axios({
+    url: '/server/data/admin/project/info/save',
+    method: 'post',
+    data:parameter
+  })
+}
+//设备信息删除
+export function equipmentNewsDel (parameter) {
+  return axios({
+    url: '/server/data/admin/project/info/remove/'+parameter.id,
+    method: 'post',
+  })
+}
+//项目类型列表
+export function projectTypeList (parameter) {
+  return axios({
+    url: '/server/data/admin/project/type/list?parentId='+parameter.id,
+    method: 'get',
+  })
+}
+//项目类型保存
+export function projectTypeSave (parameter) {
+  return axios({
+    url: '/server/data/admin/project/type/save',
+    method: 'post',
+    data:parameter
+  })
+}
+//项目类型删除
+export function projectTypeDel (parameter) {
+  return axios({
+    url: '/server/data/admin/project/type/remove/'+parameter.id,
+    method: 'post',
+  })
+}
+//项目信息列表
+export function projectNewsList (parameter) {
+  return axios({
+    url: '/server/data/admin/project/info/page?typeId='+parameter.id,
+    method: 'get',
+  })
+}
+//项目信息保存
+export function projectNewsSave (parameter) {
+  return axios({
+    url: '/server/data/admin/project/info/save',
+    method: 'post',
+    data:parameter
+  })
+}
+//项目信息删除
+export function projectNewsDel (parameter) {
+  return axios({
+    url: '/server/data/admin/project/info/remove/'+parameter.id,
+    method: 'post',
+  })
+}
 
 export function getSmsCaptcha (parameter) {
   return axios({

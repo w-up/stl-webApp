@@ -90,7 +90,7 @@ export const asyncRouterMap = [
             path: '/settings/DeviceManage',
             name: 'DeviceManage',
             component: () => import('@/views/settings/DeviceManage'),
-            meta: { title: '设备管理', keepAlive: true, permission: [ 'table' ] }
+            meta: { title: '设备管理', keepAlive: false, permission: [ 'table' ] }
           },
           {
             path: '/settings/RiskTypeManage',
@@ -108,7 +108,7 @@ export const asyncRouterMap = [
             path: '/settings/ProjectManage',
             name: 'ProjectManage',
             component: () => import('@/views/settings/ProjectManage'),
-            meta: { title: '项目管理', keepAlive: true, permission: [ 'table' ] }
+            meta: { title: '项目管理', keepAlive: false, permission: [ 'table' ] }
           },
           {
             path: '/settings/SupervisoryUnitsManage',
