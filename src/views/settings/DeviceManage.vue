@@ -282,13 +282,7 @@ export default {
       })
       equipmentTypeList(data).then(res => {
         var arr =res.data
-        for (let i = 0; i < arr.length; i++) {
-          arr[i].key=i+1
-          arr[i].code='2'
-          arr[i].label=arr[i].name
-          arr[i].children=[]
-          this.treeData[0].children.push(arr[i])
-        }
+        
       }).catch(err => {
 
       })
