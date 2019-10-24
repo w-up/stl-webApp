@@ -1,11 +1,39 @@
 <template>
      <a-modal :visible="visible" :footer="null" @cancel="cmtHandle" :width="400" class="cmModal">
         <template slot="title">
-            <span style="background-color:#EBF5FF;border:1px solid #e8e8e8;border-radius: 50%;padding:8px 10px;">张</span>
+            <div>外勤反馈</div>
+            <!-- <span style="background-color:#EBF5FF;border:1px solid #e8e8e8;border-radius: 50%;padding:8px 10px;">张</span> -->
         </template>
-        <div class="player">
-            <video-player class="video-player vjs-custom-skin" ref="videoPlayer" :options="playerOptions" :playsinline="true"></video-player>
+        <div>
+            <div class="header">
+                <a-row>
+                    <a-col :span="8">
+                        <span style="background-color:#EBF5FF;border:1px solid #e8e8e8;border-radius: 50%;padding:8px 10px;">张</span>
+                    </a-col>
+                    <a-col :span="16" class="nowdate">
+                        <div>2019-9-9 15:00</div>
+                    </a-col>
+                </a-row>
+            </div>
+            <div class="player">
+                <video-player class="video-player vjs-custom-skin" ref="videoPlayer" :options="playerOptions" :playsinline="true"></video-player>
+            </div>
         </div>
+        <div style="margin-top:20px;border-top:1px solid #e8e8e8;">
+            <div class="header">
+                <a-row>
+                    <a-col :span="8">
+                        <span style="background-color:#EBF5FF;border:1px solid #e8e8e8;border-radius: 50%;padding:8px 10px;">张</span>
+                    </a-col>
+                    <a-col :span="16" class="nowdate">
+                        <div>2019-9-9 15:00</div>
+                    </a-col>
+                </a-row>
+            </div>
+            <div class="audio">
+                <audio src="https://www.w3school.com.cn/i/horse.ogg" controls="controls"></audio>
+            </div>
+        </div> 
     </a-modal>
 </template>
 <script>
@@ -53,8 +81,11 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-     .cmModal .ant-modal-body{
+    .cmModal .ant-modal-content .ant-modal-body{
         padding: 10px;
+    }
+    .header{
+        margin-bottom: 15px;
     }
     .player{
       width: 100%;
@@ -63,4 +94,7 @@ export default {
     .video-player{
         width: 100%;
     }  
+    .nowdate{
+        text-align:right;
+    }
 </style>

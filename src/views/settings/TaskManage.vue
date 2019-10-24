@@ -204,7 +204,8 @@
               <a-collapse size="small" style="margin-top:10px;" :bordered="false">
                 <a-collapse-panel :style="customStyle">
                   <template slot="header">
-                    <a-checkbox @change.stop="peopleChoose">无人机设备</a-checkbox>
+                    <!-- <a-checkbox @change.stop="peopleChoose">无人机设备</a-checkbox> -->
+                    无人机设备
                   </template>
                   <a-row style="width:100%">
                     <a-col :span="12" offset="4" style="height:30px;">
@@ -250,7 +251,8 @@
                 </a-collapse-panel>
                 <a-collapse-panel :style="customStyle">
                   <template slot="header" @change.stop="peopleChoose">
-                    <a-checkbox>采水设备</a-checkbox>
+                    <!-- <a-checkbox>采水设备</a-checkbox> -->
+                    采水设备
                   </template>
                   <a-row style="width:100%">
                     <a-col :span="12" offset="4" style="height:30px;">
@@ -603,6 +605,14 @@
         </a-col>
       </a-row>
     </div>
+    <!-- 鼠标跟随弹窗 -->
+    <div
+      class="mouse_alert"
+      v-show="alertShow"
+      :style="{left: alertLeft + 'px', top: alertTop + 'px'}"
+    >
+      <span>{{defaultLineTask}}</span>
+    </div>
     <!-- 添加河流 -->
     <add-task-point ref="addTaskPoint"></add-task-point>
   </div>
@@ -629,13 +639,16 @@ export default {
   },
   data() {
     return {
+      alertLeft: -1000,
+      alertTop: -1000,
+      alertShow: false,
       headers: {
         //上传
         authorization: 'authorization-text'
       },
       addRiverShow: false, // 气泡卡片
       actionTab: '1', //tab
-
+      defaultLineTask: '无人机正射影像',
       lineTaskList: [
         {
           id: 0,
@@ -746,7 +759,7 @@ export default {
 
       // 地图对象
       map: {},
-      markerTool: '' // 点任务工具
+      once: 0 // 移入次数
     }
   },
   mounted() {
@@ -764,7 +777,7 @@ export default {
       this.map = new T.Map('map')
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
       this.markerTool = new T.MarkTool(this.map, { follow: true })
-      this.allLineTask()
+      this.drawAllLine()
     },
     // 上传文件
     handleUpload(info) {
@@ -778,22 +791,66 @@ export default {
       }
     },
     // 添加所有的线
-    allLineTask() {
+    drawAllLine() {
       this.map.clearOverLays()
       for (const item of this.lineTaskList) {
-        this.drawAllLine(item.lineData)
+        if (item.clicked == true) {
+          this.drawLine(item.lineData, 'red', 3, 0.5)
+        } else {
+          this.drawLine(item.lineData, 'blue', 3, 0.5)
+        }
       }
     },
-    // 绘制线
-    drawAllLine(points) {
-      let polyline = new T.Polyline(points)
-      this.map.addOverLay(polyline)
-      polyline.addEventListener('click', this.taskLineClick)
-      // polyline.addEventListener('mouseover', this.taskLineClick)
-      // polyline.addEventListener('mouseout', this.taskLineClick)
+    // 线路任务
+    chooseLineTask(index) {
+      this.defaultLineTask = index
+      for (const item of this.lineTaskList) {
+        if (item.name === index) {
+          item.clicked = true
+          this.map.setViewport(item.lineData)
+        } else {
+          item.clicked = false
+        }
+      }
+      this.drawAllLine()
     },
-    // 移入移出点击事件
-    taskLineClick(index) {
+    // 绘制线
+    drawLine(points, color, weight, opacity) {
+      let line = new T.Polyline(points, {
+        color: color, //线颜色
+        weight: weight, //线宽
+        opacity: opacity //透明度
+      })
+      //向地图上添加线
+      this.map.addOverLay(line)
+      line.addEventListener('click', this.taskLineClick)
+      line.addEventListener('mouseover', this.taskLineMouseover)
+      line.addEventListener('mousemove', this.taskLineMousemove)
+      line.addEventListener('mouseout	', this.taskLineMouseout)
+    },
+    // 线路任务删除
+    confirmLineDelete(index) {
+      this.lineTaskList.splice(this.lineTaskList.findIndex(item => item.name === index), 1)
+      this.drawAllLine()
+      this.$message.success('删除成功')
+      this.defaultLineTask = null
+    },
+    cancelDelete(e) {
+      // this.$message.error('Click on No')
+    },
+    // 线点击事件
+    taskLineClick() {
+      this.addTask()
+    },
+    // 线移入事件
+    taskLineMouseover(index) {
+      let event = event || window.event //兼容写法
+      this.alertLeft = event.pageX + 10
+      this.alertTop = event.pageY - 44
+      this.alertShow = true
+      if (this.once == 1) {
+        return
+      }
       let arr = [],
         findIndex1 = '',
         findIndex2 = '',
@@ -812,11 +869,28 @@ export default {
         for (const item of this.lineTaskList) {
           if (item.id == findIndex1) {
             item.clicked = true
+            this.defaultLineTask = item.name
+            this.drawAllLine()
           } else {
             item.clicked = false
           }
         }
       }
+      this.once++
+    },
+    taskLineMousemove() {
+      // let event = event || window.event //兼容写法
+      // this.alertLeft = event.pageX + 10
+      // this.alertTop = event.pageY - 44
+      // this.alertShow = true
+    },
+    taskLineMouseout(){
+      this.once--
+      this.alertShow = false
+      for (const item of this.lineTaskList) {
+        item.clicked = false
+      }
+      this.drawAllLine()
     },
     // 查找函数 value:要查的坐标, latlng:查的是lng经度还是lat纬度, lineDataArr:被查询的数组
     findIndex(value, latlng, lineDataArr) {
@@ -861,11 +935,15 @@ export default {
       let marker = new T.Marker(latlng)
       this.map.addOverLay(marker)
       marker.addEventListener('click', this.taskPointClick)
-      marker.addEventListener('mouseover', this.taskPointClick)
-      marker.addEventListener('mouseout	', this.taskPointClick)
+      marker.addEventListener('mouseover', this.taskPointMouse)
+      marker.addEventListener('mouseout	', this.taskPointMouse)
+    },
+    // 点点击事件
+    taskPointClick() {
+      this.addTask()
     },
     // 任务点点击移入移出事件
-    taskPointClick(index) {
+    taskPointMouse(index) {
       for (const item of this.pointTaskList) {
         for (const point of item.pointList) {
           if (index.lnglat.lat === point.latlng.lat && index.lnglat.lng === point.latlng.lng) {
@@ -945,7 +1023,7 @@ export default {
       console.log(key)
       this.map.clearOverLays()
       if (key == 1) {
-        this.allLineTask()
+        this.drawAllLine()
       } else {
         this.allPointTask()
       }
@@ -972,43 +1050,6 @@ export default {
     // 地图选项
     mapChooseItem(e) {
       console.log(`checked = ${e.target.checked}`)
-    },
-    // 线路任务
-    chooseLineTask(index) {
-      this.defaultRiver = index
-      this.lineTaskList.forEach(value => {
-        if (value.name === index) {
-          value.clicked = true
-          this.allLineTask()
-          this.drawLine(value.lineData, 'red', 3)
-        } else {
-          value.clicked = false
-        }
-      })
-    },
-    // 高亮线
-    drawLine(points, color, weight) {
-      this.map.setViewport(points)
-      let line = new T.Polyline(points, {
-        color: color, //线颜色
-        weight: weight, //线宽
-        opacity: 0.5 //透明度
-      })
-      //向地图上添加线
-      this.map.addOverLay(line)
-      line.addEventListener('click', this.taskLineClick)
-      // line.addEventListener('mouseover', this.taskLineClick)
-      // line.addEventListener('mouseout	', this.taskLineClick)
-    },
-    // 线路任务删除
-    confirmLineDelete(index) {
-      this.lineTaskList.splice(this.lineTaskList.findIndex(item => item.name === index), 1)
-      this.allLineTask()
-      this.$message.success('删除成功')
-      this.defaultRiver = null
-    },
-    cancelDelete(e) {
-      // this.$message.error('Click on No')
     },
 
     // 线路人员选择
@@ -1074,6 +1115,20 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.mouse_alert {
+  position: absolute;
+  z-index: 999;
+  border: 1px solid #333;
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 0 4px;
+  border-radius: 3px;
+  box-shadow: 3px 3px 5px 0 rgba(0, 0, 0, 0.5);
+  span {
+    color: rgba(255, 0, 0, 0.8);
+    font-size: 14px;
+  }
+}
 .supervise {
   position: relative;
   height: calc(100vh - 64px);

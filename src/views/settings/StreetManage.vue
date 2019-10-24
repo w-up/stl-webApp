@@ -38,7 +38,7 @@
           slot="renderItem"
           slot-scope="item, index"
           :key="index"
-          @click="chooseRiver(item.name)"
+          @click="chooseRiver(item.name, item.id)"
           :class="{active_item: item.clicked}"
         >
           <a-row style="width:100%">
@@ -65,6 +65,14 @@
         <a-button type="primary" block>添加街道</a-button>
       </a-popover>
     </div>
+    <!-- 鼠标跟随弹窗 -->
+    <div
+      class="mouse_alert"
+      v-show="alertShow"
+      :style="{left: alertLeft + 'px', top: alertTop + 'px'}"
+    >
+      <span>{{defaultRiver}}</span>
+    </div>
     <!-- 添加街道 -->
     <add-street ref="addStreet"></add-street>
   </div>
@@ -81,6 +89,9 @@ export default {
   },
   data() {
     return {
+      alertLeft: -1000,
+      alertTop: -1000,
+      alertShow: false,
       defaultRiver: '南京东路',
       riverList: [
         {
@@ -177,7 +188,8 @@ export default {
       polylineHandler: '',
       polygonTool: '', // 创建标注工具对象
       polygon: '', // 多边形对象
-      points: []
+      points: [],
+      once: 0 // 移入次数
     }
   },
   mounted() {
@@ -200,27 +212,11 @@ export default {
     drawAllRiver(index) {
       this.map.clearOverLays() //将之前绘制的清除
       for (const item of this.riverList) {
-        if (item.lineData !== undefined) {
-          this.setPolylineFn(item.lineData, 'blue', 3, 0)
-          this.polygon.addEventListener('click', this.polygonClick)
-          // 文字标注
-          let latArr = [],
-            lngArr = []
-          for (const itemPoint of item.lineData) {
-            latArr.push(Number(itemPoint.lat))
-            lngArr.push(Number(itemPoint.lng))
-          }
-          let lat = (Math.max(...latArr) + Math.min(...latArr)) / 2
-          let lng = (Math.max(...lngArr) + Math.min(...lngArr)) / 2
-          let latlngobj = { lat: lat, lng: lng }
-          let label = new T.Label({
-            text: `<b>${item.name}<b>`,
-            position: latlngobj,
-            offset: new T.Point(-40, 0)
-          })
-          this.map.addOverLay(label)
-          label.setLngLat(latlngobj)
-          this.map.addEventListener('zoomend', this.zoomChange)
+        if (item.clicked == true) {
+          // this.setBounds(item.lineData)
+          this.setPolylineFn(item.lineData, 'red', 3, 1, 0)
+        } else {
+          this.setPolylineFn(item.lineData, 'blue', 3, 1, 0)
         }
       }
     },
@@ -258,24 +254,24 @@ export default {
     // 选中河流
     chooseRiver(index, id) {
       this.defaultRiver = index
-      this.riverList.forEach(value => {
-        if (value.name === index) {
-          value.clicked = true
-          if (value.lineData !== undefined) {
-            this.drawAllRiver()
-            this.setBounds(value.lineData)
-            // this.map.zoomOut()
-            this.map.addEventListener('zoomend', this.zoomChange)
-          }
+      for (const item of this.riverList) {
+        if (item.id == id) {
+          item.clicked = true
+          this.map.setViewport(item.lineData)
+          // this.map.zoomOut()
+          // this.map.addEventListener('zoomend', this.zoomChange)
         } else {
-          value.clicked = false
+          item.clicked = false
         }
-      })
+        this.drawAllRiver()
+      }
     },
+    // 绘制高亮
     setBounds(lineArr) {
-      this.map.setViewport(lineArr)
-      this.setPolylineFn(lineArr, 'red', 3, 0)
+      this.setPolylineFn(lineArr, 'red', 3, 0.8, 0)
       this.polygon.addEventListener('click', this.polygonClick)
+      this.polygon.addEventListener('mouseover', this.polygonMouseover)
+      this.polygon.addEventListener('mouseout', this.polygonMouseout)
     },
     // 河流删除
     confirmDelete(index) {
@@ -323,22 +319,22 @@ export default {
       this.polylineHandler.clear() //清除之前绘制的多边形
       this.setPolylineFn(e.currentLnglats, 'blue', 3, 0)
       console.log(e.currentPolyline.Qr.lat)
-      let lat = (e.currentPolyline.Qr.Lq.lat + e.currentPolyline.Qr.kq.lat) / 2
-      let lng = (e.currentPolyline.Qr.Lq.lng + e.currentPolyline.Qr.kq.lng) / 2
-      let latlngobj = { lat: lat, lng: lng }
-      // 文字标注
-      let label = new T.Label({
-        text: '<b>文字标注!!!<b>',
-        position: latlngobj,
-        offset: new T.Point(-40, -30)
-      })
-      this.map.addOverLay(label)
-      label.setLngLat(latlngobj)
+      // let lat = (e.currentPolyline.Qr.Lq.lat + e.currentPolyline.Qr.kq.lat) / 2
+      // let lng = (e.currentPolyline.Qr.Lq.lng + e.currentPolyline.Qr.kq.lng) / 2
+      // let latlngobj = { lat: lat, lng: lng }
+      // // 文字标注
+      // let label = new T.Label({
+      //   text: '<b>文字标注!!!<b>',
+      //   position: latlngobj,
+      //   offset: new T.Point(-40, -30)
+      // })
+      // this.map.addOverLay(label)
+      // label.setLngLat(latlngobj)
 
       this.$refs.addStreet.add()
     },
     // 设置绘制的多边形
-    setPolylineFn(lineData, color, weight, fillOpacity) {
+    setPolylineFn(lineData, color, weight, opacity, fillOpacity) {
       this.polygon = new T.Polygon(lineData, {
         color: color, //线颜色
         weight: weight, //线宽
@@ -348,6 +344,10 @@ export default {
       })
       //向地图上添加面
       this.map.addOverLay(this.polygon)
+      this.polygon.addEventListener('click', this.polygonClick)
+      this.polygon.addEventListener('mouseover', this.polygonMouseover)
+      this.polygon.addEventListener('mousemove', this.polygonMousemove)
+      this.polygon.addEventListener('mouseout', this.polygonMouseout)
     },
     // 多边形点击事件
     polygonClick(index) {
@@ -378,6 +378,54 @@ export default {
         }
       }
     },
+    // 多边形移入事件
+    polygonMouseover(index) {
+      if (this.once == 1) {
+        return
+      }
+      let arr = [],
+        findIndex1 = '',
+        findIndex2 = '',
+        findIndex3 = '',
+        findIndex4 = ''
+      arr.push(index.target.Qr.Lq.lat)
+      arr.push(index.target.Qr.kq.lat)
+      arr.push(index.target.Qr.Lq.lng)
+      arr.push(index.target.Qr.kq.lng)
+      findIndex1 = this.findIndexLocal(arr[0], 'lat', this.riverList)
+      findIndex2 = this.findIndexLocal(arr[1], 'lat', this.riverList)
+      findIndex3 = this.findIndexLocal(arr[2], 'lng', this.riverList)
+      findIndex4 = this.findIndexLocal(arr[3], 'lng', this.riverList)
+      // console.log(findIndex1, findIndex2,findIndex3,findIndex4)
+      if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
+        for (const item of this.riverList) {
+          if (item.id == findIndex1) {
+            item.clicked = true
+            this.defaultRiver = item.name
+            this.drawAllRiver()
+          } else {
+            item.clicked = false
+          }
+        }
+      }
+      this.once++
+    },
+    polygonMousemove() {
+      let event = event || window.event //兼容写法
+      this.alertLeft = event.pageX + 10
+      this.alertTop = event.pageY - 44
+      this.alertShow = true
+    },
+    // 多边形移出事件
+    polygonMouseout() {
+      this.once--
+      this.alertShow = false
+      for (const item of this.riverList) {
+        item.clicked = false
+      }
+      this.drawAllRiver()
+      // this.setBounds(value.lineData)
+    },
     // 查找函数 value:要查的坐标, latlng:查的是lng经度还是lat纬度, lineDataArr:被查询的数组
     findIndexLocal(value, latlng, lineDataArr) {
       let result = '', // 查询结果
@@ -407,14 +455,6 @@ export default {
       }
       return res
     },
-    // 多边形鼠标进入事件
-    polygonMouseover(riverItem) {
-      console.log(riverItem.name)
-    },
-    // 多边形离开事件
-    polygonMouseout(riverItem) {
-      console.log(riverItem.name)
-    },
     // 上传按钮
     addUploadRiver() {
       console.log('123')
@@ -427,6 +467,20 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.mouse_alert {
+  position: absolute;
+  z-index: 999;
+  border: 1px solid #333;
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 0 4px;
+  border-radius: 3px;
+  box-shadow: 3px 3px 5px 0 rgba(0, 0, 0, 0.5);
+  span {
+    color: rgba(255, 0, 0, 0.8);
+    font-size: 14px;
+  }
+}
 .supervise {
   position: relative;
   height: calc(100vh - 64px);

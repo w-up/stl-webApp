@@ -59,7 +59,7 @@ export default {
             this.isShow = false;
         },
         addPlanInfo(){
-            this.isShow = false;
+            // this.isShow = false;
         },
         submitPlan(){
             
