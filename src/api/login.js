@@ -133,7 +133,7 @@ export function paramDel (parameter) {
 //设备管理结构列表
 export function structureEquipment (parameter) {
   return axios({
-    url: '/server/data/admin/device/structure',
+    url: '/server/data/admin/device/type/tree',
     method: 'get',
   })
 }
@@ -169,7 +169,7 @@ export function equipmentNewsList (parameter) {
 //设备信息保存
 export function equipmentNewsSave (parameter) {
   return axios({
-    url: '/server/data/admin/project/info/save',
+    url: '/server/data/admin/device/info/save',
     method: 'post',
     data:parameter
   })
@@ -177,10 +177,19 @@ export function equipmentNewsSave (parameter) {
 //设备信息删除
 export function equipmentNewsDel (parameter) {
   return axios({
-    url: '/server/data/admin/project/info/remove/'+parameter.id,
+    url: '/server/data/admin/device/info/remove/'+parameter.id,
     method: 'post',
   })
 }
+//关联设备分页
+export function relatedList (parameter) {
+  return axios({
+    url: '/server/data/admin/device/related/'+parameter.id,
+    method: 'get',
+  })
+}
+
+
 //项目类型列表
 export function projectTypeList (parameter) {
   return axios({

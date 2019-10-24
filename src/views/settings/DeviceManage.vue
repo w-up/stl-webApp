@@ -9,7 +9,7 @@
       <div style="display:flex;width:100%;box-sizing:border-box;">
         <div style="width:250px">
           <a-card style="min-height: 200px">
-            <el-tree :data="treeData"  @node-click="select"></el-tree>
+            <el-tree :data="treeData"  @node-click="select" ></el-tree>
           </a-card>
         </div>
         <div style="width:100%;margin-left:20px">
@@ -17,9 +17,9 @@
             <a-button type="primary" icon="plus" @click="visible=true" style="margin-bottom:15px">添加</a-button>
             <a-table :columns="columns" :dataSource="data" bordered>
               <template slot="operation" slot-scope="item">
-                <a @click="handleEdit(item.key)">编辑</a>
+                <a @click="handleEdit(item.id,item.name)">编辑</a>
                 <a-divider type="vertical" />
-                <a @click="handleSub(item.key)">删除</a>
+                <a @click="handleSub(item.id)">删除</a>
               </template>
             </a-table>
           </div>
@@ -27,9 +27,17 @@
             <a-button type="primary" icon="plus" @click="visible=true" style="margin-bottom:15px">添加</a-button>
             <a-table :columns="columns2" :dataSource="data" bordered>
               <template slot="operation" slot-scope="item">
-                <a @click="handleEdit(item.key)">编辑</a>
+                <a @click="handleEdit(item.id,item.name)">编辑</a>
                 <a-divider type="vertical" />
-                <a @click="handleSub(item.key)">删除</a>
+                <a-popconfirm
+                  title="是否确认删除?"
+                  @confirm="handleSub"
+                  @cancel="cancel"
+                  okText="确认"
+                  cancelText="取消"
+                >
+                  <a @click="del(row.id)">删除</a>
+                </a-popconfirm>
               </template>
             </a-table>
           </div>
@@ -42,7 +50,7 @@
             <a-button
               type="primary"
               icon="plus"
-              @click="equipmentModel=true"
+              @click="addequipment"
               style="margin:15px 0"
             >添加</a-button>
             <a-table :columns="columns1" :dataSource="data1" bordered>
@@ -53,7 +61,15 @@
               <template slot="operation" slot-scope="row">
                 <a @click="equipmentModel=true">编辑</a>
                 <a-divider type="vertical" />
-                <a @click="handleSub(id)">删除</a>
+                <a-popconfirm
+                  title="是否确认删除?"
+                  @confirm="handleSub1"
+                  @cancel="cancel"
+                  okText="确认"
+                  cancelText="取消"
+                >
+                  <a @click="del(row.id)">删除</a>
+                </a-popconfirm>
                 <a-divider type="vertical" />
                 <a @click="handleSub(id)" v-if="row.state==false">启用</a>
                 <a @click="handleSub(id)" v-else>禁用</a>
@@ -73,7 +89,10 @@
         </a-form-item>
       </a-form>
     </a-modal>
-    <a-modal title="添加设备" v-model="equipmentModel" :width="700">
+    <a-modal title="添加设备" v-model="equipmentModel" :width="700"
+      @ok="handleOk1"
+      @cancel="handleCancel1"
+    >
       <el-form ref="formValidate" :model="equipmentList" :rules="ruleValidate" >
         <el-form-item label="设备名称" prop="name">
           <el-input v-model="equipmentList.name" placeholder="请输入" style="width:200px" />
@@ -98,7 +117,7 @@
             </div>
           </a-checkbox-group>
         </el-form-item>
-        <el-form-item label="无人机电池">
+        <!-- <el-form-item label="无人机电池">
           <a-checkbox-group style="display:flex;flex-wrap:wrap;">
             <div
               v-for="(option, index) in batteryList"
@@ -109,15 +128,21 @@
               <a-input-number :min="1" :max="100000" :defaultValue="3" />
             </div>
           </a-checkbox-group>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
     </a-modal>
   </div>
 </template>
 
 <script>
-import { structureEquipment, equipmentTypeList,equipmentTypeSave,equipmentTypeDel,equipmentNewsList,equipmentNewsSave,equipmentNewsDel } from '@/api/login'
-const treeData = []
+import { structureEquipment, equipmentTypeList,equipmentTypeSave,equipmentTypeDel,equipmentNewsList,equipmentNewsSave,equipmentNewsDel,relatedList } from '@/api/login'
+const treeData = [
+  {
+    label: '全部',
+    code:'1',
+    children:[]
+  },
+]
 const columns = [
   {
     title: '序号',
@@ -178,12 +203,10 @@ const columns1 = [
 export default {
   data() {
     return {
-      oneID:'',
       parentId:'0',
       treeId: '1',
-      typeId:'',
+      id:'',
       treeData,
-      treeData1:[],
       columns,
       columns1,
       columns2,
@@ -256,118 +279,176 @@ export default {
   watch: {},
   mounted(){
     this.getList()
+    this.getstructure()
   },
   methods: {
+    getstructure(){
+      //树
+      structureEquipment().then(res => {
+        var arr =res.data
+        for (let i = 0; i < arr.length; i++) {
+          arr[i].code = '2'
+          for (let a = 0; a < arr[i].children.length; a++) {
+            arr[i].children[a].code = '3'
+            for (let c = 0; c < arr[i].children[a].length; c++) {
+              arr[i].children[a].children[c].code='4'
+            }
+          }
+        }
+        console.log(arr);
+        this.treeData[0].children = arr
+      }).catch(err => {
+
+      })
+    },
     getList(){
-      this.treeData=[{
-        label: '全部',
-        id: '0',
-        code:'1',
-        children: [
-        
-        ]
-      }]
+      //类型列表
       var data ={
         id:this.parentId
       }
       equipmentTypeList(data).then(res => {
         var sz = res.data
+        console.log(sz);
+        
         for (let i = 0; i < sz.length; i++) {
           sz[i].key=i+1
         }
         this.data=sz
-        
       }).catch(err => {
 
       })
-      equipmentTypeList(data).then(res => {
-        var arr =res.data
-        
-      }).catch(err => {
-
-      })
-    },
-    campList(){
-      var data={
-        id:this.typeId
-      }
-      // equipmentNewsList(data).then(res => {
-      //    var arr = res.data
-      //    for (let i = 0; i < arr.length; i++) {
-      //      arr[i].key=i+1
-      //      arr[i].state=true
-      //    }
-      //    this.data1=arr
-      //   }).catch(err => {
-
-      // })
+      
     },
     handleOk(e) {
+      //类型保存
       var data ={
-        parentId:this.typeList.id,
-        name:this.typeList.name
+        parentId:this.parentId,
+        name:this.typeList.name,
+        id:this.typeList.id
       }
       equipmentTypeSave(data).then(res => {
           this.$message.success('保存成功');
           this.visible = false;
-          this.equipmentList.id=''
-          this.equipmentList.name=''
+          this.typeList.id=''
+          this.typeList.name=''
+          this.getstructure()
           this.getList()
         }).catch(err => {
           this.$message.error(err.response.data.message);
       })
     },
+    handleSub() {
+      var data = {
+        id:this.id
+      }
+      equipmentTypeDel(data).then(res => {
+        var arr = res.data
+        this.$message.success('删除成功');
+        this.getList()
+      }).catch(err => {
+        this.$message.error(err.response.data.message);
+      })
+    },
+    handleOk1(){
+      //设备型号保存
+      var data ={
+        typeId:this.parentId,
+        name:this.equipmentList.name,
+        model:this.equipmentList.type,
+        code:this.equipmentList.number
+      }
+      equipmentNewsSave(data).then(res => {
+        var arr = res.data  
+        this.$message.success('保存成功');
+        this.equipmentModel = false
+        this.getList1()
+      }).catch(err => {
+        this.$message.error(err.response.data.message);
+      })
+    },
+    handleCancel1(){
+
+    },
+    getList1(){
+      //设备列表
+      var data ={
+        id:this.parentId
+      }
+      equipmentNewsList(data).then(res => {
+        var sz = res.data.data
+        for (let i = 0; i < sz.length; i++) {
+          sz[i].key=i+1
+        }
+        this.data1=sz
+      }).catch(err => {
+
+      })
+    },
+    del(id){
+      this.id = id
+    },
+    handleSub1(id){
+      var data = {
+        id:this.id
+      }
+      equipmentNewsDel(data).then(res => {
+        var arr = res.data
+        console.log(arr);
+        this.$message.success('删除成功');
+         this.getList1()
+      }).catch(err => {
+        this.$message.error(err.response.data.message);
+      })
+    },
+    addequipment(){
+      this.equipmentModel =true
+      var data ={
+        id:this.parentId
+      }
+      relatedList(data).then(res => {
+        var sz = res.data
+        console.log(sz);
+      }).catch(err => {
+
+      })
+    },
+    cancel(){
+
+    },
+    
+    handleEdit(id,name){
+      //类型编辑
+      this.typeList.id=id
+      this.visible=true
+      this.typeList.name=name
+    },
+    
     handleCancel(e) {
-      this.equipmentList.id=''
-      this.equipmentList.name=''
+      //类型弹窗关闭
+      this.typeList.id=''
+      this.typeList.name=''
       this.visible = false;
     },
     twoGetList(){
-      this.treeData=this.treeData1
-      var data={
-        id:this.typeList.id
-      }
-      equipmentTypeList(data).then(res => {
-         var arr = res.data
-        for (let i = 0; i < arr.length; i++) {
-          arr[i].key=i+1
-        }
-        this.data=arr
-        }).catch(err => {
+      
 
-      })
-      // equipmentTypeList(data).then(res => {
-      //    var arr = res.data
-      //   for (let i = 0; i < arr.length; i++) {
-      //     arr[i].key=i+1
-      //     arr[i].code='3'
-      //     arr[i].label=arr[i].name
-      //     arr[i].children=[]
-      //   }
-      //   for (let i = 0; i < arr.length; i++) {
-      //     this.treeData[0].children.push(arr[i])
-      //   }
-      //   //  this.data=arr
-      //   // // console.log(arr);
-        
-      //   }).catch(err => {
-
-      // })
     },
     select(e) {
       if (e.code=='1') {
         this.treeId='1'
-      }else if(e.code=='2') {
+        this.parentId='0'
+        this.getList()
+      }else if(e.code=='2'){
         this.treeId='2'
-        this.typeList.id=e.id
-        this.twoGetList()
-        // this.equipmentList.name=e.name
-        // this.equipmentList.typeId=e.id
-        // this.id=e.id
-        // this.newList()
+        this.parentId=e.id
+        this.getList()
+      }else if(e.code=='3'){
+        this.treeId='3'
+        this.parentId=e.id
+        this.getList1()
       }
     },
-    handleSub() {}
+    
   }
 }
 </script>
