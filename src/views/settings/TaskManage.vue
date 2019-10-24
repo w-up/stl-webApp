@@ -326,8 +326,9 @@
               >
                 <template slot="header">
                   <a-row style="width:100%">
-                    <a-col :span="15">{{item.name}}</a-col>
-                    <a-col :span="8" style="text-align:right;" :pull="1">
+                    <a-col :span="9">{{item.name}}</a-col>
+                    <a-col :span="14" style="text-align:right;" :pull="1">
+                      <a-button size="small" type="primary" style="margin-right:10px;" @click="choosePointEdit(item.id)">编辑</a-button>
                       <a-button size="small" type="primary" @click="chooseTask(item.id)">添加点</a-button>
                     </a-col>
                   </a-row>
@@ -940,7 +941,7 @@ export default {
     },
     // 点点击事件
     taskPointClick() {
-      this.addTask()
+      this.$refs.addTaskPoint.add()
     },
     // 任务点点击移入移出事件
     taskPointMouse(index) {
@@ -985,6 +986,10 @@ export default {
     chooseTask(key) {
       console.log(key)
       this.addTaskPoint()
+    },
+    // 编辑
+    choosePointEdit() {
+      this.addTask()
     },
     // 选择任务点
     choosePointTask(id, index) {
