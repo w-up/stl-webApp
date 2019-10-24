@@ -389,12 +389,15 @@
     </ul>
     <!-- 风险源信息 -->
     <risk-source-info ref="riskInfo"></risk-source-info>
+    <!-- 添加风险源 -->
+    <add-risk-source ref="addRisk"></add-risk-source>
   </div>
 </template>
 
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
 import RiskSourceInfo from './modules/RiskSourceInfo'
+import AddRiskSource from './modules/AddRiskSource'
 
 import 'ol/ol.css'
 import Map from 'ol/Map'
@@ -403,11 +406,16 @@ import TileLayer from 'ol/layer/Tile'
 import LayerGroup from 'ol/layer/Group'
 import XYZ from 'ol/source/XYZ'
 
+import OSM from 'ol/source/OSM'
+// 拖拽缩放
+// import { defaults as defaultInteractions, DragRotateAndZoom } from 'ol/interaction'
+
 export default {
   name: 'Supervise',
   components: {
     // 'world-map': WorldMap
-    'risk-source-info': RiskSourceInfo
+    'risk-source-info': RiskSourceInfo,
+    'add-risk-source': AddRiskSource
   },
   data() {
     return {
@@ -423,6 +431,8 @@ export default {
       lineTool: '', //工具-线
       lineToolNum: '', //工具-测距
 
+      mapLayer: '', // 地图图层
+
       historyData: false, // 历史数据
       phonePhoto: false, // 手机照片
       phonePhotoTool: '', // 手机照片工具
@@ -434,9 +444,9 @@ export default {
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
       ],
       phonePhotoPoints: [
-        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.22493, lng: 121.51566 } },
-        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24344, lng: 121.49892 } },
-        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22649, lng: 121.49712 } }
+        { id: 0, name: '监测点1', clicked: false, imgUrl: require('../../assets/loginBg.jpg'), latlng: { lat: 31.22493, lng: 121.51566 } },
+        { id: 1, name: '监测点2', clicked: false, imgUrl: require('../../assets/loginBg.jpg'), latlng: { lat: 31.24344, lng: 121.49892 } },
+        { id: 2, name: '监测点3', clicked: false, imgUrl: require('../../assets/loginBg.jpg'), latlng: { lat: 31.22649, lng: 121.49712 } }
       ],
       UAVPhotoPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.24493, lng: 121.52566 } },
@@ -477,7 +487,7 @@ export default {
       waterRatio: false, // 水面率
       waterRatioPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.26023, lng: 121.50565 } },
-        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.23960, lng: 121.51640 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.2396, lng: 121.5164 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22994, lng: 121.50955 } }
       ],
       bottomMud: false, // 底泥
@@ -497,14 +507,14 @@ export default {
       riverLinkPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.23841, lng: 121.516833 } },
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24611, lng: 121.49364 } },
-        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.26000, lng: 121.51684 } }
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.26, lng: 121.51684 } }
       ],
       landAndWater: false, // 水陆分布
       landAndWaterPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.25031, lng: 121.51681 } },
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24304, lng: 121.49392 } },
-        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.26450, lng: 121.49356 } }
-      ],
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.2645, lng: 121.49356 } }
+      ]
     }
   },
   watch: {
@@ -588,6 +598,30 @@ export default {
       this.lineToolNum = new T.PolylineTool(this.map, {
         showLabel: true
       })
+      // this.map = new Map({
+      //   target: 'map',
+      //   view: new View({
+      //     center: [12149550, 3121098],
+      //     zoom: 12
+      //   }),
+      //   layers: [
+      //     new TileLayer({
+      //       source: new XYZ({
+      //         url: 'https://t0.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      //       }),
+      //       isGroup: true,
+      //       name: '天地图路网'
+      //     }),
+      //     new TileLayer({
+      //       source: new XYZ({
+      //         url: 'https://t0.tianditu.gov.cn/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      //       }),
+      //       isGroup: true,
+      //       name: '天地图文字标注'
+      //     })
+      //   ],
+      //   // interactions: defaultInteractions().extend([new DragRotateAndZoom()])
+      // })
     },
     // 复位
     setCenter() {
@@ -613,7 +647,7 @@ export default {
     // 返回标注点的坐标
     addPointed(e) {
       console.log(e)
-      this.$refs.riskInfo.riskInfo()
+      this.$refs.addRisk.add()
     },
     // 工具-线
     addLineTool() {
@@ -654,16 +688,36 @@ export default {
       console.log(`a-switch to ${checked}`)
     },
     // 指北针
-    compass() {
-      
-    },
+    compass() {},
     // 图像
     onMapChange(e) {
-      console.log(`checked = ${e.target.value}`)
+      this.map.clearLayers()
+      let twoDimensionURL =
+        'http://t4.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      let wordLabel = 'http://t3.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      let satelliteURL =
+        'http://t0.tianditu.gov.cn/img_w/wmts?' +
+        'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles' +
+        '&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      //创建自定义图层对象
+
+      console.log(this.mapLayer)
+      if (e.target.value == 'a') {
+        console.log(`checked = ${e.target.value}`)
+        let mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 18 })
+        this.map.addLayer(mapLayer2d)
+      } else if (e.target.value == 'b') {
+        console.log(`checked = ${e.target.value}`)
+        //将图层增加到地图上
+        let mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 18 })
+        this.map.addLayer(mapLayerSatellite)
+      }
+      let mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 18 })
+      this.map.addLayer(mapLayerWord)
+      this.map.clearLayers()
     },
     // 更多-历史数据
     onHistoryData() {
-      console.log(this.historyData)
       if (this.historyData) {
         this.allPointTask(this.historyPoints)
       }
@@ -671,14 +725,13 @@ export default {
     // 手机照片
     onPhonePhoto() {
       if (this.phonePhoto) {
-        this.allPointTask(this.phonePhotoPoints, this.phonePhotoTool)
-        console.log(this.phonePhotoTool)
+        this.allImageTask(this.phonePhotoPoints)
       }
     },
     // 无人机照片
     onUAVPhoto() {
       if (this.UAVPhoto) {
-        this.allPointTask(this.UAVPhotoPoints, this.UAVPhotoTool)
+        this.allPointTask(this.UAVPhotoPoints)
       }
     },
     // 风险地图
@@ -772,30 +825,55 @@ export default {
       this.onLandAndWater()
     },
 
-    allPointTask(pointLists, tool) {
+    allPointTask(pointLists) {
       // this.map.clearOverLays()
       console.log(pointLists)
       // let arr = []
       for (const item of pointLists) {
         // arr.push(item.latlng)
-        this.drawAllPoint(item.latlng, tool)
+        this.drawAllPoint(item.latlng)
       }
       // this.map.setViewport(arr)
     },
     // 添加标注图片
-    drawAllPoint(latlng, tool) {
-      tool = new T.Marker(latlng)
-      this.map.addOverLay(tool)
-      tool.addEventListener('click', this.taskPointClick)
+    drawAllPoint(latlng) {
+      let markerTool = new T.Marker(latlng)
+      this.map.addOverLay(markerTool)
+      markerTool.addEventListener('click', this.taskPointClick)
     },
     // 任务点点击事件
     taskPointClick(index) {
-      for (const item of this.historyPoints) {
-        if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
-          console.log(index.lnglat.lat, index.lnglat.lng)
-          this.$refs.riskInfo.riskInfo()
-        }
+      this.$refs.riskInfo.riskInfo()
+      // for (const item of this.historyPoints) {
+      //   if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+      //     console.log(index.lnglat.lat, index.lnglat.lng)
+      //     this.$refs.riskInfo.riskInfo()
+      //   }
+      // }
+    },
+    // 绘制图片
+    allImageTask(pointLists) {
+      // this.map.clearOverLays()
+      console.log(pointLists)
+      // let arr = []
+      for (const item of pointLists) {
+        // arr.push(item.latlng)
+        this.drawAllImage(item.latlng, item.imgUrl)
       }
+      // this.map.setViewport(arr)
+    },
+    // 添加手机照片
+    drawAllImage(latlng, img) {
+      //创建图片对象
+      let icon = new T.Icon({
+        iconUrl: img,
+        iconSize: new T.Point(70, 45),
+        iconAnchor: new T.Point(35, 45)
+      })
+      //向地图上添加自定义标注
+      let marker = new T.Marker(latlng, { icon: icon })
+      marker.addEventListener('click', this.taskPointClick)
+      this.map.addOverLay(marker)
     },
     getTdLayer(lyr) {
       var url =
@@ -1006,6 +1084,9 @@ export default {
     width: 100%;
     height: calc(100% - 35px);
     overflow: auto;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
     li {
       width: 100%;
       position: relative;
