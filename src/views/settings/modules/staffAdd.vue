@@ -2,35 +2,35 @@
 <div>
     <a-card title="新增/编辑用户">
         <a-button  slot="extra" @click="backPage">返回上一页</a-button>
-        <Form ref="formValidate" :model="list" :rules="ruleValidate" :label-width="90">
+        <el-form ref="formValidate" :model="list" :rules="ruleValidate" >
             <h3>用户信息</h3>
-            <FormItem label="手机号" prop="phone">
-                <Input v-model="list.phone" placeholder="请输入" style="width:200px"></Input>
-            </FormItem>
-            <FormItem label="登录密码" prop="password">
-                <Input v-model="list.password" placeholder="请输入" style="width:200px"></Input>
-            </FormItem>
-            <FormItem label="编号" prop="number">
-                <Input v-model="list.number" placeholder="请输入" style="width:200px"></Input>
-            </FormItem>
-            <FormItem label="姓名" prop="name">
-                <Input v-model="list.name" placeholder="请输入" style="width:200px"></Input>
-            </FormItem>
-            <FormItem label="性别" prop="sex">
+            <el-form-item label="手机号" prop="phone">
+                <el-input v-model="list.phone" placeholder="请输入" style="width:200px"></el-input>
+            </el-form-item>
+            <el-form-item label="登录密码" prop="password">
+                <el-input v-model="list.password" placeholder="请输入" style="width:200px"></el-input>
+            </el-form-item>
+            <el-form-item label="编号" prop="number">
+                <el-input v-model="list.number" placeholder="请输入" style="width:200px"></el-input>
+            </el-form-item>
+            <el-form-item label="姓名" prop="name">
+                <el-input v-model="list.name" placeholder="请输入" style="width:200px"></el-input>
+            </el-form-item>
+            <el-form-item label="性别" prop="sex">
                  <a-select  style="width: 200px" placeholder="请选择" v-model="list.sex">
                     <a-select-option value="jack">男</a-select-option>
                     <a-select-option value="lucy">女</a-select-option>
                 </a-select>
-            </FormItem>
-            <FormItem label="类型"  >
+            </el-form-item>
+            <el-form-item label="类型"  >
                 <a-select  style="width: 200px" placeholder="请选择" @change="handleChange" v-model="list.type">
                     <a-select-option value="worker">外勤</a-select-option>
                     <a-select-option value="admin">内业</a-select-option>
                     <a-select-option value="viewer">外部用户</a-select-option>
                 </a-select>
-            </FormItem>
+            </el-form-item>
             <h3>权限信息</h3>
-            <FormItem label="角色" >
+            <el-form-item label="角色" >
                 <div v-if="jurisdiction=='worker'">
                     <p>外勤</p>
                     <a-checkbox-group >
@@ -49,18 +49,18 @@
                         <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
                     </a-checkbox-group>
                 </div>
-            </FormItem>
-            <FormItem label="管理范围" >
+            </el-form-item>
+            <el-form-item label="管理范围" >
                 <a-card style="min-height: 200px;width:300px">
                     <a-directory-tree :treeData="treeData" ></a-directory-tree>
                 </a-card>
                 <!-- <Tree :data="treeData" :expand='true'></Tree> -->
-            </FormItem>
-            <FormItem >
-                 <Button  style="margin-right:15px;" @click="backPage">返回</Button>
-                <Button type="success"  style="" @click="preservation">保存</Button>
-            </FormItem>
-        </Form>
+            </el-form-item>
+            <el-form-item >
+                 <a-button  style="margin-right:15px;" type="primary" @click="backPage">返回</a-button>
+                <a-button type="primary"  style="" @click="preservation">保存</a-button>
+            </el-form-item>
+        </el-form>
     </a-card >
 </div>
 </template>

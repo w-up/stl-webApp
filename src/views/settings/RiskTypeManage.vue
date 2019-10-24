@@ -29,7 +29,7 @@
       </a-table>
     </a-card>
     <a-modal title="添加/编辑风险源" v-model="visible"
-      @ok="upload2"
+      @ok="submitUpload"
       @cancel="handleCancel"
     >
       <a-form>
@@ -37,22 +37,25 @@
           <a-input placeholder="请输入风险源类型名称" v-model="list.name"/>
         </a-form-item>
         <a-form-item label="标注样式" :label-col="{ span: 7 }" :wrapper-col="{ span: 16 }">
-            <Upload
-              multiple
-              ref="upload2"
-              action="/server/data/admin/param/save"
-              :before-upload="handleUpload"
+            <el-upload
+              class="upload-demo"
+              ref="upload"
               :data="list"
-              :headers="headers"
-              :show-upload-list="false"
               name="icon"
-              :on-success="handleSuccess1"
-              :on-format-error="handleFormatError"
-              :on-error="handleError"
-            ><Button>添加</Button></Upload>
-            <viewer >
+              :headers="headers"
+              action="/server/data/admin/param/save"
+              :on-preview="handlePreview"
+              :on-success="handleSuccess"
+              :on-change="handleChange"
+              :on-remove="handleRemove"
+              :file-list="fileList"
+              :limit='1'
+              :auto-upload="false">
+              <a-button type="primary" icon="plus" >添加</a-button>
+            </el-upload>
+            <!-- <viewer >
                 <img  :src="attachmentJpg" alt="" style="height:70px;">
-            </viewer >
+            </viewer > -->
         </a-form-item>
       </a-form>
     </a-modal>
@@ -86,8 +89,8 @@ const columns = [
 export default {
   data() {
     return {
-      file:null,
-      loadingStatus:false,
+      fileList:[],
+      file:false,
       attachmentJpg:'',
       id:'',
       list: {
@@ -128,21 +131,10 @@ export default {
 
       })
     },
-    handleOk(e) {
-      // paramSave(data).then(res => {
-      //     this.$message.success('保存成功');
-      //     this.visible = false;
-      //     this.list.id=''
-      //     this.list.name=''
-      //     this.getList()
-      //   }).catch(err => {
-      //     this.$message.error(err.response.data.message);
-      // })
-    },
     handleCancel(e) {
-      this.file=null
-      this.loadingStatus=false
-      this.visible = false;
+      this.visible = false
+      this.file = false
+      this.fileList=[]
       this.attachmentJpg=''
     },
     add(id){
@@ -173,51 +165,47 @@ export default {
     cancel(e) {
 
     },
-    upload2 (row) {
-        if (this.file==null) {
-          var data = this.list
-          paramSave(data).then(res => {
-              this.$message.success('保存成功');
-              this.visible = false;
-              this.list.id=''
-              this.list.name=''
-              this.attachmentJpg=''
-              this.getList()
-          }).catch(err => {
-              this.$message.error(err.response.data.message);
-          })
-        }else{
-          this.loadingStatus = true;
-          this.$refs.upload2.post(this.file);
-          setTimeout(() => {
-              this.file = null;
-              this.attachmentJpg=''
-              this.loadingStatus = false;
-              this.visible = false;
-              this.getList()
-          }, 1500);
-        }
+    submitUpload() {
+      if (this.fileList.length == 0) {
+        var data = this.list
+        paramSave(data).then(res => {
+            this.$message.success('保存成功');
+            this.visible = false
+            this.list.id=''
+            this.list.name=''
+            this.attachmentJpg=''
+            this.getList()
+        }).catch(err => {
+            this.$message.error(err.response.data.message);
+        })
+      }else{
+        this.$refs.upload.submit();
+      }
     },
-    handleUpload (file) {
-      this.file = file;
-      this.attachmentJpg = window.URL.createObjectURL(file)
-      return false;
+    handleSuccess(response, file, fileList){
+      this.attachmentJpg=''
+      this.visible = false;
+      this.$message.success('保存成功');
+      this.list.id=''
+      this.list.name=''
+      this.getList()
+      console.log('1');
     },
-    handleSuccess1(response){
-        if(response.success === true){
-            this.$Message.success('成功！');
-        }else{
-            this.$Message.error('失败！');
-        }
+    handleChange(file, fileList){
+      console.log('2');
+      if(this.fileList.length==0){
+        this.fileList=fileList
+      }else{
+        this.fileList=[]
+      }
+      console.log(file, fileList);
+      this.attachmentJpg=window.URL.createObjectURL(file.raw)
     },
-    handleFormatError(file){
-        this.$Message.error('文件格式不正确');
+    handleRemove(file, fileList) {
+      
     },
-    handleError(err){
-        console.log(err);
-        
-        this.$Message.error("数据导入失败！")
-    },
+    handlePreview(file) {
+    }
   }
 }
 </script>

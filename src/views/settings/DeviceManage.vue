@@ -74,19 +74,19 @@
       </a-form>
     </a-modal>
     <a-modal title="添加设备" v-model="equipmentModel" :width="700">
-      <Form ref="formValidate" :model="equipmentList" :rules="ruleValidate" :label-width="90">
-        <FormItem label="设备名称" prop="name">
-          <Input v-model="equipmentList.name" placeholder="请输入" style="width:200px" />
-        </FormItem>
-        <FormItem label="设备型号" prop="type">
-          <Input v-model="equipmentList.type" placeholder="请输入" style="width:200px" />
-        </FormItem>
-        <FormItem label="设备聚隆编号">
-          <Input v-model="equipmentList.number" placeholder="请输入" style="width:200px" />
-        </FormItem>
-        <FormItem label="关联设备"></FormItem>
-        <FormItem label="无人机类型"></FormItem>
-        <FormItem label="无人机">
+      <el-form ref="formValidate" :model="equipmentList" :rules="ruleValidate" >
+        <el-form-item label="设备名称" prop="name">
+          <el-input v-model="equipmentList.name" placeholder="请输入" style="width:200px" />
+        </el-form-item>
+        <el-form-item label="设备型号" prop="type">
+          <el-input v-model="equipmentList.type" placeholder="请输入" style="width:200px" />
+        </el-form-item>
+        <el-form-item label="设备聚隆编号">
+          <el-input v-model="equipmentList.number" placeholder="请输入" style="width:200px" />
+        </el-form-item>
+        <el-form-item label="关联设备"></el-form-item>
+        <el-form-item label="无人机类型"></el-form-item>
+        <el-form-item label="无人机">
           <a-checkbox-group style="display:flex;flex-wrap:wrap;">
             <div
               v-for="(option, index) in uavList"
@@ -97,8 +97,8 @@
               <a-input-number :min="1" :max="100000" :defaultValue="3" />
             </div>
           </a-checkbox-group>
-        </FormItem>
-        <FormItem label="无人机电池">
+        </el-form-item>
+        <el-form-item label="无人机电池">
           <a-checkbox-group style="display:flex;flex-wrap:wrap;">
             <div
               v-for="(option, index) in batteryList"
@@ -109,8 +109,8 @@
               <a-input-number :min="1" :max="100000" :defaultValue="3" />
             </div>
           </a-checkbox-group>
-        </FormItem>
-      </Form>
+        </el-form-item>
+      </el-form>
     </a-modal>
   </div>
 </template>

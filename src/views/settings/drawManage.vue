@@ -29,11 +29,11 @@
       @ok="handleOk"
       @cancel="handleCancel"
     >
-      <Form ref="formValidate" :model="list" :rules="ruleValidate" :label-width="110">
-        <FormItem label="绘制类型" prop="name">
-          <Input v-model="list.name" placeholder="请输入" style="width:200px"/>
-        </FormItem>
-      </Form>
+      <el-form ref="formValidate" :model="list" :rules="ruleValidate" :label-width="110">
+        <el-form-item label="绘制类型" prop="name">
+          <el-input v-model="list.name" placeholder="请输入" style="width:200px"/>
+        </el-form-item>
+      </el-form>
     </a-modal>
   </div>
 </template>

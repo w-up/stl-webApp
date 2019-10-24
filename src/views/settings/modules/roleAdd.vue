@@ -2,21 +2,21 @@
 <div>
     <a-card title="权限设置">
         <a-button  slot="extra" @click="backPage">返回上一页</a-button>
-        <Form ref="formValidate" :model="list" :rules="ruleValidate" :label-width="90">
-            <FormItem label="编号" prop="number">
-                <Input v-model="list.number" placeholder="请输入" style="width:200px"></Input>
-            </FormItem>
-            <FormItem label="类型" prop="type" >
+        <el-form ref="formValidate" :model="list" :rules="ruleValidate" >
+            <el-form-item label="编号" prop="number">
+                <el-input v-model="list.number" placeholder="请输入" style="width:200px"></el-input>
+            </el-form-item>
+            <el-form-item label="类型" prop="type" >
                 <a-select  style="width: 200px" placeholder="请选择" v-model="list.type">
                     <a-select-option value="worker">外勤</a-select-option>
                     <a-select-option value="admin">内业</a-select-option>
                     <a-select-option value="viewer">外部用户</a-select-option>
                 </a-select>
-            </FormItem>
-            <FormItem label="名称" prop="name">
-                <Input v-model="list.name" placeholder="请输入" style="width:200px"></Input>
-            </FormItem>
-            <FormItem >
+            </el-form-item>
+            <el-form-item label="名称" prop="name">
+                <el-input v-model="list.name" placeholder="请输入" style="width:200px"></el-input>
+            </el-form-item>
+            <el-form-item >
                 <a-tabs defaultActiveKey="1">
                     <a-tab-pane tab="巡河" key="1">
                         <a-table :columns="columns" :dataSource="data" bordered>
@@ -49,12 +49,12 @@
                         </a-table>
                     </a-tab-pane>
                 </a-tabs>
-            </FormItem>
-            <FormItem >
-                 <Button  style="margin-right:15px;" @click="backPage">返回</Button>
-                <Button type="success"  style="" @click="preservation">保存</Button>
-            </FormItem>
-        </Form>
+            </el-form-item>
+            <el-form-item >
+                 <a-button  style="margin-right:15px;" type="primary" @click="backPage">返回</a-button>
+                <a-button type="primary"  style="" @click="preservation">保存</a-button>
+            </el-form-item>
+        </el-form>
     </a-card >
 </div>
 </template>

@@ -61,31 +61,31 @@
       @ok="handleOk"
       @cancel="handleCancel"
     >
-      <Form ref="formValidate" :model="equipmentList" :rules="ruleValidate" :label-width="90">
-        <FormItem label="项目名称" prop="name">
-          <Input v-model="equipmentList.name" placeholder="请输入" style="width:200px" />
-        </FormItem>
-      </Form>
+      <el-form ref="formValidate" :model="equipmentList" :rules="ruleValidate" >
+        <el-form-item label="项目名称" prop="name">
+          <el-input v-model="equipmentList.name" placeholder="请输入" style="width:200px" />
+        </el-form-item>
+      </el-form>
     </a-modal>
     <a-modal title="添加二级项目" v-model="equipmentModel"
       @ok="handleOk1"
       @cancel="handleCancel1"
     >
-      <Form ref="formValidate" :model="equipmentList" :rules="ruleValidate" :label-width="90">
-        <FormItem label="上级项目" prop="name">
-          <Input v-model="equipmentList.name" disabled placeholder="请输入" style="width:200px" />
-        </FormItem>
-        <FormItem label="项目名称" prop="type">
-          <Input v-model="equipmentList.type" placeholder="请输入" style="width:200px" />
-        </FormItem>
-        <FormItem label="间隔周期">
+      <el-form ref="formValidate" :model="equipmentList" :rules="ruleValidate" >
+        <el-form-item label="上级项目" prop="name">
+          <el-input v-model="equipmentList.name" disabled placeholder="请输入" style="width:200px" />
+        </el-form-item>
+        <el-form-item label="项目名称" prop="type">
+          <el-input v-model="equipmentList.type" placeholder="请输入" style="width:200px" />
+        </el-form-item>
+        <el-form-item label="间隔周期">
           <a-select style="width: 200px" placeholder="请选择"  v-model="equipmentList.number">
             <a-select-option value="day">日</a-select-option>
             <a-select-option value="week">周</a-select-option>
             <a-select-option value="month">月</a-select-option>
           </a-select>
-        </FormItem>
-      </Form>
+        </el-form-item>
+      </el-form>
     </a-modal>
   </div>
 </template>
