@@ -16,24 +16,24 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="河道名称">
-              <a-input placeholder="请输入河道名称" />
+              <a-input placeholder="请输入河道名称"  v-model="list.name"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="河道长度(m)">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.length1" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="河道编号">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.code" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="水域面积(m²)">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.dimension" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -49,9 +49,9 @@
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="是否重点" has-feedback>
-              <a-select default-value="1">
-                <a-select-option value="1">重点</a-select-option>
-                <a-select-option value="2">非重点</a-select-option>
+              <a-select v-model="list.priority">
+                <a-select-option value="true">重点</a-select-option>
+                <a-select-option value="false">非重点</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -60,29 +60,32 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="起点位置" has-feedback>
-              <a-cascader
-                :options="options"
-                :showSearch="{filter}"
-                @change="onChange"
-                placeholder="选择起点"
-              />
+              <a-select style="width:100px" v-model="list.areaId"  @change="getCity">
+                <a-select-option v-for="item in options" :value="item.value" :key="item.value">{{ item.label }}</a-select-option>
+              </a-select>
+              <a-select style="width:100px;margin-left:2px" v-model="list.areaId1" @change="getArea">
+                <a-select-option v-for="item in cityList" :value="item.value" :key="item.value" >{{ item.label }}</a-select-option>
+              </a-select>
+              <a-select style="width:100px;margin-left:2px" v-model="list.areaId2">
+                <a-select-option v-for="item in areaList" :value="item.value" :key="item.value">{{ item.label }}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="详细地址" has-feedback>
-              <a-input placeholder="请输入详细起点位置" />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="详细地址" has-feedback >
+              <a-input placeholder="请输入详细起点位置" v-model="list.startAddress"/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="经度" has-feedback>
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="经度" has-feedback >
+              <a-input placeholder v-model="list.lng"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="纬度" has-feedback>
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="纬度" has-feedback >
+              <a-input placeholder v-model="list.lat"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -90,78 +93,81 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="起点位置" has-feedback>
-              <a-cascader
-                :options="options"
-                :showSearch="{filter}"
-                @change="onChange"
-                placeholder="选择起点"
-              />
+              <a-select style="width:100px" v-model="list.areaId3" @change="getCity1">
+                <a-select-option v-for="item in options" :value="item.value" :key="item.value">{{ item.label }}</a-select-option>
+              </a-select>
+              <a-select style="width:100px;margin-left:2px" v-model="list.areaId4" @change="getArea1">
+                <a-select-option v-for="item in cityList1" :value="item.value" :key="item.value">{{ item.label }}</a-select-option>
+              </a-select>
+              <a-select style="width:100px;margin-left:2px" v-model="list.areaId5">
+                <a-select-option v-for="item in areaList1" :value="item.value" :key="item.value">{{ item.label }}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="详细地址" has-feedback>
-              <a-input placeholder="请输入详细起点位置" />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="详细地址" has-feedback >
+              <a-input placeholder="请输入详细起点位置" v-model="list.destAddress"/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="经度" has-feedback>
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="经度" has-feedback >
+              <a-input placeholder v-model="list.lng1"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="纬度" has-feedback>
-              <a-input placeholder />
+              <a-input placeholder v-model="list.lat1"/>
             </a-form-item>
           </a-col>
         </a-row>
         <p style="margin-top: 10px;">其他信息</p>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="一级河长">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"  label="一级河长">
+              <a-input placeholder v-model="list.controller" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="常水位(m)">
-              <a-input placeholder />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row style="width:100%">
-          <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="河口面积(m²)">
-              <a-input placeholder />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="最高控制水位(m)">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"  label="常水位(m)">
+              <a-input placeholder v-model="list.normalWaterLevel" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="平均水深(m)">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"  label="河口面积(m²)">
+              <a-input placeholder v-model="list.mouthDimension" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="最大水深(m)">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"  label="最高控制水位(m)">
+              <a-input placeholder v-model="list.highWaterLevel" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="河口最小面宽(m)">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"  label="平均水深(m)">
+              <a-input placeholder v-model="list.averageDepth" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="河口最大面宽(m)">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"  label="最大水深(m)">
+              <a-input placeholder v-model="list.maxDepth" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row style="width:100%">
+          <a-col :span="12">
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"  label="河口最小面宽(m)">
+              <a-input placeholder v-model="list.minMouthWidth" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"  label="河口最大面宽(m)">
+              <a-input placeholder v-model="list.maxMouthWidth" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -169,7 +175,7 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="每月巡查次数(次)">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.inspectTimes"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -188,7 +194,7 @@
             <a-button block @click="handleCancel">取消</a-button>
           </a-col>
           <a-col :span="3">
-            <a-button block>保存</a-button>
+            <a-button block @click="saveRiver">保存</a-button>
           </a-col>
           <a-col :span="3">
             <a-button block>修改河道区域</a-button>
@@ -203,6 +209,7 @@
 
 <script>
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+import { informationRiver,regionList,getSaveRiver} from '@/api/login'
 export default {
   props:{
     inputName: String,
@@ -210,6 +217,36 @@ export default {
   },
   data() {
     return {
+      list:{
+        id:'',
+        projectId:'5da7d092ea6c156d792df816',
+        name:'',
+        length1:'',
+        dimension:'',
+        code:'',
+        priority:'',
+        destAddress:'',
+        lat:'',
+        lng:'', 
+        startAddress:'', 
+        lat1:'', 
+        lng1:'', 
+        areaId:'',
+        areaId1:'',
+        areaId2:'',
+        areaId3:'',
+        areaId4:'',
+        areaId5:'',
+        averageDepth:'',
+        highWaterLevel:'',
+        maxDepth:'',
+        maxMouthWidth:'',
+        minMouthWidth:'',
+        mouthDimension:'',
+        normalWaterLevel:'',
+        
+      },
+      coordinate:[],
       labelCol: {
         xs: { span: 18 },
         sm: { span: 6 }
@@ -220,52 +257,15 @@ export default {
       },
       visible: false,
       confirmLoading: false,
-
       selectedItems: [], //风险源类型
       headers: {
         authorization: 'authorization-text'
       },
-
-      options: [
-        {
-          value: 'zhejiang',
-          label: 'Zhejiang',
-          children: [
-            {
-              value: 'hangzhou',
-              label: 'Hangzhou',
-              children: [
-                {
-                  value: 'xihu',
-                  label: 'West Lake'
-                },
-                {
-                  value: 'xiasha',
-                  label: 'Xia Sha',
-                  disabled: true
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: 'jiangsu',
-          label: 'Jiangsu',
-          children: [
-            {
-              value: 'nanjing',
-              label: 'Nanjing',
-              children: [
-                {
-                  value: 'zhonghuamen',
-                  label: 'Zhong Hua men'
-                }
-              ]
-            }
-          ]
-        }
-      ],
-
+      options: [],
+      cityList:[],
+      areaList:[],
+      cityList1:[],
+      areaList1:[],
       form: this.$form.createForm(this)
     }
   },
@@ -280,9 +280,86 @@ export default {
 
   },
   methods: {
-    add() {
+    add(currentLnglats) {
       this.visible = true
-      console.log(this.inputName);
+      if (currentLnglats != undefined) {
+        this.coordinate=currentLnglats
+      } 
+      regionList('100000').then(res => {
+        this.options = res.data
+      }).catch(err => {
+
+      })
+    },
+    //保存河道
+    saveRiver(){
+      var data = {
+        id: this.list.id,
+        projectId: this.list.projectId,
+        code: this.list.code,
+        name: this.list.name,
+        length: this.list.length1,
+        dimension: this.list.dimension,
+        priority: this.list.priority,
+        controller: this.list.controller,
+        inspectTimes: this.list.inspectTimes,
+        startAddress: this.list.startAddress,
+        destAddress: this.list.destAddress,
+        normalWaterLevel: this.list.normalWaterLevel,
+        highWaterLevel: this.list.highWaterLevel,
+        minMouthWidth: this.list.minMouthWidth,
+        maxMouthWidth: this.list.maxMouthWidth,
+        mouthDimension: this.list.mouthDimension,
+        averageDepth: this.list.averageDepth,
+        maxDepth: this.list.maxDepth,
+        startCoordinate : this.list.lng +','+this.list.lat,
+        destCoordinate : this.list.lng1 +','+this.list.lat1,
+        startZoneId : this.list.areaId2,
+        destZoneId : this.list.areaId5,
+      }
+      for (let i = 0; i < this.coordinate.length; i++) {
+        if (i == 0) {
+          data.region =  this.coordinate[i].lng +','+ this.coordinate[i].lat + '|'
+        }else if(i ==this.coordinate.length-1 ){
+          data.region = data.region +  this.coordinate[i].lng +','+ this.coordinate[i].lat
+        }else{
+          data.region = data.region +  this.coordinate[i].lng +','+ this.coordinate[i].lat + '|'
+        }
+      }
+      getSaveRiver(data).then(res => {
+        this.$message.success('保存成功')
+      }).catch(err => {
+         this.$message.error(err.response.data.message)
+      })
+    },
+    //省市选择
+    getCity(value,){
+      regionList(value).then(res => {
+        this.cityList = res.data
+      }).catch(err => {
+
+      })
+    },
+    getCity1(value){
+      regionList(value).then(res => {
+        this.cityList1 = res.data
+      }).catch(err => {
+
+      })
+    },
+    getArea(value){
+      regionList(value).then(res => {
+        this.areaList = res.data
+      }).catch(err => {
+
+      })
+    },
+    getArea1(value){
+      regionList(value).then(res => {
+        this.areaList1 = res.data
+      }).catch(err => {
+
+      })
     },
     // 添加河流
     addRiver(value) {
@@ -292,6 +369,63 @@ export default {
     handleChange(selectedItems) {
       this.selectedItems = selectedItems
       console.log(selectedItems)
+    },
+    //河道信息
+    getRiver(id){
+      informationRiver(id).then(res => {
+        let arr = res.data
+        if (arr.extra.startZone!= null){
+          var area = arr.extra.startZone.idpath.split(',')
+          regionList(area[0]).then(res => {
+            this.cityList = res.data
+          }).catch(err => {})
+          regionList(area[1]).then(res => {
+            this.areaList = res.data
+          }).catch(err => {})
+          this.list.areaId=area[0]
+          this.list.areaId1=area[1]
+          this.list.areaId2=area[2]
+        }
+        if (arr.extra.destZone!= null){
+          var area = arr.extra.destZone.idpath.split(',')
+          regionList(area[0]).then(res => {
+            this.cityList1 = res.data
+          }).catch(err => {})
+          regionList(area[1]).then(res => {
+            this.areaList1 = res.data
+          }).catch(err => {})
+          this.list.areaId3=area[0]
+          this.list.areaId4=area[1]
+          this.list.areaId5=area[2]
+        }
+        //基础信息
+        this.list.id=arr.info.id
+        this.list.name =arr.info.name
+        this.list.length1 =arr.info.length
+        this.list.dimension =arr.info.dimension
+        this.list.code =arr.info.code
+        this.list.priority =arr.info.priority+''
+        this.list.inspectTimes =arr.info.inspectTimes
+        this.coordinate =arr.info.region
+        //起点
+        this.list.destAddress =arr.extra.destAddress
+        this.list.startAddress =arr.extra.startAddress
+        this.list.lat =arr.extra.startCoordinate.lat
+        this.list.lng =arr.extra.startCoordinate.lng
+        this.list.lat1 =arr.extra.destCoordinate.lat1
+        this.list.lng1 =arr.extra.destCoordinate.lng1
+        //其他信息
+        this.list.controller =arr.info.controller
+        this.list.averageDepth =arr.extra.averageDepth
+        this.list.highWaterLevel =arr.extra.highWaterLevel
+        this.list.maxDepth =arr.extra.maxDepth
+        this.list.maxMouthWidth =arr.extra.maxMouthWidth
+        this.list.minMouthWidth =arr.extra.minMouthWidth
+        this.list.mouthDimension =arr.extra.mouthDimension
+        this.list.normalWaterLevel =arr.extra.normalWaterLevel
+      }).catch(err => {
+
+      })
     },
     // 文件上传
     fileUpload(info) {
@@ -327,11 +461,60 @@ export default {
       })
     },
     handleCancel() {
+      this.list.id=''
+      this.list.name=''
+      this.list.length1=''
+      this.list.dimension=''
+      this.list.code=''
+      this.list.priority=''
+      this.list.destAddress=''
+      this.list.lat=''
+      this.list.lng='' 
+      this.list.startAddress='' 
+      this.list.lat1='' 
+      this.list.lng1='' 
+      this.list.areaId=''
+      this.list.areaId1=''
+      this.list.areaId2=''
+      this.list.areaId3=''
+      this.list.areaId4=''
+      this.list.areaId5=''
+      this.list.averageDepth=''
+      this.list.highWaterLevel=''
+      this.list.maxDepth=''
+      this.list.maxMouthWidth=''
+      this.list.minMouthWidth=''
+      this.list.mouthDimension=''
+      this.list.normalWaterLevel=''
+      this.list.cityList=[],
+      this.list.areaList=[],
+      this.list.cityList1=[],
+      this.list.areaList1=[],
+      this.coordinate=[],
       this.visible = false
     },
     // 选择地址
     onChange(value, selectedOptions) {
       console.log(value, selectedOptions)
+    },
+    loadData(selectedOptions) {
+      console.log(selectedOptions);
+      const targetOption = selectedOptions[selectedOptions.length - 1];
+      targetOption.loading = true;
+      setTimeout(() => {
+        targetOption.loading = false;
+        regionList(targetOption.value).then(res => {
+          let arr = res.data
+          arr.forEach(v => {
+            v.isLeaf= false
+          });
+          console.log(arr);
+          targetOption.children = arr
+        }).catch(err => {
+          
+        })
+        this.options = [...this.options];
+      }, 1000);
     },
     filter(inputValue, path) {
       return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)

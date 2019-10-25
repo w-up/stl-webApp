@@ -57,7 +57,7 @@
             <a-col :span="4" style="text-align:right;">
               <a-popconfirm
                 title="确定要删除吗?"
-                @confirm="confirmDelete(item.name)"
+                @confirm="confirmDelete(item.id)"
                 @cancel="cancelDelete"
                 okText="确定"
                 cancelText="取消"
@@ -92,7 +92,7 @@
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
 import AddRiver from './modules/AddRiver.vue'
-import { getRiverList } from '@/api/login'
+import { getRiverList,delRiver } from '@/api/login'
 export default {
   name: 'RiverManage',
   components: {
@@ -316,9 +316,12 @@ export default {
     // 河流删除
     confirmDelete(index) {
       console.log(index)
-      this.riverList.splice(this.riverList.findIndex(item => item.name === index), 1)
-      this.$message.success('删除成功')
-      this.drawAllRiver()
+      delRiver(index).then(res => {
+        this.$message.success('删除成功')
+        this.getList()
+      }).catch(err => {
+
+      })
       this.defaultRiver = null
     },
     cancelDelete(e) {
@@ -380,8 +383,7 @@ export default {
       // })
       // this.map.addOverLay(label)
       // label.setLngLat(latlngobj)
-      this.addList ='1111'
-      this.$refs.addRiver.add()
+      this.$refs.addRiver.add(e.currentLnglats)
     },
     // 设置绘制的多边形
     setPolylineFn(lineData, color, weight, opacity, fillOpacity) {
@@ -423,6 +425,8 @@ export default {
         for (const item of this.riverList) {
           if (item.id == id) {
             item.clicked = true
+            console.log(item.id);
+            this.$refs.addRiver.getRiver(item.id)
             this.$refs.addRiver.add()
           } else {
             item.clicked = false

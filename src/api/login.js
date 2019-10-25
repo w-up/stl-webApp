@@ -242,19 +242,43 @@ export function projectNewsDel (parameter) {
 //   })
 // }
 //区域列表
-export function regionList (parameter) {
+export function regionList (id) {
   return axios({
-    url: '/server/data/admin/area/list?parentId='+parameter.id,
+    url: '/server/data/admin/area/list?parentId='+id,
     method: 'get',
   })
 }
 //河道列表
 export function getRiverList () {
   return axios({
-    url: '/server/data/admin/river/page',
+    url: '/server/data/admin/river/page?projectId=5da7d092ea6c156d792df816',
     method: 'get',
   })
 }
+//河道详细信息
+export function informationRiver (id) {
+  return axios({
+    url: '/server/data/admin/river/detail/'+id,
+    method: 'get',
+  })
+}
+//河道删除
+export function delRiver (id) {
+  return axios({
+    url: '/server/data/admin/river/remove/'+id,
+    method: 'post',
+  })
+}
+export function getSaveRiver (parameter) {
+  return axios({
+    url: '/server/data/admin/river/save',
+    method: 'post',
+    data:parameter
+  })
+}
+
+
+
 export function getSmsCaptcha (parameter) {
   return axios({
     url: api.SendSms,
