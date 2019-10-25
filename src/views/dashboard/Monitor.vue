@@ -914,7 +914,6 @@ import planDetail from '../modals/planDetail'
 import situtionInfo from './modules/situtionInfo'
 import updateTime from './modules/updateTime'
 import communication from './modules/communication'
-import { BreadcrumbItem } from 'iview'
 
 const sutreeData = [
   {
@@ -1387,6 +1386,7 @@ export default {
     //选中巡河方案
     selectPatrol() {},
     addTaskBtn() {
+      this.clearMap()
       this.$refs.addTask.show()
       this.cBtn = false
       // this.$refs.addTask.chooseLocation()
@@ -1681,7 +1681,8 @@ export default {
           var marker = new T.Marker(lnglat)
           this.map.addOverLay(marker)
           marker.addEventListener("mouseover",this.mouseOverTask)
-          marker.addEventListener("mouseout",this.mouseOutTask)
+          // marker.addEventListener("mouseout",this.mouseOutTask)   
+          marker.addEventListener("mousedown",this.mouseOverTask)     
           this.showPosition(marker)
         }
       }else{
