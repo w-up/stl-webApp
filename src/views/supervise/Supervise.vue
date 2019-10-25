@@ -402,14 +402,14 @@ import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
 import PhotoEdit from './modules/PhotoEdit'
 
-import 'ol/ol.css'
-import Map from 'ol/Map'
-import View from 'ol/View'
-import TileLayer from 'ol/layer/Tile'
-import LayerGroup from 'ol/layer/Group'
-import XYZ from 'ol/source/XYZ'
+// import 'ol/ol.css'
+// import Map from 'ol/Map'
+// import View from 'ol/View'
+// import TileLayer from 'ol/layer/Tile'
+// import LayerGroup from 'ol/layer/Group'
+// import XYZ from 'ol/source/XYZ'
 
-import OSM from 'ol/source/OSM'
+// import OSM from 'ol/source/OSM'
 // 拖拽缩放
 // import { defaults as defaultInteractions, DragRotateAndZoom } from 'ol/interaction'
 
@@ -601,7 +601,6 @@ export default {
     this.initMap()
     // this.showMap()
     // this.showSwipeMap()
-    this.getNowTime()
   },
   methods: {
     initMap() {
@@ -713,15 +712,11 @@ export default {
     onMapChange(e) {
       this.map.clearLayers()
       let twoDimensionURL =
-        'http://t4.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
-      let wordLabel = 'http://t3.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+        'http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
       let satelliteURL =
-        'http://t0.tianditu.gov.cn/img_w/wmts?' +
-        'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles' +
-        '&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=b4840c07acad9f2144370bb8abaf80fc'
+        'http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
       //创建自定义图层对象
-
-      console.log(this.mapLayer)
       if (e.target.value == 'a') {
         console.log(`checked = ${e.target.value}`)
         let mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 18 })
@@ -747,8 +742,8 @@ export default {
       })
       var node = document.getElementById('map')
       htmlToImage
-        .toPng(node)
-        .then(dataUrl => {
+        .toPng(document.body)
+        .then((dataUrl) => {
           // console.log(dataUrl)
           var str = 'map' + this.getNowTime() //以下代码为下载此图片功能
           var triggerDownload = $('<a>')
