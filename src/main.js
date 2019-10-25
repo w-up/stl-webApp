@@ -8,11 +8,11 @@ import { VueAxios } from './utils/request'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import splitPane from 'vue-splitpane'
-import draggable from 'vuedraggable'
-import VueVideoPlayer from 'vue-video-player'
+import draggable from 'vuedraggable' //拖拽
+import VueVideoPlayer from 'vue-video-player' //视频播放
 import 'vue-video-player/src/custom-theme.css'
 import 'video.js/dist/video-js.css'
-import Viewer from 'v-viewer'
+import Viewer from 'v-viewer' // 查看图片
 import 'viewerjs/dist/viewer.css'
 
 
