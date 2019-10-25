@@ -6,13 +6,13 @@
     </div>
 </template>
 <script> 
-import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
-import BmPanorama from 'vue-baidu-map/components/controls/Panorama'
+// import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
+// import BmPanorama from 'vue-baidu-map/components/controls/Panorama'
 export default {
     name:'panormaControl',
     components:{
-        BaiduMap,
-        BmPanorama
+        // BaiduMap,
+        // BmPanorama
     },
     data(){
         return{
