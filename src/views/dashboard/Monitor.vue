@@ -318,6 +318,7 @@
           <div class="right-body">
             <!-- 首页内容展示 -->
             <a-card
+              class="mainCard"
               :tabList="planList"
               :activeTabKey="noTitleKey"
               @tabChange="key => onTabChange(key,'noTitleKey')"
@@ -455,11 +456,9 @@
                                     <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="sutreeData" class="tree_succ">
                                       <template slot="custom" slot-scope="item">
                                         <span>{{ item.title }}</span>
-                                        <a-button
-                                          class="but_type"
-                                          v-if="childNode"
-                                          @click="()=> searchItme(item)"
-                                        >查看</a-button>
+                                        <span class="">
+                                          <a-button class="but_type" :id="item.key" v-if="item.isChildNode"  @click="()=> searchItme(item)">查看</a-button>
+                                        </span>
                                       </template>
                                     </a-tree>
                                   </div>
@@ -863,7 +862,7 @@
           </div>
           <div class="addPlan_foot" v-if="!firstShow">
             <div v-if="ishidden == 4">
-              <a-button style="width:90%;color:#1890ff;" @click="returnPre" >返回上一级</a-button>
+              <a-button style="width:90%;" @click="returnPre" >返回上一级</a-button>
             </div>
           </div>
         </div>
@@ -1154,7 +1153,7 @@ export default {
       treenfo:[],
       infoVisible:false,
       firstShow: true,
-      childNode: true,
+      childNode:'',
       checked: false,
       undone: false,
       clickPoint:'',       //是否绘制点按钮
@@ -1258,6 +1257,9 @@ export default {
   },
   mounted() {
     this.initCruisePlan()
+    // console.log("mount" + this.childNode)
+    // this.showTNodeBtn()
+    // console.log("mounted"+this.childNode)
   },
   methods: {
     getTdLayer(lyr){
@@ -1319,33 +1321,32 @@ export default {
         this.ishidden = 1
       }
       if (key == 'nowPlan') {
-        var sutree = this.treeData
-        console.log(sutree)
-        this.diguiTree(sutree)
-        this.childNode = true
-        // for(var j = 0;j<sutree.length;j++){
-        //   this.diguiTree(sutree[j])
-        // }
-        // var btm = document.getElementsByClassName('.right-body .ant-card-body');
-        // btm.style.bottom = '0'
+        //判断子节点
+        var sutree = this.sutreeData
+        console.log(this.sutreeData.length)
+        for(var j = 0;j<this.sutreeData.length;j++){
+          this.diguiTree(this.sutreeData[j])
+        }
+        // var tag = document.getElementsByClassName("mainCard")
+        // var btm = document.getElementsByClassName("mainCard").lastChild
+        // btm.style.bottom = '0px' 
       }
       this.clearMap();
     },
     diguiTree(item) {
       // 没有children了，所以是叶子节点
-      console.log(item)
-      // debugger;
       if (item.children == null) {
-        this.childNode = true
-        return
+        item.isChildNode = true
+      }else{
+        item.isChildNode = false     
+        for (var i = 0; i < item.children.length; i++) {
+          this.diguiTree(item.children[i])
+        }
       }
-      //不是叶子节点，所以继续循环递归
-      for (var i = 0; i < item.children.length; i++) {
-        this.diguiTree(item.children[i])
-      }
-
+      
       // for (var i in item) {
       //   if (item[i].children == null) {
+      //     console.log(item[i])
       //     this.childNode = true
       //     return
       //   } else {
@@ -1361,11 +1362,9 @@ export default {
       }
       if(key == 'personCard'){
         this.cardTrack()
-        // console.log(this.personInfo.length)
-        for(var i = 0;i< this.personInfo.length;i++){
-          console.log(this.personInfo[i].point)
-          // this.addTaskPoint(this.personInfo[i].point)
-        }
+        // for(var i = 0;i< this.personInfo.length;i++){
+        //   console.log(this.personInfo[i].point)
+        // }
         //默认全部选中  当页面渲染完成时执行
         setTimeout(function(){
           var cbArr = document.getElementsByClassName("checkboxClass")
@@ -1374,8 +1373,7 @@ export default {
             console.log(cbArr[i])
             cbArr[i].click()
           }
-        },500)
-        
+        },500)    
         // this.addTaskPoint(this.cardData)
       }
     },
@@ -1402,8 +1400,6 @@ export default {
     newPlan_btn() {
       this.ishidden = 2
     },
-    //图像显示修改
-    onMapChange() {},
     //底部取消按钮
     canclePlanBtn() {
       this.ishidden = 1
@@ -1454,8 +1450,9 @@ export default {
     changeInfo(key) {
       console.log(key)
     },
-    searchItme() {
+    searchItme(e) {
       this.$refs.situtionInfo.show()
+      console.log(e.key)
       // console.log('选中查看按钮' + val)
     },
     //今日计划模块修改时间
@@ -1473,6 +1470,7 @@ export default {
     showCancel(){
       this.infoVisible = false;
     },
+    //轨迹模块人员点击事件
     onChange(checkedValues){
       console.log('checked = ', checkedValues)
       this.checkPoint(checkedValues)
@@ -1617,6 +1615,25 @@ export default {
         }
       }
     },
+    //图像显示修改
+    onMapChange(e) {
+      this.map.clearLayers() //移除所有叠加层
+      const vecLayer = 'http://t4.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      const cvaLayer = 'http://t3.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      const imgLayer = 'http://t0.tianditu.gov.cn/img_w/wmts?' +
+        'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles' +
+        '&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      if(e.target.value == 'a'){
+        var mapLayer2d = new T.TileLayer(vecLayer,{ minZoom: 4, maxZoom: 18 })
+        this.map.addLayer(mapLayer2d)
+      }else if(e.target.value == 'b'){
+        var mapLayerSatellite = new T.TileLayer(imgLayer,{ minZoom: 4, maxZoom: 18 })
+        this.map.addLayer(mapLayerSatellite)
+      }
+      var mapLayerCva = new T.TileLayer(cvaLayer,{ minZoom: 4, maxZoom: 18 })
+      this.map.addLayer(mapLayerCva)
+      this.map.clearLayers()
+    },
     //任务模块任务点
     loadPoint(){
       //随机标注点
@@ -1715,21 +1732,16 @@ export default {
     onSelect(selectedKeys, info) {
       this.clearMap()
       this.selectedKeys = selectedKeys
-      console.log("selectedKeys********************")
-      console.log(this.selectedKeys)
       this.treeinfo = info.node.dataRef
-      console.log(this.treeinfo)
       var info = info.node.dataRef
       if(info.children){
         for(var i = 0; i< info.children.length;i++){
            if(info.children[i].riverData.length > 1){
-            console.log(info.children[i].riverData)
             this.map.setZoom("12")
             // this.positionArea(info.children[i].riverData)
             this.addPolyLine(info.children[i].riverData,info)
           }
           if(info.children[i].riverData.length == 1){
-            console.log(info.children[i].riverData)
             this.map.setZoom("12")
             this.addTaskPoint(info.children[i].riverData,info)
           } 
@@ -1748,9 +1760,7 @@ export default {
     }, 
     //追加任务画线
     addLineTool(clickLine){
-      console.log("我是父组件，调用了子组件的方法")
       this.clickLine = clickLine
-      console.log(this.clickLine)
       if(this.lineTool && this.clickLine == false){
         this.lineTool.clear()
       }else{
@@ -1806,8 +1816,6 @@ export default {
         fillOpacity: 0.4,
         lineStyle: "solid"
       });
-      // this.map.addOverLay(marker);
-      // 向地图注册标注点击事件
       this.map.addOverLay(circle)
       this.addMorePoint();
       //禁用线编辑
@@ -1970,7 +1978,6 @@ export default {
         if(this.treeData[i].children){
           for(var item of this.treeData[i].children){
             if(getLat == item.riverData[i].lat && getLng == item.riverData[i].lng){
-              console.log(item.key)
               var mouseSelect = item.key
               this.selectedKeys = mouseSelect.split(',')
             }
@@ -1985,7 +1992,6 @@ export default {
         if(this.treeData[i].children){
           for(var item of this.treeData[i].children){
             if(getLat == item.riverData[i].lat && getLng == item.riverData[i].lng){
-              console.log(this.treeData[i].key)
               var mouseSelect = this.treeData[i].key
               this.selectedKeys = mouseSelect.split(',')
             }
