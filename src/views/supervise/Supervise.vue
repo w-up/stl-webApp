@@ -144,7 +144,7 @@
         </a-popover>
       </li>
       <li>
-        <img src="./img/screenshot.png" alt="截图" title="截图" />
+        <img src="./img/screenshot.png" @click="printImage" alt="截图" title="截图" />
       </li>
       <li @click="mapZoomIn">
         <img src="./img/max.png" alt="放大" title="放大" />
@@ -391,6 +391,8 @@
     <risk-source-info ref="riskInfo"></risk-source-info>
     <!-- 添加风险源 -->
     <add-risk-source ref="addRisk"></add-risk-source>
+    <!-- 照片编辑 -->
+    <phone-edit ref="photoEdit"></phone-edit>
   </div>
 </template>
 
@@ -398,6 +400,7 @@
 // import WorldMap from "../../components/map/WorldMap.vue";
 import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
+import PhotoEdit from './modules/PhotoEdit'
 
 import 'ol/ol.css'
 import Map from 'ol/Map'
@@ -410,12 +413,16 @@ import OSM from 'ol/source/OSM'
 // 拖拽缩放
 // import { defaults as defaultInteractions, DragRotateAndZoom } from 'ol/interaction'
 
+// 截图
+import htmlToImage from 'html-to-image'
+
 export default {
   name: 'Supervise',
   components: {
     // 'world-map': WorldMap
     'risk-source-info': RiskSourceInfo,
-    'add-risk-source': AddRiskSource
+    'add-risk-source': AddRiskSource,
+    'phone-edit': PhotoEdit
   },
   data() {
     return {
@@ -424,6 +431,7 @@ export default {
       sharedChecked: false,
       swipeChecked: false,
       showView: true,
+      canDownload: true, // 是否可以下载
       // 地图对象
       map: null,
 
@@ -444,9 +452,27 @@ export default {
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
       ],
       phonePhotoPoints: [
-        { id: 0, name: '监测点1', clicked: false, imgUrl: require('../../assets/loginBg.jpg'), latlng: { lat: 31.22493, lng: 121.51566 } },
-        { id: 1, name: '监测点2', clicked: false, imgUrl: require('../../assets/loginBg.jpg'), latlng: { lat: 31.24344, lng: 121.49892 } },
-        { id: 2, name: '监测点3', clicked: false, imgUrl: require('../../assets/loginBg.jpg'), latlng: { lat: 31.22649, lng: 121.49712 } }
+        {
+          id: 0,
+          name: '监测点1',
+          clicked: false,
+          imgUrl: require('../../assets/loginBg.jpg'),
+          latlng: { lat: 31.22493, lng: 121.51566 }
+        },
+        {
+          id: 1,
+          name: '监测点2',
+          clicked: false,
+          imgUrl: require('../../assets/loginBg.jpg'),
+          latlng: { lat: 31.24344, lng: 121.49892 }
+        },
+        {
+          id: 2,
+          name: '监测点3',
+          clicked: false,
+          imgUrl: require('../../assets/loginBg.jpg'),
+          latlng: { lat: 31.22649, lng: 121.49712 }
+        }
       ],
       UAVPhotoPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.24493, lng: 121.52566 } },
@@ -575,6 +601,7 @@ export default {
     this.initMap()
     // this.showMap()
     // this.showSwipeMap()
+    this.getNowTime()
   },
   methods: {
     initMap() {
@@ -623,20 +650,14 @@ export default {
       //   // interactions: defaultInteractions().extend([new DragRotateAndZoom()])
       // })
     },
+    // 指北针
+    compass() {},
     // 复位
     setCenter() {
       let lng = 121.095505
       let lat = 31.21098
       let zoom = 10
       this.map.panTo(new T.LngLat(lng, lat), zoom)
-    },
-    // 放大
-    mapZoomIn() {
-      this.map.zoomIn()
-    },
-    // 缩小
-    mapZoomOut() {
-      this.map.zoomOut()
     },
 
     // 工具-点
@@ -687,8 +708,7 @@ export default {
       console.log(this.checked)
       console.log(`a-switch to ${checked}`)
     },
-    // 指北针
-    compass() {},
+
     // 图像
     onMapChange(e) {
       this.map.clearLayers()
@@ -715,6 +735,62 @@ export default {
       let mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 18 })
       this.map.addLayer(mapLayerWord)
       this.map.clearLayers()
+    },
+    printImage() {
+      if (!this.canDownload) {
+        return
+      }
+      this.canDownload = false
+      this.$notification.open({
+        message: '提示',
+        description: '正在截取地图, 请稍等...'
+      })
+      var node = document.getElementById('map')
+      htmlToImage
+        .toPng(node)
+        .then(dataUrl => {
+          // console.log(dataUrl)
+          var str = 'map' + this.getNowTime() //以下代码为下载此图片功能
+          var triggerDownload = $('<a>')
+            .attr('href', dataUrl)
+            .attr('download', str + '.png')
+            .appendTo('body')
+          triggerDownload[0].click()
+          triggerDownload.remove()
+          setTimeout(() => {
+            this.canDownload = true
+          }, 1500)
+        })
+        .catch(function(error) {
+          console.error('oops, something went wrong!', error)
+        })
+    },
+    // 获取当前时间
+    getNowTime() {
+      let myDate = new Date()
+      let y = myDate.getFullYear() //获取完整的年份(4位,1970-????)
+      let m = this.setTimeLayout(myDate.getMonth() + 1) //获取当前月份(0-11,0代表1月)
+      let d = this.setTimeLayout(myDate.getDate()) //获取当前日(1-31)
+      let hh = this.setTimeLayout(myDate.getHours()) //获取当前小时数(0-23)
+      let mm = this.setTimeLayout(myDate.getMinutes()) //获取当前分钟数(0-59)
+      let ss = this.setTimeLayout(myDate.getSeconds()) //获取当前秒数(0-59)
+      let timeStr = y + m + d + hh + mm + ss
+      return timeStr
+    },
+    // 设置时间格式
+    setTimeLayout(time) {
+      if (Number(time) < 10) {
+        time = '0' + time
+      }
+      return time.toString()
+    },
+    // 放大
+    mapZoomIn() {
+      this.map.zoomIn()
+    },
+    // 缩小
+    mapZoomOut() {
+      this.map.zoomOut()
     },
     // 更多-历史数据
     onHistoryData() {
@@ -872,8 +948,18 @@ export default {
       })
       //向地图上添加自定义标注
       let marker = new T.Marker(latlng, { icon: icon })
-      marker.addEventListener('click', this.taskPointClick)
+      marker.addEventListener('click', this.taskImageClick)
       this.map.addOverLay(marker)
+    },
+    // 任务照片点击
+    taskImageClick(index) {
+      this.$refs.photoEdit.showVisible()
+      // for (const item of this.historyPoints) {
+      //   if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+      //     console.log(index.lnglat.lat, index.lnglat.lng)
+      //     this.$refs.riskInfo.riskInfo()
+      //   }
+      // }
     },
     getTdLayer(lyr) {
       var url =
@@ -1034,6 +1120,7 @@ export default {
 #map {
   width: 100%;
   height: 100%;
+  position: relative;
 }
 .weather {
   position: absolute;
