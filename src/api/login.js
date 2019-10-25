@@ -241,6 +241,13 @@ export function projectNewsDel (parameter) {
 //     method: 'post',
 //   })
 // }
+//区域列表
+export function regionList (parameter) {
+  return axios({
+    url: '/server/data/admin/area/list?parentId='+parameter.id,
+    method: 'get',
+  })
+}
 //河道列表
 export function getRiverList () {
   return axios({
