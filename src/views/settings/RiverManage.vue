@@ -85,7 +85,7 @@
       <span>{{defaultRiver}}</span>
     </div>
     <!-- 添加河流 -->
-    <add-river ref="addRiver"></add-river>
+    <add-river ref="addRiver"  :inputName="addList"></add-river>
   </div>
 </template>
 
@@ -101,6 +101,7 @@ export default {
   },
   data() {
     return {
+      addList:'1111',
       alertLeft: -1000,
       alertTop: -1000,
       alertShow: false,
@@ -379,7 +380,7 @@ export default {
       // })
       // this.map.addOverLay(label)
       // label.setLngLat(latlngobj)
-
+      this.addList ='1111'
       this.$refs.addRiver.add()
     },
     // 设置绘制的多边形

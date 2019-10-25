@@ -204,6 +204,10 @@
 <script>
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 export default {
+  props:{
+    inputName: String,
+    required: true
+  },
   data() {
     return {
       labelCol: {
@@ -270,9 +274,15 @@ export default {
       return OPTIONS.filter(o => !this.selectedItems.includes(o))
     }
   },
+
+  mounted(){
+    console.log(this.inputName);
+
+  },
   methods: {
     add() {
       this.visible = true
+      console.log(this.inputName);
     },
     // 添加河流
     addRiver(value) {
