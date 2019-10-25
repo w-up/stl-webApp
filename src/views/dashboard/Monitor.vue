@@ -39,7 +39,7 @@
             </div>
           </div>
           <!-- 今日计划监管页轨迹 -->
-          <div v-if="nosuperKey === 'personCard'">
+          <div style="display:none;">
             <div class="super_weather">
               <!-- <img src="../../assets/weather.jpg" alt /> -->
             </div>
@@ -68,16 +68,16 @@
           </div>
           <div class="map_operate">
             <ul>
-              <li>
+              <li @click="compass">
                 <img src="../../assets/compass.png" alt="指北针" />
               </li>
-              <li>
+              <li @click="setCenter">
                 <img src="../../assets/restoration.png" alt="复位" />
               </li>
-              <li>
+              <li @click="mapZoomIn">
                 <img src="../../assets/max.png" alt="放大" />
               </li>
-              <li>
+              <li @click="mapZoomOut">
                 <img src="../../assets/min.png" alt="缩小" />
               </li>
               <li>
@@ -113,7 +113,7 @@
                                   <span>风险地图</span>
                                 </a-col>
                                 <a-col :span="6">
-                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                  <a-switch size="small" v-model="riskMap" @click="onRiskMap" />
                                 </a-col>
                               </a-row>
                             </a-list-item>
@@ -128,7 +128,7 @@
                                   <span>水质</span>
                                 </a-col>
                                 <a-col :span="6">
-                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                  <a-switch size="small" v-model="waterQuality" @click="onWaterQuality" />
                                 </a-col>
                               </a-row>
                             </a-list-item>
@@ -143,7 +143,7 @@
                                   <span>水面漂浮物</span>
                                 </a-col>
                                 <a-col :span="6">
-                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                  <a-switch size="small" v-model="waterFlotage" @click="onWaterFlotage" />
                                 </a-col>
                               </a-row>
                             </a-list-item>
@@ -158,7 +158,7 @@
                                   <span>河岸风险源</span>
                                 </a-col>
                                 <a-col :span="6">
-                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                  <a-switch size="small" v-model="riverRisk" @click="onRiverRisk" />
                                 </a-col>
                               </a-row>
                             </a-list-item>
@@ -173,7 +173,7 @@
                                   <span>水土流失</span>
                                 </a-col>
                                 <a-col :span="6">
-                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                  <a-switch size="small" v-model="waterLandLoss" @click="onWaterLandLoss" />
                                 </a-col>
                               </a-row>
                             </a-list-item>
@@ -188,7 +188,7 @@
                                   <span>水面率</span>
                                 </a-col>
                                 <a-col :span="6">
-                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                  <a-switch size="small" v-model="waterRatio" @click="onWaterRatio" />
                                 </a-col>
                               </a-row>
                             </a-list-item>
@@ -203,7 +203,7 @@
                                   <span>底泥</span>
                                 </a-col>
                                 <a-col :span="6">
-                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                  <a-switch size="small" v-model="bottomMud" @click="onBottomMud" />
                                 </a-col>
                               </a-row>
                             </a-list-item>
@@ -217,9 +217,9 @@
                             <a-col :span="18">
                               <span>风险管理</span>
                             </a-col>
-                            <a-col :span="6">
+                            <!-- <a-col :span="6">
                               <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
-                            </a-col>
+                            </a-col> -->
                           </a-row>
                         </a-list-item>
                       </a-popover>
@@ -237,7 +237,7 @@
                                   <span>Ⅰ-红色</span>
                                 </a-col>
                                 <a-col :span="6">
-                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                  <a-switch size="small" v-model="waterRatio" @click="onWaterRatio" />
                                 </a-col>
                               </a-row>
                             </a-list-item>
@@ -252,7 +252,7 @@
                                   <span>Ⅱ-橙色</span>
                                 </a-col>
                                 <a-col :span="6">
-                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                  <a-switch size="small" v-model="bottomMud" @click="onBottomMud" />
                                 </a-col>
                               </a-row>
                             </a-list-item>
@@ -267,7 +267,7 @@
                                   <span>Ⅲ-黄色</span>
                                 </a-col>
                                 <a-col :span="6">
-                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                  <a-switch size="small" v-model="waterLandLoss" @click="onWaterLandLoss" />
                                 </a-col>
                               </a-row>
                             </a-list-item>
@@ -282,7 +282,7 @@
                                   <span>Ⅳ-蓝色</span>
                                 </a-col>
                                 <a-col :span="6">
-                                  <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                                  <a-switch size="small" v-model="riverRisk" @click="onRiverRisk" />
                                 </a-col>
                               </a-row>
                             </a-list-item>
@@ -296,9 +296,9 @@
                             <a-col :span="18">
                               <span>风险等级</span>
                             </a-col>
-                            <a-col :span="6">
+                            <!-- <a-col :span="6">
                               <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
-                            </a-col>
+                            </a-col> -->
                           </a-row>
                         </a-list-item>
                       </a-popover>
@@ -358,6 +358,7 @@
                     <a-tree
                       checkable
                       defaultExpandAll
+                      :defaultSelectedKeys="defaultSelect"
                       v-model="checkedKeys"
                       @select="onSelect"
                       :selectedKeys="selectedKeys"
@@ -369,7 +370,7 @@
                       @click="addTaskBtn"
                       v-show="cBtn"
                     >追加任务</a-button>
-                    <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask"></add-task>
+                    <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
                   </div>
                   <div class="riverInfo">
                     <div class="river_info">
@@ -393,6 +394,7 @@
                       @click="addTaskBtn"
                       v-show="cBtn"
                     >追加任务</a-button>
+                    <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
                   </div>
                 </div>
                 <div v-if="ishidden == 2">
@@ -450,15 +452,14 @@
                                   </div>
                                   <div class>
                                     <div class="riverGroup_success">已完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys"
-                                      :treeData="treeData" class="tree_succ">
+                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="sutreeData" class="tree_succ">
                                       <template slot="custom" slot-scope="item">
                                         <span>{{ item.title }}</span>
-                                        <!-- <a-button
+                                        <a-button
                                           class="but_type"
                                           v-if="childNode"
                                           @click="()=> searchItme(item)"
-                                        >查看</a-button> -->
+                                        >查看</a-button>
                                       </template>
                                     </a-tree>
                                   </div>
@@ -473,7 +474,14 @@
                                   </div>
                                 </div>
                                 <div class="addTaskBtn">
-                                  <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button>
+                                  <!-- <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button> -->
+                                  <a-button
+                                    class="addTask_btn commBtn"
+                                    icon="plus"
+                                    @click="addTaskBtn"
+                                    v-show="cBtn"
+                                  >追加任务</a-button>
+                                  <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
                                 </div>
                               </a-collapse-panel>
                             </a-collapse>
@@ -528,7 +536,13 @@
                                   </div>
                                 </div>
                                 <div class="addTaskBtn">
-                                  <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button>
+                                  <a-button
+                                    class="addTask_btn commBtn"
+                                    icon="plus"
+                                    @click="addTaskBtn"
+                                    v-show="cBtn"
+                                  >追加任务</a-button>
+                                  <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
                                 </div>
                               </a-collapse-panel>
                             </a-collapse>
@@ -622,7 +636,14 @@
                                   </div>
                                 </div>
                                 <div class="addTaskBtn">
-                                  <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button>
+                                  <!-- <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button> -->
+                                  <a-button
+                                    class="addTask_btn commBtn"
+                                    icon="plus"
+                                    @click="addTaskBtn"
+                                    v-show="cBtn"
+                                  >追加任务</a-button>
+                                  <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
                                 </div>
                               </a-collapse-panel>
                             </a-collapse>
@@ -677,7 +698,13 @@
                                   </div>
                                 </div>
                                 <div class="addTaskBtn">
-                                  <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button>
+                                  <a-button
+                                    class="addTask_btn commBtn"
+                                    icon="plus"
+                                    @click="addTaskBtn"
+                                    v-show="cBtn"
+                                  >追加任务</a-button>
+                                  <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
                                 </div>
                               </a-collapse-panel>
                             </a-collapse>
@@ -890,51 +917,44 @@ import communication from './modules/communication'
 
 const sutreeData = [
   {
-    title: '0-0',
+    title: '人工调查点',
     key: '0-0',
     scopedSlots: { title: 'custom' },
     children: [
       {
-        title: '0-0-0',
+        title: '调查点1',
         key: '0-0-0',
         scopedSlots: { title: 'custom' },
-        children: [
-          { title: '0-0-0-0', key: '0-0-0-0', scopedSlots: { title: 'custom' } },
-          { title: '0-0-0-1', key: '0-0-0-1', scopedSlots: { title: 'custom' } },
-          { title: '0-0-0-2', key: '0-0-0-2', scopedSlots: { title: 'custom' } }
+        riverData: [
+          {
+            lat: 31.24539,
+            lng: 121.48686
+          }
         ]
       },
       {
-        title: '0-0-1',
+        title: '调查点2',
         key: '0-0-1',
         scopedSlots: { title: 'custom' },
-        children: [
-          { title: '0-0-1-0', key: '0-0-1-0', scopedSlots: { title: 'custom' } },
-          { title: '0-0-1-1', key: '0-0-1-1', scopedSlots: { title: 'custom' } },
-          { title: '0-0-1-2', key: '0-0-1-2', scopedSlots: { title: 'custom' } }
+        riverData: [
+          {
+            lat: 31.21882,
+            lng: 121.50364
+          }
         ]
       },
       {
-        title: '0-0-2',
+        title: '调查点3',
         key: '0-0-2',
-        scopedSlots: { title: 'custom' }
+        scopedSlots: { title: 'custom' },
+        riverData: [
+          {
+            lat: 31.25153,
+            lng: 121.52409
+          }
+        ]
       }
     ]
-  },
-  {
-    title: '0-1',
-    key: '0-1',
-    scopedSlots: { title: 'custom' },
-    children: [
-      { title: '0-1-0-0', key: '0-1-0-0', scopedSlots: { title: 'custom' } },
-      { title: '0-1-0-1', key: '0-1-0-1', scopedSlots: { title: 'custom' } },
-      { title: '0-1-0-2', key: '0-1-0-2', scopedSlots: { title: 'custom' } }
-    ]
-  },
-  {
-    title: '0-2',
-    key: '0-2',
-    scopedSlots: { title: 'custom' }
   }
 ]
 
@@ -1102,6 +1122,7 @@ export default {
       nosuperKey: 'taskCard',
       checkedKeys: [],
       selectedKeys: [],
+      defaultSelect:[], //默认选中树节点
       treeData,
       sutreeData,
       LineData,  //模拟河道内任务点数据
@@ -1122,18 +1143,66 @@ export default {
       layer:[],
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
       mapPoint: new Map(),
+      markerTool: '', // 工具-点
       lineTool: '', //工具-线
+      polygonTool:'', ////工具-面
       lng:'', //坐标点
       lat:'',
       riverData,
       polygon: '', // 多边形对象
       markerInfo:'',//任务弹出框
+      treenfo:[],
       infoVisible:false,
       firstShow: true,
-      childNode: false,
+      childNode: true,
       checked: false,
       undone: false,
+      clickPoint:'',       //是否绘制点按钮
+      clickLine:'',       //是否绘制线按钮
+      clickPolygon:'',    //是否绘制面按钮
       mapMarkers: new Map(),
+      riskMap: false, // 风险地图
+      riskMapPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.23493, lng: 121.51566 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24344, lng: 121.49892 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22649, lng: 121.49712 } }
+      ],
+      waterQuality: false, // 水质
+      waterQualityPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.24235, lng: 121.52235 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.25335, lng: 121.50335 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.23435, lng: 121.50445 } }
+      ],
+      waterFlotage: false, // 水质漂浮物
+      waterFlotagePoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.22222, lng: 121.52222 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.23555, lng: 121.50555 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22333, lng: 121.51333 } }
+      ],
+      riverRisk: false, // 河岸风险源
+      riverRiskPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.20333, lng: 121.49999 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.21666, lng: 121.48666 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22999, lng: 121.47333 } }
+      ],
+      waterLandLoss: false, // 水土流失
+      waterLandLossPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.09999, lng: 121.50333 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.16666, lng: 121.48333 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.05555, lng: 121.49666 } }
+      ],
+      waterRatio: false, // 水面率
+      waterRatioPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.26023, lng: 121.50565 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.23960, lng: 121.51640 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22994, lng: 121.50955 } }
+      ],
+      bottomMud: false, // 底泥
+      bottomMudPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.23564, lng: 121.51066 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24315, lng: 121.49606 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.23668, lng: 121.49656 } }
+      ],
       patrolPlanInfo: [
         {
           title: '黄浦江',
@@ -1153,15 +1222,38 @@ export default {
       ]
     }
   },
-  created() {
-    setTimeout(() => {
-      this.loading = !this.loading
-    }, 1000)
-  },
   watch: {
     //选中树节点
     checkedKeys(val) {
       console.log('onCheck', val)
+    },
+    // 风险地图
+    riskMap() {
+      this.watchAllSwitch()
+    },
+    // 水质
+    waterQuality() {
+      this.watchAllSwitch()
+    },
+    // 水质漂浮物
+    waterFlotage() {
+      this.watchAllSwitch()
+    },
+    // 河岸风险源
+    riverRisk() {
+      this.watchAllSwitch()
+    },
+    // 水土流失
+    waterLandLoss() {
+      this.watchAllSwitch()
+    },
+    // 水面率
+    waterRatio() {
+      this.watchAllSwitch()
+    },
+    // 底泥
+    bottomMud() {
+      this.watchAllSwitch()
     }
   },
   mounted() {
@@ -1227,23 +1319,39 @@ export default {
         this.ishidden = 1
       }
       if (key == 'nowPlan') {
-        let sutree = this.sutreeData
+        var sutree = this.treeData
+        console.log(sutree)
         this.diguiTree(sutree)
-
+        this.childNode = true
+        // for(var j = 0;j<sutree.length;j++){
+        //   this.diguiTree(sutree[j])
+        // }
         // var btm = document.getElementsByClassName('.right-body .ant-card-body');
         // btm.style.bottom = '0'
       }
       this.clearMap();
     },
     diguiTree(item) {
-      for (let i in item) {
-        if (item[i].children == null) {
-          this.childNode = true
-          return
-        } else {
-          this.diguiTree(item[i].children)
-        }
+      // 没有children了，所以是叶子节点
+      console.log(item)
+      // debugger;
+      if (item.children == null) {
+        this.childNode = true
+        return
       }
+      //不是叶子节点，所以继续循环递归
+      for (var i = 0; i < item.children.length; i++) {
+        this.diguiTree(item.children[i])
+      }
+
+      // for (var i in item) {
+      //   if (item[i].children == null) {
+      //     this.childNode = true
+      //     return
+      //   } else {
+      //     this.diguiTree(item[i].children)
+      //   }
+      // }
     },
     onsuperChange(key, type) {
       this[type] = key
@@ -1278,6 +1386,7 @@ export default {
     //选中巡河方案
     selectPatrol() {},
     addTaskBtn() {
+      this.clearMap()
       this.$refs.addTask.show()
       this.cBtn = false
       // this.$refs.addTask.chooseLocation()
@@ -1393,19 +1502,6 @@ export default {
       }
       console.log("当前markers=================：", this.mapMarkers.keys())
       console.log("当前markers000000000000000000：", this.mapMarkers.values())
-      // for(var i = 0;i<this.personInfo.length;i++){
-      //   if(checkedValues[i] == i){
-      //       // console.log("checked:" + i);
-      //       this.addTaskPoint(this.personInfo[i].point)
-      //   }else{
-      //     var lng = this.personInfo[i].point.lng
-      //     var lat = this.personInfo[i].point.lat
-      //     console.log(lng + ":::" + lat)
-      //     var lnglat = new T.LngLat(lng,lat)
-      //     var marker = new T.Marker(lnglat)
-      //     this.map.removeOverLay(marker)
-      //   }
-      // }
     },
     isExistInArr(arr, item){
       for(var i = 0; i< arr.length; i++){
@@ -1419,6 +1515,108 @@ export default {
 
     },
     //********************************地图操作事件***************************************** */
+    // 指北针
+    compass() {
+      
+    },
+    // 复位
+    setCenter() {
+      let lng = 121.095505
+      let lat = 31.21098
+      let zoom = 10
+      this.map.panTo(new T.LngLat(lng, lat), zoom)
+    },
+    // 放大
+    mapZoomIn() {
+      this.map.zoomIn()
+    },
+    // 缩小
+    mapZoomOut() {
+      this.map.zoomOut()
+    },
+    // 风险地图
+    onRiskMap() {
+      console.log(this.riskMap)
+      if (this.riskMap) {
+        this.allPointTask(this.riskMapPoints)
+      }
+    },
+    // 水质
+    onWaterQuality() {
+      if (this.waterQuality) {
+        this.allPointTask(this.waterQualityPoints)
+      }
+    },
+    // 水质漂浮物
+    onWaterFlotage() {
+      if (this.waterFlotage) {
+        this.allPointTask(this.waterFlotagePoints)
+      }
+    },
+    // 河岸风险源
+    onRiverRisk() {
+      if (this.riverRisk) {
+        this.allPointTask(this.riverRiskPoints)
+      }
+    },
+    // 水土流失
+    onWaterLandLoss() {
+      if (this.waterLandLoss) {
+        this.allPointTask(this.waterLandLossPoints)
+      }
+    },
+    // 水面率
+    onWaterRatio() {
+      if (this.waterRatio) {
+        this.allPointTask(this.waterRatioPoints)
+      }
+    },
+    // 底泥
+    onBottomMud() {
+      // console.log(this.bottomMud)
+      if (this.bottomMud) {
+        this.allPointTask(this.bottomMudPoints)
+      }
+    },
+    allPointTask(pointLists, tool) {
+      console.log(pointLists)
+      for (const item of pointLists) {
+        this.drawAllPoint(item.latlng, tool)
+      }
+    },
+    // 监听所有的开关属性
+    watchAllSwitch() {
+      this.map.clearOverLays()
+      // 风险地图
+      this.onRiskMap()
+      // 水质
+      this.onWaterQuality()
+      // 水质漂浮物
+      this.onWaterFlotage()
+      // 河岸风险源
+      this.onRiverRisk()
+      // 水土流失
+      this.onWaterLandLoss()
+      // 水面率
+      this.onWaterRatio()
+      // 底泥
+      this.onBottomMud()
+    },
+    // 添加标注图片
+    drawAllPoint(latlng, tool) {
+      tool = new T.Marker(latlng)
+      this.map.addOverLay(tool)
+      tool.addEventListener('click', this.taskPointClick)
+    },
+    // 任务点点击事件
+    taskPointClick(index) {
+      for (const item of this.historyPoints) {
+        if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+          console.log(index.lnglat.lat, index.lnglat.lng)
+          this.$refs.riskInfo.riskInfo()
+        }
+      }
+    },
     //任务模块任务点
     loadPoint(){
       //随机标注点
@@ -1476,12 +1674,15 @@ export default {
     },
     //添加任务点
     addTaskPoint(riverData){
-      // console.log(riverData.length)
+      console.log(riverData.length)
       if(riverData.length != undefined){
         for(var i=0;i < riverData.length;i++){
           var lnglat = new T.LngLat(riverData[i].lng,riverData[i].lat)
           var marker = new T.Marker(lnglat)
           this.map.addOverLay(marker)
+          marker.addEventListener("mouseover",this.mouseOverTask)
+          // marker.addEventListener("mouseout",this.mouseOutTask)   
+          marker.addEventListener("mousedown",this.mouseOverTask)     
           this.showPosition(marker)
         }
       }else{
@@ -1514,6 +1715,10 @@ export default {
     onSelect(selectedKeys, info) {
       this.clearMap()
       this.selectedKeys = selectedKeys
+      console.log("selectedKeys********************")
+      console.log(this.selectedKeys)
+      this.treeinfo = info.node.dataRef
+      console.log(this.treeinfo)
       var info = info.node.dataRef
       if(info.children){
         for(var i = 0; i< info.children.length;i++){
@@ -1521,11 +1726,12 @@ export default {
             console.log(info.children[i].riverData)
             this.map.setZoom("12")
             // this.positionArea(info.children[i].riverData)
-            this.addPolyLine(info.children[i].riverData)
+            this.addPolyLine(info.children[i].riverData,info)
           }
           if(info.children[i].riverData.length == 1){
+            console.log(info.children[i].riverData)
             this.map.setZoom("12")
-            this.addTaskPoint(info.children[i].riverData)
+            this.addTaskPoint(info.children[i].riverData,info)
           } 
         }
       }else{
@@ -1541,11 +1747,17 @@ export default {
       }
     }, 
     //追加任务画线
-    addLineTool(){
+    addLineTool(clickLine){
       console.log("我是父组件，调用了子组件的方法")
-      this.lineTool = new T.PolylineTool(this.map)
-      this.lineTool.open()
-      this.lineTool.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
+      this.clickLine = clickLine
+      console.log(this.clickLine)
+      if(this.lineTool && this.clickLine == false){
+        this.lineTool.clear()
+      }else{
+        this.lineTool = new T.PolylineTool(this.map)
+        this.lineTool.open()
+        this.lineTool.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
+      } 
     },
     //取消追加任务
     cancelAddTask(){
@@ -1580,7 +1792,7 @@ export default {
 
       var infoWin = new T.InfoWindow();
       var sContent = "<div style='width:100px;height:100%;text-align:center;line-height:25px;'><div style='border-bottom:1px solid green;width:100%;height:100%;'>360</div>"+
-                      "<div @click='addPoint'>人工调查点</div><div>水质监测点</div></div>";
+                      "<div>人工调查点</div><div>水质监测点</div></div>";
       infoWin.setContent(sContent);
       marker.addEventListener("click",function(){
         marker.openInfoWindow(infoWin);
@@ -1607,8 +1819,33 @@ export default {
     removeMapClick() {
       this.map.removeEventListener("click", this.MapClick);
     },
-    addPoint(){
-      this.map.removeEventListener("click", this.MapClick);
+    //画点
+    addPoint(clickPoint){
+      this.clickPoint = clickPoint
+      if(this.markerTool && this.clickPoint == false){
+         this.markerTool.clear()
+      }else{
+        this.markerTool = new T.MarkTool(this.map, { follow: true })
+        this.markerTool.open()
+      }
+      // this.markerTool.addEventListener('mouseup', this.addPointed)
+    },
+    //画面
+    addPolygonTool(clickPolygon){
+      this.clickPolygon = clickPolygon
+      if(this.polygonTool && this.clickPolygon == false){
+        this.polygonTool.clear()
+      }else{
+        this.polygonTool = new T.PolygonTool(this.map, {
+          showLabel: true,
+          color: 'blue',
+          weight: 3,
+          opacity: 0.5,
+          fillColor: '#FFFFFF',
+          fillOpacity: 0.5
+        })
+        this.polygonTool.open()
+      } 
     },
     //清空地图
     clearMap(){
@@ -1721,7 +1958,41 @@ export default {
     addPolyLine(lineData){
       var lines = new T.PolyLine(lineData)
       this.map.addOverLay(lines)
-    } 
+      lines.addEventListener("mouseover",this.treeHover) 
+    },
+    treeHover(){
+      // this.selectedKeys
+    },
+    mouseOverTask(e){
+      var getLng = e.lnglat.getLng()
+      var getLat = e.lnglat.getLat()
+      for(var i = 0;i < this.treeData.length;i++){
+        if(this.treeData[i].children){
+          for(var item of this.treeData[i].children){
+            if(getLat == item.riverData[i].lat && getLng == item.riverData[i].lng){
+              console.log(item.key)
+              var mouseSelect = item.key
+              this.selectedKeys = mouseSelect.split(',')
+            }
+          }
+        }
+      }
+    },
+    mouseOutTask(e){   
+      var getLng = e.lnglat.getLng()
+      var getLat = e.lnglat.getLat()
+      for(var i = 0;i < this.treeData.length;i++){
+        if(this.treeData[i].children){
+          for(var item of this.treeData[i].children){
+            if(getLat == item.riverData[i].lat && getLng == item.riverData[i].lng){
+              console.log(this.treeData[i].key)
+              var mouseSelect = this.treeData[i].key
+              this.selectedKeys = mouseSelect.split(',')
+            }
+          }
+        }
+      }  
+    }
   }
 }
 </script>

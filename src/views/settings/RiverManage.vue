@@ -313,13 +313,6 @@ export default {
         this.drawAllRiver()
       }
     },
-    // 绘制高亮
-    setBounds(lineArr) {
-      this.setPolylineFn(lineArr, 'red', 3, 0.8, 0)
-      this.polygon.addEventListener('click', this.polygonClick)
-      this.polygon.addEventListener('mouseover', this.polygonMouseover)
-      this.polygon.addEventListener('mouseout', this.polygonMouseout)
-    },
     // 河流删除
     confirmDelete(index) {
       console.log(index)
@@ -412,7 +405,8 @@ export default {
         findIndex1 = '',
         findIndex2 = '',
         findIndex3 = '',
-        findIndex4 = ''
+        findIndex4 = '',
+        id = ''
       arr.push(index.target.Qr.Lq.lat)
       arr.push(index.target.Qr.kq.lat)
       arr.push(index.target.Qr.Lq.lng)
@@ -425,8 +419,9 @@ export default {
       findIndex4 = this.findIndexLocal(arr[3], 'lng', this.riverList)
       // console.log(findIndex1, findIndex2,findIndex3,findIndex4)
       if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
+        id = this.riverList[findIndex1].id
         for (const item of this.riverList) {
-          if (item.id == findIndex1) {
+          if (item.id == id) {
             item.clicked = true
             this.$refs.addRiver.add()
           } else {
@@ -444,7 +439,8 @@ export default {
         findIndex1 = '',
         findIndex2 = '',
         findIndex3 = '',
-        findIndex4 = ''
+        findIndex4 = '',
+        id = ''
       arr.push(index.target.Qr.Lq.lat)
       arr.push(index.target.Qr.kq.lat)
       arr.push(index.target.Qr.Lq.lng)
@@ -453,17 +449,19 @@ export default {
       findIndex2 = this.findIndexLocal(arr[1], 'lat', this.riverList)
       findIndex3 = this.findIndexLocal(arr[2], 'lng', this.riverList)
       findIndex4 = this.findIndexLocal(arr[3], 'lng', this.riverList)
+      
       // console.log(findIndex1, findIndex2,findIndex3,findIndex4)
       if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
+        id = this.riverList[findIndex1].id
         for (const item of this.riverList) {
-          if (item.id == findIndex1) {
+          if (item.id == id) {
             item.clicked = true
             this.defaultRiver = item.name
-            this.drawAllRiver()
           } else {
             item.clicked = false
           }
         }
+        this.drawAllRiver()
       }
       this.once++
     },

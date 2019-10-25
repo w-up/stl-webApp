@@ -24,7 +24,7 @@ export const asyncRouterMap = [
             path: '/dashboard/analysis',
             name: 'Analysis',
             component: () => import('@/views/dashboard/Monitor'),
-            meta: { title: '新建计划', keepAlive: false, permission: [ 'dashboard' ] }
+            meta: { title: '巡河', keepAlive: false, permission: [ 'dashboard' ] }
           },
         ]
       },
@@ -41,7 +41,7 @@ export const asyncRouterMap = [
             path: '/supervise/Supervise',
             name: 'Supervise',
             component: () => import('@/views/supervise/Supervise'),
-            meta: { title: '基础详情页', permission: [ 'dashboard' ] }
+            meta: { title: '监管', permission: [ 'dashboard' ] }
           }
         ]
       },

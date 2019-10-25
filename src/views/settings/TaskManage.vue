@@ -326,8 +326,9 @@
               >
                 <template slot="header">
                   <a-row style="width:100%">
-                    <a-col :span="15">{{item.name}}</a-col>
-                    <a-col :span="8" style="text-align:right;" :pull="1">
+                    <a-col :span="9">{{item.name}}</a-col>
+                    <a-col :span="14" style="text-align:right;" :pull="1">
+                      <a-button size="small" type="primary" style="margin-right:10px;" @click="choosePointEdit(item.id)">编辑</a-button>
                       <a-button size="small" type="primary" @click="chooseTask(item.id)">添加点</a-button>
                     </a-col>
                   </a-row>
@@ -855,7 +856,8 @@ export default {
         findIndex1 = '',
         findIndex2 = '',
         findIndex3 = '',
-        findIndex4 = ''
+        findIndex4 = '',
+        id = ''
       arr.push(index.target.Qr.Lq.lat)
       arr.push(index.target.Qr.kq.lat)
       arr.push(index.target.Qr.Lq.lng)
@@ -865,16 +867,18 @@ export default {
       findIndex2 = this.findIndex(arr[1], 'lat', this.lineTaskList)
       findIndex3 = this.findIndex(arr[2], 'lng', this.lineTaskList)
       findIndex4 = this.findIndex(arr[3], 'lng', this.lineTaskList)
+      
       if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
+        id = this.lineTaskList[findIndex1].id
         for (const item of this.lineTaskList) {
-          if (item.id == findIndex1) {
+          if (item.id == id) {
             item.clicked = true
             this.defaultLineTask = item.name
-            this.drawAllLine()
           } else {
             item.clicked = false
           }
         }
+        this.drawAllLine()
       }
       this.once++
     },
@@ -940,7 +944,7 @@ export default {
     },
     // 点点击事件
     taskPointClick() {
-      this.addTask()
+      this.$refs.addTaskPoint.add()
     },
     // 任务点点击移入移出事件
     taskPointMouse(index) {
@@ -985,6 +989,10 @@ export default {
     chooseTask(key) {
       console.log(key)
       this.addTaskPoint()
+    },
+    // 编辑
+    choosePointEdit() {
+      this.addTask()
     },
     // 选择任务点
     choosePointTask(id, index) {
