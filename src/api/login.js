@@ -269,6 +269,7 @@ export function delRiver (id) {
     method: 'post',
   })
 }
+//河道保存
 export function getSaveRiver (parameter) {
   return axios({
     url: '/server/data/admin/river/save',
@@ -276,6 +277,52 @@ export function getSaveRiver (parameter) {
     data:parameter
   })
 }
+//街道列表
+export function getStreetList () {
+  return axios({
+    url: '/server/data/admin/street/page?projectId=5da7d092ea6c156d792df816',
+    method: 'get',
+  })
+}
+//街道详细信息
+export function informationStreet (id) {
+  return axios({
+    url: '/server/data/admin/street/detail/'+id,
+    method: 'get',
+  })
+}
+//街道删除
+export function delStreet (id) {
+  return axios({
+    url: '/server/data/admin/street/remove/'+id,
+    method: 'post',
+  })
+}
+//街道保存
+export function getSaveStreet (parameter) {
+  return axios({
+    url: '/server/data/admin/street/save',
+    method: 'post',
+    data:parameter
+  })
+}
+//任务列表
+export function taskList(type) {
+  return axios({
+    url: '/server/data/admin/task/info/page?projectId=5da7d092ea6c156d792df816&type='+type,
+    method: 'get',
+  })
+}
+//任务保存
+export function taskSave (parameter) {
+  return axios({
+    url: '/server/data/admin/task/info/save',
+    method: 'post',
+    data:parameter
+  })
+}
+
+
 
 
 

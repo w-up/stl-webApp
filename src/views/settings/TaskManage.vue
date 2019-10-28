@@ -623,7 +623,7 @@
 // import WorldMap from "../../components/map/WorldMap.vue";
 import AddTaskPoint from './modules/AddTaskPoint.vue'
 import { setUserProjection } from 'ol/proj'
-
+import { taskList,taskSave} from '@/api/login'
 const formItemLayout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 }
@@ -765,6 +765,7 @@ export default {
   },
   mounted() {
     this.initMap()
+    this.getList()
   },
   watch: {
     checkedKeys(val) {
@@ -772,6 +773,18 @@ export default {
     }
   },
   methods: {
+    getList(){
+      taskList('dot').then(res => {
+        console.log(res,'点任务');
+      }).catch(err => {
+
+      })
+      taskList('line').then(res => {
+        console.log(res,'线任务');
+      }).catch(err => {
+
+      })
+    },
     initMap() {
       //初始化地图控件
       let zoom = 14

@@ -19,7 +19,15 @@
               <template slot="operation" slot-scope="item">
                 <a @click="handleEdit(item.id,item.name)">编辑</a>
                 <a-divider type="vertical" />
-                <a @click="handleSub(item.id)">删除</a>
+                <a-popconfirm
+                  title="是否确认删除?"
+                  @confirm="handleSub"
+                  @cancel="cancel"
+                  okText="确认"
+                  cancelText="取消"
+                >
+                  <a @click="del(item.id)">删除</a>
+                </a-popconfirm>
               </template>
             </a-table>
           </div>
@@ -36,7 +44,7 @@
                   okText="确认"
                   cancelText="取消"
                 >
-                  <a @click="del(row.id)">删除</a>
+                  <a @click="del(item.id)">删除</a>
                 </a-popconfirm>
               </template>
             </a-table>
@@ -59,7 +67,7 @@
                 <a v-else>不可用</a>
               </template>
               <template slot="operation" slot-scope="row">
-                <a @click="equipmentModel=true">编辑</a>
+                <a @click="addequipment1(row)">编辑</a>
                 <a-divider type="vertical" />
                 <a-popconfirm
                   title="是否确认删除?"
@@ -91,49 +99,46 @@
     </a-modal>
     <a-modal title="添加设备" v-model="equipmentModel" :width="700"
       @ok="handleOk1"
-      @cancel="handleCancel1"
-    >
-      <el-form ref="formValidate" :model="equipmentList" :rules="ruleValidate" >
+      @cancel="handleCancel1">
+      <el-form ref="formValidate" :model="equipmentList" :rules="ruleValidate"  label-width="100px">
         <el-form-item label="设备名称" prop="name">
           <el-input v-model="equipmentList.name" placeholder="请输入" style="width:200px" />
         </el-form-item>
         <el-form-item label="设备型号" prop="type">
           <el-input v-model="equipmentList.type" placeholder="请输入" style="width:200px" />
         </el-form-item>
+        <el-form-item label="设备数量">
+          <el-input v-model="equipmentList.number" placeholder="请输入" style="width:200px" />
+        </el-form-item>
         <el-form-item label="设备聚隆编号">
           <el-input v-model="equipmentList.number" placeholder="请输入" style="width:200px" />
         </el-form-item>
         <el-form-item label="关联设备"></el-form-item>
-        <el-form-item label="无人机类型"></el-form-item>
-        <el-form-item label="无人机">
-          <a-checkbox-group style="display:flex;flex-wrap:wrap;">
-            <div
+        <!-- <el-form-item label="无人机类型"></el-form-item> -->
+        <el-form-item >
+           <el-checkbox-group  style="display:flex;flex-wrap:wrap;" v-model="checkedList">
+              <div
               v-for="(option, index) in uavList"
               :key="index"
               style="width:260px;margin:0 5px 10px 0"
-            >
-              <a-checkbox :label="option.id">{{option.name}}</a-checkbox>
-              <a-input-number :min="1" :max="100000" :defaultValue="3" />
-            </div>
-          </a-checkbox-group>
+              >
+                <el-checkbox :label="option.id">{{option.name}}</el-checkbox>
+                <a-input-number :min="1" :max="100000"  v-model="option.num" style="margin-left:5px"/>
+              </div>
+               <!-- <a-row>
+                  <a-col :span="12" v-for="(option, index) in uavList" :key="index">
+                    <div style="display:flex">
+                      <el-checkbox :label="option.id">{{option.name}}</el-checkbox>
+                      <a-input-number :min="1" :max="100000"  v-model="option.num" style="margin-left:5px;width:70px"/>
+                    </div>
+                  </a-col>
+                </a-row> -->
+            </el-checkbox-group>
         </el-form-item>
-        <!-- <el-form-item label="无人机电池">
-          <a-checkbox-group style="display:flex;flex-wrap:wrap;">
-            <div
-              v-for="(option, index) in batteryList"
-              :key="index"
-              style="width:260px;margin:0 5px 10px 0"
-            >
-              <a-checkbox :label="option.id">{{option.name}}</a-checkbox>
-              <a-input-number :min="1" :max="100000" :defaultValue="3" />
-            </div>
-          </a-checkbox-group>
-        </el-form-item> -->
       </el-form>
     </a-modal>
   </div>
 </template>
-
 <script>
 import { structureEquipment, equipmentTypeList,equipmentTypeSave,equipmentTypeDel,equipmentNewsList,equipmentNewsSave,equipmentNewsDel,relatedList } from '@/api/login'
 const treeData = [
@@ -218,10 +223,12 @@ export default {
         name: ''
       },
       equipmentList: {
+        id:'',
         name: '',
         type: '',
         number: ''
       },
+      checkedList:[],
       ruleValidate: {
         name: [{ required: true, message: '不能为空', trigger: 'blur' }],
         type: [{ required: true, message: '不能为空', trigger: 'blur' }]
@@ -251,28 +258,6 @@ export default {
           id: '3'
         }
       ],
-      batteryList: [
-        {
-          name: '精灵4电池',
-          id: '1'
-        },
-        {
-          name: '精灵4 RTK 遥控器电',
-          id: '2'
-        },
-        {
-          name: 'Marvic 3',
-          id: '3'
-        },
-        {
-          name: 'Marvic 3',
-          id: '3'
-        },
-        {
-          name: 'Marvic 3',
-          id: '3'
-        }
-      ],
       form: this.$form.createForm(this)
     }
   },
@@ -282,8 +267,7 @@ export default {
     this.getstructure()
   },
   methods: {
-    getstructure(){
-      //树
+    getstructure(){//树
       structureEquipment().then(res => {
         var arr =res.data
         for (let i = 0; i < arr.length; i++) {
@@ -298,7 +282,6 @@ export default {
         console.log(arr);
         this.treeData[0].children = arr
       }).catch(err => {
-
       })
     },
     getList(){
@@ -309,15 +292,12 @@ export default {
       equipmentTypeList(data).then(res => {
         var sz = res.data
         console.log(sz);
-        
         for (let i = 0; i < sz.length; i++) {
           sz[i].key=i+1
         }
         this.data=sz
       }).catch(err => {
-
       })
-      
     },
     handleOk(e) {
       //类型保存
@@ -345,6 +325,7 @@ export default {
         var arr = res.data
         this.$message.success('删除成功');
         this.getList()
+        this.getstructure()
       }).catch(err => {
         this.$message.error(err.response.data.message);
       })
@@ -352,14 +333,29 @@ export default {
     handleOk1(){
       //设备型号保存
       var data ={
+        id:this.equipmentList.id,
         typeId:this.parentId,
         name:this.equipmentList.name,
         model:this.equipmentList.type,
-        code:this.equipmentList.number
+        code:this.equipmentList.number,
+        relatedDeviceId:this.checkedList,
+        relatedDeviceNum:'',
+      }
+      for (let i = 0; i < this.checkedList.length; i++) {
+        for (let a = 0; a < this.uavList.length; a++) {
+          if (this.checkedList[i]==this.uavList[a].id) {
+            if (data.relatedDeviceNum!='') {
+              data.relatedDeviceNum=data.relatedDeviceNum + this.uavList[a].num +','
+            }else{
+              data.relatedDeviceNum=this.uavList[a].num +','
+            }
+          }
+        }
       }
       equipmentNewsSave(data).then(res => {
         var arr = res.data  
         this.$message.success('保存成功');
+        this.handleCancel1()
         this.equipmentModel = false
         this.getList1()
       }).catch(err => {
@@ -367,7 +363,11 @@ export default {
       })
     },
     handleCancel1(){
-
+      this.equipmentList.id=''
+      this.equipmentList.name=''
+      this.equipmentList.type=''
+      this.equipmentList.number=''
+      this.checkedList=[]
     },
     getList1(){
       //设备列表
@@ -380,6 +380,7 @@ export default {
           sz[i].key=i+1
         }
         this.data1=sz
+        this.uavList = sz
       }).catch(err => {
 
       })
@@ -402,27 +403,42 @@ export default {
     },
     addequipment(){
       this.equipmentModel =true
+    },
+    addequipment1(row){
+      this.equipmentModel =true
+      this.equipmentList.id=row.id
+      this.equipmentList.name=row.name
+      this.equipmentList.type=row.model
+      this.equipmentList.number=row.code
       var data ={
-        id:this.parentId
+        id:row.id
       }
       relatedList(data).then(res => {
-        var sz = res.data
-        console.log(sz);
+        var arr = res.data.data
+        var sz = []
+        for (let i = 0; i < arr.length; i++) {
+          sz.push(arr[i].device.id)
+          for (let a = 0; a < this.uavList.length; a++) {
+            if (arr[i].device.id==this.uavList[a].id) {
+              this.uavList[a].num=arr[i].num
+              break
+            }
+          }
+        }
+        this.checkedList = sz
       }).catch(err => {
 
       })
-    },
-    cancel(){
 
     },
-    
+    cancel(){
+    },
     handleEdit(id,name){
       //类型编辑
       this.typeList.id=id
       this.visible=true
       this.typeList.name=name
     },
-    
     handleCancel(e) {
       //类型弹窗关闭
       this.typeList.id=''
@@ -430,8 +446,6 @@ export default {
       this.visible = false;
     },
     twoGetList(){
-      
-
     },
     select(e) {
       if (e.code=='1') {
@@ -448,11 +462,9 @@ export default {
         this.getList1()
       }
     },
-    
   }
 }
 </script>
-
 <style lang="less" scoped>
 .boder-tree {
   box-shadow: 1px 1px 3px 1px #c0c0c0;

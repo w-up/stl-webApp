@@ -40,10 +40,10 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="管理级别" has-feedback>
-              <a-select default-value="1">
-                <a-select-option value="1">市</a-select-option>
-                <a-select-option value="2">区</a-select-option>
-                <a-select-option value="3">村</a-select-option>
+              <a-select v-model="list.supervisoryLevel">
+                <a-select-option value="city">市</a-select-option>
+                <a-select-option value="district">区</a-select-option>
+                <a-select-option value="village">村</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -312,6 +312,7 @@ export default {
         mouthDimension: this.list.mouthDimension,
         averageDepth: this.list.averageDepth,
         maxDepth: this.list.maxDepth,
+        supervisoryLevel:this.list.supervisoryLevel,
         startCoordinate : this.list.lng +','+this.list.lat,
         destCoordinate : this.list.lng1 +','+this.list.lat1,
         startZoneId : this.list.areaId2,
@@ -328,6 +329,8 @@ export default {
       }
       getSaveRiver(data).then(res => {
         this.$message.success('保存成功')
+        this.$parent.getList();
+        this.handleCancel()
       }).catch(err => {
          this.$message.error(err.response.data.message)
       })
@@ -407,13 +410,14 @@ export default {
         this.list.priority =arr.info.priority+''
         this.list.inspectTimes =arr.info.inspectTimes
         this.coordinate =arr.info.region
+        this.supervisoryLevel =arr.info.supervisoryLevel
         //起点
         this.list.destAddress =arr.extra.destAddress
         this.list.startAddress =arr.extra.startAddress
         this.list.lat =arr.extra.startCoordinate.lat
         this.list.lng =arr.extra.startCoordinate.lng
-        this.list.lat1 =arr.extra.destCoordinate.lat1
-        this.list.lng1 =arr.extra.destCoordinate.lng1
+        this.list.lat1 =arr.extra.destCoordinate.lat
+        this.list.lng1 =arr.extra.destCoordinate.lng
         //其他信息
         this.list.controller =arr.info.controller
         this.list.averageDepth =arr.extra.averageDepth
