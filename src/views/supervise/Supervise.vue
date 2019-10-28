@@ -742,7 +742,7 @@ export default {
       })
       var node = document.getElementById('map')
       htmlToImage
-        .toPng(document.body)
+        .toPng(node)
         .then((dataUrl) => {
           // console.log(dataUrl)
           var str = 'map' + this.getNowTime() //以下代码为下载此图片功能
