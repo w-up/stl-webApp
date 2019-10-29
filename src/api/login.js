@@ -75,7 +75,7 @@ export function rolePreservation (parameter) {
 //角色列表
 export function roleList (parameter) {
   return axios({
-    url: '/server/data/admin/auth/role/page',
+    url: '/server/data/admin/auth/role/page?type='+parameter,
     method: 'get',
     data: parameter
   })
@@ -309,16 +309,22 @@ export function getSaveStreet (parameter) {
 //任务列表
 export function taskList(type) {
   return axios({
-    url: '/server/data/admin/task/info/page?projectId=5da7d092ea6c156d792df816&type='+type,
+    url: '/server/data/admin/task/page?projectId=5da7d092ea6c156d792df816&type='+type,
     method: 'get',
   })
 }
 //任务保存
-export function taskSave (parameter) {
+export function getTaskSave (parameter) {
   return axios({
-    url: '/server/data/admin/task/info/save',
+    url: '/server/data/admin/task/save',
     method: 'post',
     data:parameter
+  })
+}
+export function getTaskDetail (id) {
+  return axios({
+    url: '/server/data/admin/task/detail/'+id,
+    method: 'get',
   })
 }
 

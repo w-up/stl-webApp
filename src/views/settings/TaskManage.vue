@@ -30,7 +30,7 @@
                 slot="renderItem"
                 slot-scope="item, index"
                 :key="index"
-                @click="chooseLineTask(item.name)"
+                @click="chooseLineTask(item.id)"
                 :class="{active_item: item.clicked}"
               >
                 <a-row style="width:100%">
@@ -55,76 +55,82 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入任务名称" />
+                <a-input placeholder="请输入任务名称"  v-model="lineList.title"/>
               </a-form-item>
               <a-form-item
                 label="任务内容"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入任务内容" />
+                <a-input placeholder="请输入任务内容" v-model="lineList.content"/>
               </a-form-item>
               <a-form-item
                 label="月计划次数"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入月计划次数" />
+                <a-input placeholder="请输入月计划次数" v-model="lineList.times"/>
               </a-form-item>
               <a-form-item
                 label="涉及线路"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-upload
-                  name="file"
-                  :multiple="true"
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                <el-upload
+                  class="upload-demo"
+                  ref="upload"
+                  :data="lineList"
+                  name="kmz"
                   :headers="headers"
-                  @change="handleUpload"
-                >
-                  <a-button>
-                    <a-icon type="upload" />上传KMZ文件
-                  </a-button>
-                </a-upload>
+                  action="/server/data/admin/task/save"
+                  :on-preview="handlePreview"
+                  :on-success="handleSuccess"
+                  :on-change="uploadChange"
+                  :on-remove="handleRemove"
+                  :file-list="fileList"
+                  accept=".kmz,.kml"
+                  :limit='1'
+                  :auto-upload="false">
+                  <a-button type="primary" icon="upload" >上传KMZ文件</a-button>
+                </el-upload>
               </a-form-item>
               <a-form-item
                 label="高度(m)"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入高度" />
+                <a-input placeholder="请输入高度" v-model="lineList.altitude"/>
               </a-form-item>
               <a-form-item
                 label="长度(m)"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入长度" />
+                <a-input placeholder="请输入长度" v-model="lineList.length"/>
               </a-form-item>
               <a-form-item
                 label="时长(min)"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入时长" />
+                <a-input placeholder="请输入时长" v-model="lineList.duration"/>
               </a-form-item>
               <a-form-item
                 label="速度(km/h)"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入速度" />
+                <a-input placeholder="请输入速度" v-model="lineList.velocity"/>
               </a-form-item>
               <a-form-item
                 label="任务模板"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-select defaultValue="无人机" style="width: 100%">
-                  <a-select-option value="无人机">无人机</a-select-option>
-                  <a-select-option value="人工调查">人工调查</a-select-option>
-                  <a-select-option value="水质调查">水质调查</a-select-option>
+                <a-select  style="width: 100%" v-model="lineList.template">
+                  <a-select-option value="uav">无人机</a-select-option>
+                  <a-select-option value="manual">人工调查</a-select-option>
+                  <a-select-option value="water">水质调查</a-select-option>
                 </a-select>
               </a-form-item>
               <a-form-item
@@ -134,16 +140,17 @@
               >
                 <a-select
                   showSearch
+                  mode="multiple"
                   :allowClear="true"
                   placeholder="请输入河流添加"
                   optionFilterProp="children"
                   style="width: 100%"
                   @change="handleChange"
                   :filterOption="filterOption"
-                  v-model="defaultRiver"
+                  v-model="riverId"
                 >
                   <a-select-option
-                    :value="item.name"
+                    :value="item.id"
                     v-for="(item, index) in riverList"
                     :key="index"
                   >{{item.name}}</a-select-option>
@@ -154,47 +161,20 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-row style="width:100%">
-                  <a-col :span="14" style="height:30px;">
-                    <a-checkbox @change="peopleChoose">主飞手</a-checkbox>
-                  </a-col>
-                  <a-col :span="10" style="height:30px;text-align:right;">
+                <el-checkbox-group v-model="roleId">
+                  <div  v-for="(city, index)  in personnelList" :key="index" style="">
+                      <!-- <a-checkbox @change="peopleChoose">主飞手</a-checkbox> -->
+                    <el-checkbox :label="city.id" style="width: 100px;">{{city.name}}</el-checkbox>
                     <a-input-number
                       size="small"
                       :min="1"
                       :max="100000"
                       :defaultValue="1"
-                      @change="peopleNum"
-                      style="width: 70px;"
+                      v-model="city.num"
+                      style="width: 70px;margin-left:5px"
                     />
-                  </a-col>
-                  <a-col :span="14" style="height:30px;">
-                    <a-checkbox @change="peopleChoose">副飞手</a-checkbox>
-                  </a-col>
-                  <a-col :span="10" style="height:30px;text-align:right;">
-                    <a-input-number
-                      size="small"
-                      :min="1"
-                      :max="100000"
-                      :defaultValue="1"
-                      @change="peopleNum"
-                      style="width: 70px;"
-                    />
-                  </a-col>
-                  <a-col :span="14" style="height:30px;">
-                    <a-checkbox @change="peopleChoose">采水员</a-checkbox>
-                  </a-col>
-                  <a-col :span="10" style="height:30px;text-align:right;">
-                    <a-input-number
-                      size="small"
-                      :min="1"
-                      :max="100000"
-                      :defaultValue="1"
-                      @change="peopleNum"
-                      style="width: 70px;"
-                    />
-                  </a-col>
-                </a-row>
+                  </div>
+                </el-checkbox-group>
               </a-form-item>
               <a-form-item
                 label="设备配置"
@@ -302,14 +282,14 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入备注" />
+                <a-input placeholder="请输入备注" v-model="lineList.remark"/>
               </a-form-item>
               <a-form-item
                 label="人员职责"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入人员职责" />
+                <a-input placeholder="请输入人员职责"  v-model="lineList.duty"/>
               </a-form-item>
             </a-form>
           </section>
@@ -371,52 +351,52 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入任务名称" />
+                <a-input placeholder="请输入任务名称" v-model="spotList.title"/>
               </a-form-item>
               <a-form-item
                 label="任务内容"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-textarea :autosize="{ minRows: 2, maxRows: 6 }" />
+                <a-textarea :autosize="{ minRows: 2, maxRows: 6 }"  v-model="spotList.content"/>
               </a-form-item>
               <a-form-item
                 label="任务高度"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入任务高度" />
+                <a-input placeholder="请输入任务高度"  v-model="spotList.altitude"/>
               </a-form-item>
               <a-form-item
                 label="任务时长(min)"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入任务时长" />
+                <a-input placeholder="请输入任务时长"  v-model="spotList.duration"/>
               </a-form-item>
               <a-form-item
                 label="备注"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-textarea placeholder="请输入备注信息" :autosize="{ minRows: 2, maxRows: 6 }" />
+                <a-textarea placeholder="请输入备注信息" :autosize="{ minRows: 2, maxRows: 6 }" v-model="spotList.remark" />
               </a-form-item>
               <a-form-item
                 label="任务职责"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-input placeholder="请输入任务职责" />
+                <a-input placeholder="请输入任务职责"  v-model="spotList.duty"/>
               </a-form-item>
               <a-form-item
                 label="任务模板"
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-select placeholder="请选择" style="width: 100%">
-                  <a-select-option value="无人机">无人机</a-select-option>
-                  <a-select-option value="人工调查">人工调查</a-select-option>
-                  <a-select-option value="水质调查">水质调查</a-select-option>
+                <a-select placeholder="请选择" style="width: 100%" v-model="spotList.template">
+                  <a-select-option value="uav">无人机</a-select-option>
+                  <a-select-option value="manual">人工调查</a-select-option>
+                  <a-select-option value="water">水质调查</a-select-option>
                 </a-select>
               </a-form-item>
               <a-form-item
@@ -435,47 +415,20 @@
                 :label-col="formItemLayout.labelCol"
                 :wrapper-col="formItemLayout.wrapperCol"
               >
-                <a-row style="width:100%">
-                  <a-col :span="14" style="height:30px;">
-                    <a-checkbox @change="peopleChoose">主飞手</a-checkbox>
-                  </a-col>
-                  <a-col :span="10" style="height:30px;text-align:right;">
+                <el-checkbox-group v-model="spotList.roleId">
+                  <div  v-for="(city, index)  in personnelList" :key="index" style="">
+                      <!-- <a-checkbox @change="peopleChoose">主飞手</a-checkbox> -->
+                    <el-checkbox :label="city.id" style="width: 100px;">{{city.name}}</el-checkbox>
                     <a-input-number
                       size="small"
                       :min="1"
                       :max="100000"
                       :defaultValue="1"
-                      @change="peopleNum"
-                      style="width: 70px;"
+                      v-model="city.num"
+                      style="width: 70px;margin-left:5px"
                     />
-                  </a-col>
-                  <a-col :span="14" style="height:30px;">
-                    <a-checkbox @change="peopleChoose">副飞手</a-checkbox>
-                  </a-col>
-                  <a-col :span="10" style="height:30px;text-align:right;">
-                    <a-input-number
-                      size="small"
-                      :min="1"
-                      :max="100000"
-                      :defaultValue="1"
-                      @change="peopleNum"
-                      style="width: 70px;"
-                    />
-                  </a-col>
-                  <a-col :span="14" style="height:30px;">
-                    <a-checkbox @change="peopleChoose">采水员</a-checkbox>
-                  </a-col>
-                  <a-col :span="10" style="height:30px;text-align:right;">
-                    <a-input-number
-                      size="small"
-                      :min="1"
-                      :max="100000"
-                      :defaultValue="1"
-                      @change="peopleNum"
-                      style="width: 70px;"
-                    />
-                  </a-col>
-                </a-row>
+                  </div>
+                </el-checkbox-group>
               </a-form-item>
               <a-form-item
                 label="设备配置"
@@ -602,6 +555,9 @@
           <a-button type="primary" block @click="taskCancel">取消</a-button>
         </a-col>
         <a-col :span="6">
+           <a-button type="primary" block >删除</a-button>
+        </a-col>
+        <a-col :span="6">
           <a-button type="primary" block @click="taskSave">保存</a-button>
         </a-col>
       </a-row>
@@ -621,9 +577,11 @@
 
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
+import Vue from 'vue'
 import AddTaskPoint from './modules/AddTaskPoint.vue'
 import { setUserProjection } from 'ol/proj'
-import { taskList,taskSave} from '@/api/login'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { taskList,getTaskSave,roleList,getTaskDetail,getRiverList} from '@/api/login'
 const formItemLayout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 }
@@ -643,49 +601,89 @@ export default {
       alertLeft: -1000,
       alertTop: -1000,
       alertShow: false,
+      fileList:[],//上传列表
+      personnelList:[],//人员列表
+      //线任务数据
+      lineList:{
+        id:'',
+        projectId:'5da7d092ea6c156d792df816',
+        type:'line',
+        title:'',
+        content:'',
+        altitude:'',
+        duration:'',
+        length:'',
+        velocity:'',
+        remark:'',
+        times:'',
+        duty:'',
+        template:'',
+        roleId:'',
+        roleNum:'',
+        deviceId:'',
+        deviceNum:'',
+        riverId:'',
+      },
+      roleId:[],//分配人员角色
+      deviceId:[],//分配设备
+      riverId:[],//关联河道
+      spotList:{
+        //点任务数据
+        title:'',
+        id:'',
+        projectId:'5da7d092ea6c156d792df816',
+        type:'dot',
+        content:'',
+        altitude:'',
+        duration:'',
+        remark:'',
+        duty:'',
+        template:'',
+        roleId:[],
+        roleNum:'',
+      },
       headers: {
-        //上传
-        authorization: 'authorization-text'
+        Authorization: '',
+        'X-TENANT-ID': 'jl:jlgis@2019' 
       },
       addRiverShow: false, // 气泡卡片
       actionTab: '1', //tab
       defaultLineTask: '无人机正射影像',
       lineTaskList: [
-        {
-          id: 0,
-          name: '无人机正射影像',
-          clicked: false,
-          lineData: [
-            { lat: 31.21493, lng: 121.49566 },
-            { lat: 31.22344, lng: 121.47892 },
-            { lat: 31.20649, lng: 121.47712 },
-            { lat: 31.20469, lng: 121.47482 },
-            { lat: 31.21469, lng: 121.51482 }
-          ]
-        },
-        {
-          id: 1,
-          name: '无人机倾斜影像',
-          clicked: false,
-          lineData: [
-            { lat: 31.20752, lng: 121.51531 },
-            { lat: 31.20186, lng: 121.50759 },
-            { lat: 31.19944, lng: 121.52106 },
-            { lat: 31.19944, lng: 121.53106 }
-          ]
-        },
-        {
-          id: 2,
-          name: '无人机人工拍照',
-          clicked: false,
-          lineData: [
-            { lat: 31.21564, lng: 121.42895 },
-            { lat: 31.22873, lng: 121.47788 },
-            { lat: 31.26706, lng: 121.47677 }
-          ]
-        }
+        // {
+        //   id: 0,
+        //   name: '无人机正射影像',
+        //   clicked: false,
+        //   lineData: [
+        //     { lat: 31.21493, lng: 121.49566 },
+        //     { lat: 31.22344, lng: 121.47892 },
+        //     { lat: 31.20649, lng: 121.47712 },
+        //     { lat: 31.20469, lng: 121.47482 },
+        //     { lat: 31.21469, lng: 121.51482 }
+        //   ]
+        // },
+        // {
+        //   id: 1,
+        //   name: '无人机倾斜影像',
+        //   clicked: false,
+        //   lineData: [
+        //     { lat: 31.20752, lng: 121.51531 },
+        //     { lat: 31.20186, lng: 121.50759 },
+        //     { lat: 31.19944, lng: 121.52106 },
+        //     { lat: 31.19944, lng: 121.53106 }
+        //   ]
+        // },
+        // {
+        //   id: 2,
+        //   name: '无人机人工拍照',
+        //   clicked: false,
+        //   lineData: [
+        //     { lat: 31.21564, lng: 121.42895 },
+        //     { lat: 31.22873, lng: 121.47788 },
+        //     { lat: 31.26706, lng: 121.47677 }
+        //   ]
+        // }
       ],
-
       addRiverShow: false,
       addLineShow: false, // 线路任务显示
       addPointShow: false, // 点任务显示
@@ -697,65 +695,63 @@ export default {
 
       defaultRiver: '黄浦江',
       riverList: [
-        {
-          id: 0,
-          name: '黄浦江',
-          clicked: true
-        },
-        {
-          id: 1,
-          name: '大治河',
-          clicked: false
-        },
-        {
-          id: 2,
-          name: '川杨河',
-          clicked: false
-        },
-        {
-          id: 3,
-          name: '蕰藻浜',
-          clicked: false
-        },
-        {
-          id: 4,
-          name: '龙华港',
-          clicked: false
-        },
-        {
-          id: 5,
-          name: '太浦河',
-          clicked: false
-        },
-        {
-          id: 6,
-          name: '太湖',
-          clicked: false
-        }
+        // {
+        //   id: 0,
+        //   name: '黄浦江',
+        //   clicked: true
+        // },
+        // {
+        //   id: 1,
+        //   name: '大治河',
+        //   clicked: false
+        // },
+        // {
+        //   id: 2,
+        //   name: '川杨河',
+        //   clicked: false
+        // },
+        // {
+        //   id: 3,
+        //   name: '蕰藻浜',
+        //   clicked: false
+        // },
+        // {
+        //   id: 4,
+        //   name: '龙华港',
+        //   clicked: false
+        // },
+        // {
+        //   id: 5,
+        //   name: '太浦河',
+        //   clicked: false
+        // },
+        // {
+        //   id: 6,
+        //   name: '太湖',
+        //   clicked: false
+        // }
       ],
-
       customStyle: 'background: #fff;margin: 0;overflow: hidden', // 折叠面板样式
-
       pointTaskList: [
         //任务点
-        {
-          id: 0,
-          name: '360',
-          pointList: [
-            { id: 0, name: '坐标点1', clicked: false, latlng: { lat: 31.21493, lng: 121.49566 } },
-            { id: 1, name: '坐标点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
-            { id: 2, name: '坐标点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
-          ]
-        },
-        {
-          id: 1,
-          name: '人工调查点',
-          pointList: [
-            { id: 0, name: '调查点1', clicked: false, latlng: { lat: 31.20752, lng: 121.51531 } },
-            { id: 1, name: '调查点2', clicked: false, latlng: { lat: 31.20186, lng: 121.50759 } },
-            { id: 2, name: '调查点3', clicked: false, latlng: { lat: 31.19944, lng: 121.52106 } }
-          ]
-        }
+        // {
+        //   id: 0,
+        //   name: '360',
+        //   pointList: [
+        //     { id: 0, name: '坐标点1', clicked: false, latlng: { lat: 31.21493, lng: 121.49566 } },
+        //     { id: 1, name: '坐标点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
+        //     { id: 2, name: '坐标点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
+        //   ]
+        // },
+        // {
+        //   id: 1,
+        //   name: '人工调查点',
+        //   pointList: [
+        //     { id: 0, name: '调查点1', clicked: false, latlng: { lat: 31.20752, lng: 121.51531 } },
+        //     { id: 1, name: '调查点2', clicked: false, latlng: { lat: 31.20186, lng: 121.50759 } },
+        //     { id: 2, name: '调查点3', clicked: false, latlng: { lat: 31.19944, lng: 121.52106 } }
+        //   ]
+        // }
       ],
 
       // 地图对象
@@ -766,6 +762,9 @@ export default {
   mounted() {
     this.initMap()
     this.getList()
+    this.getRoleList()
+    this.riverListGet()
+    this.headers.Authorization=Vue.ls.get(ACCESS_TOKEN) 
   },
   watch: {
     checkedKeys(val) {
@@ -773,14 +772,43 @@ export default {
     }
   },
   methods: {
+    //点线列表
     getList(){
       taskList('dot').then(res => {
-        console.log(res,'点任务');
+        var arr = res.data.data
+        arr.forEach(v => {
+          v.name =v.title
+          v.pointList=[]
+        });
+        this.pointTaskList =arr
+
       }).catch(err => {
 
       })
       taskList('line').then(res => {
-        console.log(res,'线任务');
+        var arr = res.data.data
+        arr.forEach(v => {
+          v.name =v.title
+        });
+        this.lineTaskList =arr
+      }).catch(err => {
+
+      })
+    },
+    //人员配置列表
+    getRoleList(){
+      roleList('worker').then(res => {
+        var arr = res.data.data
+        this.personnelList= arr
+      }).catch(err => {
+
+      })
+    },
+    //河道列表
+    riverListGet(){
+      getRiverList().then(res => {
+        var arr = res.data.data
+        this.riverList= arr
       }).catch(err => {
 
       })
@@ -792,17 +820,6 @@ export default {
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
       this.markerTool = new T.MarkTool(this.map, { follow: true })
       this.drawAllLine()
-    },
-    // 上传文件
-    handleUpload(info) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList)
-      }
-      if (info.file.status === 'done') {
-        this.$message.success(`${info.file.name} file uploaded successfully`)
-      } else if (info.file.status === 'error') {
-        this.$message.error(`${info.file.name} file upload failed.`)
-      }
     },
     // 添加所有的线
     drawAllLine() {
@@ -1004,7 +1021,34 @@ export default {
       this.addTaskPoint()
     },
     // 编辑
-    choosePointEdit() {
+    choosePointEdit(id) {
+      getTaskDetail(id).then(res => {
+        var arr = res.data
+        this.spotList.title=arr.info.title
+        this.spotList.id=arr.info.id
+        this.spotList.content=arr.info.content
+        this.spotList.altitude=arr.info.altitude
+        this.spotList.duration=arr.info.duration
+        this.spotList.remark=arr.info.remark
+        this.spotList.duty=arr.info.duty
+        this.spotList.template=arr.info.template.code
+        var sz = []
+        for (let i = 0; i < arr.staff.length; i++) {
+          sz.push(arr.staff[i].role.id)
+          console.log('1');
+          for (let a = 0; a < this.personnelList.length; a++) {
+            if (arr.staff[i].role.id==this.personnelList[a].id) {
+              this.personnelList[a].num=arr.staff[i].amount
+              console.log('2');
+              break
+            }
+          }
+        }
+        this.spotList.roleId=sz
+        console.log(arr);
+      }).catch(err => {
+
+      })
       this.addTask()
     },
     // 选择任务点
@@ -1121,20 +1165,121 @@ export default {
     taskCancel() {
       if (this.actionTab == 1) {
         this.addLineShow = false
+        this.lineList.id=''
+        this.lineList.title=''
+        this.lineList.content=''
+        this.lineList.altitude=''
+        this.lineList.duration=''
+        this.lineList.length=''
+        this.lineList.velocity=''
+        this.lineList.remark=''
+        this.lineList.times=''
+        this.lineList.duty=''
+        this.lineList.template=''
+        this.lineList.roleId=''
+        this.lineList.roleNum=''
+        this.lineList.deviceId=''
+        this.lineList.deviceNum=''
+        this.lineList.riverId=''
+        this.roleId=[]
+        this.deviceId=[]
+        this.riverId=[]
       } else if (this.actionTab == 2) {
         this.addPointShow = false
+        this.spotList.title=''
+        this.spotList.id=''
+        this.spotList.content=''
+        this.spotList.altitude=''
+        this.spotList.duration=''
+        this.spotList.remark=''
+        this.spotList.duty=''
+        this.spotList.template=''
+        this.spotList.roleId=[]
+        this.spotList.roleNum=''
       }
     },
     taskSave() {
       if (this.actionTab == 1) {
-        this.addLineShow = false
+        for (let i = 0; i < this.roleId.length; i++) {
+          for (let a = 0; a < this.personnelList.length; a++) {
+            if (this.roleId[i]==this.personnelList[a].id) {
+              if (this.lineList.roleNum!='') {
+                this.lineList.roleNum=','+this.lineList.roleNum + this.personnelList[a].num 
+              }else{
+                this.lineList.roleNum=this.personnelList[a].num 
+              }
+            }
+          }
+        }
+        this.lineList.roleId = this.roleId.join(",")
+        this.lineList.riverId = this.riverId.join(",")
+        var data = this.lineList
+        if (this.fileList.length == 0) {
+          getTaskSave(data).then(res => {
+            this.$message.success('保存成功');
+            this.taskCancel()
+            this.getList()
+          }).catch(err => {
+              this.$message.error(err.response.data.message);
+          })
+        }else{
+          this.$refs.upload.submit();
+        } 
       } else if (this.actionTab == 2) {
-        this.addPointShow = false
+        var data = this.spotList
+        for (let i = 0; i < this.spotList.roleId.length; i++) {
+          for (let a = 0; a < this.personnelList.length; a++) {
+            if (this.spotList.roleId[i]==this.personnelList[a].id) {
+              if (data.roleNum!='') {
+                data.roleNum=','+data.roleNum + this.personnelList[a].num 
+              }else{
+                data.roleNum=this.personnelList[a].num 
+              }
+            }
+          }
+        }
+        data.roleId = data.roleId.join(",")
+        getTaskSave(data).then(res => {
+          var arr = res.data  
+          this.$message.success('保存成功');
+          this.taskCancel()
+          this.getList()
+        }).catch(err => {
+          this.$message.error(err.response.data.message);
+        })
+        
       }
+    },
+    //上传
+    submitUpload() {
+      
+    },
+    //上传成功
+    handleSuccess(response, file, fileList){
+      this.taskCancel()
+      this.$message.success('保存成功');
+      this.getList()
+    },
+    uploadChange(file, fileList){
+      if(this.fileList.length==0){
+        this.fileList=fileList
+      }else{
+        this.fileList=[]
+      }
+    },
+    handleRemove(file, fileList) {
+      
+    },
+    handlePreview(file) {
     }
   }
 }
 </script>
+<style lang="less">
+.ant-form input[type='file'] {
+  display: none; 
+}
+</style>
 <style lang="less" scoped>
 .mouse_alert {
   position: absolute;
