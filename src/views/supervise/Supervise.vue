@@ -41,44 +41,29 @@
     </div>
     <div class="time_line">
       <ul class="time_ul">
-        <li>
-          <h6 style="font-size:12px;text-align:center;">2019.09</h6>
+        <li v-for="item in timeData" :key="item.id">
+          <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6>
           <a-tooltip
             placement="right"
             class="time_item"
             trigger="hover"
-            v-for="item in 30"
-            :key="item"
+            v-for="day in item.month"
+            :key="day.id"
           >
             <template slot="title">
-              <span>2019.09.{{item}}</span>
+              <span>{{item.title}}.{{day.title}}</span>
             </template>
-            <a-icon
-              type="minus"
-              class="icon_style"
-              :class="{'time_color_red':item%3 == 0,'time_color_blue':item%3 == 1,'time_color_gray':item%3 == 2}"
-            />
-            <p>{{item}}</p>
-          </a-tooltip>
-        </li>
-        <li>
-          <h6 style="font-size:12px;text-align:center;">2019.08</h6>
-          <a-tooltip
-            placement="right"
-            class="time_item"
-            trigger="hover"
-            v-for="item in 31"
-            :key="item"
-          >
-            <template slot="title">
-              <span>2019.08.{{item}}</span>
-            </template>
-            <a-icon
-              type="minus"
-              class="icon_style"
-              :class="{'time_color_red':item%3 == 0,'time_color_blue':item%3 == 1,'time_color_gray':item%3 == 2}"
-            />
-            <p>{{item}}</p>
+            <div class="line_style">
+              <div
+                class="line"
+                :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
+              ></div>
+            </div>
+            <p>
+              <span
+                :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
+              >{{day.title}}</span>
+            </p>
           </a-tooltip>
         </li>
       </ul>
@@ -392,7 +377,7 @@
     <!-- 添加风险源 -->
     <add-risk-source ref="addRisk"></add-risk-source>
     <!-- 照片编辑 -->
-    <phone-edit ref="photoEdit"></phone-edit>
+    <photo-edit ref="photoEdit"></photo-edit>
   </div>
 </template>
 
@@ -402,14 +387,14 @@ import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
 import PhotoEdit from './modules/PhotoEdit'
 
-// import 'ol/ol.css'
-// import Map from 'ol/Map'
-// import View from 'ol/View'
-// import TileLayer from 'ol/layer/Tile'
-// import LayerGroup from 'ol/layer/Group'
-// import XYZ from 'ol/source/XYZ'
+import 'ol/ol.css'
+import Map from 'ol/Map'
+import View from 'ol/View'
+import TileLayer from 'ol/layer/Tile'
+import LayerGroup from 'ol/layer/Group'
+import XYZ from 'ol/source/XYZ'
 
-// import OSM from 'ol/source/OSM'
+import OSM from 'ol/source/OSM'
 // 拖拽缩放
 // import { defaults as defaultInteractions, DragRotateAndZoom } from 'ol/interaction'
 
@@ -422,10 +407,85 @@ export default {
     // 'world-map': WorldMap
     'risk-source-info': RiskSourceInfo,
     'add-risk-source': AddRiskSource,
-    'phone-edit': PhotoEdit
+    'photo-edit': PhotoEdit
   },
   data() {
     return {
+      timeData: [
+        {
+          id: 0,
+          title: '2019.09',
+          month: [
+            { id: '30', title: '30', level: 0 },
+            { id: '29', title: '29', level: 1 },
+            { id: '28', title: '28', level: 2 },
+            { id: '27', title: '27', level: 2 },
+            { id: '26', title: '26', level: 1 },
+            { id: '25', title: '25', level: 1 },
+            { id: '24', title: '24', level: 1 },
+            { id: '23', title: '23', level: 0 },
+            { id: '22', title: '22', level: 0 },
+            { id: '21', title: '21', level: 2 },
+            { id: '20', title: '20', level: 2 },
+            { id: '19', title: '19', level: 1 },
+            { id: '18', title: '18', level: 0 },
+            { id: '17', title: '17', level: 2 },
+            { id: '16', title: '16', level: 2 },
+            { id: '15', title: '15', level: 0 },
+            { id: '14', title: '14', level: 1 },
+            { id: '13', title: '13', level: 0 },
+            { id: '12', title: '12', level: 1 },
+            { id: '11', title: '11', level: 1 },
+            { id: '10', title: '10', level: 0 },
+            { id: '09', title: '09', level: 1 },
+            { id: '08', title: '08', level: 0 },
+            { id: '07', title: '07', level: 2 },
+            { id: '06', title: '06', level: 0 },
+            { id: '05', title: '05', level: 2 },
+            { id: '04', title: '04', level: 2 },
+            { id: '03', title: '03', level: 0 },
+            { id: '02', title: '02', level: 1 },
+            { id: '01', title: '01', level: 1 }
+          ]
+        },
+        {
+          id: 1,
+          title: '2019.08',
+          month: [
+            { id: '31', title: '31', level: 0 },
+            { id: '30', title: '30', level: 0 },
+            { id: '29', title: '29', level: 1 },
+            { id: '28', title: '28', level: 2 },
+            { id: '27', title: '27', level: 2 },
+            { id: '26', title: '26', level: 1 },
+            { id: '25', title: '25', level: 1 },
+            { id: '24', title: '24', level: 1 },
+            { id: '23', title: '23', level: 0 },
+            { id: '22', title: '22', level: 0 },
+            { id: '21', title: '21', level: 2 },
+            { id: '20', title: '20', level: 2 },
+            { id: '19', title: '19', level: 1 },
+            { id: '18', title: '18', level: 0 },
+            { id: '17', title: '17', level: 2 },
+            { id: '16', title: '16', level: 2 },
+            { id: '15', title: '15', level: 0 },
+            { id: '14', title: '14', level: 1 },
+            { id: '13', title: '13', level: 0 },
+            { id: '12', title: '12', level: 1 },
+            { id: '11', title: '11', level: 1 },
+            { id: '10', title: '10', level: 0 },
+            { id: '09', title: '09', level: 1 },
+            { id: '08', title: '08', level: 0 },
+            { id: '07', title: '07', level: 2 },
+            { id: '06', title: '06', level: 0 },
+            { id: '05', title: '05', level: 2 },
+            { id: '04', title: '04', level: 2 },
+            { id: '03', title: '03', level: 0 },
+            { id: '02', title: '02', level: 1 },
+            { id: '01', title: '01', level: 1 }
+          ]
+        }
+      ],
       mapType: 'a',
       checked: false,
       sharedChecked: false,
@@ -443,6 +503,7 @@ export default {
 
       historyData: false, // 历史数据
       phonePhoto: false, // 手机照片
+      photoAlert: false, // 照片弹窗
       phonePhotoTool: '', // 手机照片工具
       UAVPhoto: false, // 无人机照片
       UAVPhotoTool: '', // 无人机照片工具
@@ -599,8 +660,9 @@ export default {
   },
   mounted() {
     this.initMap()
-    // this.showMap()
-    // this.showSwipeMap()
+
+    // this.watchAllSwitch()
+    // this.photoAlert = true
   },
   methods: {
     initMap() {
@@ -743,15 +805,20 @@ export default {
       var node = document.getElementById('map')
       htmlToImage
         .toPng(node)
-        .then((dataUrl) => {
+        .then(dataUrl => {
           // console.log(dataUrl)
-          var str = 'map' + this.getNowTime() //以下代码为下载此图片功能
-          var triggerDownload = $('<a>')
-            .attr('href', dataUrl)
-            .attr('download', str + '.png')
-            .appendTo('body')
-          triggerDownload[0].click()
-          triggerDownload.remove()
+          // var str = 'map' + this.getNowTime() //以下代码为下载此图片功能
+          // var triggerDownload = $('<a>')
+          //   .attr('href', dataUrl)
+          //   .attr('download', str + '.png')
+          //   .appendTo('body')
+          // triggerDownload[0].click()
+          // triggerDownload.remove()
+          var link = document.createElement('a')
+          link.download = 'map' + this.getNowTime() + '.png'
+          link.href = dataUrl
+          link.click()
+          link.remove()
           setTimeout(() => {
             this.canDownload = true
           }, 1500)
@@ -948,6 +1015,7 @@ export default {
     },
     // 任务照片点击
     taskImageClick(index) {
+      // this.photoAlert = true
       this.$refs.photoEdit.showVisible()
       // for (const item of this.historyPoints) {
       //   if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
@@ -1154,11 +1222,32 @@ export default {
     }
   }
 }
+
+// <li>
+//           <h6 style="font-size:12px;text-align:center;">2019.09</h6>
+//           <a-tooltip
+//             placement="right"
+//             class="time_item"
+//             trigger="hover"
+//             v-for="item in 30"
+//             :key="item"
+//           >
+//             <template slot="title">
+//               <span>2019.09.{{item}}</span>
+//             </template>
+//             <div class="line_style">
+//               <span
+//                 :class="{'time_bg_red':item%3 == 0,'time_bg_blue':item%3 == 1,'time_bg_gray':item%3 == 2}"
+//               ></span>
+//             </div>
+//           </a-tooltip>
+//         </li>
+
 .time_line {
   position: absolute;
   left: 0;
   top: 0;
-  width: 70px;
+  width: 68px;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.9);
   z-index: 888;
@@ -1172,40 +1261,65 @@ export default {
     li {
       width: 100%;
       position: relative;
+      font-size: 0;
+      text-align: center;
       .time_item {
+        position: relative;
+        display: block;
         width: 100%;
+        cursor: pointer;
+        text-align: center;
+        padding: 5px 0;
+        .line_style {
+          display: block;
+          text-align: center;
+          width: 20px;
+          margin: auto;
+          .line {
+            width: 20px;
+            height: 2px;
+          }
+          .time_bg_red {
+            background-color: rgb(249, 56, 56);
+          }
+          .time_bg_blue {
+            background-color: rgb(116, 196, 73);
+          }
+          .time_bg_gray {
+            background-color: rgb(204, 204, 204);
+            width: 4px;
+          }
+        }
         p {
           display: none;
           margin: 0;
           width: 100%;
           font-size: 12px;
-          padding: 3px 10px;
           text-align: center;
-          cursor: default;
+          span {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            color: white;
+          }
         }
-        .icon_style {
-          position: relative;
-          font-size: 24px;
-          display: block;
-          width: 100%;
+        .time_bg_red {
+          background-color: rgb(249, 56, 56);
+        }
+        .time_bg_blue {
+          background-color: rgb(116, 196, 73);
+        }
+        .time_bg_gray {
+          background-color: rgb(204, 204, 204);
         }
       }
       .time_item:hover {
         p {
           display: block;
         }
-        .icon_style {
+        .line_style {
           display: none;
         }
-      }
-      .time_color_red {
-        color: red;
-      }
-      .time_color_blue {
-        color: rgb(57, 236, 66);
-      }
-      .time_color_gray {
-        color: rgb(180, 180, 180);
       }
     }
   }
