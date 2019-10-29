@@ -86,10 +86,7 @@ export default {
   },
   methods: {
     getList(){
-      var data ={
-
-      }
-      roleList(data).then(res => {
+      roleList('').then(res => {
          var arr = res.data.data
          for (let i = 0; i < arr.length; i++) {
           arr[i].type=arr[i].type.name

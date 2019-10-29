@@ -46,7 +46,7 @@
             <a-col :span="4" style="text-align:right;">
               <a-popconfirm
                 title="确定要删除吗?"
-                @confirm="confirmDelete(item.name)"
+                @confirm="confirmDelete(item.id)"
                 @cancel="cancelDelete"
                 okText="确定"
                 cancelText="取消"
@@ -81,6 +81,7 @@
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
 import AddStreet from './modules/AddStreet.vue'
+import { getStreetList,delStreet } from '@/api/login'
 export default {
   name: 'StreetManage',
   components: {
@@ -94,93 +95,93 @@ export default {
       alertShow: false,
       defaultRiver: '南京东路',
       riverList: [
-        {
-          id: 0,
-          name: '南京东路',
-          clicked: true,
-          lineData: [
-            { lat: 31.21882, lng: 121.50364 },
-            { lat: 31.21265, lng: 121.50227 },
-            { lat: 31.20583, lng: 121.49703 },
-            { lat: 31.19915, lng: 121.49197 },
-            { lat: 31.19702, lng: 121.49591 },
-            { lat: 31.2164, lng: 121.50757 },
-            { lat: 31.21948, lng: 121.50758 }
-            // { lat: 31.2164, lng: 121.50759 },
-            // { lat: 31.21948, lng: 121.50759 }
-          ]
-        },
-        {
-          id: 1,
-          name: '南京西路',
-          clicked: false,
-          lineData: [
-            { lat: 31.25153, lng: 121.52409 },
-            { lat: 31.25355, lng: 121.53085 },
-            { lat: 31.25858, lng: 121.53934 },
-            { lat: 31.25535, lng: 121.54334 },
-            { lat: 31.2499, lng: 121.53353 },
-            { lat: 31.24786, lng: 121.52737 },
-            { lat: 31.24682, lng: 121.51709 },
-            { lat: 31.25111, lng: 121.51711 }
-          ]
-        },
-        {
-          id: 2,
-          name: '南京步行街',
-          clicked: false,
-          lineData: [
-            { lat: 31.24539, lng: 121.48686 },
-            { lat: 31.24616, lng: 121.48411 },
-            { lat: 31.2466, lng: 121.4824 },
-            { lat: 31.24612, lng: 121.48051 },
-            { lat: 31.24484, lng: 121.47901 },
-            { lat: 31.24462, lng: 121.47939 },
-            { lat: 31.24543, lng: 121.48089 },
-            { lat: 31.2459, lng: 121.48261 },
-            { lat: 31.2448, lng: 121.4857 },
-            { lat: 31.2444, lng: 121.4872 }
-          ]
-        },
-        {
-          id: 3,
-          name: '浙江中路',
-          clicked: false,
-          lineData: [
-            { lat: 31.21717, lng: 121.51336 },
-            { lat: 31.21691, lng: 121.51454 },
-            { lat: 31.21768, lng: 121.51566 },
-            { lat: 31.21768, lng: 121.51763 },
-            { lat: 31.21733, lng: 121.51748 },
-            { lat: 31.21739, lng: 121.51568 },
-            { lat: 31.21664, lng: 121.51456 },
-            { lat: 31.21669, lng: 121.51387 },
-            { lat: 31.21699, lng: 121.51323 }
-          ]
-        },
-        {
-          id: 4,
-          name: '河南南路',
-          clicked: false,
-          lineData: [
-            { lat: 31.21493, lng: 121.49566 },
-            { lat: 31.22344, lng: 121.47892 },
-            { lat: 31.20649, lng: 121.47712 },
-            { lat: 31.20469, lng: 121.47482 },
-            { lat: 31.21469, lng: 121.51482 }
-          ]
-        },
-        {
-          id: 5,
-          name: '北京西路',
-          clicked: false,
-          lineData: [
-            { lat: 31.20752, lng: 121.51531 },
-            { lat: 31.20186, lng: 121.50759 },
-            { lat: 31.19944, lng: 121.52106 },
-            { lat: 31.19944, lng: 121.53106 }
-          ]
-        }
+        // {
+        //   id: 0,
+        //   name: '南京东路',
+        //   clicked: true,
+        //   lineData: [
+        //     { lat: 31.21882, lng: 121.50364 },
+        //     { lat: 31.21265, lng: 121.50227 },
+        //     { lat: 31.20583, lng: 121.49703 },
+        //     { lat: 31.19915, lng: 121.49197 },
+        //     { lat: 31.19702, lng: 121.49591 },
+        //     { lat: 31.2164, lng: 121.50757 },
+        //     { lat: 31.21948, lng: 121.50758 }
+        //     // { lat: 31.2164, lng: 121.50759 },
+        //     // { lat: 31.21948, lng: 121.50759 }
+        //   ]
+        // },
+        // {
+        //   id: 1,
+        //   name: '南京西路',
+        //   clicked: false,
+        //   lineData: [
+        //     { lat: 31.25153, lng: 121.52409 },
+        //     { lat: 31.25355, lng: 121.53085 },
+        //     { lat: 31.25858, lng: 121.53934 },
+        //     { lat: 31.25535, lng: 121.54334 },
+        //     { lat: 31.2499, lng: 121.53353 },
+        //     { lat: 31.24786, lng: 121.52737 },
+        //     { lat: 31.24682, lng: 121.51709 },
+        //     { lat: 31.25111, lng: 121.51711 }
+        //   ]
+        // },
+        // {
+        //   id: 2,
+        //   name: '南京步行街',
+        //   clicked: false,
+        //   lineData: [
+        //     { lat: 31.24539, lng: 121.48686 },
+        //     { lat: 31.24616, lng: 121.48411 },
+        //     { lat: 31.2466, lng: 121.4824 },
+        //     { lat: 31.24612, lng: 121.48051 },
+        //     { lat: 31.24484, lng: 121.47901 },
+        //     { lat: 31.24462, lng: 121.47939 },
+        //     { lat: 31.24543, lng: 121.48089 },
+        //     { lat: 31.2459, lng: 121.48261 },
+        //     { lat: 31.2448, lng: 121.4857 },
+        //     { lat: 31.2444, lng: 121.4872 }
+        //   ]
+        // },
+        // {
+        //   id: 3,
+        //   name: '浙江中路',
+        //   clicked: false,
+        //   lineData: [
+        //     { lat: 31.21717, lng: 121.51336 },
+        //     { lat: 31.21691, lng: 121.51454 },
+        //     { lat: 31.21768, lng: 121.51566 },
+        //     { lat: 31.21768, lng: 121.51763 },
+        //     { lat: 31.21733, lng: 121.51748 },
+        //     { lat: 31.21739, lng: 121.51568 },
+        //     { lat: 31.21664, lng: 121.51456 },
+        //     { lat: 31.21669, lng: 121.51387 },
+        //     { lat: 31.21699, lng: 121.51323 }
+        //   ]
+        // },
+        // {
+        //   id: 4,
+        //   name: '河南南路',
+        //   clicked: false,
+        //   lineData: [
+        //     { lat: 31.21493, lng: 121.49566 },
+        //     { lat: 31.22344, lng: 121.47892 },
+        //     { lat: 31.20649, lng: 121.47712 },
+        //     { lat: 31.20469, lng: 121.47482 },
+        //     { lat: 31.21469, lng: 121.51482 }
+        //   ]
+        // },
+        // {
+        //   id: 5,
+        //   name: '北京西路',
+        //   clicked: false,
+        //   lineData: [
+        //     { lat: 31.20752, lng: 121.51531 },
+        //     { lat: 31.20186, lng: 121.50759 },
+        //     { lat: 31.19944, lng: 121.52106 },
+        //     { lat: 31.19944, lng: 121.53106 }
+        //   ]
+        // }
       ],
       addRiverShow: false,
       // 地图对象
@@ -194,9 +195,23 @@ export default {
   },
   mounted() {
     this.initMap()
-    this.drawAllRiver()
+    this.getList()
+    // this.drawAllRiver()
   },
   methods: {
+    getList(){
+      getStreetList().then(res => {
+        let arr = res.data.data
+        arr.forEach(v => {
+          v.lineData = v.region
+          v.clicked = false
+        });
+        this.riverList = arr
+        this.drawAllRiver()
+      }).catch(err => {
+
+      })
+    },
     initMap() {
       //初始化地图控件
       let zoom = 14
@@ -275,10 +290,16 @@ export default {
     },
     // 河流删除
     confirmDelete(index) {
-      console.log(index)
-      this.riverList.splice(this.riverList.findIndex(item => item.name === index), 1)
-      this.$message.success('删除成功')
-      this.drawAllRiver()
+      // console.log(index)
+      delStreet(index).then(res => {
+        this.$message.success('删除成功')
+        this.getList()
+      }).catch(err => {
+        this.$message.error(err.response.data.message)
+      })
+      // this.riverList.splice(this.riverList.findIndex(item => item.name === index), 1)
+      // this.$message.success('删除成功')
+      // this.drawAllRiver()
       this.defaultRiver = null
     },
     cancelDelete(e) {
@@ -331,7 +352,7 @@ export default {
       // this.map.addOverLay(label)
       // label.setLngLat(latlngobj)
 
-      this.$refs.addStreet.add()
+      this.$refs.addStreet.add(e.currentLnglats)
     },
     // 设置绘制的多边形
     setPolylineFn(lineData, color, weight, opacity, fillOpacity) {
@@ -372,6 +393,7 @@ export default {
       if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
         id = this.riverList[findIndex1].id
         for (const item of this.riverList) {
+          this.$refs.addStreet.getStreet(item.id)
           if (item.id == findIndex1) {
             item.clicked = true
           } else {
