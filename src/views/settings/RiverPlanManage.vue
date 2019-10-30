@@ -16,37 +16,46 @@
       </div>
     </div>
     <div class="right">
-      <section class="task_face">
-        <a-select
-          showSearch
-          placeholder="请输入河流"
-          optionFilterProp="children"
-          style="width: 100%"
-          @change="chooseRiver"
-          :filterOption="filterOption"
-          v-model="defaultRiver"
-          v-show="!addLineShow"
-        >
-          <a-select-option
-            :value="item.name"
-            v-for="(item, index) in riverList"
-            :key="index"
-          >{{item.name}}</a-select-option>
-        </a-select>
-        <a-collapse v-show="!addLineShow" size="small" style="margin-top:10px;">
-          <a-collapse-panel v-for="item in lineTaskList" :key="item.key" :style="customStyle">
-            <template slot="header">
-              <a-row style="width:100%">
-                <a-col :span="14">{{item.name}}</a-col>
-                <a-col :span="10" style="text-align:right;padding-right:10px;">
-                  <a-button size="small" @click.stop="defaultPlan(item.name)">{{item.default?"默认":"设为默认"}}</a-button>
-                </a-col>
-              </a-row>
-            </template>
-            <a-tree defaultExpandAll @select="onSelect" :selectedKeys="selectedKeys"
-              :treeData="treeData"
-            ></a-tree>
-            <!-- <a-directory-tree multiple defaultExpandAll @select="riverPlan" @expand="onExpand">
+      <h3 style="font-size: 16px;margin:10px 0 0 10px">巡河方案管理</h3>
+      <a-divider style="margin: 5px 0 10px; background-color: #888;" />
+      <div style="padding: 0 10px">
+        <section class="task_face">
+          <a-select
+            showSearch
+            placeholder="请输入河流"
+            optionFilterProp="children"
+            style="width: 100%"
+            @change="chooseRiver"
+            :filterOption="filterOption"
+            v-model="defaultRiver"
+            v-show="!addLineShow"
+          >
+            <a-select-option
+              :value="item.name"
+              v-for="(item, index) in riverList"
+              :key="index"
+            >{{item.name}}</a-select-option>
+          </a-select>
+          <a-collapse v-show="!addLineShow" size="small" style="margin-top:10px;">
+            <a-collapse-panel v-for="item in lineTaskList" :key="item.key" :style="customStyle">
+              <template slot="header">
+                <a-row style="width:100%">
+                  <a-col :span="14">{{item.name}}</a-col>
+                  <a-col :span="10" style="text-align:right;padding-right:10px;">
+                    <a-button
+                      size="small"
+                      @click.stop="defaultPlan(item.name)"
+                    >{{item.default?"默认":"设为默认"}}</a-button>
+                  </a-col>
+                </a-row>
+              </template>
+              <a-tree
+                defaultExpandAll
+                @select="onSelect"
+                :selectedKeys="selectedKeys"
+                :treeData="treeData"
+              ></a-tree>
+              <!-- <a-directory-tree multiple defaultExpandAll @select="riverPlan" @expand="onExpand">
               <a-tree-node title="360" key="0-0">
                 <a-tree-node title="调查点1" key="0-0-0" isLeaf />
                 <a-tree-node title="调查点2" key="0-0-1" isLeaf />
@@ -56,106 +65,111 @@
                 <a-tree-node title="人工调查2" key="0-1-1" isLeaf />
               </a-tree-node>
               <a-tree-node title="巡河线路1" key="0-2"></a-tree-node>
-            </a-directory-tree> -->
-          </a-collapse-panel>
-        </a-collapse>
-        <a-form v-show="addLineShow" style="width: 100%;">
-          <a-form-item
-            label="方案名称"
-            :label-col="formItemLayout.labelCol"
-            :wrapper-col="formItemLayout.wrapperCol"
-          >
-            <a-input placeholder />
-          </a-form-item>
-          <a-form-item
-            label="关联河道"
-            :label-col="formItemLayout.labelCol"
-            :wrapper-col="formItemLayout.wrapperCol"
-          >
-            <a-select
-              showSearch
-              placeholder="请输入河流添加"
-              optionFilterProp="children"
-              style="width: 100%"
-              @change="chooseRiver"
-              :filterOption="filterOption"
-              v-model="defaultRiver"
+              </a-directory-tree>-->
+            </a-collapse-panel>
+          </a-collapse>
+          <a-form v-show="addLineShow" style="width: 100%;">
+            <a-form-item
+              label="方案名称"
+              :label-col="formItemLayout.labelCol"
+              :wrapper-col="formItemLayout.wrapperCol"
             >
-              <a-select-option
-                :value="item.name"
-                v-for="(item, index) in riverList"
-                :key="index"
-              >{{item.name}}</a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item
-            label="任务线路"
-            :label-col="formItemLayout.labelCol"
-            :wrapper-col="formItemLayout.wrapperCol"
-          >
-            <a-row style="width:100%">
-              <a-col :span="24" style="height:30px;">
-                <a-checkbox @change="onChange">线路1</a-checkbox>
-              </a-col>
-              <a-col :span="24" style="height:30px;">
-                <a-checkbox @change="onChange">线路2</a-checkbox>
-              </a-col>
-              <a-col :span="24" style="height:30px;">
-                <a-checkbox @change="onChange">线路3</a-checkbox>
-              </a-col>
-              <a-col :span="24" style="height:30px;">
-                <a-checkbox @change="onChange">线路4</a-checkbox>
-              </a-col>
-            </a-row>
-          </a-form-item>
-          <a-form-item
-            label="调查点任务"
-            :label-col="formItemLayout.labelCol"
-            :wrapper-col="formItemLayout.wrapperCol"
-          >
-            <a-tree-select
-              style="width: 100%"
-              :treeData="treeData"
-              :value="value"
-              @change="addRiverPlan"
-              treeCheckable
-              :showCheckedStrategy="SHOW_PARENT"
-              searchPlaceholder="Please select"
-            />
-          </a-form-item>
-        </a-form>
-      </section>
-      <a-button type="primary" block class="bottom_add" @click="addTask" v-show="!addLineShow">创建方案</a-button>
-      <!-- 线路任务按钮 -->
-      <a-row
-        v-show="addLineShow"
-        class="bottom_add"
-        type="flex"
-        justify="space-around"
-        align="middle"
-      >
-        <a-col :span="8">
-          <a-button type="primary" block @click="taskCancel">取消</a-button>
-        </a-col>
-        <a-col :span="8">
-          <a-button type="primary" block @click="taskSave">保存</a-button>
-        </a-col>
-      </a-row>
+              <a-input placeholder />
+            </a-form-item>
+            <a-form-item
+              label="关联河道"
+              :label-col="formItemLayout.labelCol"
+              :wrapper-col="formItemLayout.wrapperCol"
+            >
+              <a-select
+                showSearch
+                placeholder="请输入河流添加"
+                optionFilterProp="children"
+                style="width: 100%"
+                @change="chooseRiver"
+                :filterOption="filterOption"
+                v-model="defaultRiver"
+              >
+                <a-select-option
+                  :value="item.name"
+                  v-for="(item, index) in riverList"
+                  :key="index"
+                >{{item.name}}</a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item
+              label="任务线路"
+              :label-col="formItemLayout.labelCol"
+              :wrapper-col="formItemLayout.wrapperCol"
+            >
+              <a-row style="width:100%">
+                <a-col :span="24" style="height:30px;">
+                  <a-checkbox @change="onChange">线路1</a-checkbox>
+                </a-col>
+                <a-col :span="24" style="height:30px;">
+                  <a-checkbox @change="onChange">线路2</a-checkbox>
+                </a-col>
+                <a-col :span="24" style="height:30px;">
+                  <a-checkbox @change="onChange">线路3</a-checkbox>
+                </a-col>
+                <a-col :span="24" style="height:30px;">
+                  <a-checkbox @change="onChange">线路4</a-checkbox>
+                </a-col>
+              </a-row>
+            </a-form-item>
+            <a-form-item
+              label="调查点任务"
+              :label-col="formItemLayout.labelCol"
+              :wrapper-col="formItemLayout.wrapperCol"
+            >
+              <a-tree-select
+                style="width: 100%"
+                :treeData="treeData"
+                :value="value"
+                @change="addRiverPlan"
+                treeCheckable
+                :showCheckedStrategy="SHOW_PARENT"
+                searchPlaceholder="Please select"
+              />
+            </a-form-item>
+          </a-form>
+        </section>
+        <a-button
+          type="primary"
+          block
+          class="bottom_add"
+          @click="addTask"
+          v-show="!addLineShow"
+        >创建方案</a-button>
+        <!-- 线路任务按钮 -->
+        <a-row
+          v-show="addLineShow"
+          class="bottom_add"
+          type="flex"
+          justify="space-around"
+          align="middle"
+        >
+          <a-col :span="8">
+            <a-button type="primary" block @click="taskCancel">取消</a-button>
+          </a-col>
+          <a-col :span="8">
+            <a-button type="primary" block @click="taskSave">保存</a-button>
+          </a-col>
+        </a-row>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 const formItemLayout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 }
+  labelCol: { span: 7 },
+  wrapperCol: { span: 17 }
 }
 const formTailLayout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 }
+  labelCol: { span: 7 },
+  wrapperCol: { span: 17 }
 }
-
-
 
 import { TreeSelect } from 'ant-design-vue'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
@@ -246,7 +260,7 @@ const treeData = [
             lat: 31.21948,
             lng: 121.50759
           }
-        ] 
+        ]
       },
       {
         title: '360调查点3',
@@ -285,7 +299,7 @@ const treeData = [
             lat: 31.25111,
             lng: 121.51711
           }
-        ] 
+        ]
       }
     ]
   },
@@ -534,61 +548,60 @@ export default {
       this.selectedKeys = selectedKeys
       var info = info.node.dataRef
       this.clearLays()
-      if(info.children){
-        for(var i = 0; i< info.children.length;i++){
-          if(info.children[i].riverData.length > 1){
+      if (info.children) {
+        for (var i = 0; i < info.children.length; i++) {
+          if (info.children[i].riverData.length > 1) {
             console.log(info.children[i].riverData)
             this.positionArea(info.children[i].riverData)
-            this.map.setZoom("13")
+            this.map.setZoom('13')
           }
-          if(info.children[i].riverData.length == 1){
-            this.map.setZoom("10")
+          if (info.children[i].riverData.length == 1) {
+            this.map.setZoom('10')
             this.setMarkerInfo(info.children[i].riverData)
-          }     
+          }
         }
-      }else{
-        if(info.riverData.length > 1){
+      } else {
+        if (info.riverData.length > 1) {
           this.positionArea(info.riverData)
         }
-        if(info.riverData.length == 1){
-          this.map.setZoom("14")
+        if (info.riverData.length == 1) {
+          this.map.setZoom('14')
           this.setMarkerInfo(info.riverData)
         }
       }
     },
     //定位到选中地
-    positionArea(val){
+    positionArea(val) {
       this.map.setViewport(val)
       this.setPolygonLine(val, 'red', 3, 0)
-      this.polygon.addEventListener('click', this.polygonClick);  
+      this.polygon.addEventListener('click', this.polygonClick)
     },
     //绘制多边形
-    setPolygonLine(layerData,color,weighe,fillOpacity){
-      this.polygon = new T.Polygon(layerData,{
+    setPolygonLine(layerData, color, weighe, fillOpacity) {
+      this.polygon = new T.Polygon(layerData, {
         color: color,
         weight: weighe,
-        opacity:0.5,
-        fillColor:'#FFFFFF',
-        fillOpacity:fillOpacity
-      });
+        opacity: 0.5,
+        fillColor: '#FFFFFF',
+        fillOpacity: fillOpacity
+      })
       this.map.addOverLay(this.polygon)
     },
     //绘制标注点
-    setMarkerInfo(riverData){
+    setMarkerInfo(riverData) {
       this.map.setViewport(riverData)
-      this.map.setZoom("14")
-      for(var i = 0;i< riverData.length;i++){
+      this.map.setZoom('14')
+      for (var i = 0; i < riverData.length; i++) {
         var lng = riverData[i].lng
         var lat = riverData[i].lat
-        var point = new T.LngLat(lng,lat)
+        var point = new T.LngLat(lng, lat)
         var marker = new T.Marker(point)
         this.map.addOverLay(marker)
-        var markerInfo = new T.InfoWindow("信息窗口")
-        marker.addEventListener("click",function(){
+        var markerInfo = new T.InfoWindow('信息窗口')
+        marker.addEventListener('click', function() {
           marker.openInfoWindow(markerInfo)
         })
       }
-      
     },
     // 弹窗点击确认事件
     modalClick(v) {
@@ -606,15 +619,15 @@ export default {
       console.log(`checked = ${e.target.checked}`)
     },
     // 选择方案详情
-    riverPlan (keys) {
-      console.log('Trigger Select', keys);
+    riverPlan(keys) {
+      console.log('Trigger Select', keys)
     },
-    onExpand () {
-      console.log('Trigger Expand');
+    onExpand() {
+      console.log('Trigger Expand')
     },
     // 设为默认方案
     defaultPlan(index) {
-      this.lineTaskList.forEach(value=>{
+      this.lineTaskList.forEach(value => {
         if (value.name === index) {
           value.default = true
         } else {
@@ -622,7 +635,7 @@ export default {
         }
       })
     },
-    
+
     // 创建方案
     addTask() {
       this.addLineShow = true
@@ -654,7 +667,7 @@ export default {
       this.value = value
     },
     //清楚覆盖物
-    clearLays(){
+    clearLays() {
       this.map.clearOverLays()
     }
   }
@@ -691,7 +704,7 @@ export default {
   height: 100%;
   display: inline-block;
   vertical-align: top;
-  padding: 10px;
+  // padding: 10px;
   background-color: white;
 }
 .task_face {
