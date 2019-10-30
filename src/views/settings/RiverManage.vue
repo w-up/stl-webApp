@@ -241,9 +241,9 @@ export default {
       for (const item of this.riverList) {
         if (item.clicked == true) {
           // this.setBounds(item.lineData)
-          this.setPolylineFn(item.lineData, 'red', 3, 1, 0)
+          this.setPolylineFn(item.lineData, 'red', 3, 1, 0, item.name, item.id)
         } else {
-          this.setPolylineFn(item.lineData, 'blue', 3, 1, 0)
+          this.setPolylineFn(item.lineData, 'blue', 3, 1, 0, item.name, item.id)
         }
         // // 文字标注
         // let latArr = [],
@@ -386,16 +386,18 @@ export default {
       this.$refs.addRiver.add(e.currentLnglats)
     },
     // 设置绘制的多边形
-    setPolylineFn(lineData, color, weight, opacity, fillOpacity) {
+    setPolylineFn(lineData, color, weight, opacity, fillOpacity, title, id) {
       this.polygon = new T.Polygon(lineData, {
         color: color, //线颜色
         weight: weight, //线宽
         opacity: 0.5, //透明度
         fillColor: '#FFFFFF', //填充颜色
-        fillOpacity: fillOpacity // 填充透明度
+        fillOpacity: fillOpacity, // 填充透明度
+        title: title,
+        id: id
       })
       //向地图上添加面
-      this.map.addOverLay(this.polygon)
+      this.map.addOverLay(this.polygon, {})
       this.polygon.addEventListener('click', this.polygonClick)
       this.polygon.addEventListener('mouseover', this.polygonMouseover)
       this.polygon.addEventListener('mousemove', this.polygonMousemove)
@@ -403,6 +405,7 @@ export default {
     },
     // 多边形点击事件
     polygonClick(index) {
+      console.log(index)
       let arr = [],
         findIndex1 = '',
         findIndex2 = '',
