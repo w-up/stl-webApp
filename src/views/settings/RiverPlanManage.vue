@@ -170,179 +170,175 @@ const formTailLayout = {
   labelCol: { span: 7 },
   wrapperCol: { span: 17 }
 }
-
 import { TreeSelect } from 'ant-design-vue'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
 const treeData = [
-  {
-    title: '360',
-    value: '0-0',
-    key: '0-0',
-    children: [
-      {
-        title: '360调查点1',
-        value: '0-0-0',
-        key: '0-0-0',
-        riverData: [
-          {
-            lat: 31.24539,
-            lng: 121.48686
-          },
-          {
-            lat: 31.24616,
-            lng: 121.48411
-          },
-          {
-            lat: 31.2466,
-            lng: 121.4824
-          },
-          {
-            lat: 31.24612,
-            lng: 121.48051
-          },
-          {
-            lat: 31.24484,
-            lng: 121.47901
-          },
-          {
-            lat: 31.24462,
-            lng: 121.47939
-          },
-          {
-            lat: 31.24543,
-            lng: 121.48089
-          },
-          {
-            lat: 31.2459,
-            lng: 121.48261
-          },
-          {
-            lat: 31.2448,
-            lng: 121.4857
-          },
-          {
-            lat: 31.2444,
-            lng: 121.4872
-          }
-        ]
-      },
-      {
-        title: '360调查点2',
-        value: '0-0-1',
-        key: '0-0-1',
-        riverData: [
-          {
-            lat: 31.21882,
-            lng: 121.50364
-          },
-          {
-            lat: 31.21265,
-            lng: 121.50227
-          },
-          {
-            lat: 31.20583,
-            lng: 121.49703
-          },
-          {
-            lat: 31.19915,
-            lng: 121.49197
-          },
-          {
-            lat: 31.19702,
-            lng: 121.49591
-          },
-          {
-            lat: 31.2164,
-            lng: 121.50759
-          },
-          {
-            lat: 31.21948,
-            lng: 121.50759
-          }
-        ]
-      },
-      {
-        title: '360调查点3',
-        value: '0-0-2',
-        key: '0-0-2',
-        riverData: [
-          {
-            lat: 31.25153,
-            lng: 121.52409
-          },
-          {
-            lat: 31.25355,
-            lng: 121.53085
-          },
-          {
-            lat: 31.25858,
-            lng: 121.53934
-          },
-          {
-            lat: 31.25535,
-            lng: 121.54334
-          },
-          {
-            lat: 31.2499,
-            lng: 121.53353
-          },
-          {
-            lat: 31.24786,
-            lng: 121.52737
-          },
-          {
-            lat: 31.24682,
-            lng: 121.51709
-          },
-          {
-            lat: 31.25111,
-            lng: 121.51711
-          }
-        ]
-      }
-    ]
-  },
-  {
-    title: '人工调查点',
-    value: '0-1',
-    key: '0-1',
-    children: [
-      {
-        title: '调查点1',
-        value: '0-1-0',
-        key: '0-1-0',
-        riverData: [
-          {
-            lat: 31.24539,
-            lng: 121.48686
-          }
-        ]
-      },
-      {
-        title: '调查点2',
-        value: '0-1-1',
-        key: '0-1-1',
-        riverData: [
-          {
-            lat: 31.21882,
-            lng: 121.50364
-          }
-        ]
-      },
-      {
-        title: '调查点3',
-        value: '0-1-2',
-        key: '0-1-2',
-        riverData: [
-          {
-            lat: 31.25153,
-            lng: 121.52409
-          }
-        ]
-      }
-    ]
-  }
+  // {
+  //   title: '360',
+  //   key: 'wqewfsaf',
+  //   children: [
+  //     {
+  //       title: '360调查点1',
+  //       key: 'adasdwqeqwe',
+  //       riverData: [
+  //         {
+  //           lat: 31.24539,
+  //           lng: 121.48686
+  //         },
+  //         {
+  //           lat: 31.24616,
+  //           lng: 121.48411
+  //         },
+  //         {
+  //           lat: 31.2466,
+  //           lng: 121.4824
+  //         },
+  //         {
+  //           lat: 31.24612,
+  //           lng: 121.48051
+  //         },
+  //         {
+  //           lat: 31.24484,
+  //           lng: 121.47901
+  //         },
+  //         {
+  //           lat: 31.24462,
+  //           lng: 121.47939
+  //         },
+  //         {
+  //           lat: 31.24543,
+  //           lng: 121.48089
+  //         },
+  //         {
+  //           lat: 31.2459,
+  //           lng: 121.48261
+  //         },
+  //         {
+  //           lat: 31.2448,
+  //           lng: 121.4857
+  //         },
+  //         {
+  //           lat: 31.2444,
+  //           lng: 121.4872
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       title: '360调查点2',
+  //       value: '0-0-1',
+  //       key: '0-0-1',
+  //       riverData: [
+  //         {
+  //           lat: 31.21882,
+  //           lng: 121.50364
+  //         },
+  //         {
+  //           lat: 31.21265,
+  //           lng: 121.50227
+  //         },
+  //         {
+  //           lat: 31.20583,
+  //           lng: 121.49703
+  //         },
+  //         {
+  //           lat: 31.19915,
+  //           lng: 121.49197
+  //         },
+  //         {
+  //           lat: 31.19702,
+  //           lng: 121.49591
+  //         },
+  //         {
+  //           lat: 31.2164,
+  //           lng: 121.50759
+  //         },
+  //         {
+  //           lat: 31.21948,
+  //           lng: 121.50759
+  //         }
+  //       ] 
+  //     },
+  //     {
+  //       title: '360调查点3',
+  //       value: '0-0-2',
+  //       key: '0-0-2',
+  //       riverData: [
+  //         {
+  //           lat: 31.25153,
+  //           lng: 121.52409
+  //         },
+  //         {
+  //           lat: 31.25355,
+  //           lng: 121.53085
+  //         },
+  //         {
+  //           lat: 31.25858,
+  //           lng: 121.53934
+  //         },
+  //         {
+  //           lat: 31.25535,
+  //           lng: 121.54334
+  //         },
+  //         {
+  //           lat: 31.2499,
+  //           lng: 121.53353
+  //         },
+  //         {
+  //           lat: 31.24786,
+  //           lng: 121.52737
+  //         },
+  //         {
+  //           lat: 31.24682,
+  //           lng: 121.51709
+  //         },
+  //         {
+  //           lat: 31.25111,
+  //           lng: 121.51711
+  //         }
+  //       ] 
+  //     }
+  //   ]
+  // },
+  // {
+  //   title: '人工调查点',
+  //   value: '0-1',
+  //   key: '0-1',
+  //   children: [
+  //     {
+  //       title: '调查点1',
+  //       value: '0-1-0',
+  //       key: '0-1-0',
+  //       riverData: [
+  //         {
+  //           lat: 31.24539,
+  //           lng: 121.48686
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       title: '调查点2',
+  //       value: '0-1-1',
+  //       key: '0-1-1',
+  //       riverData: [
+  //         {
+  //           lat: 31.21882,
+  //           lng: 121.50364
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       title: '调查点3',
+  //       key: '0-1-2',
+  //       riverData: [
+  //         {
+  //           lat: 31.25153,
+  //           lng: 121.52409
+  //         }
+  //       ]
+  //     }
+  //   ]
+  // }
 ]
 export default {
   name: 'RiverPlanManage',
@@ -351,27 +347,38 @@ export default {
   },
   data() {
     return {
+      list:{
+        id:'',
+        projectId:'5da7d092ea6c156d792df816',
+        name:'',
+        lineId:[],
+        pointId:[],
+        primary:false,
+      },
+      defaultRiver: '',
       addRiverShow: false, // 气泡卡片
+      lineList:[],//任务路线
+      spotList:[],//任务点
       // activeKey: 0, //
       lineTaskList: [
-        {
-          id: 0,
-          name: '黄浦江方案1',
-          key: 0,
-          default: true
-        },
-        {
-          id: 1,
-          name: '黄浦江方案2',
-          key: 1,
-          default: false
-        },
-        {
-          id: 2,
-          name: '黄浦江方案3',
-          key: 2,
-          default: false
-        }
+        // {
+        //   id: 0,
+        //   name: '黄浦江方案1',
+        //   key: 0,
+        //   default: true
+        // },
+        // {
+        //   id: 1,
+        //   name: '黄浦江方案2',
+        //   key: 1,
+        //   default: false
+        // },
+        // {
+        //   id: 2,
+        //   name: '黄浦江方案3',
+        //   key: 2,
+        //   default: false
+        // }
       ],
       customStyle: 'background: #fff;margin: 0;overflow: hidden',
       addRiverShow: false,
@@ -385,46 +392,43 @@ export default {
 
       SHOW_PARENT,
       value: '',
-
-      defaultRiver: '黄浦江',
       riverList: [
-        {
-          id: 0,
-          name: '黄浦江',
-          clicked: true
-        },
-        {
-          id: 1,
-          name: '大治河',
-          clicked: false
-        },
-        {
-          id: 2,
-          name: '川杨河',
-          clicked: false
-        },
-        {
-          id: 3,
-          name: '蕰藻浜',
-          clicked: false
-        },
-        {
-          id: 4,
-          name: '龙华港',
-          clicked: false
-        },
-        {
-          id: 5,
-          name: '太浦河',
-          clicked: false
-        },
-        {
-          id: 6,
-          name: '太湖',
-          clicked: false
-        }
+        // {
+        //   id: 0,
+        //   name: '黄浦江',
+        //   clicked: true
+        // },
+        // {
+        //   id: 1,
+        //   name: '大治河',
+        //   clicked: false
+        // },
+        // {
+        //   id: 2,
+        //   name: '川杨河',
+        //   clicked: false
+        // },
+        // {
+        //   id: 3,
+        //   name: '蕰藻浜',
+        //   clicked: false
+        // },
+        // {
+        //   id: 4,
+        //   name: '龙华港',
+        //   clicked: false
+        // },
+        // {
+        //   id: 5,
+        //   name: '太浦河',
+        //   clicked: false
+        // },
+        // {
+        //   id: 6,
+        //   name: '太湖',
+        //   clicked: false
+        // }
       ],
-
       expandedKeys: ['0-0-0', '0-0-1'],
       autoExpandParent: true,
       checkedKeys: ['0-0-0'],
@@ -439,6 +443,7 @@ export default {
   },
   mounted() {
     this.initCruisePlan()
+    this.getList()
   },
   watch: {
     checkedKeys(val) {
@@ -446,6 +451,64 @@ export default {
     }
   },
   methods: {
+    getList(){
+      getRiverList().then(res => {
+        var arr = res.data.data
+        arr.forEach(v => {
+          v.clicked = false
+        });
+        this.riverList =arr
+        
+      }).catch(err => {
+
+      })
+    },
+    //编辑
+    edit(id){
+      this.addLineShow = true
+      programmeDetail(id).then(res => {
+        var arr = res.data
+        this.list.id=arr.id
+        this.list.name=arr.name
+        this.list.primary=arr.primary
+        var lineId=[]
+        var pointId = []
+        if (arr.lines!=null) {
+          arr.lines.forEach(v => {
+            lineId.push(v.id)
+          });
+        }
+        if (arr.points!=null) {
+          arr.points.forEach(v => {
+            pointId.push(v.id)
+          });
+        }
+        console.log(lineId,pointId);
+        
+        this.list.lineId =lineId
+        this.list.pointId=pointId
+      }).catch(err => {
+
+      })
+    },
+    //删除
+    spotDel(){
+      if (this.list.id == '') {
+         this.$message.error('请先保存任务')
+      }else{
+        programmeRemove(this.list.id).then(res => {
+          this.$message.success('删除成功')
+          this.taskCancel()
+          this.chooseRiver()
+        }).catch(err => {
+            this.$message.error(err.response.data.message);
+        })
+      }
+      
+    },
+    cancelDelete(e) {
+      // this.$message.error('Click on No')
+    },
     initCruisePlan() {
       const that = this
       //初始化地图控件
@@ -471,6 +534,24 @@ export default {
         let sn = d.getElementsByTagName('script')[0]
         sn.parentNode.insertBefore(c, sn)
         sn.parentNode.insertBefore(s, sn);*/
+    },
+    //请求点线任务
+    collapseChange(key){
+      // console.log(key);
+      // if (key != undefined) {
+      //   taskSpotList(key).then(res => {
+      //     console.log(res);
+          
+      //   }).catch(err => {
+
+      //   })
+      //   taskLineList(key).then(res => {
+      //     console.log(res);
+          
+      //   }).catch(err => {
+
+      //   })
+      // }
     },
     hiddenMenuChange(expandedKeys) {
       console.log('onExpand', expandedKeys)
@@ -545,6 +626,8 @@ export default {
       this.map.removeEventListener('click', this.MapClick)
     },
     onSelect(selectedKeys, info) {
+      console.log(selectedKeys,info);
+      
       this.selectedKeys = selectedKeys
       var info = info.node.dataRef
       this.clearLays()
@@ -627,13 +710,23 @@ export default {
     },
     // 设为默认方案
     defaultPlan(index) {
-      this.lineTaskList.forEach(value => {
-        if (value.name === index) {
-          value.default = true
-        } else {
-          value.default = false
-        }
+      var data ={
+        id:index,
+        riverId:this.defaultRiver
+      }
+      programmePrimary(data).then(res => {
+        this.$message.success('保存成功')
+        this.chooseRiver()
+      }).catch(err => {
+        this.$message.error(err.response.data.message)
       })
+      // this.lineTaskList.forEach(value=>{
+      //   if (value.name === index) {
+      //     value.default = true
+      //   } else {
+      //     value.default = false
+      //   }
+      // })
     },
 
     // 创建方案
@@ -643,6 +736,47 @@ export default {
     // 关联河道
     chooseRiver(index) {
       console.log(`selected ${index}`)
+      programmeList(this.defaultRiver).then(res => {
+        var arr = res.data.data
+        for (let a = 0; a < arr.length; a++) {
+          if (arr[a].points != null) {
+            arr[a].points.forEach(v => {
+              v.riverData =[{lat:'',lng:'',}]
+              v.title= v.name 
+              v.key = v.id
+              v.riverData[0].lat = v.coordinate[1]
+              v.riverData[0].lng = v.coordinate[0]
+            });
+          }else{
+            arr[a].points=[]
+          }
+          if (arr[a].lines != null) {
+            arr[a].lines.forEach(v => {
+              v.riverData =[]
+              v.title= v.name 
+              v.key = v.id
+            });
+          }else{
+            arr[a].lines=[]
+          }
+          arr[a].dataTree= arr[a].lines.concat(arr[a].points);
+        }
+        this.lineTaskList = arr
+      }).catch(err => {
+
+      })
+      taskSpotList(this.defaultRiver).then(res => {
+        var arr = res.data
+        this.spotList = arr
+      }).catch(err => {
+
+      })
+      taskLineList(this.defaultRiver).then(res => {
+        var arr = res.data
+        this.lineList = arr
+      }).catch(err => {
+
+      })
       this.riverList.forEach(value => {
         if (value.name === index) {
           value.clicked = true
@@ -657,9 +791,24 @@ export default {
     // 线路任务按钮
     taskCancel() {
       this.addLineShow = false
+      this.list.id = ''
+      this.list.name = ''
+      this.list.lineId = []
+      this.list.pointId = []
+      this.list.primary = false
     },
     taskSave() {
-      this.addLineShow = false
+      var data = this.list
+      data.lineId = data.lineId.join(",")
+      data.pointId = data.pointId.join(",")
+      data.riverId = this.defaultRiver
+      programmeSave(data).then(res => {
+        this.addLineShow = false
+        this.$message.success('保存成功')
+        this.chooseRiver()
+      }).catch(err => {
+        this.$message.error(err.response.data.message)
+      })
     },
     // 添加调查点任务
     addRiverPlan(value) {

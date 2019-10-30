@@ -71,7 +71,7 @@
       @ok="handleOk1"
       @cancel="handleCancel1"
     >
-      <el-form ref="formValidate" :model="equipmentList" :rules="ruleValidate" >
+      <el-form ref="formValidate" :model="equipmentList" :rules="ruleValidate" label-width="100px" >
         <el-form-item label="上级项目" prop="name">
           <el-input v-model="equipmentList.name" disabled placeholder="请输入" style="width:200px" />
         </el-form-item>
