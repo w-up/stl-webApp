@@ -15,115 +15,115 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="名称">
-              <a-input placeholder="名称" v-model="pointInfo.name"/>
+              <a-input v-model="list.name" placeholder="名称" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="编号">
-              <a-input placeholder="编号" />
+              <a-input v-model="list.code" placeholder="编号" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="等级">
-              <a-input placeholder="等级" />
+              <a-input v-model="list.level" placeholder="等级" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="市考断面">
-              <a-input placeholder="市考断面" />
+              <a-input v-model="list.section" placeholder="市考断面" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="地址">
-              <a-input placeholder="请输入地址" />
+              <a-input v-model="list.address" placeholder="请输入地址" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="经度">
-              <a-input readOnly placeholder="经度" v-model="pointInfo.latlng.lng"/>
+              <a-input readOnly v-model="list.lng" placeholder="经度" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="纬度">
-              <a-input readOnly placeholder="纬度" v-model="pointInfo.latlng.lat"/>
+              <a-input readOnly v-model="list.lat" placeholder="纬度" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="水体名称">
-              <a-input placeholder="等级" />
+              <a-input v-model="list.waterName" placeholder="水体名称" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="水体编码">
-              <a-input placeholder="市考断面" />
+              <a-input v-model="list.waterCode" placeholder="水体编码" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="管理等级">
-              <a-input placeholder="等级" />
+              <a-input v-model="list.manageLevel" placeholder="管理等级" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="水体分类">
-              <a-input placeholder="市考断面" />
+              <a-input v-model="list.waterType" placeholder="水体分类" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="行政区">
-              <a-input placeholder="等级" />
+              <a-input v-model="list.area" placeholder="行政区" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所在街道">
-              <a-input placeholder="市考断面" />
+              <a-input v-model="list.town" placeholder="所在街道" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所在村">
-              <a-input placeholder="等级" />
+              <a-input v-model="list.village" placeholder="所在村" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="责任单位">
-              <a-input placeholder="市考断面" />
+              <a-input v-model="list.dutyOrg" placeholder="责任单位" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="检测单位">
-              <a-input placeholder="等级" />
+              <a-input v-model="list.monitorOrg" placeholder="检测单位" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属部门">
-              <a-input placeholder="市考断面" />
+              <a-input v-model="list.department" placeholder="所属部门" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="原检测站编码">
-              <a-input placeholder="请输入姓名" />
+              <a-input v-model="list.originalCode" placeholder="原检测站编码" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="备注">
-              <a-input placeholder="请输入姓名" />
+              <a-input v-model="list.remark" placeholder="备注" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -132,7 +132,7 @@
             <a-button type="primary" block @click="handleCancel">取消</a-button>
           </a-col>
           <a-col :span="4">
-            <a-button type="primary" block @click="handleCancel">保存</a-button>
+            <a-button type="primary" block @click="handleSave">保存</a-button>
           </a-col>
         </a-row>
       </a-form>
@@ -141,14 +141,38 @@
 </template>
 
 <script>
-const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+import {testingSave,testingDetail} from '@/api/login'
 export default {
   props: {
     //接收父组件传来的值
-    pointInfo: { id: Number, name: String, clicked: Boolean, latlng: { lat: Number, lng: Number } },
+    pointInfo: { id: '', name: '', latlng: { lat: '', lng: '' } },
   },
   data() {
     return {
+      list:{
+        id:'',
+        projectId:'5da7d092ea6c156d792df816',
+        type:'',
+        lng:'',
+        lat:'',
+        name:'',
+        code:'',
+        level:'',
+        section:'',
+        waterName:'',
+        waterCode:'',
+        manageLevel:'',
+        waterType:'',
+        area:'',
+        town:'',
+        village:'',
+        dutyOrg:'',
+        monitorOrg:'',
+        department:'',
+        originalCode:'',
+        remark:'',
+        address:'',
+      },
       labelCol: {
         xs: { span: 18 },
         sm: { span: 6 }
@@ -161,50 +185,6 @@ export default {
       confirmLoading: false,
 
       selectedItems: [], //风险源类型
-      headers: {
-        authorization: 'authorization-text'
-      },
-
-      options: [
-        {
-          value: 'zhejiang',
-          label: 'Zhejiang',
-          children: [
-            {
-              value: 'hangzhou',
-              label: 'Hangzhou',
-              children: [
-                {
-                  value: 'xihu',
-                  label: 'West Lake'
-                },
-                {
-                  value: 'xiasha',
-                  label: 'Xia Sha',
-                  disabled: true
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: 'jiangsu',
-          label: 'Jiangsu',
-          children: [
-            {
-              value: 'nanjing',
-              label: 'Nanjing',
-              children: [
-                {
-                  value: 'zhonghuamen',
-                  label: 'Zhong Hua men'
-                }
-              ]
-            }
-          ]
-        }
-      ],
-      form: this.$form.createForm(this)
     }
   },
   computed: {
@@ -215,32 +195,45 @@ export default {
   mounted() {
   },
   methods: {
-    add() {
+    add(e,type) {
+      console.log(e,type);
+      if (type ==1) {
+        this.list.type ='fixed'
+      }else{
+        this.list.type ='manual'
+      }
+      this.list.lng = e.lng
+      this.list.lat = e.lat
       this.visible = true
     },
-    // 添加河流
-    addRiver(value) {
-      console.log(value)
-    },
-    // 风险源类型
-    handleChange(selectedItems) {
-      this.selectedItems = selectedItems
-      console.log(selectedItems)
-    },
-    // 文件上传
-    fileUpload(info) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList)
-      }
-      if (info.file.status === 'done') {
-        this.$message.success(`${info.file.name} file uploaded successfully`)
-      } else if (info.file.status === 'error') {
-        this.$message.error(`${info.file.name} file upload failed.`)
-      }
-    },
-    // 标签
-    handleChangeTag(value) {
-      console.log(`selected ${value}`)
+    add1(id) {
+      testingDetail(id).then(res => {
+        var arr = res.data
+        this.list.id=arr.id
+        this.list.type=arr.type.code
+        this.list.lng=arr.coordinate.lng
+        this.list.lat=arr.coordinate.lat
+        this.list.name=arr.name
+        this.list.code=arr.code
+        this.list.address=arr.address
+        this.list.level=arr.level
+        this.list.section=arr.section
+        this.list.waterName=arr.waterName
+        this.list.waterCode=arr.waterCode
+        this.list.manageLevel=arr.manageLevel
+        this.list.waterType=arr.waterType
+        this.list.area=arr.area
+        this.list.town=arr.town
+        this.list.village=arr.village
+        this.list.dutyOrg=arr.dutyOrg
+        this.list.monitorOrg=arr.monitorOrg
+        this.list.department=arr.department
+        this.list.originalCode=arr.originalCode
+        this.list.remark=arr.remark
+        this.visible = true
+      }).catch(err => {
+        this.$message.error(err.response.data.message);
+      })
     },
     handleSubmit() {
       const {
@@ -260,12 +253,45 @@ export default {
         }
       })
     },
+    handleSave() {
+      var data = this.list
+      data.coordinate = data.lng + ','+data.lat
+      testingSave(data).then(res => {
+        if (this.list.type == "fixed") {
+          this.$parent.getFixedList();
+        }else{
+          this.$parent.getManualList();
+        }
+        this.handleCancel()     
+        this.$message.success('保存成功')
+
+      }).catch(err => {
+          this.$message.error(err.response.data.message);
+      })
+    },
     handleCancel() {
       this.visible = false
-    },
-    // 选择地址
-    onChange(value, selectedOptions) {
-      console.log(value, selectedOptions)
+      this.list.id=''
+      this.list.type=''
+      this.list.lng=''
+      this.list.lat=''
+      this.list.name=''
+      this.list.code=''
+      this.list.level=''
+      this.list.section=''
+      this.list.waterName=''
+      this.list.waterCode=''
+      this.list.manageLevel=''
+      this.list.waterType=''
+      this.list.area=''
+      this.list.town=''
+      this.list.village=''
+      this.list.dutyOrg=''
+      this.list.monitorOrg=''
+      this.list.department=''
+      this.list.originalCode=''
+      this.list.remark=''
+      this.list.address=''
     },
     filter(inputValue, path) {
       return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)

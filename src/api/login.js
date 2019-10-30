@@ -379,7 +379,7 @@ export function programmeDetail(id) {
   })
 }
 //方案删除
-export function programmeRemove(parameter) {
+export function programmeRemove(id) {
   return axios({
     url: '/server/data/admin/scheme/remove/'+id,
     method: 'post',
@@ -393,8 +393,35 @@ export function programmePrimary(parameter) {
     data:parameter
   })
 }
-
-
+//水质监测分页
+export function testingPage(id) {
+  return axios({
+    url: '/server/data/admin/monitor/page?projectId=5da7d092ea6c156d792df816&type='+id,
+    method: 'get',
+  })
+}
+//水质保存
+export function testingSave(parameter) {
+  return axios({
+    url: '/server/data/admin/monitor/save',
+    method: 'post',
+    data:parameter
+  })
+}
+//水质详情
+export function testingDetail(id) {
+  return axios({
+    url: '/server/data/admin/monitor/detail/'+id,
+    method: 'get'
+  })
+}
+//水质删除
+export function testingDel(id) {
+  return axios({
+    url: '/server/data/admin/monitor/remove/'+id,
+    method: 'post',
+  })
+}
 
 
 export function getSmsCaptcha (parameter) {

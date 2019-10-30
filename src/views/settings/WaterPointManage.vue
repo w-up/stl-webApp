@@ -24,7 +24,7 @@
                 slot="renderItem"
                 slot-scope="item, index"
                 :key="index"
-                @click="fixedPoint(item.name)"
+                @click="fixedPoint(item.id)"
                 :class="{active_item: item.clicked}"
               >
                 <a-row style="width:100%">
@@ -52,7 +52,7 @@
                 slot="renderItem"
                 slot-scope="item, index"
                 :key="index"
-                @click="peoplePoint(item.name)"
+                @click="fixedPoint(item.id)"
                 :class="{active_item: item.clicked}"
               >
                 <a-row style="width:100%">
@@ -83,7 +83,7 @@
 
 <script>
 import AddWaterPoint from './modules/AddWaterPoint.vue'
-
+import {testingPage,testingDel} from '@/api/login'
 export default {
   name: 'TaskManage',
   components: {
@@ -93,16 +93,16 @@ export default {
     return {
       addRiverShow: false, // 气泡卡片
       actionTab: '1', //tab
-
+      type:'1',
       fixedPointList: [
-        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.21493, lng: 121.49566 } },
-        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
-        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
+        // { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.21493, lng: 121.49566 } },
+        // { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
+        // { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
       ],
       peoplePointList: [
-        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.26493, lng: 121.45566 } },
-        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.27344, lng: 121.43892 } },
-        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.25649, lng: 121.43712 } }
+        // { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.26493, lng: 121.45566 } },
+        // { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.27344, lng: 121.43892 } },
+        // { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.25649, lng: 121.43712 } }
       ],
       addRiverShow: false,
       addLineShow: false, // 线路任务显示
@@ -115,20 +115,51 @@ export default {
       map: {},
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
       mapPoint: new Map(),
-      pointInfo: { id: Number, name: String, clicked: Boolean, latlng: { lat: Number, lng: Number } }// 点信息
+      pointInfo: { id: '', name: '', clicked: '', latlng: { lat: '', lng: '' } }// 点信息
     }
   },
   mounted() {
     this.initMap()
+    this.getFixedList()
+    this.getManualList()
   },
   methods: {
+    //固定监测分页
+    getFixedList(){
+      testingPage('fixed').then(res => {
+        var arr = res.data.data
+        arr.forEach(v => {
+          v.latlng = v.coordinate
+          v.clicked = false
+        });
+        console.log(arr);
+        
+        this.fixedPointList = arr
+        this.allPointTask(this.fixedPointList)
+      }).catch(err => {
+
+      })
+    },
+    //人工监测分页
+    getManualList(){
+      testingPage('manual').then(res => {
+        var arr = res.data.data
+        arr.forEach(v => {
+          v.latlng = v.coordinate
+          v.clicked = false
+        });
+        this.peoplePointList = arr      
+      }).catch(err => {
+
+      })
+    },
     initMap() {
       //初始化地图控件
       let zoom = 14
       this.map = new T.Map('map')
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
       this.markerTool = new T.MarkTool(this.map, { follow: true })
-      this.allPointTask(this.fixedPointList)
+      
     },
     allPointTask(pointLists) {
       this.map.clearOverLays()
@@ -166,23 +197,27 @@ export default {
     },
     // 任务点点击事件
     taskPointClick(index) {
-      console.log(index.lnglat.lat, index.lnglat.lng)
-      this.$refs.addWaterPoint.add()
+      // console.log(index)
+      // this.$refs.addWaterPoint.add()
       if (this.actionTab == 1) {
         for (const item of this.fixedPointList) {
           if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
             item.clicked = true
             this.pointInfo = item
+            this.$refs.addWaterPoint.add1(item.id)
           } else {
             item.clicked = false
+            this.$refs.addWaterPoint.add1(item.id)
           }
         }
       } else {
         for (const item of this.peoplePointList) {
           if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
             item.clicked = true
+            this.$refs.addWaterPoint.add1(item.id)
             this.pointInfo = item
           } else {
+            this.$refs.addWaterPoint.add1(item.id)
             item.clicked = false
           }
         }
@@ -196,7 +231,7 @@ export default {
     },
     // 返回标注点的坐标
     addTaskPointed(e) {
-      this.$refs.addWaterPoint.add()
+      this.$refs.addWaterPoint.add(e.currentLnglat,this.type)
       console.log(e)
     },
 
@@ -204,6 +239,7 @@ export default {
     callback(key) {
       let arr = []
       this.map.clearOverLays()
+      this.type = key
       if (key == 1) {
         this.allPointTask(this.fixedPointList)
         for (const item of this.fixedPointList) {
@@ -225,16 +261,15 @@ export default {
     },
     // 固定监测点
     fixedPoint(index) {
-      this.defaultRiver = index
-      this.fixedPointList.forEach(value => {
-        if (value.name === index) {
-          value.clicked = true
-          let arr = []
-          arr.push(value.latlng)
-          this.map.setViewport(arr)
-        } else {
-          value.clicked = false
+      testingDel(index).then(res => {
+        if (this.type == 1) {
+          this.$parent.getFixedList();
+        }else{
+          this.$parent.getManualList();
         }
+        this.$message.success('删除成功')
+      }).catch(err => {
+        this.$message.error(err.response.data.message);
       })
     },
     // 人工监测点

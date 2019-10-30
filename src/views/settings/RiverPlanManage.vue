@@ -33,19 +33,19 @@
             :key="index"
           >{{item.name}}</a-select-option>
         </a-select>
-        <a-collapse v-show="!addLineShow" size="small" style="margin-top:10px;">
-          <a-collapse-panel v-for="item in lineTaskList" :key="item.key" :style="customStyle">
+        <a-collapse v-show="!addLineShow" defaultActiveKey="1" accordion size="small" style="margin-top:10px;" @change="collapseChange">
+          <a-collapse-panel v-for="item in lineTaskList" :key="item.id" :style="customStyle" class="custom_list">
             <template slot="header">
               <a-row style="width:100%">
                 <a-col :span="9">{{item.name}}</a-col>
                 <a-col :span="15" style="text-align:right;padding-right:10px;">
-                  <a-button size="small" type="primary" style="margin-right:5px;" >编辑</a-button>
+                  <a-button size="small" type="primary" style="margin-right:5px;" @click="edit(item.id)">编辑</a-button>
                   <a-button size="small" @click.stop="defaultPlan(item.id)">{{item.primary?"默认":"设为默认"}}</a-button>
                 </a-col>
               </a-row>
             </template>
             <a-tree defaultExpandAll @select="onSelect" :selectedKeys="selectedKeys"
-              :treeData="treeData"
+              :treeData="item.dataTree"
             ></a-tree>
             <!-- <a-directory-tree multiple defaultExpandAll @select="riverPlan" @expand="onExpand">
               <a-tree-node title="360" key="0-0">
@@ -145,10 +145,21 @@
         justify="space-around"
         align="middle"
       >
-        <a-col :span="8">
+        <a-col :span="7">
           <a-button type="primary" block @click="taskCancel">取消</a-button>
         </a-col>
-        <a-col :span="8">
+        <a-col :span="7">
+          <a-popconfirm
+            title="确定要删除吗?"
+            @confirm="spotDel()"
+            @cancel="cancelDelete"
+            okText="确定"
+            cancelText="取消"
+          >
+            <a-button type="primary" block >删除</a-button>
+          </a-popconfirm>
+        </a-col>
+        <a-col :span="7">
           <a-button type="primary" block @click="taskSave">保存</a-button>
         </a-col>
       </a-row>
@@ -170,174 +181,171 @@ import { TreeSelect } from 'ant-design-vue'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
 const treeData = [
-  {
-    title: '360',
-    value: '0-0',
-    key: '0-0',
-    children: [
-      {
-        title: '360调查点1',
-        value: '0-0-0',
-        key: '0-0-0',
-        riverData: [
-          {
-            lat: 31.24539,
-            lng: 121.48686
-          },
-          {
-            lat: 31.24616,
-            lng: 121.48411
-          },
-          {
-            lat: 31.2466,
-            lng: 121.4824
-          },
-          {
-            lat: 31.24612,
-            lng: 121.48051
-          },
-          {
-            lat: 31.24484,
-            lng: 121.47901
-          },
-          {
-            lat: 31.24462,
-            lng: 121.47939
-          },
-          {
-            lat: 31.24543,
-            lng: 121.48089
-          },
-          {
-            lat: 31.2459,
-            lng: 121.48261
-          },
-          {
-            lat: 31.2448,
-            lng: 121.4857
-          },
-          {
-            lat: 31.2444,
-            lng: 121.4872
-          }
-        ]
-      },
-      {
-        title: '360调查点2',
-        value: '0-0-1',
-        key: '0-0-1',
-        riverData: [
-          {
-            lat: 31.21882,
-            lng: 121.50364
-          },
-          {
-            lat: 31.21265,
-            lng: 121.50227
-          },
-          {
-            lat: 31.20583,
-            lng: 121.49703
-          },
-          {
-            lat: 31.19915,
-            lng: 121.49197
-          },
-          {
-            lat: 31.19702,
-            lng: 121.49591
-          },
-          {
-            lat: 31.2164,
-            lng: 121.50759
-          },
-          {
-            lat: 31.21948,
-            lng: 121.50759
-          }
-        ] 
-      },
-      {
-        title: '360调查点3',
-        value: '0-0-2',
-        key: '0-0-2',
-        riverData: [
-          {
-            lat: 31.25153,
-            lng: 121.52409
-          },
-          {
-            lat: 31.25355,
-            lng: 121.53085
-          },
-          {
-            lat: 31.25858,
-            lng: 121.53934
-          },
-          {
-            lat: 31.25535,
-            lng: 121.54334
-          },
-          {
-            lat: 31.2499,
-            lng: 121.53353
-          },
-          {
-            lat: 31.24786,
-            lng: 121.52737
-          },
-          {
-            lat: 31.24682,
-            lng: 121.51709
-          },
-          {
-            lat: 31.25111,
-            lng: 121.51711
-          }
-        ] 
-      }
-    ]
-  },
-  {
-    title: '人工调查点',
-    value: '0-1',
-    key: '0-1',
-    children: [
-      {
-        title: '调查点1',
-        value: '0-1-0',
-        key: '0-1-0',
-        riverData: [
-          {
-            lat: 31.24539,
-            lng: 121.48686
-          }
-        ]
-      },
-      {
-        title: '调查点2',
-        value: '0-1-1',
-        key: '0-1-1',
-        riverData: [
-          {
-            lat: 31.21882,
-            lng: 121.50364
-          }
-        ]
-      },
-      {
-        title: '调查点3',
-        value: '0-1-2',
-        key: '0-1-2',
-        riverData: [
-          {
-            lat: 31.25153,
-            lng: 121.52409
-          }
-        ]
-      }
-    ]
-  }
+  // {
+  //   title: '360',
+  //   key: 'wqewfsaf',
+  //   children: [
+  //     {
+  //       title: '360调查点1',
+  //       key: 'adasdwqeqwe',
+  //       riverData: [
+  //         {
+  //           lat: 31.24539,
+  //           lng: 121.48686
+  //         },
+  //         {
+  //           lat: 31.24616,
+  //           lng: 121.48411
+  //         },
+  //         {
+  //           lat: 31.2466,
+  //           lng: 121.4824
+  //         },
+  //         {
+  //           lat: 31.24612,
+  //           lng: 121.48051
+  //         },
+  //         {
+  //           lat: 31.24484,
+  //           lng: 121.47901
+  //         },
+  //         {
+  //           lat: 31.24462,
+  //           lng: 121.47939
+  //         },
+  //         {
+  //           lat: 31.24543,
+  //           lng: 121.48089
+  //         },
+  //         {
+  //           lat: 31.2459,
+  //           lng: 121.48261
+  //         },
+  //         {
+  //           lat: 31.2448,
+  //           lng: 121.4857
+  //         },
+  //         {
+  //           lat: 31.2444,
+  //           lng: 121.4872
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       title: '360调查点2',
+  //       value: '0-0-1',
+  //       key: '0-0-1',
+  //       riverData: [
+  //         {
+  //           lat: 31.21882,
+  //           lng: 121.50364
+  //         },
+  //         {
+  //           lat: 31.21265,
+  //           lng: 121.50227
+  //         },
+  //         {
+  //           lat: 31.20583,
+  //           lng: 121.49703
+  //         },
+  //         {
+  //           lat: 31.19915,
+  //           lng: 121.49197
+  //         },
+  //         {
+  //           lat: 31.19702,
+  //           lng: 121.49591
+  //         },
+  //         {
+  //           lat: 31.2164,
+  //           lng: 121.50759
+  //         },
+  //         {
+  //           lat: 31.21948,
+  //           lng: 121.50759
+  //         }
+  //       ] 
+  //     },
+  //     {
+  //       title: '360调查点3',
+  //       value: '0-0-2',
+  //       key: '0-0-2',
+  //       riverData: [
+  //         {
+  //           lat: 31.25153,
+  //           lng: 121.52409
+  //         },
+  //         {
+  //           lat: 31.25355,
+  //           lng: 121.53085
+  //         },
+  //         {
+  //           lat: 31.25858,
+  //           lng: 121.53934
+  //         },
+  //         {
+  //           lat: 31.25535,
+  //           lng: 121.54334
+  //         },
+  //         {
+  //           lat: 31.2499,
+  //           lng: 121.53353
+  //         },
+  //         {
+  //           lat: 31.24786,
+  //           lng: 121.52737
+  //         },
+  //         {
+  //           lat: 31.24682,
+  //           lng: 121.51709
+  //         },
+  //         {
+  //           lat: 31.25111,
+  //           lng: 121.51711
+  //         }
+  //       ] 
+  //     }
+  //   ]
+  // },
+  // {
+  //   title: '人工调查点',
+  //   value: '0-1',
+  //   key: '0-1',
+  //   children: [
+  //     {
+  //       title: '调查点1',
+  //       value: '0-1-0',
+  //       key: '0-1-0',
+  //       riverData: [
+  //         {
+  //           lat: 31.24539,
+  //           lng: 121.48686
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       title: '调查点2',
+  //       value: '0-1-1',
+  //       key: '0-1-1',
+  //       riverData: [
+  //         {
+  //           lat: 31.21882,
+  //           lng: 121.50364
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       title: '调查点3',
+  //       key: '0-1-2',
+  //       riverData: [
+  //         {
+  //           lat: 31.25153,
+  //           lng: 121.52409
+  //         }
+  //       ]
+  //     }
+  //   ]
+  // }
 ]
 export default {
   name: 'RiverPlanManage',
@@ -462,6 +470,52 @@ export default {
 
       })
     },
+    //编辑
+    edit(id){
+      this.addLineShow = true
+      programmeDetail(id).then(res => {
+        var arr = res.data
+        this.list.id=arr.id
+        this.list.name=arr.name
+        this.list.primary=arr.primary
+        var lineId=[]
+        var pointId = []
+        if (arr.lines!=null) {
+          arr.lines.forEach(v => {
+            lineId.push(v.id)
+          });
+        }
+        if (arr.points!=null) {
+          arr.points.forEach(v => {
+            pointId.push(v.id)
+          });
+        }
+        console.log(lineId,pointId);
+        
+        this.list.lineId =lineId
+        this.list.pointId=pointId
+      }).catch(err => {
+
+      })
+    },
+    //删除
+    spotDel(){
+      if (this.list.id == '') {
+         this.$message.error('请先保存任务')
+      }else{
+        programmeRemove(this.list.id).then(res => {
+          this.$message.success('删除成功')
+          this.taskCancel()
+          this.chooseRiver()
+        }).catch(err => {
+            this.$message.error(err.response.data.message);
+        })
+      }
+      
+    },
+    cancelDelete(e) {
+      // this.$message.error('Click on No')
+    },
     initCruisePlan() {
       const that = this
       //初始化地图控件
@@ -487,6 +541,24 @@ export default {
         let sn = d.getElementsByTagName('script')[0]
         sn.parentNode.insertBefore(c, sn)
         sn.parentNode.insertBefore(s, sn);*/
+    },
+    //请求点线任务
+    collapseChange(key){
+      // console.log(key);
+      // if (key != undefined) {
+      //   taskSpotList(key).then(res => {
+      //     console.log(res);
+          
+      //   }).catch(err => {
+
+      //   })
+      //   taskLineList(key).then(res => {
+      //     console.log(res);
+          
+      //   }).catch(err => {
+
+      //   })
+      // }
     },
     hiddenMenuChange(expandedKeys) {
       console.log('onExpand', expandedKeys)
@@ -561,6 +633,8 @@ export default {
       this.map.removeEventListener('click', this.MapClick)
     },
     onSelect(selectedKeys, info) {
+      console.log(selectedKeys,info);
+      
       this.selectedKeys = selectedKeys
       var info = info.node.dataRef
       this.clearLays()
@@ -672,8 +746,30 @@ export default {
       console.log(`selected ${index}`)
       programmeList(this.defaultRiver).then(res => {
         var arr = res.data.data
+        for (let a = 0; a < arr.length; a++) {
+          if (arr[a].points != null) {
+            arr[a].points.forEach(v => {
+              v.riverData =[{lat:'',lng:'',}]
+              v.title= v.name 
+              v.key = v.id
+              v.riverData[0].lat = v.coordinate[1]
+              v.riverData[0].lng = v.coordinate[0]
+            });
+          }else{
+            arr[a].points=[]
+          }
+          if (arr[a].lines != null) {
+            arr[a].lines.forEach(v => {
+              v.riverData =[]
+              v.title= v.name 
+              v.key = v.id
+            });
+          }else{
+            arr[a].lines=[]
+          }
+          arr[a].dataTree= arr[a].lines.concat(arr[a].points);
+        }
         this.lineTaskList = arr
-        console.log(arr);
       }).catch(err => {
 
       })
@@ -703,6 +799,11 @@ export default {
     // 线路任务按钮
     taskCancel() {
       this.addLineShow = false
+      this.list.id = ''
+      this.list.name = ''
+      this.list.lineId = []
+      this.list.pointId = []
+      this.list.primary = false
     },
     taskSave() {
       var data = this.list
