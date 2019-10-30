@@ -422,6 +422,38 @@ export function testingDel(id) {
     method: 'post',
   })
 }
+//督办单分页
+export function SupervisePage() {
+  return axios({
+    url: '/server/data/admin/supervision/page?projectId=5da7d092ea6c156d792df816',
+    method: 'get',
+  })
+}
+//督办单保存
+export function SuperviseSave(parameter) {
+  return axios({
+    url: '/server/data/admin/supervision/save',
+    method: 'post',
+    data:parameter
+  })
+}
+//督办单删除
+export function SuperviseDel(id) {
+  return axios({
+    url: '/server/data/admin/supervision/remove/'+id,
+    method: 'post',
+  })
+}
+//督办单详情
+export function SuperviseDetail(id) {
+  return axios({
+    url: '/server/data/admin/supervision/detail/'+id,
+    method: 'get',
+  })
+}
+
+
+
 
 
 export function getSmsCaptcha (parameter) {

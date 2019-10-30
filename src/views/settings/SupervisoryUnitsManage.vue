@@ -72,44 +72,23 @@
 
     <div class="table-operator">
       <a-button type="primary" icon="plus" @click="$refs.addSupervisory.add()" style="margin-bottom: 15px;">添加</a-button>
-      <!-- <a-button type="dashed" @click="tableOption">{{ optionAlertShow && '关闭' || '开启' }} 多选</a-button>
-      <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1">
-            <a-icon type="delete" />删除
-          </a-menu-item> -->
-          <!-- lock | unlock -->
-          <!-- <a-menu-item key="2">
-            <a-icon type="lock" />锁定
-          </a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px">
-          批量操作
-          <a-icon type="down" />
-        </a-button>
-      </a-dropdown> -->
     </div>
-
     <a-table :columns="columns" :dataSource="loadData" bordered>
-    <!-- :alert="options.alert"
-      :rowSelection="options.rowSelection" -->
-      <span slot="serial" slot-scope="text, record, index">{{ index + 1 }}</span>
-      <!-- <span slot="status" slot-scope="text">
-        <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
-      </span>
-      <span slot="description" slot-scope="text">
-        <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
-      </span> -->
-
-      <span slot="action">
-        <template>
-          <a >编辑</a>
-          <a-divider type="vertical" />
+      <template slot="action" slot-scope="row">
+        <a >编辑</a>
+        <a-divider type="vertical" />
+        <a-popconfirm
+          title="确定要删除吗?"
+          @confirm="confirmDelete(row.id)"
+          @cancel="cancelDelete"
+          okText="确定"
+          cancelText="取消"
+        >
           <a >删除</a>
-        </template>
-      </span>
+        </a-popconfirm>
+      </template>
     </a-table>
-    <add-supervisory ref="addSupervisory" @ok="handleOk" />
+    <add-supervisory ref="addSupervisory" @ok="handleOk"  :streetList="streetList" :riverList="riverList" :labelList="labelList"/>
     <step-by-step-modal ref="modal" @ok="handleOk" />
   </a-card>
 </template>
@@ -120,26 +99,7 @@ import { STable, Ellipsis } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import AddSupervisory from './modules/AddSupervisory'
 import { getRoleList, getServiceList } from '@/api/manage'
-
-const statusMap = {
-  0: {
-    status: 'default',
-    text: '关闭'
-  },
-  1: {
-    status: 'processing',
-    text: '运行中'
-  },
-  2: {
-    status: 'success',
-    text: '已上线'
-  },
-  3: {
-    status: 'error',
-    text: '异常'
-  }
-}
-
+import {SupervisePage,SuperviseSave,SuperviseDel,SuperviseDetail,getStreetList,getRiverList,paramList} from '@/api/login'
 export default {
   name: 'TableList',
   components: {
@@ -150,7 +110,11 @@ export default {
   },
   data() {
     return {
+      streetList:[],
+      riverList:[],
+      labelList:[],
       mdl: {},
+      id:'',
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
@@ -159,7 +123,7 @@ export default {
       columns: [
         {
           title: '序号',
-          scopedSlots: { customRender: 'serial' },
+          dataIndex: 'key',
           sorter: true
         },
         {
@@ -190,143 +154,100 @@ export default {
         },
         {
           title: '操作',
-          dataIndex: 'action',
           width: '150px',
           scopedSlots: { customRender: 'action' }
         }
       ],
+      
       loadData: [
-        {
-          key:'1',
-          no:'督办单1',
-          description:'上钢新村街道',
-          callNo:'黄浦江',
-          status:'排口',
-          editor:'张三',
-          updatedAt:'2019-7-8',
-        },
-        {
-          key:'2',
-          no:'督办单1',
-          description:'上钢新村街道',
-          callNo:'黄浦江',
-          status:'排口',
-          editor:'张三',
-          updatedAt:'2019-7-8',
-        },
+        // {
+        //   key:'1',
+        //   no:'督办单1',
+        //   description:'上钢新村街道',
+        //   callNo:'黄浦江',
+        //   status:'排口',
+        //   editor:'张三',
+        //   updatedAt:'2019-7-8',
+        // },
+        // {
+        //   key:'2',
+        //   no:'督办单1',
+        //   description:'上钢新村街道',
+        //   callNo:'黄浦江',
+        //   status:'排口',
+        //   editor:'张三',
+        //   updatedAt:'2019-7-8',
+        // },
       ],
-      // columns: [
-      //   {
-      //     title: '序号',
-      //     scopedSlots: { customRender: 'serial' },
-      //     sorter: true
-      //   },
-      //   {
-      //     title: '名称',
-      //     dataIndex: 'no'
-      //   },
-      //   {
-      //     title: '所属街道',
-      //     dataIndex: 'description',
-      //     scopedSlots: { customRender: 'description' }
-      //   },
-      //   {
-      //     title: '所属河道',
-      //     dataIndex: 'callNo',
-      //     sorter: true,
-      //     needTotal: true,
-      //     customRender: text => text + ' 次'
-      //   },
-      //   {
-      //     title: '风险源类型',
-      //     dataIndex: 'status',
-      //     scopedSlots: { customRender: 'status' }
-      //   },
-      //   {
-      //     title: '编辑人',
-      //     dataIndex: 'editor',
-      //     sorter: true
-      //   },
-      //   {
-      //     title: '调查日期',
-      //     dataIndex: 'updatedAt',
-      //     sorter: true
-      //   },
-      //   {
-      //     title: '操作',
-      //     dataIndex: 'action',
-      //     width: '150px',
-      //     scopedSlots: { customRender: 'action' }
-      //   }
-      // ],
-      // 加载数据方法 必须为 Promise 对象
-      // loadData: parameter => {
-      //   console.log('loadData.parameter', parameter)
-      //   return getServiceList(Object.assign(parameter, this.queryParam)).then(res => {
-      //     return res.result
-      //   })
-      // },
       selectedRowKeys: [],
       selectedRows: []
     }
   },
-  // filters: {
-  //   statusFilter(type) {
-  //     return statusMap[type].text
-  //   },
-  //   statusTypeFilter(type) {
-  //     return statusMap[type].status
-  //   }
-  // },
-  // created() {
-  //   // this.tableOption()
-  //   getRoleList({ t: new Date() })
-  // },
+  mounted(){
+    this.getList()
+    this.getType()
+  },
   methods: {
+    getList(){
+      SupervisePage().then(res => {
+        function formatDate(now) { 
+          var year=now.getFullYear() //取得4位数的年份
+          var month=now.getMonth()+1  //取得日期中的月份，其中0表示1月，11表示12月
+          var date=now.getDate()      //返回日期月份中的天数（1到31）
+          var hour=now.getHours()     //返回日期中的小时数（0到23）
+          var minute=now.getMinutes() //返回日期中的分钟数（0到59）
+          var second=now.getSeconds() //返回日期中的秒数（0到59）
+          return year+"-"+month+"-"+date
+        }
+        var arr = res.data.data
+        for (let i = 0; i < arr.length; i++) {
+          arr[i].key = i + 1
+          arr[i].name = arr[i].creator.name
+          arr[i].description =arr[i].street.name
+          arr[i].updatedAt = formatDate(new Date(arr[i].surveyDate))
+          arr[i].callNo = ''
+          for (let a = 0; a < arr[i].rivers.length; a++) {
+            arr[i].callNo =arr[i].callNo + arr[i].rivers[a].name + ' '
+          }
+        }
+        this.loadData = arr
+      }).catch(err => {
+      })
+    },
+    getType(){
+      getStreetList().then(res => {
+        var arr = res.data.data
+        this.streetList = arr
+      }).catch(err => {
+      })
+      getRiverList().then(res => {
+        var arr = res.data.data
+        this.riverList=arr
+      }).catch(err => {
+      })
+      var data ={
+        type:'risk_source_type'
+      }
+      paramList(data).then(res => {
+        var arr = res.data
+        this.labelList=arr
+      }).catch(err => {
+      })
+    },
     onChange(date, dateString) {
       console.log(date, dateString)
     },
-    // tableOption() {
-    //   if (!this.optionAlertShow) {
-    //     this.options = {
-    //       alert: {
-    //         show: true,
-    //         clear: () => {
-    //           this.selectedRowKeys = []
-    //         }
-    //       },
-    //       rowSelection: {
-    //         selectedRowKeys: this.selectedRowKeys,
-    //         onChange: this.onSelectChange,
-    //         getCheckboxProps: record => ({
-    //           props: {
-    //             disabled: record.no === 'No 2', // Column configuration not to be checked
-    //             name: record.no
-    //           }
-    //         })
-    //       }
-    //     }
-    //     this.optionAlertShow = true
-    //   } else {
-    //     this.options = {
-    //       alert: false,
-    //       rowSelection: null
-    //     }
-    //     this.optionAlertShow = false
-    //   }
-    // },
-
-    // handleEdit(record) {
-    //   console.log(record)
-    //   this.$refs.modal.edit(record)
-    // },
-    // handleSub(record) {
-    //   if (record.status !== 0) {
-    //     this.$message.info(`${record.no} 订阅成功`)
-    //   } else {
-    //     this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-    //   }
-    // },
+    del(id){
+      this.id = id
+    },
+    confirmDelete(id) {
+      SuperviseDel(id).then(res => {
+          this.$message.success('删除成功')
+          this.id=''
+          this.getList()
+        }).catch(err => {})
+    },
+    cancelDelete(){},
     handleOk() {
       this.$refs.table.refresh()
     },

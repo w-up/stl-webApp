@@ -134,8 +134,9 @@ export default {
       }
       getSaveStreet(data).then(res => {
         this.$message.success('保存成功')
-        this.$parent.getList();
         this.handleCancel()
+        this.$parent.getList();
+        
       }).catch(err => {
         this.$message.error(err.response.data.message)
       })
@@ -193,9 +194,9 @@ export default {
         }
       })
     },
-    handleCancel() {
-      this.visible = false
-    },
+    // handleCancel() {
+    //   this.visible = false
+    // },
     // 选择地址
     onChange(value, selectedOptions) {
       console.log(value, selectedOptions);

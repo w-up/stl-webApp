@@ -11,67 +11,91 @@
     <a-spin :spinning="confirmLoading">
       <a-form>
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="督办单名称">
-          <a-input placeholder="请输入督办单名称" />
+          <a-input placeholder="请输入督办单名称" v-model="list.name"/>
         </a-form-item>
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属街道" has-feedback>
-          <a-select default-value="1">
-            <a-select-option value="1">黄浦江</a-select-option>
-            <a-select-option value="2">流沙河</a-select-option>
-            <a-select-option value="3">大渡河</a-select-option>
+          <a-select
+            showSearch
+            mode="multiple"
+            :allowClear="true"
+            placeholder="请输入街道"
+            optionFilterProp="children"
+            style="width: 100%"
+            @change="handleChange1"
+            :filterOption="filterOption"
+            v-model="streetId"
+          >
+            <a-select-option
+              :value="item.id"
+              v-for="(item, index) in streetList"
+              :key="index"
+            >{{item.name}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属河流" has-feedback>
-          <a-select default-value="1">
-            <a-select-option value="1">黄浦江</a-select-option>
-            <a-select-option value="2">流沙河</a-select-option>
-            <a-select-option value="3">大渡河</a-select-option>
+          <a-select
+            showSearch
+            mode="multiple"
+            :allowClear="true"
+            placeholder="请输入河流"
+            optionFilterProp="children"
+            style="width: 100%"
+            @change="handleChange2"
+            :filterOption="filterOption"
+            v-model="riverId"
+          >
+            <a-select-option
+              :value="item.id"
+              v-for="(item, index) in riverList"
+              :key="index"
+            >{{item.name}}</a-select-option>
           </a-select>
-        </a-form-item>
-        <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="添加河流" has-feedback>
-          <a-input-search placeholder="输入河道名称添加" @search="addRiver">
-            <a-button slot="enterButton">确定</a-button>
-          </a-input-search>
         </a-form-item>
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="风险源类型" has-feedback>
           <a-select
+            showSearch
             mode="multiple"
-            placeholder="请选择类型"
-            :value="selectedItems"
-            @change="handleChange"
+            :allowClear="true"
+            placeholder="请输入风险源"
+            optionFilterProp="children"
             style="width: 100%"
+            @change="handleChange3"
+            :filterOption="filterOption"
+            v-model="riskSourceTypeId"
           >
-            <a-select-option v-for="item in filteredOptions" :key="item" :value="item">{{item}}</a-select-option>
+            <a-select-option
+              :value="item.id"
+              v-for="(item, index) in labelList"
+              :key="index"
+            >{{item.name}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="文件" has-feedback>
-          <a-upload
-            name="file"
-            :multiple="true"
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+          <el-upload
+            class="upload-demo"
+            ref="upload"
+            :data="list"
+            name="attachment"
             :headers="headers"
-            @change="fileUpload"
-          >
-            <a-button style="width: 100%;display:inline-block;">
-              <a-icon type="upload" />上传
-            </a-button>
-          </a-upload>
+            action="/server/data/admin/supervision/save"
+            :on-preview="handlePreview"
+            :on-success="handleSuccess"
+            :on-change="uploadChange"
+            :on-remove="handleRemove"
+            :file-list="fileList"
+            :limit='1'
+            :auto-upload="false">
+            <a-button type="primary" icon="plus" >添加</a-button>
+          </el-upload>
         </a-form-item>
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="调查日期" has-feedback>
-          <a-date-picker style="width: 100%" />
+          <a-date-picker style="width: 100%"  v-model="list.surveyDate" />
         </a-form-item>
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="标签" has-feedback>
-          <a-select
-            mode="multiple"
-            :defaultValue="['a1', 'b2']"
-            style="width: 100%"
-            @change="handleChangeTag"
-            placeholder="请添加标签"
-          >
-            <a-select-option
-              v-for="i in 25"
-              :key="(i + 9).toString(36) + i"
-            >{{(i + 9).toString(36) + i}}</a-select-option>
-          </a-select>
+            <a-input placeholder="使用逗号分隔"  v-model="list.tags"/>
+        </a-form-item>
+        <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="备注" has-feedback>
+            <a-input placeholder=""  v-model="list.remark"/>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -79,10 +103,34 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+import {SuperviseSave,SuperviseDetail} from '@/api/login'
 export default {
+  props:{
+    streetList: Array,
+    riverList: Array,
+    labelList: Array,
+  },
   data() {
     return {
+      fileList:[],
+      file:false,
+      list:{
+        id:'',
+        projectId:'5da7d092ea6c156d792df816',
+        name:'',
+        streetId:'',
+        riverId:'',
+        riskSourceTypeId:'',
+        surveyDate:'',
+        remark:'',
+        tags:'',
+      },
+      streetId:[],
+      riverId:[],
+      riskSourceTypeId:[],
       labelCol: {
         xs: { span: 24 },
         sm: { span: 5 }
@@ -93,12 +141,10 @@ export default {
       },
       visible: false,
       confirmLoading: false,
-
-      selectedItems: [], //风险源类型
       headers: {
-        authorization: 'authorization-text'
+        Authorization: '',
+        'X-TENANT-ID': 'jl:jlgis@2019' 
       },
-
       form: this.$form.createForm(this)
     }
   },
@@ -106,6 +152,9 @@ export default {
     filteredOptions() {
       return OPTIONS.filter(o => !this.selectedItems.includes(o))
     }
+  },
+  mounted(){
+    this.headers.Authorization=Vue.ls.get(ACCESS_TOKEN)
   },
   methods: {
     add() {
@@ -120,45 +169,102 @@ export default {
       this.selectedItems = selectedItems
       console.log(selectedItems)
     },
-    // 文件上传
-    fileUpload(info) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList)
-      }
-      if (info.file.status === 'done') {
-        this.$message.success(`${info.file.name} file uploaded successfully`)
-      } else if (info.file.status === 'error') {
-        this.$message.error(`${info.file.name} file upload failed.`)
-      }
-    },
-    // 标签
-    handleChangeTag(value) {
-      console.log(`selected ${value}`)
-    },
-    handleSubmit() {
-      const {
-        form: { validateFields }
-      } = this
-      this.confirmLoading = true
-      validateFields((errors, values) => {
-        if (!errors) {
-          console.log('values', values)
-          setTimeout(() => {
-            this.visible = false
-            this.confirmLoading = false
-            this.$emit('ok', values)
-          }, 1500)
+    handleChange1(index) {
+      console.log(`selected ${index}`)
+      this.streetList.forEach(value => {
+        if (value.name === index) {
+          value.clicked = true
+          this.map.setViewport(value.lineData)
+          this.drawAllRiver()
         } else {
-          this.confirmLoading = false
+          value.clicked = false
         }
       })
     },
+    handleChange2(index) {
+      console.log(`selected ${index}`)
+      this.riverList.forEach(value => {
+        if (value.name === index) {
+          value.clicked = true
+          this.map.setViewport(value.lineData)
+          this.drawAllRiver()
+        } else {
+          value.clicked = false
+        }
+      })
+    },
+    handleChange3(index) {
+      console.log(`selected ${index}`)
+      this.labelList.forEach(value => {
+        if (value.name === index) {
+          value.clicked = true
+          this.map.setViewport(value.lineData)
+          this.drawAllRiver()
+        } else {
+          value.clicked = false
+        }
+      })
+    },
+    filterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
     handleCancel() {
       this.visible = false
+      this.list.id=''
+      this.list.name=''
+      this.list.streetId=''
+      this.list.riverId=''
+      this.list.riskSourceTypeId=''
+      this.streetId=[]
+      this.riverId=[]
+      this.riskSourceTypeId=[]
+      this.list.surveyDate=''
+      this.list.remark=''
+      this.list. tags=''
+    },
+    handleSubmit() {
+      this.list.streetId=this.streetId.join(',')
+      this.list.riverId=this.riverId.join(',')
+      this.list.riskSourceTypeId=this.riskSourceTypeId.join(',')
+      if (this.fileList.length == 0) {
+        var data = this.list
+        SuperviseSave(data).then(res => {
+            this.$message.success('保存成功');
+            this.$parent.getList();
+            this.handleCancel()
+        }).catch(err => {
+            this.$message.error(err.response.data.message);
+        })
+      }else{
+        this.$refs.upload.submit();
+      }
+    },
+    handleSuccess(response, file, fileList){
+      this.$message.success('保存成功');
+      this.$parent.getList();
+      this.handleCancel()
+    },
+    uploadChange(file, fileList){
+      if(this.fileList.length==0){
+        this.fileList=fileList
+      }else{
+        this.fileList=[]
+      }
+      this.attachmentJpg=window.URL.createObjectURL(file.raw)
+    },
+    handleRemove(file, fileList) {
+      
+    },
+    handlePreview(file) {
     }
   }
 }
 </script>
+<style lang="less" >
+.ant-form input[type='file'] {
+  display: none; 
+}
+</style>
 <style scoped>
 .ant-form-item {
   margin-bottom: 0;

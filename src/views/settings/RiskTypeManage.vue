@@ -30,7 +30,7 @@
     </a-card>
     <a-modal title="添加/编辑风险源" v-model="visible"
       @ok="submitUpload"
-      @cancel="handleCancel"
+      @cancel="handleCancel" 
     >
       <a-form>
         <a-form-item label="风险源类型名称" :label-col="{ span: 7 }" :wrapper-col="{ span: 16 }">

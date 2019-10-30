@@ -42,7 +42,7 @@
           v-model="defaultRiver"
         >
           <a-select-option
-            :value="item.name"
+            :value="item.id"
             v-for="(item, index) in riverList"
             :key="index"
           >{{item.name}}</a-select-option>
