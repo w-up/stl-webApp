@@ -30,13 +30,21 @@
     <div class="weather">
       <img src="../../assets/sun.png" alt="天气" />
       <h3>29</h3>
-      <div class="text" style="margin-left:4px;">
-        <h5>℃ 晴(实时)</h5>
-        <p>晴转多云 24~29℃</p>
+      <div class="text">
+        <div class="top">
+          <span class="degree_logo">℃</span>
+          <span class="weather_detail">晴(实时)</span>
+          <span class="date">9月16日 星期一</span>
+        </div>
+        <p class="degree">晴转多云 24～29℃</p>
       </div>
-      <div class="text" style="margin-left:10px;">
-        <h5>2019/10/01</h5>
-        <p>星期一</p>
+      <div class="weather_right">
+        <a-icon
+          class="right_icon"
+          :class="{'right_icon_active':weatherShow == true}"
+          @click="weatherFun"
+          type="caret-left"
+        />
       </div>
     </div>
     <div class="time_line">
@@ -49,6 +57,8 @@
             trigger="hover"
             v-for="day in item.month"
             :key="day.id"
+            @click="timeLineItem(item.title, day.title)"
+            :class="{'time_item_clicked':day.clicked == true}"
           >
             <template slot="title">
               <span>{{item.title}}.{{day.title}}</span>
@@ -372,6 +382,7 @@
         </a-popover>
       </li>
     </ul>
+    <div class="weather_alert" v-show="weatherShow"></div>
     <!-- 风险源信息 -->
     <risk-source-info ref="riskInfo"></risk-source-info>
     <!-- 添加风险源 -->
@@ -416,76 +427,77 @@ export default {
           id: 0,
           title: '2019.09',
           month: [
-            { id: '30', title: '30', level: 0 },
-            { id: '29', title: '29', level: 1 },
-            { id: '28', title: '28', level: 2 },
-            { id: '27', title: '27', level: 2 },
-            { id: '26', title: '26', level: 1 },
-            { id: '25', title: '25', level: 1 },
-            { id: '24', title: '24', level: 1 },
-            { id: '23', title: '23', level: 0 },
-            { id: '22', title: '22', level: 0 },
-            { id: '21', title: '21', level: 2 },
-            { id: '20', title: '20', level: 2 },
-            { id: '19', title: '19', level: 1 },
-            { id: '18', title: '18', level: 0 },
-            { id: '17', title: '17', level: 2 },
-            { id: '16', title: '16', level: 2 },
-            { id: '15', title: '15', level: 0 },
-            { id: '14', title: '14', level: 1 },
-            { id: '13', title: '13', level: 0 },
-            { id: '12', title: '12', level: 1 },
-            { id: '11', title: '11', level: 1 },
-            { id: '10', title: '10', level: 0 },
-            { id: '09', title: '09', level: 1 },
-            { id: '08', title: '08', level: 0 },
-            { id: '07', title: '07', level: 2 },
-            { id: '06', title: '06', level: 0 },
-            { id: '05', title: '05', level: 2 },
-            { id: '04', title: '04', level: 2 },
-            { id: '03', title: '03', level: 0 },
-            { id: '02', title: '02', level: 1 },
-            { id: '01', title: '01', level: 1 }
+            { id: '30', title: '30', level: 0, clicked: false },
+            { id: '29', title: '29', level: 1, clicked: false },
+            { id: '28', title: '28', level: 2, clicked: false },
+            { id: '27', title: '27', level: 2, clicked: false },
+            { id: '26', title: '26', level: 1, clicked: false },
+            { id: '25', title: '25', level: 1, clicked: false },
+            { id: '24', title: '24', level: 1, clicked: false },
+            { id: '23', title: '23', level: 0, clicked: false },
+            { id: '22', title: '22', level: 0, clicked: false },
+            { id: '21', title: '21', level: 2, clicked: false },
+            { id: '20', title: '20', level: 2, clicked: false },
+            { id: '19', title: '19', level: 1, clicked: false },
+            { id: '18', title: '18', level: 0, clicked: false },
+            { id: '17', title: '17', level: 2, clicked: false },
+            { id: '16', title: '16', level: 2, clicked: false },
+            { id: '15', title: '15', level: 0, clicked: false },
+            { id: '14', title: '14', level: 1, clicked: false },
+            { id: '13', title: '13', level: 0, clicked: false },
+            { id: '12', title: '12', level: 1, clicked: false },
+            { id: '11', title: '11', level: 1, clicked: false },
+            { id: '10', title: '10', level: 0, clicked: false },
+            { id: '09', title: '09', level: 1, clicked: false },
+            { id: '08', title: '08', level: 0, clicked: false },
+            { id: '07', title: '07', level: 2, clicked: false },
+            { id: '06', title: '06', level: 0, clicked: false },
+            { id: '05', title: '05', level: 2, clicked: false },
+            { id: '04', title: '04', level: 2, clicked: false },
+            { id: '03', title: '03', level: 0, clicked: false },
+            { id: '02', title: '02', level: 1, clicked: false },
+            { id: '01', title: '01', level: 1, clicked: false }
           ]
         },
         {
           id: 1,
           title: '2019.08',
           month: [
-            { id: '31', title: '31', level: 0 },
-            { id: '30', title: '30', level: 0 },
-            { id: '29', title: '29', level: 1 },
-            { id: '28', title: '28', level: 2 },
-            { id: '27', title: '27', level: 2 },
-            { id: '26', title: '26', level: 1 },
-            { id: '25', title: '25', level: 1 },
-            { id: '24', title: '24', level: 1 },
-            { id: '23', title: '23', level: 0 },
-            { id: '22', title: '22', level: 0 },
-            { id: '21', title: '21', level: 2 },
-            { id: '20', title: '20', level: 2 },
-            { id: '19', title: '19', level: 1 },
-            { id: '18', title: '18', level: 0 },
-            { id: '17', title: '17', level: 2 },
-            { id: '16', title: '16', level: 2 },
-            { id: '15', title: '15', level: 0 },
-            { id: '14', title: '14', level: 1 },
-            { id: '13', title: '13', level: 0 },
-            { id: '12', title: '12', level: 1 },
-            { id: '11', title: '11', level: 1 },
-            { id: '10', title: '10', level: 0 },
-            { id: '09', title: '09', level: 1 },
-            { id: '08', title: '08', level: 0 },
-            { id: '07', title: '07', level: 2 },
-            { id: '06', title: '06', level: 0 },
-            { id: '05', title: '05', level: 2 },
-            { id: '04', title: '04', level: 2 },
-            { id: '03', title: '03', level: 0 },
-            { id: '02', title: '02', level: 1 },
-            { id: '01', title: '01', level: 1 }
+            { id: '31', title: '31', level: 0, clicked: false },
+            { id: '30', title: '30', level: 0, clicked: false },
+            { id: '29', title: '29', level: 1, clicked: false },
+            { id: '28', title: '28', level: 2, clicked: false },
+            { id: '27', title: '27', level: 2, clicked: false },
+            { id: '26', title: '26', level: 1, clicked: false },
+            { id: '25', title: '25', level: 1, clicked: false },
+            { id: '24', title: '24', level: 1, clicked: false },
+            { id: '23', title: '23', level: 0, clicked: false },
+            { id: '22', title: '22', level: 0, clicked: false },
+            { id: '21', title: '21', level: 2, clicked: false },
+            { id: '20', title: '20', level: 2, clicked: false },
+            { id: '19', title: '19', level: 1, clicked: false },
+            { id: '18', title: '18', level: 0, clicked: false },
+            { id: '17', title: '17', level: 2, clicked: false },
+            { id: '16', title: '16', level: 2, clicked: false },
+            { id: '15', title: '15', level: 0, clicked: false },
+            { id: '14', title: '14', level: 1, clicked: false },
+            { id: '13', title: '13', level: 0, clicked: false },
+            { id: '12', title: '12', level: 1, clicked: false },
+            { id: '11', title: '11', level: 1, clicked: false },
+            { id: '10', title: '10', level: 0, clicked: false },
+            { id: '09', title: '09', level: 1, clicked: false },
+            { id: '08', title: '08', level: 0, clicked: false },
+            { id: '07', title: '07', level: 2, clicked: false },
+            { id: '06', title: '06', level: 0, clicked: false },
+            { id: '05', title: '05', level: 2, clicked: false },
+            { id: '04', title: '04', level: 2, clicked: false },
+            { id: '03', title: '03', level: 0, clicked: false },
+            { id: '02', title: '02', level: 1, clicked: false },
+            { id: '01', title: '01', level: 1, clicked: false }
           ]
         }
       ],
+      weatherShow: false, //天气弹窗
       mapType: 'a',
       checked: false,
       sharedChecked: false,
@@ -665,6 +677,26 @@ export default {
     // this.photoAlert = true
   },
   methods: {
+    // 时间轴
+    timeLineItem(mouth, index) {
+      for (const item of this.timeData) {
+        if (mouth == item.title) {
+          for (const value of item.month) {
+            if (value.level != 2) {
+              if (value.title == index) {
+                value.clicked = true
+              } else {
+                value.clicked = false
+              }
+            }
+          }
+        }
+      }
+    },
+    // 天气
+    weatherFun() {
+      this.weatherShow = !this.weatherShow
+    },
     initMap() {
       //初始化地图控件
       let zoom = 14
@@ -690,7 +722,7 @@ export default {
       //   target: 'map',
       //   view: new View({
       //     center: [12149550, 3121098],
-      //     zoom: 12
+      //     zoom: 15
       //   }),
       //   layers: [
       //     new TileLayer({
@@ -969,18 +1001,19 @@ export default {
       // let arr = []
       for (const item of pointLists) {
         // arr.push(item.latlng)
-        this.drawAllPoint(item.latlng)
+        this.drawAllPoint(item.latlng, item.name, item.id)
       }
       // this.map.setViewport(arr)
     },
     // 添加标注图片
-    drawAllPoint(latlng) {
-      let markerTool = new T.Marker(latlng)
+    drawAllPoint(latlng, index, id) {
+      let markerTool = new T.Marker(latlng, { title: index, id: id })
       this.map.addOverLay(markerTool)
       markerTool.addEventListener('click', this.taskPointClick)
     },
     // 任务点点击事件
     taskPointClick(index) {
+      console.log(index)
       this.$refs.riskInfo.riskInfo()
       // for (const item of this.historyPoints) {
       //   if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
@@ -994,27 +1027,50 @@ export default {
       // this.map.clearOverLays()
       console.log(pointLists)
       // let arr = []
-      for (const item of pointLists) {
-        // arr.push(item.latlng)
-        this.drawAllImage(item.latlng, item.imgUrl)
-      }
+      // for (const item of pointLists) {
+      //   // arr.push(item.latlng)
+      //   this.drawAllImage(item.latlng, item.imgUrl, item.name)
+      // }
+      this.drawAllImage(pointLists)
       // this.map.setViewport(arr)
     },
     // 添加手机照片
-    drawAllImage(latlng, img) {
+    drawAllImage(pointLists) {
       //创建图片对象
-      let icon = new T.Icon({
-        iconUrl: img,
-        iconSize: new T.Point(70, 45),
-        iconAnchor: new T.Point(35, 45)
-      })
+
       //向地图上添加自定义标注
-      let marker = new T.Marker(latlng, { icon: icon })
-      marker.addEventListener('click', this.taskImageClick)
-      this.map.addOverLay(marker)
+      // let marker = new T.Marker(latlng, { icon: icon })
+      // marker.addEventListener('click', this.taskImageClick)
+      // this.map.addOverLay(marker)
+
+      let arrayObj = new Array()
+      let styles = new Array()
+      for (const item of pointLists) {
+        let icon = new T.Icon({
+          iconUrl: item.imgUrl,
+          iconSize: new T.Point(70, 45),
+          iconAnchor: new T.Point(35, 45),
+          title: item.name
+        })
+        styles = [
+          {
+            url: item.imgUrl,
+            size: [70, 45], //图片大小
+            offset: new T.Point(35, 45), //显示图片的偏移量
+            textColor: '#000000', //显示数字的颜色
+            textSize: 8, //显示文字的大小
+            range: [0, 50]
+          }
+        ]
+        let marker = new T.Marker(item.latlng, { icon: icon })
+        marker.addEventListener('click', this.taskImageClick)
+        arrayObj.push(marker)
+      }
+      var markers = new T.MarkerClusterer(this.map, { markers: arrayObj, styles: styles })
     },
     // 任务照片点击
     taskImageClick(index) {
+      console.log(index)
       // this.photoAlert = true
       this.$refs.photoEdit.showVisible()
       // for (const item of this.historyPoints) {
@@ -1189,60 +1245,100 @@ export default {
   position: absolute;
   left: 80px;
   top: 10px;
-  width: 360px;
-  height: 60px;
+  width: 400px;
+  height: 65px;
+  z-index: 888;
   background-color: rgba(255, 255, 255, 1);
   opacity: 0.9;
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 10px;
   border: 1px solid rgb(204, 204, 204);
-  z-index: 888;
+  box-shadow:0px 4px 6px 0px rgba(0,0,0,0.05);
+  padding: 13px;
   display: flex;
   display: -webkit-flex;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  align-items: center;
+  -webkit-align-items: center;
+  justify-items: center;
+  -webkit-justify-items: center;
   img {
-    width: 58px;
-    height: 58px;
+    width: 40px;
+    height: 40px;
   }
   h3 {
-    font-size: 50px;
-    line-height: 60px;
+    font-size: 45px;
+    line-height: 45px;
     margin: 0;
   }
   .text {
-    h5 {
-      line-height: 30px;
+    width: 225px;
+    height: 100%;
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    -webkit-justify-content: space-between;
+    div {
       font-size: 15px;
+      line-height: 17px;
       font-weight: 600;
+      color: rgba(45, 45, 45, 1);
       margin: 0;
+      .weather_detail {
+        margin-left: 14px;
+      }
+      .date {
+        margin-left: 16px;
+        color: rgba(140, 159, 173, 1);
+      }
     }
     p {
-      line-height: 30px;
+      font-weight: 600;
+      color: rgba(45, 45, 45, 1);
+      line-height: 17px;
       font-size: 15px;
       margin: 0;
     }
   }
+  .weather_right {
+    width: 46px;
+    height: 100%;
+    border-left: 1px solid rgba(216, 216, 216, 0.26);
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    -webkit-align-items: center;
+    padding-left: 10px;
+    .right_icon {
+      font-size: 18px;
+      padding: 10px;
+      transition: 0.5s;
+      -moz-transition: 0.5s; /* Firefox 4 */
+      -webkit-transition: 0.5s; /* Safari and Chrome */
+    }
+    .right_icon_active {
+      color: #1890ff;
+      transform: rotate(180deg);
+      -ms-transform: rotate(180deg); /* IE 9 */
+      -moz-transform: rotate(180deg); /* Firefox */
+      -webkit-transform: rotate(180deg); /* Safari 和 Chrome */
+    }
+  }
 }
-
-// <li>
-//           <h6 style="font-size:12px;text-align:center;">2019.09</h6>
-//           <a-tooltip
-//             placement="right"
-//             class="time_item"
-//             trigger="hover"
-//             v-for="item in 30"
-//             :key="item"
-//           >
-//             <template slot="title">
-//               <span>2019.09.{{item}}</span>
-//             </template>
-//             <div class="line_style">
-//               <span
-//                 :class="{'time_bg_red':item%3 == 0,'time_bg_blue':item%3 == 1,'time_bg_gray':item%3 == 2}"
-//               ></span>
-//             </div>
-//           </a-tooltip>
-//         </li>
-
+.weather_alert {
+  position: absolute;
+  left: 490px;
+  top: 10px;
+  z-index: 888;
+  width: 320px;
+  height: 320px;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  padding: 10px;
+}
 .time_line {
   position: absolute;
   left: 0;
@@ -1314,6 +1410,14 @@ export default {
         }
       }
       .time_item:hover {
+        p {
+          display: block;
+        }
+        .line_style {
+          display: none;
+        }
+      }
+      .time_item_clicked {
         p {
           display: block;
         }
