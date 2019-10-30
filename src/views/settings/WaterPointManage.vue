@@ -16,65 +16,69 @@
       </div>
     </div>
     <div class="right">
-      <a-tabs defaultActiveKey="1" @change="callback" v-model="actionTab" class="custom_tabs">
-        <a-tab-pane tab="固定监测点" key="1">
-          <section class="task_face">
-            <a-list size="small" bordered :dataSource="fixedPointList" style="margin-top: 10px;">
-              <a-list-item
-                slot="renderItem"
-                slot-scope="item, index"
-                :key="index"
-                @click="fixedPoint(item.name)"
-                :class="{active_item: item.clicked}"
-              >
-                <a-row style="width:100%">
-                  <a-col :span="20">{{item.name}}</a-col>
-                  <a-col :span="4" style="text-align:right;">
-                    <a-popconfirm
-                      title="确定要删除吗?"
-                      @confirm="fixedConfirmDelete(item.name)"
-                      @cancel="cancelDelete"
-                      okText="确定"
-                      cancelText="取消"
-                    >
-                      <a href="#">删除</a>
-                    </a-popconfirm>
-                  </a-col>
-                </a-row>
-              </a-list-item>
-            </a-list>
-          </section>
-        </a-tab-pane>
-        <a-tab-pane tab="人工监测点" key="2" forceRender>
-          <section class="task_face">
-            <a-list size="small" bordered :dataSource="peoplePointList" style="margin-top: 10px;">
-              <a-list-item
-                slot="renderItem"
-                slot-scope="item, index"
-                :key="index"
-                @click="peoplePoint(item.name)"
-                :class="{active_item: item.clicked}"
-              >
-                <a-row style="width:100%">
-                  <a-col :span="20">{{item.name}}</a-col>
-                  <a-col :span="4" style="text-align:right;">
-                    <a-popconfirm
-                      title="确定要删除吗?"
-                      @confirm="peopleConfirmDelete(item.name)"
-                      @cancel="cancelDelete"
-                      okText="确定"
-                      cancelText="取消"
-                    >
-                      <a href="#">删除</a>
-                    </a-popconfirm>
-                  </a-col>
-                </a-row>
-              </a-list-item>
-            </a-list>
-          </section>
-        </a-tab-pane>
-      </a-tabs>
-      <a-button type="primary" block class="bottom_add" @click="addTask">添加</a-button>
+      <h3 style="font-size: 16px;margin:10px 0 0 10px">水质监测点管理</h3>
+      <a-divider style="margin: 5px 0 0; background-color: #888;" />
+      <div style="padding: 0 10px">
+        <a-tabs defaultActiveKey="1" @change="callback" v-model="actionTab" class="custom_tabs">
+          <a-tab-pane tab="固定监测点" key="1">
+            <section class="task_face">
+              <a-list size="small" bordered :dataSource="fixedPointList" style="margin-top: 10px;">
+                <a-list-item
+                  slot="renderItem"
+                  slot-scope="item, index"
+                  :key="index"
+                  @click="fixedPoint(item.name)"
+                  :class="{active_item: item.clicked}"
+                >
+                  <a-row style="width:100%">
+                    <a-col :span="20">{{item.name}}</a-col>
+                    <a-col :span="4" style="text-align:right;">
+                      <a-popconfirm
+                        title="确定要删除吗?"
+                        @confirm="fixedConfirmDelete(item.name)"
+                        @cancel="cancelDelete"
+                        okText="确定"
+                        cancelText="取消"
+                      >
+                        <a href="#">删除</a>
+                      </a-popconfirm>
+                    </a-col>
+                  </a-row>
+                </a-list-item>
+              </a-list>
+            </section>
+          </a-tab-pane>
+          <a-tab-pane tab="人工监测点" key="2" forceRender>
+            <section class="task_face">
+              <a-list size="small" bordered :dataSource="peoplePointList" style="margin-top: 10px;">
+                <a-list-item
+                  slot="renderItem"
+                  slot-scope="item, index"
+                  :key="index"
+                  @click="peoplePoint(item.name)"
+                  :class="{active_item: item.clicked}"
+                >
+                  <a-row style="width:100%">
+                    <a-col :span="20">{{item.name}}</a-col>
+                    <a-col :span="4" style="text-align:right;">
+                      <a-popconfirm
+                        title="确定要删除吗?"
+                        @confirm="peopleConfirmDelete(item.name)"
+                        @cancel="cancelDelete"
+                        okText="确定"
+                        cancelText="取消"
+                      >
+                        <a href="#">删除</a>
+                      </a-popconfirm>
+                    </a-col>
+                  </a-row>
+                </a-list-item>
+              </a-list>
+            </section>
+          </a-tab-pane>
+        </a-tabs>
+        <a-button type="primary" block class="bottom_add" @click="addTask">添加</a-button>
+      </div>
     </div>
     <!-- 添加 -->
     <add-water-point ref="addWaterPoint" :pointInfo="pointInfo"></add-water-point>
@@ -115,7 +119,7 @@ export default {
       map: {},
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
       mapPoint: new Map(),
-      pointInfo: { id: Number, name: String, clicked: Boolean, latlng: { lat: Number, lng: Number } }// 点信息
+      pointInfo: { id: Number, name: String, clicked: Boolean, latlng: { lat: Number, lng: Number } } // 点信息
     }
   },
   mounted() {
@@ -342,7 +346,7 @@ export default {
   height: 100%;
   display: inline-block;
   vertical-align: top;
-  padding: 10px;
+  // padding: 10px;
   background-color: white;
 }
 .task_face {
