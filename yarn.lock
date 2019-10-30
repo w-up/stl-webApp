@@ -3100,6 +3100,18 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+cropper@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.npm.taobao.org/cropper/download/cropper-4.1.0.tgz#3c2faaa78f730a3c71814cee61e17c7a674b943f"
+  integrity sha1-PC+qp49zCjxxgUzuYeF8emdLlD8=
+  dependencies:
+    cropperjs "^1.5.6"
+
+cropperjs@^1.5.6:
+  version "1.5.6"
+  resolved "https://registry.npm.taobao.org/cropperjs/download/cropperjs-1.5.6.tgz#82faf432bec709d828f2f7a96d1179198edaf0e2"
+  integrity sha1-gvr0Mr7HCdgo8vepbRF5GY7a8OI=
+
 cross-spawn@^5.0.1, cross-spawn@^5.1.0:
   version "5.1.0"
   resolved "https://registry.npm.taobao.org/cross-spawn/download/cross-spawn-5.1.0.tgz?cache=0&sync_timestamp=1570439926300&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fcross-spawn%2Fdownload%2Fcross-spawn-5.1.0.tgz#e8bd0efee58fcff6f8f94510a0a554bbfa235449"
@@ -6568,6 +6580,11 @@ jest@^23.6.0:
   dependencies:
     import-local "^1.0.0"
     jest-cli "^23.6.0"
+
+jquery@^3.4.1:
+  version "3.4.1"
+  resolved "https://registry.npm.taobao.org/jquery/download/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
+  integrity sha1-cU8fjZ3eS9+lV2S6N+8hRjDYDvI=
 
 js-beautify@^1.6.12, js-beautify@^1.6.14:
   version "1.10.2"
