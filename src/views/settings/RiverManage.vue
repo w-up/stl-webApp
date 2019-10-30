@@ -26,55 +26,59 @@
       <!-- <world-map></world-map> -->
     </div>
     <div class="right">
-      <a-select
-        showSearch
-        :allowClear="true"
-        placeholder="请输入河流"
-        optionFilterProp="children"
-        style="width: 100%"
-        @focus="handleFocus"
-        @blur="handleBlur"
-        @change="handleChange"
-        :filterOption="filterOption"
-        v-model="defaultRiver"
-      >
-        <a-select-option
-          :value="item.name"
-          v-for="(item, index) in riverList"
-          :key="index"
-        >{{item.name}}</a-select-option>
-      </a-select>
-      <a-list size="small" bordered :dataSource="riverList" style="margin-top: 10px;">
-        <a-list-item
-          slot="renderItem"
-          slot-scope="item, index"
-          :key="index"
-          @click.stop="chooseRiver(item.name, item.id)"
-          :class="{active_item: item.clicked}"
+      <h3 style="font-size: 16px;margin:10px 0 0 10px">河道管理</h3>
+      <a-divider style="margin: 5px 0 10px; background-color: #888;" />
+      <div style="padding: 0 10px">
+        <a-select
+          showSearch
+          :allowClear="true"
+          placeholder="请输入河流"
+          optionFilterProp="children"
+          style="width: 100%"
+          @focus="handleFocus"
+          @blur="handleBlur"
+          @change="handleChange"
+          :filterOption="filterOption"
+          v-model="defaultRiver"
         >
-          <a-row style="width:100%">
-            <a-col :span="20">{{item.name}}</a-col>
-            <a-col :span="4" style="text-align:right;">
-              <a-popconfirm
-                title="确定要删除吗?"
-                @confirm="confirmDelete(item.id)"
-                @cancel="cancelDelete"
-                okText="确定"
-                cancelText="取消"
-              >
-                <a href="#">删除</a>
-              </a-popconfirm>
-            </a-col>
-          </a-row>
-        </a-list-item>
-      </a-list>
-      <a-popover title trigger="click" v-model="addRiverShow" class="bottom_add">
-        <template slot="content">
-          <a-button block @click="addDrawRiver()">绘制</a-button>
-          <a-button block @click="addUploadRiver" style="margin-top: 10px;">上传KMZ</a-button>
-        </template>
-        <a-button type="primary" block>添加河道</a-button>
-      </a-popover>
+          <a-select-option
+            :value="item.name"
+            v-for="(item, index) in riverList"
+            :key="index"
+          >{{item.name}}</a-select-option>
+        </a-select>
+        <a-list size="small" bordered :dataSource="riverList" style="margin-top: 10px;">
+          <a-list-item
+            slot="renderItem"
+            slot-scope="item, index"
+            :key="index"
+            @click.stop="chooseRiver(item.name, item.id)"
+            :class="{active_item: item.clicked}"
+          >
+            <a-row style="width:100%">
+              <a-col :span="20">{{item.name}}</a-col>
+              <a-col :span="4" style="text-align:right;">
+                <a-popconfirm
+                  title="确定要删除吗?"
+                  @confirm="confirmDelete(item.id)"
+                  @cancel="cancelDelete"
+                  okText="确定"
+                  cancelText="取消"
+                >
+                  <a href="#">删除</a>
+                </a-popconfirm>
+              </a-col>
+            </a-row>
+          </a-list-item>
+        </a-list>
+        <a-popover title trigger="click" v-model="addRiverShow" class="bottom_add">
+          <template slot="content">
+            <a-button block @click="addDrawRiver()">绘制</a-button>
+            <a-button block @click="addUploadRiver" style="margin-top: 10px;">上传KMZ</a-button>
+          </template>
+          <a-button type="primary" block>添加河道</a-button>
+        </a-popover>
+      </div>
     </div>
     <!-- 鼠标跟随弹窗 -->
     <div
@@ -85,14 +89,14 @@
       <span>{{defaultRiver}}</span>
     </div>
     <!-- 添加河流 -->
-    <add-river ref="addRiver"  :inputName="addList"></add-river>
+    <add-river ref="addRiver" :inputName="addList"></add-river>
   </div>
 </template>
 
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
 import AddRiver from './modules/AddRiver.vue'
-import { getRiverList,delRiver } from '@/api/login'
+import { getRiverList, delRiver } from '@/api/login'
 export default {
   name: 'RiverManage',
   components: {
@@ -101,7 +105,7 @@ export default {
   },
   data() {
     return {
-      addList:'1111',
+      addList: '1111',
       alertLeft: -1000,
       alertTop: -1000,
       alertShow: false,
@@ -210,19 +214,19 @@ export default {
     this.initMap()
   },
   methods: {
-    getList(){
+    getList() {
       //河道列表
-      getRiverList().then(res => {
-        let arr = res.data.data
-        arr.forEach(v => {
-          v.lineData = v.region
-          v.clicked = false
-        });
-        this.riverList = arr
-        this.drawAllRiver()
-      }).catch(err => {
-
-      })
+      getRiverList()
+        .then(res => {
+          let arr = res.data.data
+          arr.forEach(v => {
+            v.lineData = v.region
+            v.clicked = false
+          })
+          this.riverList = arr
+          this.drawAllRiver()
+        })
+        .catch(err => {})
     },
     initMap() {
       //初始化地图控件
@@ -316,12 +320,12 @@ export default {
     // 河流删除
     confirmDelete(index) {
       console.log(index)
-      delRiver(index).then(res => {
-        this.$message.success('删除成功')
-        this.getList()
-      }).catch(err => {
-
-      })
+      delRiver(index)
+        .then(res => {
+          this.$message.success('删除成功')
+          this.getList()
+        })
+        .catch(err => {})
       this.defaultRiver = null
     },
     cancelDelete(e) {
@@ -428,7 +432,7 @@ export default {
         for (const item of this.riverList) {
           if (item.id == id) {
             item.clicked = true
-            console.log(item.id);
+            console.log(item.id)
             this.$refs.addRiver.getRiver(item.id)
             this.$refs.addRiver.add()
           } else {
@@ -456,7 +460,7 @@ export default {
       findIndex2 = this.findIndexLocal(arr[1], 'lat', this.riverList)
       findIndex3 = this.findIndexLocal(arr[2], 'lng', this.riverList)
       findIndex4 = this.findIndexLocal(arr[3], 'lng', this.riverList)
-      
+
       // console.log(findIndex1, findIndex2,findIndex3,findIndex4)
       if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
         id = this.riverList[findIndex1].id
@@ -592,7 +596,7 @@ export default {
   height: 100%;
   display: inline-block;
   vertical-align: top;
-  padding: 10px;
+  // padding: 10px;
   background-color: white;
 }
 
