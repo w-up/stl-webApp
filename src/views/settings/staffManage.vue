@@ -1,33 +1,31 @@
 <template>
-  <div  >
-    <a-card >
+  <div>
+    <a-card>
       <a-breadcrumb style="font-size: 16px;">
         <a-breadcrumb-item>设置</a-breadcrumb-item>
         <a-breadcrumb-item>用户管理</a-breadcrumb-item>
       </a-breadcrumb>
       <a-divider style="margin: 10px 0" />
       <div>
-        <a-form
-          layout="inline"
-        >
+        <a-form layout="inline">
           <a-form-item label="角色">
-            <a-select  style="width: 200px" placeholder="请选择" >
+            <a-select style="width: 200px" placeholder="请选择">
               <a-select-option value="jack">超级管理员</a-select-option>
               <a-select-option value="lucy">巡河总监</a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="类型">
-            <a-select  style="width: 200px" placeholder="请选择" >
+            <a-select style="width: 200px" placeholder="请选择">
               <a-select-option value="jack">外勤</a-select-option>
               <a-select-option value="lucy">内业</a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item >
-            <a-button type="primary" >查询</a-button>
+          <a-form-item>
+            <a-button type="primary">查询</a-button>
           </a-form-item>
         </a-form>
       </div>
-      <a-button type="primary" icon="plus"  style="margin:15px 0" @click="add(id='')" >添加</a-button>
+      <a-button type="primary" icon="plus" style="margin:15px 0" @click="add(id='')">添加</a-button>
       <a-table :columns="columns" :dataSource="data" bordered>
         <template slot="state" slot-scope="row">
           <a v-if="row.actived==true">启用</a>
@@ -55,118 +53,120 @@
 </template>
 
 <script>
-import { userList, userEnable,userProhibit,userDel } from '@/api/login'
+import { userList, userEnable, userProhibit, userDel } from '@/api/login'
 const columns = [
-   {
+  {
     title: '编号',
-    width:80,
-    dataIndex: 'key',
-  }, {
+    width: 80,
+    dataIndex: 'key'
+  },
+  {
     title: '姓名',
-    dataIndex: 'name',
-  },{
+    dataIndex: 'name'
+  },
+  {
     title: '联系方式',
-    dataIndex: 'mobile',
-  },{
+    dataIndex: 'mobile'
+  },
+  {
     title: '角色',
-    dataIndex: 'role',
-  },  {
+    dataIndex: 'role'
+  },
+  {
     title: '类型',
-    dataIndex: 'type',
-  },{
+    dataIndex: 'type'
+  },
+  {
     title: '状态',
     scopedSlots: { customRender: 'state' },
-    width:90,
-  },{
+    width: 90
+  },
+  {
     title: '操作',
     scopedSlots: { customRender: 'operation' },
-    width:160,
+    width: 160
   }
-];
+]
 export default {
-  data () {
+  data() {
     return {
       columns,
-      data:[
-        
-      ]
+      data: []
     }
   },
-  watch: {
-
-  },
-  mounted(){
+  watch: {},
+  mounted() {
     this.getList()
   },
   methods: {
-    getList(){
-      var data ={
-
-      }
-      userList(data).then(res => {
-         var arr = res.data.data
-         for (let i = 0; i < arr.length; i++) {
-          arr[i].type=arr[i].type.name
-          arr[i].key=i+1
-         }
-         this.data = arr
-         console.log(arr);
-        }).catch(err => {
-
-      })
+    getList() {
+      var data = {}
+      userList(data)
+        .then(res => {
+          var arr = res.data.data
+          for (let i = 0; i < arr.length; i++) {
+            arr[i].type = arr[i].type.name
+            arr[i].key = i + 1
+          }
+          this.data = arr
+          console.log(arr)
+        })
+        .catch(err => {})
     },
-    enable(id){
-      var data ={
-        id:id
+    enable(id) {
+      var data = {
+        id: id
       }
-      userEnable(data).then(res => {
-          this.$message.success('启用成功');
+      userEnable(data)
+        .then(res => {
+          this.$message.success('启用成功')
           this.getList()
-        }).catch(err => {
-          this.$message.error(err.response.data.message);
-      })
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message)
+        })
     },
-    prohibit(id){
-      var data ={
-        id:id
+    prohibit(id) {
+      var data = {
+        id: id
       }
-      userProhibit(data).then(res => {
-          this.$message.success('禁用成功');
-         this.getList()
-        }).catch(err => {
-          this.$message.error(err.response.data.message);
-      })
+      userProhibit(data)
+        .then(res => {
+          this.$message.success('禁用成功')
+          this.getList()
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message)
+        })
     },
-    del(id){
-      this.id=id
+    del(id) {
+      this.id = id
     },
     confirm(e) {
-      var data ={
-        id:this.id
+      var data = {
+        id: this.id
       }
-      userDel(data).then(res => {
-          this.$message.success('删除成功');
+      userDel(data)
+        .then(res => {
+          this.$message.success('删除成功')
           this.getList()
-        }).catch(err => {
-          this.$message.error(err.response.data.message);
-      })
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message)
+        })
     },
-    cancel(e) {
-
-    },
-    add(id){
+    cancel(e) {},
+    add(id) {
       this.$router.push({
         path: '/settings/staff',
         query: {
-          id: id,
+          id: id
         }
-      }) 
-    },
-  },
+      })
+    }
+  }
 }
 </script>
 
 <style lang="less" scoped>
-
-  
 </style>
