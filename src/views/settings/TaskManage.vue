@@ -1020,8 +1020,20 @@ export default {
     },
     // 返回标注点的坐标
     addTaskPointed(e) {
-      this.$refs.addTaskPoint.add()
+      
+      console.log(e.currentLnglat.lng)
+      console.log(e.currentLnglat.lat)
+      let geocode = new T.Geocoder()
+      geocode.getLocation(e.currentLnglat, this.searchResult)
       console.log(e)
+    },
+    searchResult(result) {
+      this.$refs.addTaskPoint.add()
+      if (result.getStatus() == 0) {
+        console.log(result.getAddress())
+      } else {
+        this.$message.error("获取地址失败")
+      }
     },
     onSelect(selectedKeys, info) {
       console.log('onSelect', info)
