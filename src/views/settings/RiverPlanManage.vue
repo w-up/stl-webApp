@@ -16,38 +16,64 @@
       </div>
     </div>
     <div class="right">
-      <section class="task_face">
-        <a-select
-          showSearch
-          placeholder="请输入河流"
-          optionFilterProp="children"
-          style="width: 100%"
-          @change="chooseRiver"
-          :filterOption="filterOption"
-          v-model="defaultRiver"
-          v-show="!addLineShow"
-        >
-          <a-select-option
-            :value="item.id"
-            v-for="(item, index) in riverList"
-            :key="index"
-          >{{item.name}}</a-select-option>
-        </a-select>
-        <a-collapse v-show="!addLineShow" defaultActiveKey="1" accordion size="small" style="margin-top:10px;" @change="collapseChange">
-          <a-collapse-panel v-for="item in lineTaskList" :key="item.id" :style="customStyle" class="custom_list">
-            <template slot="header">
-              <a-row style="width:100%">
-                <a-col :span="9">{{item.name}}</a-col>
-                <a-col :span="15" style="text-align:right;padding-right:10px;">
-                  <a-button size="small" type="primary" style="margin-right:5px;" @click="edit(item.id)">编辑</a-button>
-                  <a-button size="small" @click.stop="defaultPlan(item.id)">{{item.primary?"默认":"设为默认"}}</a-button>
-                </a-col>
-              </a-row>
-            </template>
-            <a-tree defaultExpandAll @select="onSelect" :selectedKeys="selectedKeys"
-              :treeData="item.dataTree"
-            ></a-tree>
-            <!-- <a-directory-tree multiple defaultExpandAll @select="riverPlan" @expand="onExpand">
+      <h3 style="font-size: 16px;margin:10px 0 0 10px">巡河方案管理</h3>
+      <a-divider style="margin: 5px 0 10px; background-color: #888;" />
+      <div style="padding: 0 10px">
+        <section class="task_face">
+          <a-select
+            showSearch
+            placeholder="请输入河流"
+            optionFilterProp="children"
+            style="width: 100%"
+            @change="chooseRiver"
+            :filterOption="filterOption"
+            v-model="defaultRiver"
+            v-show="!addLineShow"
+          >
+            <a-select-option
+              :value="item.id"
+              v-for="(item, index) in riverList"
+              :key="index"
+            >{{item.name}}</a-select-option>
+          </a-select>
+          <a-collapse
+            v-show="!addLineShow"
+            defaultActiveKey="1"
+            accordion
+            size="small"
+            style="margin-top:10px;"
+            @change="collapseChange"
+          >
+            <a-collapse-panel
+              v-for="item in lineTaskList"
+              :key="item.id"
+              :style="customStyle"
+              class="custom_list"
+            >
+              <template slot="header">
+                <a-row style="width:100%">
+                  <a-col :span="9">{{item.name}}</a-col>
+                  <a-col :span="15" style="text-align:right;padding-right:10px;">
+                    <a-button
+                      size="small"
+                      type="primary"
+                      style="margin-right:5px;"
+                      @click="edit(item.id)"
+                    >编辑</a-button>
+                    <a-button
+                      size="small"
+                      @click.stop="defaultPlan(item.id)"
+                    >{{item.primary?"默认":"设为默认"}}</a-button>
+                  </a-col>
+                </a-row>
+              </template>
+              <a-tree
+                defaultExpandAll
+                @select="onSelect"
+                :selectedKeys="selectedKeys"
+                :treeData="item.dataTree"
+              ></a-tree>
+              <!-- <a-directory-tree multiple defaultExpandAll @select="riverPlan" @expand="onExpand">
               <a-tree-node title="360" key="0-0">
                 <a-tree-node title="调查点1" key="0-0-0" isLeaf />
                 <a-tree-node title="调查点2" key="0-0-1" isLeaf />
@@ -57,112 +83,119 @@
                 <a-tree-node title="人工调查2" key="0-1-1" isLeaf />
               </a-tree-node>
               <a-tree-node title="巡河线路1" key="0-2"></a-tree-node>
-            </a-directory-tree> -->
-          </a-collapse-panel>
-        </a-collapse>
-        <a-form v-show="addLineShow" style="width: 100%;">
-          <a-form-item
-            label="方案名称"
-            :label-col="formItemLayout.labelCol"
-            :wrapper-col="formItemLayout.wrapperCol"
-          >
-            <a-input placeholder  v-model="list.name"/>
-          </a-form-item>
-          <a-form-item
-            label="关联河道"
-            :label-col="formItemLayout.labelCol"
-            :wrapper-col="formItemLayout.wrapperCol"
-          >
-            <a-select
-              showSearch
-              placeholder="请输入河流添加"
-              optionFilterProp="children"
-              style="width: 100%"
-              @change="chooseRiver"
-              :filterOption="filterOption"
-              v-model="defaultRiver"
-              disabled
+              </a-directory-tree>-->
+            </a-collapse-panel>
+          </a-collapse>
+          <a-form v-show="addLineShow" style="width: 100%;">
+            <a-form-item
+              label="方案名称"
+              :label-col="formItemLayout.labelCol"
+              :wrapper-col="formItemLayout.wrapperCol"
             >
-              <a-select-option
-                :value="item.id"
-                v-for="(item, index) in riverList"
-                :key="index"
-              >{{item.name}}</a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item
-            label="任务线路"
-            :label-col="formItemLayout.labelCol"
-            :wrapper-col="formItemLayout.wrapperCol"
-          >
-            <a-select
-              showSearch
-              mode="multiple"
-              :allowClear="true"
-              placeholder="请选择"
-              optionFilterProp="children"
-              style="width: 100%"
-              :filterOption="filterOption"
-              v-model="list.lineId"
+              <a-input placeholder v-model="list.name" />
+            </a-form-item>
+            <a-form-item
+              label="关联河道"
+              :label-col="formItemLayout.labelCol"
+              :wrapper-col="formItemLayout.wrapperCol"
             >
-              <a-select-option
-                :value="item.id"
-                v-for="(item, index) in lineList"
-                :key="index"
-              >{{item.name}}</a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item
-            label="调查点任务"
-            :label-col="formItemLayout.labelCol"
-            :wrapper-col="formItemLayout.wrapperCol"
-          >
-            <a-select
-              showSearch
-              mode="tags"
-              :allowClear="true"
-              placeholder="请选择"
-              optionFilterProp="children"
-              style="width: 100%"
-              :filterOption="filterOption"
-              v-model="list.pointId"
+              <a-select
+                showSearch
+                placeholder="请输入河流添加"
+                optionFilterProp="children"
+                style="width: 100%"
+                @change="chooseRiver"
+                :filterOption="filterOption"
+                v-model="defaultRiver"
+                disabled
+              >
+                <a-select-option
+                  :value="item.id"
+                  v-for="(item, index) in riverList"
+                  :key="index"
+                >{{item.name}}</a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item
+              label="任务线路"
+              :label-col="formItemLayout.labelCol"
+              :wrapper-col="formItemLayout.wrapperCol"
             >
-              <a-select-option
-                :value="item.id"
-                v-for="(item, index) in spotList"
-                :key="index"
-              >{{item.name}}</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-form>
-      </section>
-      <a-button type="primary" block class="bottom_add" @click="addTask" v-show="!addLineShow">创建方案</a-button>
-      <!-- 线路任务按钮 -->
-      <a-row
-        v-show="addLineShow"
-        class="bottom_add"
-        type="flex"
-        justify="space-around"
-        align="middle"
-      >
-        <a-col :span="7">
-          <a-button type="primary" block @click="taskCancel">取消</a-button>
-        </a-col>
-        <a-col :span="7">
-          <a-popconfirm
-            title="确定要删除吗?"
-            @confirm="spotDel()"
-            @cancel="cancelDelete"
-            okText="确定"
-            cancelText="取消"
-          >
-            <a-button type="primary" block >删除</a-button>
-          </a-popconfirm>
-        </a-col>
-        <a-col :span="7">
-          <a-button type="primary" block @click="taskSave">保存</a-button>
-        </a-col>
-      </a-row>
+              <a-select
+                showSearch
+                mode="multiple"
+                :allowClear="true"
+                placeholder="请选择"
+                optionFilterProp="children"
+                style="width: 100%"
+                :filterOption="filterOption"
+                v-model="list.lineId"
+              >
+                <a-select-option
+                  :value="item.id"
+                  v-for="(item, index) in lineList"
+                  :key="index"
+                >{{item.name}}</a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item
+              label="调查点任务"
+              :label-col="formItemLayout.labelCol"
+              :wrapper-col="formItemLayout.wrapperCol"
+            >
+              <a-select
+                showSearch
+                mode="tags"
+                :allowClear="true"
+                placeholder="请选择"
+                optionFilterProp="children"
+                style="width: 100%"
+                :filterOption="filterOption"
+                v-model="list.pointId"
+              >
+                <a-select-option
+                  :value="item.id"
+                  v-for="(item, index) in spotList"
+                  :key="index"
+                >{{item.name}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-form>
+        </section>
+        <a-button
+          type="primary"
+          block
+          class="bottom_add"
+          @click="addTask"
+          v-show="!addLineShow"
+        >创建方案</a-button>
+        <!-- 线路任务按钮 -->
+        <a-row
+          v-show="addLineShow"
+          class="bottom_add"
+          type="flex"
+          justify="space-around"
+          align="middle"
+        >
+          <a-col :span="7">
+            <a-button type="primary" block @click="taskCancel">取消</a-button>
+          </a-col>
+          <a-col :span="7">
+            <a-popconfirm
+              title="确定要删除吗?"
+              @confirm="spotDel()"
+              @cancel="cancelDelete"
+              okText="确定"
+              cancelText="取消"
+            >
+              <a-button type="primary" block>删除</a-button>
+            </a-popconfirm>
+          </a-col>
+          <a-col :span="7">
+            <a-button type="primary" block @click="taskSave">保存</a-button>
+          </a-col>
+        </a-row>
+      </div>
     </div>
   </div>
 </template>
@@ -176,7 +209,16 @@ const formTailLayout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 }
 }
-import {getRiverList,programmeList,programmeSave,programmeDetail,programmeRemove,programmePrimary,taskSpotList,taskLineList} from '@/api/login'
+import {
+  getRiverList,
+  programmeList,
+  programmeSave,
+  programmeDetail,
+  programmeRemove,
+  programmePrimary,
+  taskSpotList,
+  taskLineList
+} from '@/api/login'
 import { TreeSelect } from 'ant-design-vue'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
@@ -264,7 +306,7 @@ const treeData = [
   //           lat: 31.21948,
   //           lng: 121.50759
   //         }
-  //       ] 
+  //       ]
   //     },
   //     {
   //       title: '360调查点3',
@@ -303,7 +345,7 @@ const treeData = [
   //           lat: 31.25111,
   //           lng: 121.51711
   //         }
-  //       ] 
+  //       ]
   //     }
   //   ]
   // },
@@ -354,18 +396,18 @@ export default {
   },
   data() {
     return {
-      list:{
-        id:'',
-        projectId:'5da7d092ea6c156d792df816',
-        name:'',
-        lineId:[],
-        pointId:[],
-        primary:false,
+      list: {
+        id: '',
+        projectId: '5da7d092ea6c156d792df816',
+        name: '',
+        lineId: [],
+        pointId: [],
+        primary: false
       },
       defaultRiver: '',
       addRiverShow: false, // 气泡卡片
-      lineList:[],//任务路线
-      spotList:[],//任务点
+      lineList: [], //任务路线
+      spotList: [], //任务点
       // activeKey: 0, //
       lineTaskList: [
         // {
@@ -458,60 +500,60 @@ export default {
     }
   },
   methods: {
-    getList(){
-      getRiverList().then(res => {
-        var arr = res.data.data
-        arr.forEach(v => {
-          v.clicked = false
-        });
-        this.riverList =arr
-        
-      }).catch(err => {
-
-      })
+    getList() {
+      getRiverList()
+        .then(res => {
+          var arr = res.data.data
+          arr.forEach(v => {
+            v.clicked = false
+          })
+          this.riverList = arr
+        })
+        .catch(err => {})
     },
     //编辑
-    edit(id){
+    edit(id) {
       this.addLineShow = true
-      programmeDetail(id).then(res => {
-        var arr = res.data
-        this.list.id=arr.id
-        this.list.name=arr.name
-        this.list.primary=arr.primary
-        var lineId=[]
-        var pointId = []
-        if (arr.lines!=null) {
-          arr.lines.forEach(v => {
-            lineId.push(v.id)
-          });
-        }
-        if (arr.points!=null) {
-          arr.points.forEach(v => {
-            pointId.push(v.id)
-          });
-        }
-        console.log(lineId,pointId);
-        
-        this.list.lineId =lineId
-        this.list.pointId=pointId
-      }).catch(err => {
+      programmeDetail(id)
+        .then(res => {
+          var arr = res.data
+          this.list.id = arr.id
+          this.list.name = arr.name
+          this.list.primary = arr.primary
+          var lineId = []
+          var pointId = []
+          if (arr.lines != null) {
+            arr.lines.forEach(v => {
+              lineId.push(v.id)
+            })
+          }
+          if (arr.points != null) {
+            arr.points.forEach(v => {
+              pointId.push(v.id)
+            })
+          }
+          console.log(lineId, pointId)
 
-      })
+          this.list.lineId = lineId
+          this.list.pointId = pointId
+        })
+        .catch(err => {})
     },
     //删除
-    spotDel(){
+    spotDel() {
       if (this.list.id == '') {
-         this.$message.error('请先保存任务')
-      }else{
-        programmeRemove(this.list.id).then(res => {
-          this.$message.success('删除成功')
-          this.taskCancel()
-          this.chooseRiver()
-        }).catch(err => {
-            this.$message.error(err.response.data.message);
-        })
+        this.$message.error('请先保存任务')
+      } else {
+        programmeRemove(this.list.id)
+          .then(res => {
+            this.$message.success('删除成功')
+            this.taskCancel()
+            this.chooseRiver()
+          })
+          .catch(err => {
+            this.$message.error(err.response.data.message)
+          })
       }
-      
     },
     cancelDelete(e) {
       // this.$message.error('Click on No')
@@ -543,20 +585,16 @@ export default {
         sn.parentNode.insertBefore(s, sn);*/
     },
     //请求点线任务
-    collapseChange(key){
+    collapseChange(key) {
       // console.log(key);
       // if (key != undefined) {
       //   taskSpotList(key).then(res => {
       //     console.log(res);
-          
       //   }).catch(err => {
-
       //   })
       //   taskLineList(key).then(res => {
       //     console.log(res);
-          
       //   }).catch(err => {
-
       //   })
       // }
     },
@@ -633,66 +671,65 @@ export default {
       this.map.removeEventListener('click', this.MapClick)
     },
     onSelect(selectedKeys, info) {
-      console.log(selectedKeys,info);
-      
+      console.log(selectedKeys, info)
+
       this.selectedKeys = selectedKeys
       var info = info.node.dataRef
       this.clearLays()
-      if(info.children){
-        for(var i = 0; i< info.children.length;i++){
-          if(info.children[i].riverData.length > 1){
+      if (info.children) {
+        for (var i = 0; i < info.children.length; i++) {
+          if (info.children[i].riverData.length > 1) {
             console.log(info.children[i].riverData)
             this.positionArea(info.children[i].riverData)
-            this.map.setZoom("13")
+            this.map.setZoom('13')
           }
-          if(info.children[i].riverData.length == 1){
-            this.map.setZoom("10")
+          if (info.children[i].riverData.length == 1) {
+            this.map.setZoom('10')
             this.setMarkerInfo(info.children[i].riverData)
-          }     
+          }
         }
-      }else{
-        if(info.riverData.length > 1){
+      } else {
+        if (info.riverData.length > 1) {
           this.positionArea(info.riverData)
         }
-        if(info.riverData.length == 1){
-          this.map.setZoom("14")
+        if (info.riverData.length == 1) {
+          this.map.setZoom('14')
           this.setMarkerInfo(info.riverData)
         }
       }
     },
     //定位到选中地
-    positionArea(val){
+    positionArea(val) {
       this.map.setViewport(val)
       this.setPolygonLine(val, 'red', 3, 0)
-      this.polygon.addEventListener('click', this.polygonClick);  
+      this.polygon.addEventListener('click', this.polygonClick)
     },
     //绘制多边形
-    setPolygonLine(layerData,color,weighe,fillOpacity){
-      this.polygon = new T.Polygon(layerData,{
+    setPolygonLine(layerData, color, weighe, fillOpacity) {
+      this.polygon = new T.Polygon(layerData, {
         color: color,
         weight: weighe,
-        opacity:0.5,
-        fillColor:'#FFFFFF',
-        fillOpacity:fillOpacity
-      });
+        opacity: 0.5,
+        fillColor: '#FFFFFF',
+        fillOpacity: fillOpacity
+      })
       this.map.addOverLay(this.polygon)
     },
     //绘制标注点
-    setMarkerInfo(riverData){
+    setMarkerInfo(riverData) {
       this.map.setViewport(riverData)
-      this.map.setZoom("14")
-      for(var i = 0;i< riverData.length;i++){
+      this.map.setZoom('14')
+      for (var i = 0; i < riverData.length; i++) {
         var lng = riverData[i].lng
         var lat = riverData[i].lat
-        var point = new T.LngLat(lng,lat)
+        var point = new T.LngLat(lng, lat)
         var marker = new T.Marker(point)
         this.map.addOverLay(marker)
-        var markerInfo = new T.InfoWindow("信息窗口")
-        marker.addEventListener("click",function(){
+        var markerInfo = new T.InfoWindow('信息窗口')
+        marker.addEventListener('click', function() {
           marker.openInfoWindow(markerInfo)
         })
       }
-      
     },
     // 弹窗点击确认事件
     modalClick(v) {
@@ -710,24 +747,26 @@ export default {
       console.log(`checked = ${e.target.checked}`)
     },
     // 选择方案详情
-    riverPlan (keys) {
-      console.log('Trigger Select', keys);
+    riverPlan(keys) {
+      console.log('Trigger Select', keys)
     },
-    onExpand () {
-      console.log('Trigger Expand');
+    onExpand() {
+      console.log('Trigger Expand')
     },
     // 设为默认方案
     defaultPlan(index) {
-      var data ={
-        id:index,
-        riverId:this.defaultRiver
+      var data = {
+        id: index,
+        riverId: this.defaultRiver
       }
-      programmePrimary(data).then(res => {
-        this.$message.success('保存成功')
-        this.chooseRiver()
-      }).catch(err => {
-        this.$message.error(err.response.data.message)
-      })
+      programmePrimary(data)
+        .then(res => {
+          this.$message.success('保存成功')
+          this.chooseRiver()
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message)
+        })
       // this.lineTaskList.forEach(value=>{
       //   if (value.name === index) {
       //     value.default = true
@@ -736,7 +775,7 @@ export default {
       //   }
       // })
     },
-    
+
     // 创建方案
     addTask() {
       this.addLineShow = true
@@ -744,47 +783,47 @@ export default {
     // 关联河道
     chooseRiver(index) {
       console.log(`selected ${index}`)
-      programmeList(this.defaultRiver).then(res => {
-        var arr = res.data.data
-        for (let a = 0; a < arr.length; a++) {
-          if (arr[a].points != null) {
-            arr[a].points.forEach(v => {
-              v.riverData =[{lat:'',lng:'',}]
-              v.title= v.name 
-              v.key = v.id
-              v.riverData[0].lat = v.coordinate[1]
-              v.riverData[0].lng = v.coordinate[0]
-            });
-          }else{
-            arr[a].points=[]
+      programmeList(this.defaultRiver)
+        .then(res => {
+          var arr = res.data.data
+          for (let a = 0; a < arr.length; a++) {
+            if (arr[a].points != null) {
+              arr[a].points.forEach(v => {
+                v.riverData = [{ lat: '', lng: '' }]
+                v.title = v.name
+                v.key = v.id
+                v.riverData[0].lat = v.coordinate[1]
+                v.riverData[0].lng = v.coordinate[0]
+              })
+            } else {
+              arr[a].points = []
+            }
+            if (arr[a].lines != null) {
+              arr[a].lines.forEach(v => {
+                v.riverData = []
+                v.title = v.name
+                v.key = v.id
+              })
+            } else {
+              arr[a].lines = []
+            }
+            arr[a].dataTree = arr[a].lines.concat(arr[a].points)
           }
-          if (arr[a].lines != null) {
-            arr[a].lines.forEach(v => {
-              v.riverData =[]
-              v.title= v.name 
-              v.key = v.id
-            });
-          }else{
-            arr[a].lines=[]
-          }
-          arr[a].dataTree= arr[a].lines.concat(arr[a].points);
-        }
-        this.lineTaskList = arr
-      }).catch(err => {
-
-      })
-      taskSpotList(this.defaultRiver).then(res => {
-        var arr = res.data
-        this.spotList = arr
-      }).catch(err => {
-
-      })
-      taskLineList(this.defaultRiver).then(res => {
-        var arr = res.data
-        this.lineList = arr
-      }).catch(err => {
-
-      })
+          this.lineTaskList = arr
+        })
+        .catch(err => {})
+      taskSpotList(this.defaultRiver)
+        .then(res => {
+          var arr = res.data
+          this.spotList = arr
+        })
+        .catch(err => {})
+      taskLineList(this.defaultRiver)
+        .then(res => {
+          var arr = res.data
+          this.lineList = arr
+        })
+        .catch(err => {})
       this.riverList.forEach(value => {
         if (value.name === index) {
           value.clicked = true
@@ -807,16 +846,18 @@ export default {
     },
     taskSave() {
       var data = this.list
-      data.lineId = data.lineId.join(",")
-      data.pointId = data.pointId.join(",")
+      data.lineId = data.lineId.join(',')
+      data.pointId = data.pointId.join(',')
       data.riverId = this.defaultRiver
-      programmeSave(data).then(res => {
-        this.addLineShow = false
-        this.$message.success('保存成功')
-        this.chooseRiver()
-      }).catch(err => {
-        this.$message.error(err.response.data.message)
-      })
+      programmeSave(data)
+        .then(res => {
+          this.addLineShow = false
+          this.$message.success('保存成功')
+          this.chooseRiver()
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message)
+        })
     },
     // 添加调查点任务
     addRiverPlan(value) {
@@ -824,7 +865,7 @@ export default {
       this.value = value
     },
     //清楚覆盖物
-    clearLays(){
+    clearLays() {
       this.map.clearOverLays()
     }
   }
@@ -861,7 +902,7 @@ export default {
   height: 100%;
   display: inline-block;
   vertical-align: top;
-  padding: 10px;
+  // padding: 10px;
   background-color: white;
 }
 .task_face {
