@@ -321,13 +321,78 @@ export function getTaskSave (parameter) {
     data:parameter
   })
 }
+//任务详情
 export function getTaskDetail (id) {
   return axios({
     url: '/server/data/admin/task/detail/'+id,
     method: 'get',
   })
 }
-
+//任务删除
+export function taskRemove (id) {
+  return axios({
+    url: '/server/data/admin/task/remove/'+id,
+    method: 'post',
+  })
+}
+//任务点分页
+export function taskSpotPage(id) {
+  return axios({
+    url: '/server/data/admin/task/point/page?taskId='+id,
+    method: 'get',
+  })
+}
+//任务点列表
+export function taskSpotList(id) {
+  return axios({
+    url: '/server/data/admin/task/point/list?riverId='+id,
+    method: 'get',
+  })
+}
+//任务线列表
+export function taskLineList(id) {
+  return axios({
+    url: '/server/data/admin/task/line/list?riverId='+id,
+    method: 'get',
+  })
+}
+//方案分页
+export function programmeList(id) {
+  return axios({
+    url: '/server/data/admin/scheme/page?projectId=5da7d092ea6c156d792df816&riverId='+id,
+    method: 'get',
+  })
+}
+//方案保存
+export function programmeSave(parameter) {
+  return axios({
+    url: '/server/data/admin/scheme/save',
+    method: 'post',
+    data:parameter
+  })
+}
+//方案详情
+export function programmeDetail(id) {
+  return axios({
+    url: '/server/data/admin/scheme/detail/'+id,
+    method: 'get',
+  })
+}
+//方案删除
+export function programmeRemove(parameter) {
+  return axios({
+    url: '/server/data/admin/scheme/remove/'+id,
+    method: 'post',
+  })
+}
+//方案设默认
+export function programmePrimary(parameter) {
+  return axios({
+    url: '/server/data/admin/scheme/set/primary/',
+    method: 'post',
+    data:parameter
+  })
+}
 
 
 

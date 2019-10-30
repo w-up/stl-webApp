@@ -28,7 +28,7 @@
           v-show="!addLineShow"
         >
           <a-select-option
-            :value="item.name"
+            :value="item.id"
             v-for="(item, index) in riverList"
             :key="index"
           >{{item.name}}</a-select-option>
@@ -37,9 +37,10 @@
           <a-collapse-panel v-for="item in lineTaskList" :key="item.key" :style="customStyle">
             <template slot="header">
               <a-row style="width:100%">
-                <a-col :span="14">{{item.name}}</a-col>
-                <a-col :span="10" style="text-align:right;padding-right:10px;">
-                  <a-button size="small" @click.stop="defaultPlan(item.name)">{{item.default?"默认":"设为默认"}}</a-button>
+                <a-col :span="9">{{item.name}}</a-col>
+                <a-col :span="15" style="text-align:right;padding-right:10px;">
+                  <a-button size="small" type="primary" style="margin-right:5px;" >编辑</a-button>
+                  <a-button size="small" @click.stop="defaultPlan(item.id)">{{item.primary?"默认":"设为默认"}}</a-button>
                 </a-col>
               </a-row>
             </template>
@@ -65,7 +66,7 @@
             :label-col="formItemLayout.labelCol"
             :wrapper-col="formItemLayout.wrapperCol"
           >
-            <a-input placeholder />
+            <a-input placeholder  v-model="list.name"/>
           </a-form-item>
           <a-form-item
             label="关联河道"
@@ -80,9 +81,10 @@
               @change="chooseRiver"
               :filterOption="filterOption"
               v-model="defaultRiver"
+              disabled
             >
               <a-select-option
-                :value="item.name"
+                :value="item.id"
                 v-for="(item, index) in riverList"
                 :key="index"
               >{{item.name}}</a-select-option>
@@ -93,35 +95,44 @@
             :label-col="formItemLayout.labelCol"
             :wrapper-col="formItemLayout.wrapperCol"
           >
-            <a-row style="width:100%">
-              <a-col :span="24" style="height:30px;">
-                <a-checkbox @change="onChange">线路1</a-checkbox>
-              </a-col>
-              <a-col :span="24" style="height:30px;">
-                <a-checkbox @change="onChange">线路2</a-checkbox>
-              </a-col>
-              <a-col :span="24" style="height:30px;">
-                <a-checkbox @change="onChange">线路3</a-checkbox>
-              </a-col>
-              <a-col :span="24" style="height:30px;">
-                <a-checkbox @change="onChange">线路4</a-checkbox>
-              </a-col>
-            </a-row>
+            <a-select
+              showSearch
+              mode="multiple"
+              :allowClear="true"
+              placeholder="请选择"
+              optionFilterProp="children"
+              style="width: 100%"
+              :filterOption="filterOption"
+              v-model="list.lineId"
+            >
+              <a-select-option
+                :value="item.id"
+                v-for="(item, index) in lineList"
+                :key="index"
+              >{{item.name}}</a-select-option>
+            </a-select>
           </a-form-item>
           <a-form-item
             label="调查点任务"
             :label-col="formItemLayout.labelCol"
             :wrapper-col="formItemLayout.wrapperCol"
           >
-            <a-tree-select
+            <a-select
+              showSearch
+              mode="tags"
+              :allowClear="true"
+              placeholder="请选择"
+              optionFilterProp="children"
               style="width: 100%"
-              :treeData="treeData"
-              :value="value"
-              @change="addRiverPlan"
-              treeCheckable
-              :showCheckedStrategy="SHOW_PARENT"
-              searchPlaceholder="Please select"
-            />
+              :filterOption="filterOption"
+              v-model="list.pointId"
+            >
+              <a-select-option
+                :value="item.id"
+                v-for="(item, index) in spotList"
+                :key="index"
+              >{{item.name}}</a-select-option>
+            </a-select>
           </a-form-item>
         </a-form>
       </section>
@@ -154,9 +165,7 @@ const formTailLayout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 }
 }
-
-
-
+import {getRiverList,programmeList,programmeSave,programmeDetail,programmeRemove,programmePrimary,taskSpotList,taskLineList} from '@/api/login'
 import { TreeSelect } from 'ant-design-vue'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
@@ -337,27 +346,38 @@ export default {
   },
   data() {
     return {
+      list:{
+        id:'',
+        projectId:'5da7d092ea6c156d792df816',
+        name:'',
+        lineId:[],
+        pointId:[],
+        primary:false,
+      },
+      defaultRiver: '',
       addRiverShow: false, // 气泡卡片
+      lineList:[],//任务路线
+      spotList:[],//任务点
       // activeKey: 0, //
       lineTaskList: [
-        {
-          id: 0,
-          name: '黄浦江方案1',
-          key: 0,
-          default: true
-        },
-        {
-          id: 1,
-          name: '黄浦江方案2',
-          key: 1,
-          default: false
-        },
-        {
-          id: 2,
-          name: '黄浦江方案3',
-          key: 2,
-          default: false
-        }
+        // {
+        //   id: 0,
+        //   name: '黄浦江方案1',
+        //   key: 0,
+        //   default: true
+        // },
+        // {
+        //   id: 1,
+        //   name: '黄浦江方案2',
+        //   key: 1,
+        //   default: false
+        // },
+        // {
+        //   id: 2,
+        //   name: '黄浦江方案3',
+        //   key: 2,
+        //   default: false
+        // }
       ],
       customStyle: 'background: #fff;margin: 0;overflow: hidden',
       addRiverShow: false,
@@ -371,46 +391,43 @@ export default {
 
       SHOW_PARENT,
       value: '',
-
-      defaultRiver: '黄浦江',
       riverList: [
-        {
-          id: 0,
-          name: '黄浦江',
-          clicked: true
-        },
-        {
-          id: 1,
-          name: '大治河',
-          clicked: false
-        },
-        {
-          id: 2,
-          name: '川杨河',
-          clicked: false
-        },
-        {
-          id: 3,
-          name: '蕰藻浜',
-          clicked: false
-        },
-        {
-          id: 4,
-          name: '龙华港',
-          clicked: false
-        },
-        {
-          id: 5,
-          name: '太浦河',
-          clicked: false
-        },
-        {
-          id: 6,
-          name: '太湖',
-          clicked: false
-        }
+        // {
+        //   id: 0,
+        //   name: '黄浦江',
+        //   clicked: true
+        // },
+        // {
+        //   id: 1,
+        //   name: '大治河',
+        //   clicked: false
+        // },
+        // {
+        //   id: 2,
+        //   name: '川杨河',
+        //   clicked: false
+        // },
+        // {
+        //   id: 3,
+        //   name: '蕰藻浜',
+        //   clicked: false
+        // },
+        // {
+        //   id: 4,
+        //   name: '龙华港',
+        //   clicked: false
+        // },
+        // {
+        //   id: 5,
+        //   name: '太浦河',
+        //   clicked: false
+        // },
+        // {
+        //   id: 6,
+        //   name: '太湖',
+        //   clicked: false
+        // }
       ],
-
       expandedKeys: ['0-0-0', '0-0-1'],
       autoExpandParent: true,
       checkedKeys: ['0-0-0'],
@@ -425,6 +442,7 @@ export default {
   },
   mounted() {
     this.initCruisePlan()
+    this.getList()
   },
   watch: {
     checkedKeys(val) {
@@ -432,6 +450,18 @@ export default {
     }
   },
   methods: {
+    getList(){
+      getRiverList().then(res => {
+        var arr = res.data.data
+        arr.forEach(v => {
+          v.clicked = false
+        });
+        this.riverList =arr
+        
+      }).catch(err => {
+
+      })
+    },
     initCruisePlan() {
       const that = this
       //初始化地图控件
@@ -614,13 +644,23 @@ export default {
     },
     // 设为默认方案
     defaultPlan(index) {
-      this.lineTaskList.forEach(value=>{
-        if (value.name === index) {
-          value.default = true
-        } else {
-          value.default = false
-        }
+      var data ={
+        id:index,
+        riverId:this.defaultRiver
+      }
+      programmePrimary(data).then(res => {
+        this.$message.success('保存成功')
+        this.chooseRiver()
+      }).catch(err => {
+        this.$message.error(err.response.data.message)
       })
+      // this.lineTaskList.forEach(value=>{
+      //   if (value.name === index) {
+      //     value.default = true
+      //   } else {
+      //     value.default = false
+      //   }
+      // })
     },
     
     // 创建方案
@@ -630,6 +670,25 @@ export default {
     // 关联河道
     chooseRiver(index) {
       console.log(`selected ${index}`)
+      programmeList(this.defaultRiver).then(res => {
+        var arr = res.data.data
+        this.lineTaskList = arr
+        console.log(arr);
+      }).catch(err => {
+
+      })
+      taskSpotList(this.defaultRiver).then(res => {
+        var arr = res.data
+        this.spotList = arr
+      }).catch(err => {
+
+      })
+      taskLineList(this.defaultRiver).then(res => {
+        var arr = res.data
+        this.lineList = arr
+      }).catch(err => {
+
+      })
       this.riverList.forEach(value => {
         if (value.name === index) {
           value.clicked = true
@@ -646,7 +705,17 @@ export default {
       this.addLineShow = false
     },
     taskSave() {
-      this.addLineShow = false
+      var data = this.list
+      data.lineId = data.lineId.join(",")
+      data.pointId = data.pointId.join(",")
+      data.riverId = this.defaultRiver
+      programmeSave(data).then(res => {
+        this.addLineShow = false
+        this.$message.success('保存成功')
+        this.chooseRiver()
+      }).catch(err => {
+        this.$message.error(err.response.data.message)
+      })
     },
     // 添加调查点任务
     addRiverPlan(value) {

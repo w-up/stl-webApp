@@ -26,31 +26,23 @@
         <a-col :span="18">
           <span>已为您匹配到相关河道, 您可以手动添加或删除河道</span>
           <a-col :span="24" style="margin-top:10px;">
-            <a-select
+            <!-- <a-select
               showSearch
-              placeholder="请输入河流"
+              mode="multiple"
+              :allowClear="true"
+              placeholder="请输入河流添加"
               optionFilterProp="children"
               style="width: 100%"
-              @focus="handleFocus"
-              @blur="handleBlur"
               @change="handleChange"
               :filterOption="filterOption"
-              v-model="defaultRiver"
+              v-model="riverId"
             >
-              <a-select-option :value="item.name" v-for="(item, index) in riverList" :key="index">
-                <a-row style="width:100%">
-                  <a-col :span="20">{{item.name}}</a-col>
-                  <a-col :span="4">
-                    <a-button
-                      size="small"
-                      shape="circle"
-                      icon="close"
-                      @click.stop="deleteRiver(item.name)"
-                    />
-                  </a-col>
-                </a-row>
-              </a-select-option>
-            </a-select>
+              <a-select-option
+                :value="item.id"
+                v-for="(item, index) in riverList"
+                :key="index"
+              >{{item.name}}</a-select-option>
+            </a-select> -->
           </a-col>
         </a-col>
       </a-row>
@@ -127,50 +119,6 @@ export default {
       confirmLoading: false,
 
       selectedItems: [], //风险源类型
-      headers: {
-        authorization: 'authorization-text'
-      },
-
-      options: [
-        {
-          value: 'zhejiang',
-          label: 'Zhejiang',
-          children: [
-            {
-              value: 'hangzhou',
-              label: 'Hangzhou',
-              children: [
-                {
-                  value: 'xihu',
-                  label: 'West Lake'
-                },
-                {
-                  value: 'xiasha',
-                  label: 'Xia Sha',
-                  disabled: true
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: 'jiangsu',
-          label: 'Jiangsu',
-          children: [
-            {
-              value: 'nanjing',
-              label: 'Nanjing',
-              children: [
-                {
-                  value: 'zhonghuamen',
-                  label: 'Zhong Hua men'
-                }
-              ]
-            }
-          ]
-        }
-      ],
-
       form: this.$form.createForm(this)
     }
   },
@@ -180,7 +128,8 @@ export default {
     }
   },
   methods: {
-    add() {
+    add(e,id) {
+      console.log(e,id);
       this.visible = true
     },
     // 添加河流

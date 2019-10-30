@@ -38,7 +38,7 @@
                   <a-col :span="4" style="text-align:right;">
                     <a-popconfirm
                       title="确定要删除吗?"
-                      @confirm="confirmLineDelete(item.name)"
+                      @confirm="confirmLineDelete(item.id)"
                       @cancel="cancelDelete"
                       okText="确定"
                       cancelText="取消"
@@ -296,7 +296,7 @@
         </a-tab-pane>
         <a-tab-pane tab="点任务" key="2" forceRender>
           <section class="task_face">
-            <a-collapse defaultActiveKey="1" accordion style="margin-top:10px;">
+            <a-collapse defaultActiveKey="1" accordion style="margin-top:10px;" @change="collapseChange">
               <a-collapse-panel
                 v-show="!addPointShow"
                 v-for="item in pointTaskList"
@@ -555,7 +555,15 @@
           <a-button type="primary" block @click="taskCancel">取消</a-button>
         </a-col>
         <a-col :span="6">
-           <a-button type="primary" block >删除</a-button>
+          <a-popconfirm
+            title="确定要删除吗?"
+            @confirm="spotDel()"
+            @cancel="cancelDelete"
+            okText="确定"
+            cancelText="取消"
+          >
+            <a-button type="primary" block >删除</a-button>
+          </a-popconfirm>
         </a-col>
         <a-col :span="6">
           <a-button type="primary" block @click="taskSave">保存</a-button>
@@ -581,7 +589,7 @@ import Vue from 'vue'
 import AddTaskPoint from './modules/AddTaskPoint.vue'
 import { setUserProjection } from 'ol/proj'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { taskList,getTaskSave,roleList,getTaskDetail,getRiverList} from '@/api/login'
+import { taskList,getTaskSave,roleList,getTaskDetail,getRiverList,taskRemove,taskSpotPage} from '@/api/login'
 const formItemLayout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 }
@@ -624,9 +632,11 @@ export default {
         deviceNum:'',
         riverId:'',
       },
+      taskId:'',//任务点ID
       roleId:[],//分配人员角色
       deviceId:[],//分配设备
       riverId:[],//关联河道
+
       spotList:{
         //点任务数据
         title:'',
@@ -861,10 +871,30 @@ export default {
     },
     // 线路任务删除
     confirmLineDelete(index) {
-      this.lineTaskList.splice(this.lineTaskList.findIndex(item => item.name === index), 1)
-      this.drawAllLine()
-      this.$message.success('删除成功')
-      this.defaultLineTask = null
+      taskRemove(index).then(res => {
+        this.$message.success('删除成功')
+        this.getList()
+        this.drawAllLine()
+        this.defaultLineTask = null
+      }).catch(err => {
+          this.$message.error(err.response.data.message);
+      })
+      
+    },
+    //点任务删除
+    spotDel(){
+      if (this.spotList.id == '') {
+         this.$message.error('请先保存任务')
+      }else{
+        taskRemove(this.spotList.id).then(res => {
+          this.$message.success('删除成功')
+          this.taskCancel()
+          this.getList()
+        }).catch(err => {
+            this.$message.error(err.response.data.message);
+        })
+      }
+      
     },
     cancelDelete(e) {
       // this.$message.error('Click on No')
@@ -925,6 +955,21 @@ export default {
         item.clicked = false
       }
       this.drawAllLine()
+    },
+    //任务点获取
+    collapseChange(key){
+      console.log(key);
+      if (key!= undefined) {
+        this.taskId = key
+        taskSpotPage(key).then(res => {
+          console.log(res);
+          
+
+        }).catch(err => {
+
+        })
+      }
+      
     },
     // 查找函数 value:要查的坐标, latlng:查的是lng经度还是lat纬度, lineDataArr:被查询的数组
     findIndex(value, latlng, lineDataArr) {
@@ -1007,7 +1052,7 @@ export default {
     },
     // 返回标注点的坐标
     addTaskPointed(e) {
-      this.$refs.addTaskPoint.add()
+      this.$refs.addTaskPoint.add(e.currentLnglat,this.taskId)
       console.log(e)
     },
     onSelect(selectedKeys, info) {
