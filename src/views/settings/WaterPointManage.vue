@@ -247,13 +247,13 @@ export default {
         this.allPointTask(this.fixedPointList)
         for (const item of this.fixedPointList) {
           arr.push(item.latlng)
-          this.map.setViewport(arr)
+          // this.map.setViewport(arr)
         }
       } else {
         this.allPointTask(this.peoplePointList)
         for (const item of this.peoplePointList) {
           arr.push(item.latlng)
-          this.map.setViewport(arr)
+          // this.map.setViewport(arr)
         }
       }
     },
