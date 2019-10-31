@@ -228,8 +228,7 @@ export default {
       }
       projectNewsSave(data).then(res => {
           this.$message.success('保存成功');
-          this.equipmentModel = false;
-          this.equipmentList.id=''
+          this.handleCancel1()
           this.newList()
         }).catch(err => {
           this.$message.error(err.response.data.message);
@@ -237,6 +236,8 @@ export default {
     },
     handleCancel1(e) {
       this.equipmentList.id=''
+      this.equipmentList.type=''
+      this.equipmentList.number=''
       this.equipmentModel = false;
     },
     newList(){

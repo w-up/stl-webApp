@@ -27,7 +27,6 @@
                   slot="renderItem"
                   slot-scope="item, index"
                   :key="index"
-                  @click="fixedPoint(item.name)"
                   :class="{active_item: item.clicked}"
                 >
                   <a-row style="width:100%">
@@ -35,7 +34,7 @@
                     <a-col :span="4" style="text-align:right;">
                       <a-popconfirm
                         title="确定要删除吗?"
-                        @confirm="fixedConfirmDelete(item.name)"
+                        @confirm="fixedPoint(item.id)"
                         @cancel="cancelDelete"
                         okText="确定"
                         cancelText="取消"
@@ -55,7 +54,6 @@
                   slot="renderItem"
                   slot-scope="item, index"
                   :key="index"
-                  @click="peoplePoint(item.name)"
                   :class="{active_item: item.clicked}"
                 >
                   <a-row style="width:100%">
@@ -63,7 +61,7 @@
                     <a-col :span="4" style="text-align:right;">
                       <a-popconfirm
                         title="确定要删除吗?"
-                        @confirm="peopleConfirmDelete(item.name)"
+                        @confirm="fixedPoint(item.id)"
                         @cancel="cancelDelete"
                         okText="确定"
                         cancelText="取消"
@@ -79,64 +77,6 @@
         </a-tabs>
         <a-button type="primary" block class="bottom_add" @click="addTask">添加</a-button>
       </div>
-      <a-tabs defaultActiveKey="1" @change="callback" v-model="actionTab" class="custom_tabs">
-        <a-tab-pane tab="固定监测点" key="1">
-          <section class="task_face">
-            <a-list size="small" bordered :dataSource="fixedPointList" style="margin-top: 10px;">
-              <a-list-item
-                slot="renderItem"
-                slot-scope="item, index"
-                :key="index"
-                @click="fixedPoint(item.id)"
-                :class="{active_item: item.clicked}"
-              >
-                <a-row style="width:100%">
-                  <a-col :span="20">{{item.name}}</a-col>
-                  <a-col :span="4" style="text-align:right;">
-                    <a-popconfirm
-                      title="确定要删除吗?"
-                      @confirm="fixedConfirmDelete(item.name)"
-                      @cancel="cancelDelete"
-                      okText="确定"
-                      cancelText="取消"
-                    >
-                      <a href="#">删除</a>
-                    </a-popconfirm>
-                  </a-col>
-                </a-row>
-              </a-list-item>
-            </a-list>
-          </section>
-        </a-tab-pane>
-        <a-tab-pane tab="人工监测点" key="2" forceRender>
-          <section class="task_face">
-            <a-list size="small" bordered :dataSource="peoplePointList" style="margin-top: 10px;">
-              <a-list-item
-                slot="renderItem"
-                slot-scope="item, index"
-                :key="index"
-                @click="fixedPoint(item.id)"
-                :class="{active_item: item.clicked}"
-              >
-                <a-row style="width:100%">
-                  <a-col :span="20">{{item.name}}</a-col>
-                  <a-col :span="4" style="text-align:right;">
-                    <a-popconfirm
-                      title="确定要删除吗?"
-                      @confirm="peopleConfirmDelete(item.name)"
-                      @cancel="cancelDelete"
-                      okText="确定"
-                      cancelText="取消"
-                    >
-                      <a href="#">删除</a>
-                    </a-popconfirm>
-                  </a-col>
-                </a-row>
-              </a-list-item>
-            </a-list>
-          </section>
-        </a-tab-pane>
-      </a-tabs>
       <a-button type="primary" block class="bottom_add" @click="addTask">添加</a-button>
     </div>
     <!-- 添加 -->
@@ -326,13 +266,13 @@ export default {
     fixedPoint(index) {
       testingDel(index).then(res => {
         if (this.type == 1) {
-          this.$parent.getFixedList();
+          this.getFixedList();
         }else{
-          this.$parent.getManualList();
+          this.getManualList();
         }
         this.$message.success('删除成功')
       }).catch(err => {
-        this.$message.error(err.response.data.message);
+        
       })
     },
     // 人工监测点
@@ -348,21 +288,6 @@ export default {
           value.clicked = false
         }
       })
-    },
-    // 固定监测点删除
-    fixedConfirmDelete(index) {
-      console.log(index)
-      this.fixedPointList.splice(this.fixedPointList.findIndex(item => item.name === index), 1)
-      this.$message.success('删除成功')
-      this.allPointTask(this.fixedPointList)
-      this.defaultRiver = null
-    },
-    // 人工监测点删除
-    peopleConfirmDelete(index) {
-      this.peoplePointList.splice(this.peoplePointList.findIndex(item => item.name === index), 1)
-      this.$message.success('删除成功')
-      this.allPointTask(this.peoplePointList)
-      this.defaultRiver = null
     },
     cancelDelete(e) {
       // this.$message.error('Click on No')

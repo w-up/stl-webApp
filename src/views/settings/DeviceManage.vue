@@ -108,7 +108,7 @@
           <el-input v-model="equipmentList.type" placeholder="请输入" style="width:200px" />
         </el-form-item>
         <el-form-item label="设备数量">
-          <el-input v-model="equipmentList.number" placeholder="请输入" style="width:200px" />
+          <el-input  placeholder="请输入" style="width:200px" />
         </el-form-item>
         <el-form-item label="设备聚隆编号">
           <el-input v-model="equipmentList.number" placeholder="请输入" style="width:200px" />
@@ -192,7 +192,7 @@ const columns1 = [
   },
   {
     title: '数量',
-    dataIndex: 'code'
+    dataIndex: 'code1'
   },
   {
     title: '状态',

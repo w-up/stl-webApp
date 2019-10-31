@@ -75,7 +75,7 @@
     </div>
     <a-table :columns="columns" :dataSource="loadData" bordered>
       <template slot="action" slot-scope="row">
-        <a >编辑</a>
+        <a @click="$refs.addSupervisory.add1(row.id)">编辑</a>
         <a-divider type="vertical" />
         <a-popconfirm
           title="确定要删除吗?"
@@ -108,7 +108,7 @@ export default {
     AddSupervisory,
     StepByStepModal
   },
-  data() {
+  data() { 
     return {
       streetList:[],
       riverList:[],
@@ -128,7 +128,7 @@ export default {
         },
         {
           title: '名称',
-          dataIndex: 'no'
+          dataIndex: 'name'
         },
         {
           title: '所属街道',
@@ -184,11 +184,11 @@ export default {
     }
   },
   mounted(){
-    this.getList()
+    this.getPage()
     this.getType()
   },
   methods: {
-    getList(){
+    getPage(){
       SupervisePage().then(res => {
         function formatDate(now) { 
           var year=now.getFullYear() //取得4位数的年份
@@ -202,12 +202,15 @@ export default {
         var arr = res.data.data
         for (let i = 0; i < arr.length; i++) {
           arr[i].key = i + 1
-          arr[i].name = arr[i].creator.name
           arr[i].description =arr[i].street.name
           arr[i].updatedAt = formatDate(new Date(arr[i].surveyDate))
           arr[i].callNo = ''
           for (let a = 0; a < arr[i].rivers.length; a++) {
             arr[i].callNo =arr[i].callNo + arr[i].rivers[a].name + ' '
+          }
+          arr[i].status = ''
+          for (let a = 0; a < arr[i].riskSourceType.length; a++) {
+            arr[i].status =arr[i].status + arr[i].riskSourceType[a].name + ' '
           }
         }
         this.loadData = arr
