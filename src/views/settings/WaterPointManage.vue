@@ -209,7 +209,6 @@ export default {
             this.$refs.addWaterPoint.add1(item.id)
           } else {
             item.clicked = false
-            this.$refs.addWaterPoint.add1(item.id)
           }
         }
       } else {
@@ -219,7 +218,6 @@ export default {
             this.$refs.addWaterPoint.add1(item.id)
             this.pointInfo = item
           } else {
-            this.$refs.addWaterPoint.add1(item.id)
             item.clicked = false
           }
         }
