@@ -26,8 +26,8 @@
       <!-- <world-map></world-map> -->
     </div>
     <div class="right">
-      <h3 style="font-size: 16px;margin:10px 0 0 10px">河道管理</h3>
-      <a-divider style="margin: 5px 0 10px; background-color: #888;" />
+      <h3 style="font-size: 16px; font-weight: 600; margin:10px 0 0 10px; text-align:center;">河道管理</h3>
+      <a-divider style="margin: 10px 0 10px;" />
       <div style="padding: 0 10px">
         <a-select
           showSearch

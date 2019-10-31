@@ -16,8 +16,8 @@
       </div>
     </div>
     <div class="right">
-      <h3 style="font-size: 16px;margin:10px 0 0 10px">任务管理</h3>
-      <a-divider style="margin: 5px 0 0; background-color: #888;" />
+      <h3 style="font-size: 16px; font-weight: 600; margin:10px 0 0 10px; text-align:center;">任务管理</h3>
+      <a-divider style="margin: 10px 0 0;" />
       <div style="padding: 0 10px">
         <a-tabs defaultActiveKey="1" @change="callback" v-model="actionTab" class="custom_tabs">
           <a-tab-pane tab="线路任务" key="1">
@@ -417,11 +417,23 @@
                   :label-col="formItemLayout.labelCol"
                   :wrapper-col="formItemLayout.wrapperCol"
                 >
-                  <a-select placeholder="请选择" style="width: 100%">
-                    <a-select-option value="图标1">图标1</a-select-option>
-                    <a-select-option value="图标2">图标2</a-select-option>
-                    <a-select-option value="图标3">图标3</a-select-option>
-                  </a-select>
+                  <el-upload
+                    class="upload-demo"
+                    ref="upload"
+                    :data="lineList"
+                    name="kmz"
+                    :headers="headers"
+                    action="/server/data/admin/task/save"
+                    :on-preview="handlePreview"
+                    :on-success="handleSuccess"
+                    :on-change="uploadChange"
+                    :on-remove="handleRemove"
+                    :file-list="fileList"
+                    :limit="1"
+                    :auto-upload="false"
+                  >
+                    <a-button type="primary" icon="upload">上传</a-button>
+                  </el-upload>
                 </a-form-item>
                 <a-form-item
                   label="人员配置"

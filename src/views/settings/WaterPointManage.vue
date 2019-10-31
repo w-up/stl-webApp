@@ -16,8 +16,8 @@
       </div>
     </div>
     <div class="right">
-      <h3 style="font-size: 16px;margin:10px 0 0 10px">水质监测点管理</h3>
-      <a-divider style="margin: 5px 0 0; background-color: #888;" />
+      <h3 style="font-size: 16px; font-weight: 600; margin:10px 0 0 10px; text-align:center;">水质监测点管理</h3>
+      <a-divider style="margin: 10px 0 0;" />
       <div style="padding: 0 10px">
         <a-tabs defaultActiveKey="1" @change="callback" v-model="actionTab" class="custom_tabs">
           <a-tab-pane tab="固定监测点" key="1">
@@ -86,7 +86,7 @@
 
 <script>
 import AddWaterPoint from './modules/AddWaterPoint.vue'
-import {testingPage,testingDel} from '@/api/login'
+import { testingPage, testingDel } from '@/api/login'
 export default {
   name: 'TaskManage',
   components: {
@@ -96,7 +96,7 @@ export default {
     return {
       addRiverShow: false, // 气泡卡片
       actionTab: '1', //tab
-      type:'1',
+      type: '1',
       fixedPointList: [
         // { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.21493, lng: 121.49566 } },
         // { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
@@ -118,7 +118,7 @@ export default {
       map: {},
       // 地图节点对象（里面含节点对象、区域对象、任务弹窗对象）
       mapPoint: new Map(),
-      pointInfo: { id: '', name: '', clicked: '', latlng: { lat: '', lng: '' } }// 点信息
+      pointInfo: { id: '', name: '', clicked: '', latlng: { lat: '', lng: '' } } // 点信息
     }
   },
   mounted() {
@@ -128,33 +128,33 @@ export default {
   },
   methods: {
     //固定监测分页
-    getFixedList(){
-      testingPage('fixed').then(res => {
-        var arr = res.data.data
-        arr.forEach(v => {
-          v.latlng = v.coordinate
-          v.clicked = false
-        });
-        console.log(arr);
-        
-        this.fixedPointList = arr
-        this.allPointTask(this.fixedPointList)
-      }).catch(err => {
+    getFixedList() {
+      testingPage('fixed')
+        .then(res => {
+          var arr = res.data.data
+          arr.forEach(v => {
+            v.latlng = v.coordinate
+            v.clicked = false
+          })
+          console.log(arr)
 
-      })
+          this.fixedPointList = arr
+          this.allPointTask(this.fixedPointList)
+        })
+        .catch(err => {})
     },
     //人工监测分页
-    getManualList(){
-      testingPage('manual').then(res => {
-        var arr = res.data.data
-        arr.forEach(v => {
-          v.latlng = v.coordinate
-          v.clicked = false
-        });
-        this.peoplePointList = arr      
-      }).catch(err => {
-
-      })
+    getManualList() {
+      testingPage('manual')
+        .then(res => {
+          var arr = res.data.data
+          arr.forEach(v => {
+            v.latlng = v.coordinate
+            v.clicked = false
+          })
+          this.peoplePointList = arr
+        })
+        .catch(err => {})
     },
     initMap() {
       //初始化地图控件
@@ -162,7 +162,6 @@ export default {
       this.map = new T.Map('map')
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
       this.markerTool = new T.MarkTool(this.map, { follow: true })
-      
     },
     allPointTask(pointLists) {
       this.map.clearOverLays()
@@ -234,7 +233,7 @@ export default {
     },
     // 返回标注点的坐标
     addTaskPointed(e) {
-      this.$refs.addWaterPoint.add(e.currentLnglat,this.type)
+      this.$refs.addWaterPoint.add(e.currentLnglat, this.type)
       console.log(e)
     },
 
@@ -264,16 +263,16 @@ export default {
     },
     // 固定监测点
     fixedPoint(index) {
-      testingDel(index).then(res => {
-        if (this.type == 1) {
-          this.getFixedList();
-        }else{
-          this.getManualList();
-        }
-        this.$message.success('删除成功')
-      }).catch(err => {
-        
-      })
+      testingDel(index)
+        .then(res => {
+          if (this.type == 1) {
+            this.getFixedList()
+          } else {
+            this.getManualList()
+          }
+          this.$message.success('删除成功')
+        })
+        .catch(err => {})
     },
     // 人工监测点
     peoplePoint(index) {

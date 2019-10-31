@@ -16,8 +16,8 @@
       </div>
     </div>
     <div class="right">
-      <h3 style="font-size: 16px;margin:10px 0 0 10px">巡河方案管理</h3>
-      <a-divider style="margin: 5px 0 10px; background-color: #888;" />
+      <h3 style="font-size: 16px; font-weight: 600; margin:10px 0 0 10px; text-align:center;">巡河方案管理</h3>
+      <a-divider style="margin: 10px 0 10px;" />
       <div style="padding: 0 10px">
         <section class="task_face">
           <a-select
