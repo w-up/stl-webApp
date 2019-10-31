@@ -824,6 +824,7 @@ export default {
           this.gettTaskPointList(v.id)
         })
         this.pointTaskList = arr
+        
       }).catch(err => {})
       
     },
@@ -832,8 +833,10 @@ export default {
         var arr = res.data.data
         arr.forEach(v => {
           v.name = v.title
+          v.lineData = v.coordinate
         })
         this.lineTaskList = arr
+        this.drawAllLine()
       }).catch(err => {})
     },
     //人员配置列表
@@ -902,8 +905,10 @@ export default {
     // 线路任务
     chooseLineTask(index) {
       this.defaultLineTask = index
+      console.log(index);
+      
       for (const item of this.lineTaskList) {
-        if (item.name === index) {
+        if (item.id === index) {
           item.clicked = true
           this.map.setViewport(item.lineData)
         } else {
@@ -984,6 +989,8 @@ export default {
       findIndex4 = this.findIndex(arr[3], 'lng', this.lineTaskList)
 
       if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
+        console.log(this.lineTaskList);
+        
         id = this.lineTaskList[findIndex1].id
         for (const item of this.lineTaskList) {
           if (item.id == id) {
