@@ -27,6 +27,7 @@
                   slot="renderItem"
                   slot-scope="item, index"
                   :key="index"
+                   @click="fixedPoint(item.name)"
                   :class="{active_item: item.clicked}"
                 >
                   <a-row style="width:100%">
@@ -34,7 +35,7 @@
                     <a-col :span="4" style="text-align:right;">
                       <a-popconfirm
                         title="确定要删除吗?"
-                        @confirm="fixedPoint(item.id)"
+                        @confirm="del(item.id)"
                         @cancel="cancelDelete"
                         okText="确定"
                         cancelText="取消"
@@ -54,6 +55,7 @@
                   slot="renderItem"
                   slot-scope="item, index"
                   :key="index"
+                  @click="peoplePoint(item.name)"
                   :class="{active_item: item.clicked}"
                 >
                   <a-row style="width:100%">
@@ -61,7 +63,7 @@
                     <a-col :span="4" style="text-align:right;">
                       <a-popconfirm
                         title="确定要删除吗?"
-                        @confirm="fixedPoint(item.id)"
+                        @confirm="del(item.id)"
                         @cancel="cancelDelete"
                         okText="确定"
                         cancelText="取消"
@@ -261,6 +263,34 @@ export default {
     },
     // 固定监测点
     fixedPoint(index) {
+      this.defaultRiver = index
+      this.fixedPointList.forEach(value => {
+        if (value.name === index) {
+          value.clicked = true
+          let arr = []
+          arr.push(value.latlng)
+          this.map.setViewport(arr)
+        } else {
+          value.clicked = false
+        }
+      })
+    },
+    // 人工监测点
+    peoplePoint(index) {
+      this.defaultRiver = index
+      this.peoplePointList.forEach(value => {
+        if (value.name === index) {
+          value.clicked = true
+          let arr = []
+          arr.push(value.latlng)
+          this.map.setViewport(arr)
+        } else {
+          value.clicked = false
+        }
+      })
+    },
+    
+    del(index) {
       testingDel(index)
         .then(res => {
           if (this.type == 1) {
