@@ -417,16 +417,21 @@
                   :label-col="formItemLayout.labelCol"
                   :wrapper-col="formItemLayout.wrapperCol"
                 >
+                  <div style="display:flex">
+                  <viewer >
+                    <img  :src="attachmentJpg" alt="" style="height:30px;margin-right:10px">
+                  </viewer > 
                   <el-upload
                     class="upload-demo"
-                    ref="upload"
-                    :data="lineList"
+                    ref="upload1"
+                    :data="spotList"
                     name="kmz"
                     :headers="headers"
                     action="/server/data/admin/task/save"
                     :on-preview="handlePreview"
-                    :on-success="handleSuccess"
-                    :on-change="uploadChange"
+                    :on-success="handleSuccess1"
+                    :on-change="uploadChange1"
+                    :show-file-list="false"
                     :on-remove="handleRemove"
                     :file-list="fileList"
                     :limit="1"
@@ -434,6 +439,7 @@
                   >
                     <a-button type="primary" icon="upload">上传</a-button>
                   </el-upload>
+                  </div>
                 </a-form-item>
                 <a-form-item
                   label="人员配置"
@@ -632,6 +638,7 @@ export default {
   },
   data() {
     return {
+      attachmentJpg:'',//图片
       alertLeft: -1000,
       alertTop: -1000,
       taskId:'',
@@ -1132,6 +1139,7 @@ export default {
           this.spotList.remark = arr.info.remark
           this.spotList.duty = arr.info.duty
           this.spotList.template = arr.info.template.code
+          this.attachmentJpg = arr.info.kmz
           var sz = []
           for (let i = 0; i < arr.staff.length; i++) {
             sz.push(arr.staff[i].role.id)
@@ -1297,6 +1305,7 @@ export default {
         this.spotList.template = ''
         this.spotList.roleId = []
         this.spotList.roleNum = ''
+        this.attachmentJpg = ''
       }
     },
     taskSave() {
@@ -1342,7 +1351,8 @@ export default {
           }
         }
         data.roleId = data.roleId.join(',')
-        getTaskSave(data).then(res => {
+        if (this.fileList.length == 0) {
+          getTaskSave(data).then(res => {
             var arr = res.data
             this.$message.success('保存成功')
             this.taskCancel()
@@ -1350,6 +1360,10 @@ export default {
           }).catch(err => {
             this.$message.error(err.response.data.message)
           })
+        } else {
+          this.$refs.upload1.submit()
+        }
+        
       }
     },
     //上传
@@ -1360,9 +1374,23 @@ export default {
       this.$message.success('保存成功')
       this.getLineList()
     },
+    handleSuccess1(response, file, fileList) {
+      this.taskCancel()
+      this.$message.success('保存成功')
+      this.getList()
+    },
     uploadChange(file, fileList) {
       if (this.fileList.length == 0) {
         this.fileList = fileList
+      } else {
+        this.fileList = []
+      }
+    },
+    uploadChange1(file, fileList) {
+      if (this.fileList.length == 0) {
+
+        this.fileList = fileList
+        this.attachmentJpg= URL.createObjectURL(file.raw)
       } else {
         this.fileList = []
       }
