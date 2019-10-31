@@ -356,6 +356,28 @@ export function taskLineList(id) {
     method: 'get',
   })
 }
+//任务点详情
+export function taskPointDetail(id) {
+  return axios({
+    url: '/server/data/admin/task/point/detail/'+id,
+    method: 'get',
+  })
+}
+//任务点保存
+export function taskPointSave(parameter) {
+  return axios({
+    url: '/server/data/admin/task/point/save',
+    method: 'post',
+    data:parameter
+  })
+}
+//任务点保存
+export function taskPointDel(id) {
+  return axios({
+    url: '/server/data/admin/task/point/remove/'+id,
+    method: 'post',
+  })
+}
 //方案分页
 export function programmeList(id) {
   return axios({
