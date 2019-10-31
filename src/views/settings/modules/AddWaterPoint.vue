@@ -141,37 +141,37 @@
 </template>
 
 <script>
-import {testingSave,testingDetail} from '@/api/login'
+import { testingSave, testingDetail } from '@/api/login'
 export default {
   props: {
     //接收父组件传来的值
-    pointInfo: { id: '', name: '', latlng: { lat: '', lng: '' } },
+    pointInfo: { id: '', name: '', latlng: { lat: '', lng: '' } }
   },
   data() {
     return {
-      list:{
-        id:'',
-        projectId:'5da7d092ea6c156d792df816',
-        type:'',
-        lng:'',
-        lat:'',
-        name:'',
-        code:'',
-        level:'',
-        section:'',
-        waterName:'',
-        waterCode:'',
-        manageLevel:'',
-        waterType:'',
-        area:'',
-        town:'',
-        village:'',
-        dutyOrg:'',
-        monitorOrg:'',
-        department:'',
-        originalCode:'',
-        remark:'',
-        address:'',
+      list: {
+        id: '',
+        projectId: '5da7d092ea6c156d792df816',
+        type: '',
+        lng: '',
+        lat: '',
+        name: '',
+        code: '',
+        level: '',
+        section: '',
+        waterName: '',
+        waterCode: '',
+        manageLevel: '',
+        waterType: '',
+        area: '',
+        town: '',
+        village: '',
+        dutyOrg: '',
+        monitorOrg: '',
+        department: '',
+        originalCode: '',
+        remark: '',
+        address: ''
       },
       labelCol: {
         xs: { span: 18 },
@@ -184,7 +184,7 @@ export default {
       visible: false,
       confirmLoading: false,
 
-      selectedItems: [], //风险源类型
+      selectedItems: [] //风险源类型
     }
   },
   computed: {
@@ -192,48 +192,49 @@ export default {
       return OPTIONS.filter(o => !this.selectedItems.includes(o))
     }
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
-    add(e,type) {
-      console.log(e,type);
-      if (type ==1) {
-        this.list.type ='fixed'
-      }else{
-        this.list.type ='manual'
+    add(e, type) {
+      console.log(e, type)
+      if (type == 1) {
+        this.list.type = 'fixed'
+      } else {
+        this.list.type = 'manual'
       }
       this.list.lng = e.lng
       this.list.lat = e.lat
       this.visible = true
     },
     add1(id) {
-      testingDetail(id).then(res => {
-        var arr = res.data
-        this.list.id=arr.id
-        this.list.type=arr.type.code
-        this.list.lng=arr.coordinate.lng
-        this.list.lat=arr.coordinate.lat
-        this.list.name=arr.name
-        this.list.code=arr.code
-        this.list.address=arr.address
-        this.list.level=arr.level
-        this.list.section=arr.section
-        this.list.waterName=arr.waterName
-        this.list.waterCode=arr.waterCode
-        this.list.manageLevel=arr.manageLevel
-        this.list.waterType=arr.waterType
-        this.list.area=arr.area
-        this.list.town=arr.town
-        this.list.village=arr.village
-        this.list.dutyOrg=arr.dutyOrg
-        this.list.monitorOrg=arr.monitorOrg
-        this.list.department=arr.department
-        this.list.originalCode=arr.originalCode
-        this.list.remark=arr.remark
-        this.visible = true
-      }).catch(err => {
-        this.$message.error(err.response.data.message);
-      })
+      testingDetail(id)
+        .then(res => {
+          var arr = res.data
+          this.list.id = arr.id
+          this.list.type = arr.type.code
+          this.list.lng = arr.coordinate.lng
+          this.list.lat = arr.coordinate.lat
+          this.list.name = arr.name
+          this.list.code = arr.code
+          this.list.address = arr.address
+          this.list.level = arr.level
+          this.list.section = arr.section
+          this.list.waterName = arr.waterName
+          this.list.waterCode = arr.waterCode
+          this.list.manageLevel = arr.manageLevel
+          this.list.waterType = arr.waterType
+          this.list.area = arr.area
+          this.list.town = arr.town
+          this.list.village = arr.village
+          this.list.dutyOrg = arr.dutyOrg
+          this.list.monitorOrg = arr.monitorOrg
+          this.list.department = arr.department
+          this.list.originalCode = arr.originalCode
+          this.list.remark = arr.remark
+          this.visible = true
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message)
+        })
     },
     handleSubmit() {
       const {
@@ -255,43 +256,44 @@ export default {
     },
     handleSave() {
       var data = this.list
-      data.coordinate = data.lng + ','+data.lat
-      testingSave(data).then(res => {
-        if (this.list.type == "fixed") {
-          this.$parent.getFixedList();
-        }else{
-          this.$parent.getManualList();
-        }
-        this.handleCancel()     
-        this.$message.success('保存成功')
-
-      }).catch(err => {
-          this.$message.error(err.response.data.message);
-      })
+      data.coordinate = data.lng + ',' + data.lat
+      testingSave(data)
+        .then(res => {
+          if (this.list.type == 'fixed') {
+            this.$parent.getFixedList()
+          } else {
+            this.$parent.getManualList()
+          }
+          this.handleCancel()
+          this.$message.success('保存成功')
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message)
+        })
     },
     handleCancel() {
       this.visible = false
-      this.list.id=''
-      this.list.type=''
-      this.list.lng=''
-      this.list.lat=''
-      this.list.name=''
-      this.list.code=''
-      this.list.level=''
-      this.list.section=''
-      this.list.waterName=''
-      this.list.waterCode=''
-      this.list.manageLevel=''
-      this.list.waterType=''
-      this.list.area=''
-      this.list.town=''
-      this.list.village=''
-      this.list.dutyOrg=''
-      this.list.monitorOrg=''
-      this.list.department=''
-      this.list.originalCode=''
-      this.list.remark=''
-      this.list.address=''
+      this.list.id = ''
+      this.list.type = ''
+      this.list.lng = ''
+      this.list.lat = ''
+      this.list.name = ''
+      this.list.code = ''
+      this.list.level = ''
+      this.list.section = ''
+      this.list.waterName = ''
+      this.list.waterCode = ''
+      this.list.manageLevel = ''
+      this.list.waterType = ''
+      this.list.area = ''
+      this.list.town = ''
+      this.list.village = ''
+      this.list.dutyOrg = ''
+      this.list.monitorOrg = ''
+      this.list.department = ''
+      this.list.originalCode = ''
+      this.list.remark = ''
+      this.list.address = ''
     },
     filter(inputValue, path) {
       return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
