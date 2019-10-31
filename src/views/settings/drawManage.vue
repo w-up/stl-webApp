@@ -122,20 +122,27 @@ export default {
 
     },
     handleOk(e) {
-      var data ={
-        id:this.list.id,
-        type:'draw_type',
-        name:this.list.name
-      }
-      paramSave(data).then(res => {
-          this.$message.success('保存成功');
-          this.visible = false;
-          this.list.id=''
-          this.list.name=''
-          this.getList()
-        }).catch(err => {
-          this.$message.error(err.response.data.message);
-      })
+      this.$refs['formValidate'].validate((valid) => {
+          if (valid) {
+            var data ={
+              id:this.list.id,
+              type:'draw_type',
+              name:this.list.name
+            }
+            paramSave(data).then(res => {
+                this.$message.success('保存成功');
+                this.visible = false;
+                this.list.id=''
+                this.list.name=''
+                this.getList()
+              }).catch(err => {
+                this.$message.error(err.response.data.message);
+            })
+          } else {
+            this.$message.error('请填写绘制类型')
+          }
+        });
+      
     },
     handleCancel(e) {
       this.list.id=''
