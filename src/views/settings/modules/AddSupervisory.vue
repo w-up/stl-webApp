@@ -285,7 +285,7 @@ export default {
         SuperviseSave(data).then(res => {
             this.$message.success('保存成功')
             this.handleCancel()
-            this.$parent.getPage();
+            this.$parent.$parent.getPage();
         }).catch(err => {
           this.$message.error(err.response.data.message)
         })
