@@ -53,9 +53,9 @@
               :auto-upload="false">
               <a-button type="primary" icon="plus" >添加</a-button>
             </el-upload>
-            <!-- <viewer >
+            <viewer >
                 <img  :src="attachmentJpg" alt="" style="height:70px;">
-            </viewer > -->
+            </viewer >
         </a-form-item>
       </a-form>
     </a-modal>
@@ -166,21 +166,26 @@ export default {
 
     },
     submitUpload() {
-      if (this.fileList.length == 0) {
-        var data = this.list
-        paramSave(data).then(res => {
-            this.$message.success('保存成功');
-            this.visible = false
-            this.list.id=''
-            this.list.name=''
-            this.attachmentJpg=''
-            this.getList()
-        }).catch(err => {
-            this.$message.error(err.response.data.message);
-        })
+      if (this.attachmentJpg !='') {
+        if (this.fileList.length == 0) {
+          var data = this.list
+          paramSave(data).then(res => {
+              this.$message.success('保存成功');
+              this.visible = false
+              this.list.id=''
+              this.list.name=''
+              this.attachmentJpg=''
+              this.getList()
+          }).catch(err => {
+              this.$message.error(err.response.data.message);
+          })
+        }else{
+          this.$refs.upload.submit();
+        }
       }else{
-        this.$refs.upload.submit();
+        this.$message.error('图片不能为空');
       }
+      
     },
     handleSuccess(response, file, fileList){
       this.attachmentJpg=''
@@ -199,7 +204,7 @@ export default {
         this.fileList=[]
       }
       console.log(file, fileList);
-      this.attachmentJpg=window.URL.createObjectURL(file.raw)
+      this.attachmentJpg=URL.createObjectURL(file.raw)
     },
     handleRemove(file, fileList) {
       
