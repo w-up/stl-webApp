@@ -89,6 +89,13 @@
         </a-popover>
       </div>
     </div>
+    <div class="phone_upload" v-show="phonePhoto">
+      <a-upload name="file" :multiple="true" action :headers="headers" @change="phoneUpload">
+        <a-button style="width:180px;" block>
+          <a-icon type="upload" />上传照片
+        </a-button>
+      </a-upload>
+    </div>
     <ul class="menu">
       <li @click="compass">
         <img src="./img/compass.png" alt="指北针" title="指北针" />
@@ -139,7 +146,7 @@
         </a-popover>
       </li>
       <li>
-        <img src="./img/screenshot.png" @click="printImage" alt="截图" title="截图" />
+        <img src="./img/screenshot.png" id="export-png" @click="printImage" alt="截图" title="截图" />
       </li>
       <li @click="mapZoomIn">
         <img src="./img/max.png" alt="放大" title="放大" />
@@ -406,11 +413,13 @@ import LayerGroup from 'ol/layer/Group'
 import XYZ from 'ol/source/XYZ'
 
 import OSM from 'ol/source/OSM'
+
 // 拖拽缩放
 // import { defaults as defaultInteractions, DragRotateAndZoom } from 'ol/interaction'
 
 // 截图
 import htmlToImage from 'html-to-image'
+// import { toPng } from 'html-to-image'
 
 export default {
   name: 'Supervise',
@@ -422,6 +431,10 @@ export default {
   },
   data() {
     return {
+      headers: {
+        // 文件上传
+        authorization: 'authorization-text'
+      },
       timeData: [
         {
           id: 0,
@@ -545,6 +558,20 @@ export default {
           clicked: false,
           imgUrl: require('../../assets/loginBg.jpg'),
           latlng: { lat: 31.22649, lng: 121.49712 }
+        },
+        {
+          id: 3,
+          name: '监测点4',
+          clicked: false,
+          imgUrl: require('../../assets/loginBg.jpg'),
+          latlng: { lat: 31.19482, lng: 121.46819 }
+        },
+        {
+          id: 4,
+          name: '监测点5',
+          clicked: false,
+          imgUrl: require('../../assets/loginBg.jpg'),
+          latlng: { lat: 31.19649, lng: 121.45995 }
         }
       ],
       UAVPhotoPoints: [
@@ -671,8 +698,8 @@ export default {
     }
   },
   mounted() {
+    let that = this
     this.initMap()
-
     // this.watchAllSwitch()
     // this.photoAlert = true
   },
@@ -698,7 +725,7 @@ export default {
       this.weatherShow = !this.weatherShow
     },
     initMap() {
-      //初始化地图控件
+      // 初始化地图控件
       let zoom = 14
       this.map = new T.Map('map')
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
@@ -721,25 +748,25 @@ export default {
       // this.map = new Map({
       //   target: 'map',
       //   view: new View({
-      //     center: [12149550, 3121098],
-      //     zoom: 15
+      //     center: [121.4955, 31.21098],
+      //     zoom: 14
       //   }),
       //   layers: [
       //     new TileLayer({
       //       source: new XYZ({
-      //         url: 'https://t0.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      //         url: 'https://t0.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
       //       }),
       //       isGroup: true,
       //       name: '天地图路网'
       //     }),
       //     new TileLayer({
       //       source: new XYZ({
-      //         url: 'https://t0.tianditu.gov.cn/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      //         url: 'https://t0.tianditu.gov.cn/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
       //       }),
       //       isGroup: true,
       //       name: '天地图文字标注'
       //     })
-      //   ],
+      //   ]
       //   // interactions: defaultInteractions().extend([new DragRotateAndZoom()])
       // })
     },
@@ -806,10 +833,10 @@ export default {
     onMapChange(e) {
       this.map.clearLayers()
       let twoDimensionURL =
-        'http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
-      let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+        'http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
+      let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
       let satelliteURL =
-        'http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+        'http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
       //创建自定义图层对象
       if (e.target.value == 'a') {
         console.log(`checked = ${e.target.value}`)
@@ -826,6 +853,7 @@ export default {
       this.map.clearLayers()
     },
     printImage() {
+      let that = this
       if (!this.canDownload) {
         return
       }
@@ -834,6 +862,22 @@ export default {
         message: '提示',
         description: '正在截取地图, 请稍等...'
       })
+      // var exportOptions = {
+      //   filter: function(element) {
+      //     return element.className ? element.className.indexOf('ol-control') === -1 : true
+      //   }
+      // }
+
+      // that.map.once('rendercomplete', function() {
+      //   toPng(that.map.getTargetElement(), exportOptions).then(function(dataURL) {
+      //     // var link = document.getElementById('image-download')
+      //     // link.href = dataURL
+      //     // link.click()
+      //     comsole.log(dataURL)
+      //   })
+      // })
+      // that.map.renderSync()
+
       var node = document.getElementById('map')
       htmlToImage
         .toPng(node)
@@ -1049,9 +1093,16 @@ export default {
         let icon = new T.Icon({
           iconUrl: item.imgUrl,
           iconSize: new T.Point(70, 45),
-          iconAnchor: new T.Point(35, 45),
-          title: item.name
+          iconAnchor: new T.Point(35, 45)
         })
+        // var label = new T.Label({
+        //   text: `<img style="width:70px; height:45px;" src="${item.imgUrl}">`,
+        //   position: item.latlng,
+        //   offset: new T.Point(-35, 45)
+        // })
+        // //创建地图文本对象
+        // this.map.addOverLay(label)
+        // label.addEventListener('click', this.taskImageClick)
         styles = [
           {
             url: item.imgUrl,
@@ -1062,11 +1113,18 @@ export default {
             range: [0, 50]
           }
         ]
-        let marker = new T.Marker(item.latlng, { icon: icon })
-        marker.addEventListener('click', this.taskImageClick)
+        let marker = new T.Marker(item.latlng, { icon: icon, id: item.id, name: item.name })
         arrayObj.push(marker)
+        marker.addEventListener('click', this.taskImageClick)
       }
       var markers = new T.MarkerClusterer(this.map, { markers: arrayObj, styles: styles })
+      // document.getElementsByClassName("tdt-cluster0")[0].addEventListener(click, this.taskImageClick)
+      setTimeout(() => {
+        $('.tdt-cluster0').click(function(params) {
+          console.log(123)
+        })
+      }, 1000)
+      // markers.addEventListener('click', this.taskImageClick)
     },
     // 任务照片点击
     taskImageClick(index) {
@@ -1080,9 +1138,20 @@ export default {
       //   }
       // }
     },
+    // 上传手机照片
+    phoneUpload(info) {
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList)
+      }
+      if (info.file.status === 'done') {
+        this.$message.success(`${info.file.name} file uploaded successfully`)
+      } else if (info.file.status === 'error') {
+        this.$message.error(`${info.file.name} file upload failed.`)
+      }
+    },
     getTdLayer(lyr) {
       var url =
-        'http://t{0-7}.tianditu.com/DataServer?T=' + lyr + '&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+        'http://t{0-7}.tianditu.com/DataServer?T=' + lyr + '&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
       var layer = new TileLayer({
         source: new XYZ({
           url: url
@@ -1253,7 +1322,7 @@ export default {
   overflow: hidden;
   border-radius: 10px;
   border: 1px solid rgb(204, 204, 204);
-  box-shadow:0px 4px 6px 0px rgba(0,0,0,0.05);
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.05);
   padding: 13px;
   display: flex;
   display: -webkit-flex;
@@ -1436,12 +1505,23 @@ export default {
   }
 }
 
+.phone_upload {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 180px;
+  background-color: white;
+  z-index: 888;
+  border-radius: 4px;
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.5);
+}
+
 .menu {
   position: fixed;
   right: 20px;
   bottom: 20px;
   width: 40px;
-  z-index: 999;
+  z-index: 888;
   margin: 0;
   padding: 0;
   list-style-type: none;

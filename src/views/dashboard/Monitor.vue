@@ -1263,7 +1263,7 @@ export default {
   },
   methods: {
     getTdLayer(lyr){
-      var url = "http://t{0-7}.tianditu.com/DataServer?T=" + lyr + "&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc"
+      var url = "http://t{0-7}.tianditu.com/DataServer?T=" + lyr + "&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822"
       this.layer = new TileLayer({
         source: new XYZ({
           url: url
@@ -1618,11 +1618,11 @@ export default {
     //图像显示修改
     onMapChange(e) {
       this.map.clearLayers() //移除所有叠加层
-      const vecLayer = 'http://t4.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
-      const cvaLayer = 'http://t3.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc'
+      const vecLayer = 'http://t4.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
+      const cvaLayer = 'http://t3.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
       const imgLayer = 'http://t0.tianditu.gov.cn/img_w/wmts?' +
         'SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles' +
-        '&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=b4840c07acad9f2144370bb8abaf80fc'
+        '&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=a659a60049b130a5d1fececfd5a6b822'
       if(e.target.value == 'a'){
         var mapLayer2d = new T.TileLayer(vecLayer,{ minZoom: 4, maxZoom: 18 })
         this.map.addLayer(mapLayer2d)

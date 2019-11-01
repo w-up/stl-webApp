@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     getTdLayer(lyr){
-        var url = "http://t{0-7}.tianditu.com/DataServer?T=" + lyr + "&x={x}&y={y}&l={z}&tk=b4840c07acad9f2144370bb8abaf80fc"
+        var url = "http://t{0-7}.tianditu.com/DataServer?T=" + lyr + "&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822"
         var layer = new TileLayer({
             source: new XYZ({
             url: url
