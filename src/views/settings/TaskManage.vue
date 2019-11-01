@@ -300,7 +300,8 @@
           </a-tab-pane>
           <a-tab-pane tab="点任务" key="2" forceRender>
             <section class="task_face">
-               <a-collapse defaultActiveKey="1" accordion style="margin-top:10px;" > <!-- -->
+              <a-collapse defaultActiveKey="1" accordion style="margin-top:10px;">
+                <!-- -->
                 <a-collapse-panel
                   v-show="!addPointShow"
                   v-for="item in pointTaskList"
@@ -418,27 +419,27 @@
                   :wrapper-col="formItemLayout.wrapperCol"
                 >
                   <div style="display:flex">
-                  <viewer >
-                    <img  :src="attachmentJpg" alt="" style="height:30px;margin-right:10px">
-                  </viewer > 
-                  <el-upload
-                    class="upload-demo"
-                    ref="upload1"
-                    :data="spotList"
-                    name="kmz"
-                    :headers="headers"
-                    action="/server/data/admin/task/save"
-                    :on-preview="handlePreview"
-                    :on-success="handleSuccess1"
-                    :on-change="uploadChange1"
-                    :show-file-list="false"
-                    :on-remove="handleRemove"
-                    :file-list="fileList"
-                    :limit="1"
-                    :auto-upload="false"
-                  >
-                    <a-button type="primary" icon="upload">上传</a-button>
-                  </el-upload>
+                    <viewer>
+                      <img :src="attachmentJpg" alt style="height:30px;margin-right:10px" />
+                    </viewer>
+                    <el-upload
+                      class="upload-demo"
+                      ref="upload1"
+                      :data="spotList"
+                      name="kmz"
+                      :headers="headers"
+                      action="/server/data/admin/task/save"
+                      :on-preview="handlePreview"
+                      :on-success="handleSuccess1"
+                      :on-change="uploadChange1"
+                      :show-file-list="false"
+                      :on-remove="handleRemove"
+                      :file-list="fileList"
+                      :limit="1"
+                      :auto-upload="false"
+                    >
+                      <a-button type="primary" icon="upload">上传</a-button>
+                    </el-upload>
                   </div>
                 </a-form-item>
                 <a-form-item
@@ -593,7 +594,7 @@
               okText="确定"
               cancelText="取消"
             >
-              <a-button type="primary" block >删除</a-button>
+              <a-button type="primary" block>删除</a-button>
             </a-popconfirm>
           </a-col>
           <a-col :span="6">
@@ -621,7 +622,16 @@ import Vue from 'vue'
 import AddTaskPoint from './modules/AddTaskPoint.vue'
 import { setUserProjection } from 'ol/proj'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { taskList, getTaskSave, roleList, getTaskDetail, getRiverList ,taskSpotPage,taskPointDel,taskRemove} from '@/api/login'
+import {
+  taskList,
+  getTaskSave,
+  roleList,
+  getTaskDetail,
+  getRiverList,
+  taskSpotPage,
+  taskPointDel,
+  taskRemove
+} from '@/api/login'
 const formItemLayout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 }
@@ -638,10 +648,10 @@ export default {
   },
   data() {
     return {
-      attachmentJpg:'',//图片
+      attachmentJpg: '', //图片
       alertLeft: -1000,
       alertTop: -1000,
-      taskId:'',
+      taskId: '',
       alertShow: false,
       fileList: [], //上传列表
       personnelList: [], //人员列表
@@ -816,28 +826,31 @@ export default {
   methods: {
     //点线列表
     getList() {
-      taskList('dot').then(res => {
-        var arr = res.data.data
-        arr.forEach(v => {
-          v.name = v.title
-          v.pointList = []
-          this.gettTaskPointList(v.id)
+      taskList('dot')
+        .then(res => {
+          var arr = res.data.data
+          arr.forEach(v => {
+            v.name = v.title
+            v.pointList = []
+            this.gettTaskPointList(v.id)
+          })
+          this.pointTaskList = arr
         })
-        this.pointTaskList = arr
-        
-      }).catch(err => {})
-      
+        .catch(err => {})
     },
-    getLineList(){
-      taskList('line').then(res => {
-        var arr = res.data.data
-        arr.forEach(v => {
-          v.name = v.title
-          v.lineData = v.coordinate
+    getLineList() {
+      taskList('line')
+        .then(res => {
+          var arr = res.data.data
+          arr.forEach(v => {
+            v.clicked = false
+            v.name = v.title
+            v.lineData = v.coordinate
+          })
+          this.lineTaskList = arr
+          this.drawAllLine()
         })
-        this.lineTaskList = arr
-        this.drawAllLine()
-      }).catch(err => {})
+        .catch(err => {})
     },
     //人员配置列表
     getRoleList() {
@@ -849,30 +862,31 @@ export default {
         .catch(err => {})
     },
     //任务点列表
-    gettTaskPointList(key){
-      if (key!=undefined) {
-        taskSpotPage(key).then(res => {
-          var arr = res.data.data
-          for (let a = 0; a < arr.length; a++) {
-            arr[a].latlng={
-              lat:'',
-              lng:''
+    gettTaskPointList(key) {
+      if (key != undefined) {
+        taskSpotPage(key)
+          .then(res => {
+            var arr = res.data.data
+            for (let a = 0; a < arr.length; a++) {
+              arr[a].latlng = {
+                lat: '',
+                lng: ''
+              }
+              arr[a].clicked = false
+              arr[a].latlng.lat = arr[a].coordinate[1]
+              arr[a].latlng.lng = arr[a].coordinate[0]
             }
-            arr[a].latlng.lat = arr[a].coordinate[1]
-            arr[a].latlng.lng = arr[a].coordinate[0]
-            
-          }
-          for (let i = 0; i < this.pointTaskList.length; i++) {
-            if (this.pointTaskList[i].id == key) {
-              this.pointTaskList[i].pointList = arr
-            } 
-          }
-          this.allPointTask()
-        }).catch(err => {
-          this.$message.error('失败请重试')
-        })
+            for (let i = 0; i < this.pointTaskList.length; i++) {
+              if (this.pointTaskList[i].id == key) {
+                this.pointTaskList[i].pointList = arr
+              }
+            }
+            this.allPointTask()
+          })
+          .catch(err => {
+            this.$message.error('失败请重试')
+          })
       }
-      
     },
     //河道列表
     riverListGet() {
@@ -896,17 +910,17 @@ export default {
       this.map.clearOverLays()
       for (const item of this.lineTaskList) {
         if (item.clicked == true) {
-          this.drawLine(item.lineData, 'red', 3, 0.5)
+          this.drawLine(item.lineData, 'red', 3, 0.5, item.id, item.name)
         } else {
-          this.drawLine(item.lineData, 'blue', 3, 0.5)
+          this.drawLine(item.lineData, 'blue', 3, 0.5, item.id, item.name)
         }
       }
     },
     // 线路任务
     chooseLineTask(index) {
       this.defaultLineTask = index
-      console.log(index);
-      
+      console.log(index)
+
       for (const item of this.lineTaskList) {
         if (item.id === index) {
           item.clicked = true
@@ -918,11 +932,13 @@ export default {
       this.drawAllLine()
     },
     // 绘制线
-    drawLine(points, color, weight, opacity) {
+    drawLine(points, color, weight, opacity, id, name) {
       let line = new T.Polyline(points, {
         color: color, //线颜色
         weight: weight, //线宽
-        opacity: opacity //透明度
+        opacity: opacity, //透明度
+        id: id,
+        name: name
       })
       //向地图上添加线
       this.map.addOverLay(line)
@@ -933,28 +949,31 @@ export default {
     },
     // 线路任务删除
     confirmLineDelete(id) {
-      taskRemove(id).then(res => {
-        this.$message.success('保存成功')
-        this.getLineList()
-      }).catch(err => {
-        this.$message.error(err.response.data.message)
-      })
+      taskRemove(id)
+        .then(res => {
+          this.$message.success('保存成功')
+          this.getLineList()
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message)
+        })
       this.defaultLineTask = null
     },
     //点任务删除
-    spotDel(){
+    spotDel() {
       if (this.spotList.id == '') {
-         this.$message.error('请先保存任务')
-      }else{
-        taskRemove(this.spotList.id).then(res => {
-          this.$message.success('删除成功')
-          this.taskCancel()
-          this.getList()
-        }).catch(err => {
-            this.$message.error(err.response.data.message);
-        })
+        this.$message.error('请先保存任务')
+      } else {
+        taskRemove(this.spotList.id)
+          .then(res => {
+            this.$message.success('删除成功')
+            this.taskCancel()
+            this.getList()
+          })
+          .catch(err => {
+            this.$message.error(err.response.data.message)
+          })
       }
-      
     },
     cancelDelete(e) {
       // this.$message.error('Click on No')
@@ -972,36 +991,15 @@ export default {
       if (this.once == 1) {
         return
       }
-      let arr = [],
-        findIndex1 = '',
-        findIndex2 = '',
-        findIndex3 = '',
-        findIndex4 = '',
-        id = ''
-      arr.push(index.target.Qr.Lq.lat)
-      arr.push(index.target.Qr.kq.lat)
-      arr.push(index.target.Qr.Lq.lng)
-      arr.push(index.target.Qr.kq.lng)
-
-      findIndex1 = this.findIndex(arr[0], 'lat', this.lineTaskList)
-      findIndex2 = this.findIndex(arr[1], 'lat', this.lineTaskList)
-      findIndex3 = this.findIndex(arr[2], 'lng', this.lineTaskList)
-      findIndex4 = this.findIndex(arr[3], 'lng', this.lineTaskList)
-
-      if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
-        console.log(this.lineTaskList);
-        
-        id = this.lineTaskList[findIndex1].id
-        for (const item of this.lineTaskList) {
-          if (item.id == id) {
-            item.clicked = true
-            this.defaultLineTask = item.name
-          } else {
-            item.clicked = false
-          }
+      for (const item of this.lineTaskList) {
+        if (item.id == index.target.options.id) {
+          item.clicked = true
+          this.defaultLineTask = item.name
+        } else {
+          item.clicked = false
         }
-        this.drawAllLine()
       }
+      this.drawAllLine()
       this.once++
     },
     taskLineMousemove() {
@@ -1018,47 +1016,18 @@ export default {
       }
       this.drawAllLine()
     },
-    // 查找函数 value:要查的坐标, latlng:查的是lng经度还是lat纬度, lineDataArr:被查询的数组
-    findIndex(value, latlng, lineDataArr) {
-      let result = '', // 查询结果
-        resultArr = [], // 查询结果数组
-        res = '' // 返回列表的第几个
-      if (latlng == 'lat') {
-        // 纬度
-        for (let i = 0; i < lineDataArr.length; i++) {
-          result = lineDataArr[i].lineData.findIndex(item => {
-            return value == item.lat
-          })
-          resultArr.push(result)
-        }
-      } else {
-        // 经度
-        for (let i = 0; i < lineDataArr.length; i++) {
-          result = lineDataArr[i].lineData.findIndex(item => {
-            return value == item.lng
-          })
-          resultArr.push(result)
-        }
-      }
-      for (const item of resultArr) {
-        res = resultArr.findIndex(item => {
-          return item != -1
-        })
-      }
-      return res
-    },
     // 添加所有的标注点
     allPointTask() {
       this.map.clearOverLays()
       for (const item of this.pointTaskList) {
         for (const point of item.pointList) {
-          this.drawAllPoint(point.latlng)
+          this.drawAllPoint(point.latlng, point.id, point.name)
         }
       }
     },
     // 添加标注图片
-    drawAllPoint(latlng) {
-      let marker = new T.Marker(latlng)
+    drawAllPoint(latlng, id, name) {
+      let marker = new T.Marker(latlng, { id: id, name: name })
       this.map.addOverLay(marker)
       marker.addEventListener('click', this.taskPointClick)
       marker.addEventListener('mouseover', this.taskPointMouse)
@@ -1068,7 +1037,7 @@ export default {
     taskPointClick(index) {
       for (const item of this.pointTaskList) {
         for (const point of item.pointList) {
-          if (index.lnglat.lat === point.latlng.lat && index.lnglat.lng === point.latlng.lng) {
+          if (index.target.options.id === point.id) {
             this.$refs.addTaskPoint.edit(point.id)
             point.clicked = true
           } else {
@@ -1076,13 +1045,13 @@ export default {
           }
         }
       }
-      
     },
     // 任务点点击移入移出事件
     taskPointMouse(index) {
+      console.log(index)
       for (const item of this.pointTaskList) {
         for (const point of item.pointList) {
-          if (index.lnglat.lat === point.latlng.lat && index.lnglat.lng === point.latlng.lng) {
+          if (index.target.options.id === point.id) {
             point.clicked = true
           } else {
             point.clicked = false
@@ -1109,7 +1078,6 @@ export default {
     },
     // 返回标注点的坐标
     addTaskPointed(e) {
-      
       // console.log(e.currentLnglat.lng)
       // console.log(e.currentLnglat.lat)
       let geocode = new T.Geocoder()
@@ -1117,10 +1085,10 @@ export default {
       // console.log(e)
     },
     searchResult(result) {
-      this.$refs.addTaskPoint.add(result.formatted_address,result.location,this.taskId)
+      this.$refs.addTaskPoint.add(result.formatted_address, result.location, this.taskId)
       if (result.getStatus() == 0) {
       } else {
-        this.$message.error("获取地址失败")
+        this.$message.error('获取地址失败')
       }
     },
     onSelect(selectedKeys, info) {
@@ -1136,7 +1104,8 @@ export default {
     },
     // 编辑
     choosePointEdit(id) {
-      getTaskDetail(id).then(res => {
+      getTaskDetail(id)
+        .then(res => {
           var arr = res.data
           this.spotList.title = arr.info.title
           this.spotList.id = arr.info.id
@@ -1186,17 +1155,19 @@ export default {
     },
     // 删除任务点
     confirmPiontDelete(id, index) {
-      taskPointDel(id).then(res => {
-        this.$message.success('保存成功')
-        this.getList()
-      }).catch(err => {
-        this.$message.error(err.response.data.message)
-      })
+      taskPointDel(id)
+        .then(res => {
+          this.$message.success('保存成功')
+          this.getList()
+        })
+        .catch(err => {
+          this.$message.error(err.response.data.message)
+        })
     },
     // 添加任务点
     addTaskPointAlert() {
-      console.log('1');
-      
+      console.log('1')
+
       this.$refs.addTaskPoint.add()
     },
     // tab切换
@@ -1359,18 +1330,19 @@ export default {
         }
         data.roleId = data.roleId.join(',')
         if (this.fileList.length == 0) {
-          getTaskSave(data).then(res => {
-            var arr = res.data
-            this.$message.success('保存成功')
-            this.taskCancel()
-            this.getList()
-          }).catch(err => {
-            this.$message.error(err.response.data.message)
-          })
+          getTaskSave(data)
+            .then(res => {
+              var arr = res.data
+              this.$message.success('保存成功')
+              this.taskCancel()
+              this.getList()
+            })
+            .catch(err => {
+              this.$message.error(err.response.data.message)
+            })
         } else {
           this.$refs.upload1.submit()
         }
-        
       }
     },
     //上传
@@ -1395,9 +1367,8 @@ export default {
     },
     uploadChange1(file, fileList) {
       if (this.fileList.length == 0) {
-
         this.fileList = fileList
-        this.attachmentJpg= URL.createObjectURL(file.raw)
+        this.attachmentJpg = URL.createObjectURL(file.raw)
       } else {
         this.fileList = []
       }
