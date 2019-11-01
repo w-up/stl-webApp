@@ -37,25 +37,25 @@
           <a-input placeholder="请输入风险源类型名称" v-model="list.name"/>
         </a-form-item>
         <a-form-item label="标注样式" :label-col="{ span: 7 }" :wrapper-col="{ span: 16 }">
-            <el-upload
-              class="upload-demo"
-              ref="upload"
-              :data="list"
-              name="icon"
-              :headers="headers"
-              action="/server/data/admin/param/save"
-              :on-preview="handlePreview"
-              :on-success="handleSuccess"
-              :on-change="handleChange"
-              :on-remove="handleRemove"
-              :file-list="fileList"
-              :limit='1'
-              :auto-upload="false">
-              <a-button type="primary" icon="plus" >添加</a-button>
-            </el-upload>
-            <viewer >
-                <img  :src="attachmentJpg" alt="" style="height:70px;">
-            </viewer >
+          <el-upload
+            class="upload-demo"
+            ref="upload"
+            :data="list"
+            name="icon"
+            :headers="headers"
+            action="/server/data/admin/param/save"
+            :on-preview="handlePreview"
+            :on-success="handleSuccess"
+            :on-change="handleChange"
+            :on-remove="handleRemove"
+            :file-list="fileList"
+            :limit='1'
+            :auto-upload="false">
+            <a-button type="primary" icon="plus" >添加</a-button>
+          </el-upload>
+          <viewer >
+              <img  :src="attachmentJpg" alt="" style="height:70px;">
+          </viewer >
         </a-form-item>
       </a-form>
     </a-modal>
@@ -135,6 +135,8 @@ export default {
       this.visible = false
       this.file = false
       this.fileList=[]
+      this.list.id=''
+      this.list.name=''
       this.attachmentJpg=''
     },
     add(id){
@@ -194,10 +196,9 @@ export default {
       this.list.id=''
       this.list.name=''
       this.getList()
-      console.log('1');
+      this.attachmentJpg=''
     },
     handleChange(file, fileList){
-      console.log('2');
       if(this.fileList.length==0){
         this.fileList=fileList
       }else{

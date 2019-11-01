@@ -4,6 +4,7 @@
     :width="400"
     :visible="visible"
     :confirmLoading="confirmLoading"
+    @cancel="handleCancel"
     :mask="true"
     :centered="true"
     :footer="null"
