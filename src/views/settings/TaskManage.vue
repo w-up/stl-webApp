@@ -1433,7 +1433,7 @@ export default {
 }
 .task_face {
   width: 100%;
-  height: calc(100vh - 180px);
+  height: calc(100vh - 210px);
   overflow: auto;
 }
 
