@@ -12,7 +12,7 @@ An out-of-box UI solution for enterprise applications as a Vue boilerplate. base
 [![Travis branch](https://travis-ci.org/sendya/ant-design-pro-vue.svg?branch=master)](https://travis-ci.org/sendya/ant-design-pro-vue)
 
 </div>
-
+<h3>重要提示!!! 将src/assets/js/cloneNode.js copy至 node_modules/html-to-image/lib/cloneNode.js</h3>
 - 预览: https://preview.pro.loacg.com
 - 首页: https://pro.loacg.com
 - 文档: https://pro.loacg.com/docs/getting-started
@@ -25,11 +25,11 @@ Overview
 
 基于 [Ant Design of Vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/) 实现的 [Ant Design Pro](https://pro.ant.design/) 
 
-![工作台-多标签模式](https://static-2.loacg.com/open/static/github/20190224163345.jpg)
+![工作台-多标签模式](https://images.gitee.com/uploads/images/2019/1104/140533_321e6f09_4912212.jpeg)
 
-![工作台+设置菜单](https://static-2.loacg.com/open/static/github/20181126112124.png)
+![工作台+设置菜单](https://images.gitee.com/uploads/images/2019/1104/140533_0ce663cd_4912212.png)
 
-![个人设置](https://static-2.loacg.com/open/static/github/20180916-134251.png)
+![个人设置](https://images.gitee.com/uploads/images/2019/1104/140533_31a89bd5_4912212.png)
 
 
 环境和依赖
