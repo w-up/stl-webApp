@@ -192,6 +192,7 @@ export default {
       })
     },
     handleCancel() {
+      this.$parent.allPointTask()
       this.visible = false
       this.list.taskId=''
       this.list.name=''
