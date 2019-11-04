@@ -1021,13 +1021,18 @@ export default {
       this.map.clearOverLays()
       for (const item of this.pointTaskList) {
         for (const point of item.pointList) {
-          this.drawAllPoint(point.latlng, point.id, point.name)
+          this.drawAllPoint(point.latlng, point.id, point.name, item.kmz)
         }
       }
     },
     // 添加标注图片
-    drawAllPoint(latlng, id, name) {
-      let marker = new T.Marker(latlng, { id: id, name: name })
+    drawAllPoint(latlng, id, name, iconUrl) {
+      let icon = new T.Icon({
+        iconUrl: iconUrl,
+        iconSize: new T.Point(21, 30),
+        iconAnchor: new T.Point(11, 30)
+      })
+      let marker = new T.Marker(latlng, { icon: icon, id: id, name: name })
       this.map.addOverLay(marker)
       marker.addEventListener('click', this.taskPointClick)
       marker.addEventListener('mouseover', this.taskPointMouse)
@@ -1068,13 +1073,26 @@ export default {
       console.log(index)
     },
     // 注册添加点击事件
-    addTaskPoint() {
-      this.markerTool.open()
-      this.markerTool.getMarkers()
-      for (var i = 0; i < this.markerTool.length; i++) {
-        this.markerTool[i].disableDragging()
+    addTaskPoint(index) {
+      for (const item of this.pointTaskList) {
+        if (item.id == index) {
+          for (const point of item.pointList) {
+            this.drawAllPoint(point.latlng, point.id, point.name, item.kmz)
+            let icon = new T.Icon({
+              iconUrl: item.kmz,
+              iconSize: new T.Point(21, 30),
+              iconAnchor: new T.Point(11, 30)
+            })
+            let markerTool = new T.MarkTool(this.map, { icon: icon, follow: true })
+            // this.markerTool.setIcon({icon: icon})
+            markerTool.open()
+            markerTool.addEventListener('mouseup', this.addTaskPointed)
+          }
+        }
       }
-      this.markerTool.addEventListener('mouseup', this.addTaskPointed)
+
+      // let marker = new T.Marker(latlng, { icon: icon, id: id, name: name })
+      // this.map.addOverLay(marker)
     },
     // 返回标注点的坐标
     addTaskPointed(e) {
@@ -1100,7 +1118,7 @@ export default {
     chooseTask(key) {
       console.log(key)
       this.taskId = key
-      this.addTaskPoint()
+      this.addTaskPoint(key)
     },
     // 编辑
     choosePointEdit(id) {
@@ -1433,7 +1451,7 @@ export default {
 }
 .task_face {
   width: 100%;
-  height: calc(100vh - 180px);
+  height: calc(100vh - 210px);
   overflow: auto;
 }
 
