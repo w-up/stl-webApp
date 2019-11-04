@@ -1074,20 +1074,18 @@ export default {
     },
     // 注册添加点击事件
     addTaskPoint(index) {
+      console.log(this.pointTaskList)
       for (const item of this.pointTaskList) {
         if (item.id == index) {
-          for (const point of item.pointList) {
-            this.drawAllPoint(point.latlng, point.id, point.name, item.kmz)
-            let icon = new T.Icon({
-              iconUrl: item.kmz,
-              iconSize: new T.Point(21, 30),
-              iconAnchor: new T.Point(11, 30)
-            })
-            let markerTool = new T.MarkTool(this.map, { icon: icon, follow: true })
-            // this.markerTool.setIcon({icon: icon})
-            markerTool.open()
-            markerTool.addEventListener('mouseup', this.addTaskPointed)
-          }
+          let icon = new T.Icon({
+            iconUrl: item.kmz,
+            iconSize: new T.Point(21, 30),
+            iconAnchor: new T.Point(11, 30)
+          })
+          let markerTool = new T.MarkTool(this.map, { icon: icon, follow: true })
+          // this.markerTool.setIcon({icon: icon})
+          markerTool.open()
+          markerTool.addEventListener('mouseup', this.addTaskPointed)
         }
       }
 
