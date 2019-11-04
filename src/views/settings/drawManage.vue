@@ -9,7 +9,7 @@
       <a-button type="primary" icon="plus" style="margin-bottom:15px" @click="visible=true">添加</a-button>
       <a-table :columns="columns" :dataSource="data" bordered>
         <template slot="operation" slot-scope="row">
-          <div v-if="row.name !='风险源'">
+          <div v-if="row.name !='风险源'&&row.name !='排口' ">
             <a @click="add(row.id)">编辑</a>
             <a-divider type="vertical" />
             <a-popconfirm

@@ -54,7 +54,7 @@
             <a-button type="primary" icon="plus" >添加</a-button>
           </el-upload>
           <viewer >
-              <img  :src="attachmentJpg" alt="" style="height:70px;">
+            <img  :src="attachmentJpg" alt="" style="height:70px;">
           </viewer >
         </a-form-item>
       </a-form>
