@@ -7,11 +7,10 @@ var utils_1 = require("./utils");
 var clonePseudoElements_1 = __importDefault(require("./clonePseudoElements"));
 function cloneSingleNode(nativeNode) {
     // http://jleco.jl-shgroup.com/tianditu/
-    // console.log(nativeNode.tagName)
     // 跨域照片解决
     if (nativeNode.tagName == "IMG") {
-        var regTest = /http:\/\/t[0-7]\.tianditu\.gov\.cn/;
-        nativeNode.src = nativeNode.src.replace(/http:\/\/t[0-7]\.tianditu\.gov\.cn/, 'http://jleco.jl-shgroup.com/tianditu');
+        var readNowUrl = document.location.origin;
+        nativeNode.src = nativeNode.src.replace(/http:\/\/t[0-7]\.tianditu\.gov\.cn/, `${readNowUrl} + /tianditu`);
     }
     if (nativeNode instanceof HTMLCanvasElement) {
         return utils_1.createImage(nativeNode.toDataURL());
@@ -21,7 +20,6 @@ function cloneSingleNode(nativeNode) {
             .then(function (svg) { return utils_1.svgToDataURL(svg); })
             .then(utils_1.createImage);
     }
-    // console.log(nativeNode.cloneNode(false))
     return Promise.resolve(nativeNode.cloneNode(false));
 }
 function cloneChildren(nativeNode, clonedNode, filter) {
