@@ -62,12 +62,12 @@ export default {
      mounted(){
         setTimeout(() => {
             console.log('dynamic change options', this.player)
-            this.player.muted(false)
+            // this.player.muted(false)
         },5000)
     },
     computed:{
         player(){
-            return this.$refs.videoPlayer.player
+            // return this.$refs.videoPlayer.player
         }
     },
     methods:{
