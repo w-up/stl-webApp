@@ -340,22 +340,29 @@
                       <a-button @click="addSurveyPoint" class="commBtn">添加调查点</a-button>
                     </a-col>
                   </a-row>
-                  <div class="riverInfo">
+                  <div class="riverInfo" v-for="item in taskPage"  :key="item.value">
                     <div class="river_info">
-                      <a-row type="flex" justify="space-between" align="middle">
-                        <a-col :span="8" @click="searchMap">黄浦江</a-col>
+                      <a-row type="flex" justify="space-between" align="middle" >
+                        <a-col :span="8" @click="choosePointTask(item.id)">{{item.objectName}}</a-col>
                         <a-col :span="10">
                           <a-select defaultValue @change="handleChange" style="width:100%;">
                             <a-select-option value="jack">Jack</a-select-option>
-                            <a-select-option value="lucy">Lucy</a-select-option>
                           </a-select>
                         </a-col>
                         <a-col :span="3">
-                          <a-button shape="circle" icon="close" style="font-size:8px;"></a-button>
+                          <a-popconfirm
+                            title="是否确认删除?"
+                            @confirm="getInspectPointDel(item.id)"
+                            @cancel="cancel"
+                            okText="确认"
+                            cancelText="取消"
+                          >
+                            <a-button shape="circle" icon="close" style="font-size:8px;" ></a-button>
+                          </a-popconfirm>
                         </a-col>
                       </a-row>
                     </div>
-                    <a-tree
+                    <!-- <a-tree
                       checkable
                       defaultExpandAll
                       :defaultSelectedKeys="defaultSelect"
@@ -363,42 +370,18 @@
                       @select="onSelect"
                       :selectedKeys="selectedKeys"
                       :treeData="treeData"
-                    ></a-tree>
+                    ></a-tree> -->
                     <a-button
                       class="addTask_btn commBtn"
                       icon="plus"
-                      @click="addTaskBtn"
+                      @click="addTaskBtn(item.id)"
                       v-show="cBtn"
                     >追加任务</a-button>
                     <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
                   </div>
-                  <!-- <div class="riverInfo">
-                    <div class="river_info">
-                      <a-row type="flex" justify="space-between" align="middle">
-                        <a-col :span="10" @click="searchMap">专向调查点</a-col>
-                        <a-col :span="3">
-                          <a-button shape="circle" icon="close" style="font-size:8px;"></a-button>
-                        </a-col>
-                      </a-row>
-                    </div>
-                    <a-tree
-                      checkable
-                      v-model="checkedKeys"
-                      @select="onSelect"
-                      :selectedKeys="selectedKeys"
-                      :treeData="treeData"
-                    ></a-tree>
-                    <a-button
-                      class="addTask_btn commBtn"
-                      icon="plus"
-                      @click="addTaskBtn"
-                      v-show="cBtn"
-                    >追加任务</a-button>
-                    <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
-                  </div> -->
                 </div>
-                <div v-if="ishidden == 2">
-                  <creat-group ref="creatGroup"></creat-group>
+                <div v-show="ishidden == 2">
+                  <creat-group ref="creatGroup" ></creat-group>
                 </div>
                 <div v-if="ishidden == 3">
                   <plan-list ref="planListCard"></plan-list>
@@ -486,7 +469,7 @@
                           </div>
                         </a-collapse-panel>
                       </a-collapse>
-                      <a-collapse v-model="activeTwo">
+                      <!-- <a-collapse v-model="activeTwo">
                         <a-collapse-panel key="11" class="collapse_group">
                           <template slot="header">
                             <a-row type="flex" justify="space-between" align="middle">
@@ -546,7 +529,7 @@
                             </a-collapse>
                           </div>
                         </a-collapse-panel>
-                      </a-collapse>
+                      </a-collapse> -->
                     </div>
                     <div class="btn_group">
                       <a-row type="flex" justify="space-around">
@@ -648,7 +631,7 @@
                           </div>
                         </a-collapse-panel>
                       </a-collapse>
-                      <a-collapse v-model="activeTwo">
+                      <!-- <a-collapse v-model="activeTwo">
                         <a-collapse-panel key="11" class="collapse_group">
                           <template slot="header">
                             <a-row type="flex" justify="space-between" align="middle">
@@ -708,7 +691,7 @@
                             </a-collapse>
                           </div>
                         </a-collapse-panel>
-                      </a-collapse>
+                      </a-collapse> -->
                     </div>
                     <div class="btn_group">
                       <a-button class="addTask_btn" @click="detailPlan">详情</a-button>
@@ -886,11 +869,40 @@
           <a-button key="submit" type="primary" @click="showOk">添加</a-button>
         </template>
     </a-modal>
+    <!-- 添加调查点信息弹框 -->
+    <a-modal :visible="inspectVisible" :closable="false" :mask="false" :width="400"  
+      @ok="handleOk"
+      @cancel="handleCancel">
+      <template slot="title">
+          <span>添加调查点</span>
+      </template>
+       <a-form >
+        <a-form-item label="选择任务" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
+          <a-select
+            showSearch
+            :allowClear="true"
+            placeholder="请选择"
+            optionFilterProp="children"
+            style="width: 100%"
+            @change="handleChange"
+            :filterOption="filterOption"
+            v-model="taskId"
+          >
+            <a-select-option
+              :value="item.id"
+              v-for="(item, index) in spotTaskList"
+              :key="index"
+            >{{item.name}}</a-select-option>
+          </a-select>
+        </a-form-item>
+       </a-form>
+      
+    </a-modal>
   </div>
 </template>
 
 <script>
-import { planPage,planSave} from '@/api/login'
+import { planPage,planSave,inspectPointPage,inspectPointSave,inspectPointDel,taskList,taskSpotList,targetPage,targetSave,targetDel} from '@/api/login'
 import '../../assets/css/monitor.less'
 import 'ol/ol.css'
 // import Map from "ol/Map"
@@ -1095,6 +1107,9 @@ export default {
   },
   data() {
     return {
+      inspectVisible:false,//调查点弹窗
+      spotTaskList:[],
+      taskId:'',
       picker:'',
       planCard: [
         {
@@ -1107,8 +1122,8 @@ export default {
         }
       ],
       planList:{
-        id:'',
-        name:'',
+        id:'5dc0d964ea6c15b288665287',
+        name:'计划 2019-11-5',
       },
       superCard: [
         {
@@ -1120,6 +1135,7 @@ export default {
           tab: '轨迹'
         }
       ],
+      taskPage:[],
       noTitleKey: 'addPlan',
       nosuperKey: 'taskCard',
       checkedKeys: [],
@@ -1262,6 +1278,8 @@ export default {
     this.initCruisePlan()
     this.getPage()
     this.getPicker()
+    this.getinspectPointPage()
+    this.getTask()
     // console.log("mount" + this.childNode)
     // this.showTNodeBtn()
     // console.log("mounted"+this.childNode)
@@ -1276,11 +1294,22 @@ export default {
           return year+"-"+month+"-"+date
         }
       this.picker = formatDate(new Date())
-      this.getPlanSave()
+      // this.getPlanSave()
+    },
+    //任务点列表
+    getTask(){
+      taskList('dot').then(res=>{
+        
+        var arr = res.data.data
+        arr.forEach(v => {
+          v.name = v.content
+        });
+        console.log(arr);
+        this.spotTaskList =arr
+      })
     },
     //计划列表
     getPage(){
-      
       planPage().then(res=>{
         console.log(res);
         
@@ -1306,6 +1335,89 @@ export default {
       }).catch(err=>{
 
       })
+    },
+    //目标列表
+    getinspectPointPage(){
+
+      targetPage(this.planList.id).then(res=>{
+        
+        var arr =res.data.data
+        arr.forEach(v => {
+          v. latlng= { lat: 31.20752, lng: 121.51531 } 
+        });
+        console.log(arr);
+        this.taskPage =arr
+        this.allPointTask(arr)
+      })
+    },
+    //调查点保存
+    handleOk(){
+      var data = {
+        id:'',
+        planId:this.planList.id,
+        name:'',
+        coordinate:this.lng+','+this.lat,
+        radius:'1000'
+      }
+      inspectPointSave(data).then(res=>{
+        this.$message.success('添加调查点成功')
+        var arr = res.data
+        var ar = {
+          id:'',
+          planId:this.planList.id,
+          object:'point',
+          objectId:arr.id,
+          objectName:arr.name
+        }
+        targetSave(ar).then(res=>{
+          console.log(res.data);
+          this.getinspectPointPage()
+        })
+        this.handleCancel()
+        // this.getinspectPointPage()
+      })
+    },
+    //关闭调查点窗口
+    handleCancel(){
+      this.taskId = ''
+      this.inspectVisible = false
+    },
+    //目标删除
+    getInspectPointDel(id){
+      targetDel(id).then(res=>{
+       this.$message.success('删除成功')
+        this.getinspectPointPage()
+      }).catch(err => {
+        this.$message.error(err.response.data.message)
+      })
+    },
+    choosePointTask(id) {
+      for (const item of this.taskPage) {
+        if (item.id === id) {
+          item.clicked = true
+          console.log(item.latlng)
+          let arr = []
+          arr.push(item.latlng)
+          this.map.setViewport(arr)
+        } else {
+          item.clicked = false
+        }
+      }
+    },
+    allPointTask(arr) {
+      this.map.clearOverLays()
+      for (const item of arr) {
+        console.log(item.latlng);
+        
+        this.drawAllPoint(item.latlng)
+      }
+    },
+    cancel(){
+    },
+    handleChange(index) {
+    },
+    filterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
     getTdLayer(lyr){
       var url = "http://t{0-7}.tianditu.com/DataServer?T=" + lyr + "&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822"
@@ -1428,8 +1540,15 @@ export default {
     },
     //选中巡河方案
     selectPatrol() {},
-    addTaskBtn() {
+    addTaskBtn(id) {
+      console.log(id);
+      
+      // if (condition) {
+        
+      // }
       this.clearMap()
+      console.log(this.$refs.addTask);
+      
       this.$refs.addTask.show()
       this.cBtn = false
       // this.$refs.addTask.chooseLocation()
@@ -1444,6 +1563,7 @@ export default {
     //生成计划
     newPlan_btn() {
       this.ishidden = 2
+      this.$refs.creatGroup.getList(this.planList.id,this.taskPage)
     },
     //底部取消按钮
     canclePlanBtn() {
@@ -1647,6 +1767,7 @@ export default {
     },
     // 添加标注图片
     drawAllPoint(latlng, tool) {
+      console.log(latlng, tool);
       tool = new T.Marker(latlng)
       this.map.addOverLay(tool)
       tool.addEventListener('click', this.taskPointClick)
@@ -1840,11 +1961,19 @@ export default {
       //向地图上添加中心标注
       this.lng = e.lnglat.lng;
       this.lat = e.lnglat.lat;
+      this.inspectVisible = true
       console.log("坐标:" + this.lng , this.lat);
       let marker = new T.Marker(new T.LngLat(e.lnglat.lng, e.lnglat.lat), {icon: icon});
       console.log("marker:" +marker);
       this.map.addOverLay(marker);
-
+      var data = {
+        coordinate:e.lnglat.lng+','+e.lnglat.lat,
+        radius:'1000'
+      }
+      taskSpotList(data).then(res=>{
+        console.log(res,'周围的点');
+        
+      })
       var infoWin = new T.InfoWindow();
       var sContent = "<div style='width:100px;height:100%;text-align:center;line-height:25px;'><div style='border-bottom:1px solid green;width:100%;height:100%;'>360</div>"+
                       "<div>人工调查点</div><div>水质监测点</div></div>";

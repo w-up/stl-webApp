@@ -68,17 +68,28 @@ export default {
   methods: {
     ...mapActions(['Logout']),
     handleLogout() {
-      this.$confirm({
-        title: '提示',
-        content: '真的要注销登录吗 ?',
-        onOk: () => {
-          Vue.ls.remove(ACCESS_TOKEN)
-          this.$router.push({
-           path: '/user/login'
-          })
-        },
-        onCancel() {}
-      })
+      this.$confirm('真的要注销登录吗 ?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        Vue.ls.remove(ACCESS_TOKEN)
+        this.$router.push({
+          path: '/user/login'
+        })
+      }).catch(() => {
+            
+      });
+      // this.$confirm({
+      //   title: '提示',
+      //   content: '真的要注销登录吗 ?',
+      //   onOk: () => {
+      //     console.log('11');
+          
+          
+      //   },
+      //   onCancel() {}
+      // })
     }
   }
 }

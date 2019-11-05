@@ -11,7 +11,7 @@
             <a-select
                 showSearch
                 :value="value"
-                placeholder="黄浦江"
+                placeholder="请选择"
                 style="width: 90%"
                 :showArrow="false"
                 :defaultActiveFirstOption="false"
@@ -33,7 +33,11 @@ export default {
     data(){
         return{
             visible:false,
-            riverData: [{text:'黄浦江',value:'huang'},{text:'松花江',value:'song'},{text:'长江',value:'chang'}],
+            riverData: [
+                {text:'黄浦江',value:'huang'},
+                {text:'松花江',value:'song'},
+                {text:'长江',value:'chang'}
+            ],
             value: undefined,
             // loading:true
             // fetching: false

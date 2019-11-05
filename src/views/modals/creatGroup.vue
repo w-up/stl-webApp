@@ -1,7 +1,7 @@
 <template>
     <div class="group_info">
         <div class="creat_btn">
-            <a-button class="creatBtn" @click="creatGroup">创建分组</a-button>
+            <a-button class="creatBtn" @click="creatGroup1">创建分组</a-button>
         </div>
         <div class="group_detail">
             <div class="detail_modal">
@@ -23,22 +23,30 @@
                         <a-button shape="circle" icon="close" style="font-size:8px;margin-left:80%;"></a-button>
                     </div>
                 </a-list> -->
-                <div style="width:100%;">
+                <div style="width:100%;" v-for="item in groupingList" :key="item.id">
                     <div class="group_title">
                         <a-row type="flex" justify="space-between" align="middle">
-                            <a-col :span="4"><span class="group_font">组一</span></a-col>
+                            <a-col :span="8"><span class="group_font">{{item.name}}</span></a-col>
                             <a-col :span="3">
-                                <a-button shape="circle" icon="close" style="font-size:8px;"></a-button>
+                                <a-popconfirm
+                                    title="是否确认删除?"
+                                    @confirm="getGroupingDel(item.id)"
+                                    @cancel="cancel"
+                                    okText="确认"
+                                    cancelText="取消"
+                                >
+                                    <a-button shape="circle" icon="close" style="font-size:8px;" ></a-button>
+                                </a-popconfirm>
                             </a-col>
                         </a-row>
                     </div>
-                    <draggable class="list-group" :list="data" group="people" @change="log">
-                        <div class="list-group-item listItem" v-for="element in data" :key="element.id">
+                    <draggable class="list-group" :list="item.taskList" group="people" @change="log">
+                        <div class="list-group-item listItem" v-for="element in item.taskList" :key="element.id">
                             {{element.name}}
                         </div>
                     </draggable>
                 </div>
-                <div style="width:100%;">
+                <!-- <div style="width:100%;">
                     <div class="group_title">
                         <a-row type="flex" justify="space-between" align="middle">
                             <a-col :span="4"><span class="group_font">组二</span></a-col>
@@ -52,14 +60,14 @@
                             {{element.name}}
                         </div>
                     </draggable>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
 </template>
 <script>
 import '../../assets/css/creatGroup.less'
-
+import { groupingPage,groupingSave,groupingDel} from '@/api/login'
 
 let data = [
   { name: "黄浦江", id: 1 },
@@ -78,15 +86,38 @@ export default {
         return{
             data,
             dataTwo,
-            ishidden:3
+            ishidden:3,
+            taskList:[],
+            groupingList:[]
         }
     },
     methods:{
+        //分组保存
+        getGroupingSave(id,taskList){
+            var data ={
+                id:'',
+                planId:id,
+                name:'',
+            }
+            this.taskList= taskList
+            groupingSave(data).then(res=>{
+                this.getList(id,taskList)
+            })
+        },
+        //分组列表
+        getList(id,taskList){
+            groupingPage(id).then(res=>{
+                var arr = res.data
+                arr[0].taskList =taskList
+                this.groupingList = arr
+            })
+        },
+        //分组删除
         nextBtn(){   
             this.$emit('showPlan',this.ishidden);
             console.log(this.ishidden);
         },
-        creatGroup(){
+        creatGroup1(){
 
         },
         add(){
