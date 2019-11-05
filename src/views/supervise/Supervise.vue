@@ -1,6 +1,118 @@
 <template>
   <div class="supervise">
-    <div id="map" ref="worldMap" v-show="showView"></div>
+    <div id="map" ref="worldMap" v-show="showView">
+      <div class="weather">
+        <img src="../../assets/sun.png" alt="天气" />
+        <h3>29</h3>
+        <div class="text">
+          <div class="top">
+            <span class="degree_logo">℃</span>
+            <span class="weather_detail">晴(实时)</span>
+            <span class="date">9月16日 星期一</span>
+          </div>
+          <p class="degree">晴转多云 24～29℃</p>
+        </div>
+        <div class="weather_right">
+          <a-icon
+            class="right_icon"
+            :class="{'right_icon_active':weatherShow == true}"
+            @click="weatherFun"
+            type="caret-left"
+          />
+        </div>
+      </div>
+      <div class="time_line">
+        <ul class="time_ul">
+          <li v-for="item in timeData" :key="item.id">
+            <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6>
+            <a-tooltip
+              placement="right"
+              class="time_item"
+              trigger="hover"
+              v-for="day in item.month"
+              :key="day.id"
+              @click="timeLineItem(item.title, day.title)"
+              :class="{'time_item_clicked':day.clicked == true}"
+            >
+              <template slot="title">
+                <span>{{item.title}}.{{day.title}}</span>
+              </template>
+              <div class="line_style">
+                <div
+                  class="line"
+                  :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
+                ></div>
+              </div>
+              <p>
+                <span
+                  :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
+                >{{day.title}}</span>
+              </p>
+            </a-tooltip>
+          </li>
+        </ul>
+        <div class="time_set">
+          <a-popover placement="rightBottom" trigger="click">
+            <template slot="content">
+              <a-range-picker @change="setTime" />
+            </template>
+            <template slot="title">
+              <span>设置时间段</span>
+            </template>
+            <a-button type="primary" icon="setting" block></a-button>
+          </a-popover>
+        </div>
+      </div>
+    </div>
+    <div class="phone_upload" :style="{top: phonePhotoButton + 'px'}" v-show="phonePhoto">
+      <a-upload name="file" :multiple="true" action :headers="headers" @change="phoneUpload">
+        <a-button style="width:180px;" block>
+          <a-icon type="upload" />上传照片
+        </a-button>
+      </a-upload>
+    </div>
+    <div class="phone_upload" :style="{top: riskMapButton + 'px'}" v-show="riskMap">
+      <a-card size="small" class="custom_card" title="风险地图" style="width: 180px">
+        <a-row style="width:100%">
+          <a-col :span="12">边框颜色</a-col>
+          <a-col
+            :span="12"
+            @click="chooseColor(1)"
+            v-clickoutside="handleCloseColor"
+            style="height:20px;"
+            :style="{background: borderColor}"
+          ></a-col>
+        </a-row>
+        <a-row style="width:100%">
+          <a-col :span="12">填充颜色</a-col>
+          <a-col
+            :span="12"
+            @click="chooseColor(2)"
+            v-clickoutside="handleCloseColor"
+            style="height:20px;"
+            :style="{background: fullColor}"
+          ></a-col>
+        </a-row>
+        <a-row style="width:100%">
+          <a-col :span="24">边框透明度</a-col>
+          <a-col :span="24">
+            <a-slider v-model="borderOpacity" :step="0.1" :min="0" :max="1" />
+          </a-col>
+        </a-row>
+        <a-row style="width:100%">
+          <a-col :span="24">填充透明度</a-col>
+          <a-col :span="24">
+            <a-slider v-model="fullOpacity" :step="0.1" :min="0" :max="1" />
+          </a-col>
+        </a-row>
+        <a-button block @click="drawRiskMap">
+          <a-icon type="edit" />绘制风险地图
+        </a-button>
+      </a-card>
+      <div class="color_wrap" v-show="colorAlertShow">
+        <chrome-picker class v-model="riskMapColor" @input="changeColor(riskMapColor)"></chrome-picker>
+      </div>
+    </div>
     <!-- <div class="showMap" v-show="!showView">
       <div class="half">
           <div id="roadMap" class="vmap"></div>
@@ -27,75 +139,7 @@
       <world-map></world-map>
     </div>-->
     <!-- <div class="right">456546</div> -->
-    <div class="weather">
-      <img src="../../assets/sun.png" alt="天气" />
-      <h3>29</h3>
-      <div class="text">
-        <div class="top">
-          <span class="degree_logo">℃</span>
-          <span class="weather_detail">晴(实时)</span>
-          <span class="date">9月16日 星期一</span>
-        </div>
-        <p class="degree">晴转多云 24～29℃</p>
-      </div>
-      <div class="weather_right">
-        <a-icon
-          class="right_icon"
-          :class="{'right_icon_active':weatherShow == true}"
-          @click="weatherFun"
-          type="caret-left"
-        />
-      </div>
-    </div>
-    <div class="time_line">
-      <ul class="time_ul">
-        <li v-for="item in timeData" :key="item.id">
-          <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6>
-          <a-tooltip
-            placement="right"
-            class="time_item"
-            trigger="hover"
-            v-for="day in item.month"
-            :key="day.id"
-            @click="timeLineItem(item.title, day.title)"
-            :class="{'time_item_clicked':day.clicked == true}"
-          >
-            <template slot="title">
-              <span>{{item.title}}.{{day.title}}</span>
-            </template>
-            <div class="line_style">
-              <div
-                class="line"
-                :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
-              ></div>
-            </div>
-            <p>
-              <span
-                :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
-              >{{day.title}}</span>
-            </p>
-          </a-tooltip>
-        </li>
-      </ul>
-      <div class="time_set">
-        <a-popover placement="rightBottom" trigger="click">
-          <template slot="content">
-            <a-range-picker @change="setTime" />
-          </template>
-          <template slot="title">
-            <span>设置时间段</span>
-          </template>
-          <a-button type="primary" icon="setting" block></a-button>
-        </a-popover>
-      </div>
-    </div>
-    <div class="phone_upload" v-show="phonePhoto">
-      <a-upload name="file" :multiple="true" action :headers="headers" @change="phoneUpload">
-        <a-button style="width:180px;" block>
-          <a-icon type="upload" />上传照片
-        </a-button>
-      </a-upload>
-    </div>
+
     <ul class="menu">
       <li @click="compass">
         <img src="./img/compass.png" alt="指北针" title="指北针" />
@@ -419,7 +463,21 @@ import OSM from 'ol/source/OSM'
 
 // 截图
 import htmlToImage from 'html-to-image'
-// import { toPng } from 'html-to-image'
+// 颜色拾取器
+import { Chrome } from 'vue-color'
+
+// import { debounce } from '../../utils/utilsTool'
+
+function debounce(func, wait = 1000) {
+  //可以放入项目中的公共方法中进行调用
+  let timeout
+  return function(event) {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => {
+      func.call(this, event)
+    }, wait)
+  }
+}
 
 export default {
   name: 'Supervise',
@@ -427,7 +485,8 @@ export default {
     // 'world-map': WorldMap
     'risk-source-info': RiskSourceInfo,
     'add-risk-source': AddRiskSource,
-    'photo-edit': PhotoEdit
+    'photo-edit': PhotoEdit,
+    'chrome-picker': Chrome
   },
   data() {
     return {
@@ -516,7 +575,19 @@ export default {
       sharedChecked: false,
       swipeChecked: false,
       showView: true,
-      canDownload: true, // 是否可以下载
+      phonePhotoButton: 0, // 手机照片按钮高度
+      riskMapButton: 0, // 风险地图按钮高度
+      canDownload: true, // 是否可以图片截图下载
+      riskMapColor: {
+        // 默认颜色
+        hex: '#F32C11'
+      },
+      colorAlertShow: false, // 拾色器显隐
+      colorIndex: '', // 选哪个
+      borderColor: '#F32C11', // 边框颜色
+      fullColor: '#F32C11', // 填充颜色
+      borderOpacity: 0.8, // 边框透明度
+      fullOpacity: 0.5, //填充透明度
       // 地图对象
       map: null,
 
@@ -581,10 +652,81 @@ export default {
       ],
 
       riskMap: false, // 风险地图
-      riskMapPoints: [
-        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.23493, lng: 121.51566 } },
-        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24344, lng: 121.49892 } },
-        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22649, lng: 121.49712 } }
+      riskMapRiver: [
+        {
+          id: 0,
+          name: '黄浦江',
+          clicked: true,
+          lineData: [
+            { lat: 31.21882, lng: 121.50364 },
+            { lat: 31.21265, lng: 121.50227 },
+            { lat: 31.20583, lng: 121.49703 },
+            { lat: 31.19915, lng: 121.49197 },
+            { lat: 31.19702, lng: 121.49591 },
+            { lat: 31.2164, lng: 121.50757 },
+            { lat: 31.21948, lng: 121.50758 }
+          ]
+        },
+        {
+          id: 1,
+          name: '大治河',
+          clicked: false,
+          lineData: [
+            { lat: 31.25153, lng: 121.52409 },
+            { lat: 31.25355, lng: 121.53085 },
+            { lat: 31.25858, lng: 121.53934 },
+            { lat: 31.25535, lng: 121.54334 },
+            { lat: 31.2499, lng: 121.53353 },
+            { lat: 31.24786, lng: 121.52737 },
+            { lat: 31.24682, lng: 121.51709 },
+            { lat: 31.25111, lng: 121.51711 }
+          ]
+        },
+        {
+          id: 2,
+          name: '川杨河',
+          clicked: false,
+          lineData: [
+            { lat: 31.24539, lng: 121.48686 },
+            { lat: 31.24616, lng: 121.48411 },
+            { lat: 31.2466, lng: 121.4824 },
+            { lat: 31.24612, lng: 121.48051 },
+            { lat: 31.24484, lng: 121.47901 },
+            { lat: 31.24462, lng: 121.47939 },
+            { lat: 31.24543, lng: 121.48089 },
+            { lat: 31.2459, lng: 121.48261 },
+            { lat: 31.2448, lng: 121.4857 },
+            { lat: 31.2444, lng: 121.4872 }
+          ]
+        },
+        {
+          id: 3,
+          name: '蕰藻浜',
+          clicked: false,
+          lineData: [
+            { lat: 31.21717, lng: 121.51336 },
+            { lat: 31.21691, lng: 121.51454 },
+            { lat: 31.21768, lng: 121.51566 },
+            { lat: 31.21768, lng: 121.51763 },
+            { lat: 31.21733, lng: 121.51748 },
+            { lat: 31.21739, lng: 121.51568 },
+            { lat: 31.21664, lng: 121.51456 },
+            { lat: 31.21669, lng: 121.51387 },
+            { lat: 31.21699, lng: 121.51323 }
+          ]
+        },
+        {
+          id: 4,
+          name: '龙华港',
+          clicked: false,
+          lineData: [
+            { lat: 31.21493, lng: 121.49566 },
+            { lat: 31.22344, lng: 121.47892 },
+            { lat: 31.20649, lng: 121.47712 },
+            { lat: 31.20469, lng: 121.47482 },
+            { lat: 31.21469, lng: 121.51482 }
+          ]
+        }
       ],
       waterQuality: false, // 水质
       waterQualityPoints: [
@@ -651,6 +793,14 @@ export default {
     // 手机照片
     phonePhoto() {
       this.watchAllSwitch()
+      console.log(this.phonePhoto)
+      if (this.phonePhoto && this.riskMap) {
+        this.phonePhotoButton = 10
+        this.riskMapButton = 1 * 52
+      } else {
+        this.phonePhotoButton = 10
+        this.riskMapButton = 10
+      }
     },
     // 无人机照片
     UAVPhoto() {
@@ -659,6 +809,13 @@ export default {
     // 风险地图
     riskMap() {
       this.watchAllSwitch()
+      if (this.phonePhoto && this.riskMap) {
+        this.phonePhotoButton = 10
+        this.riskMapButton = 1 * 52
+      } else {
+        this.phonePhotoButton = 10
+        this.riskMapButton = 10
+      }
     },
     // 水质
     waterQuality() {
@@ -862,34 +1019,12 @@ export default {
         message: '提示',
         description: '正在截取地图, 请稍等...'
       })
-      // var exportOptions = {
-      //   filter: function(element) {
-      //     return element.className ? element.className.indexOf('ol-control') === -1 : true
-      //   }
-      // }
-
-      // that.map.once('rendercomplete', function() {
-      //   toPng(that.map.getTargetElement(), exportOptions).then(function(dataURL) {
-      //     // var link = document.getElementById('image-download')
-      //     // link.href = dataURL
-      //     // link.click()
-      //     comsole.log(dataURL)
-      //   })
-      // })
-      // that.map.renderSync()
-
       var node = document.getElementById('map')
+      var mapWidth = document.getElementById('map').offsetWidth
+      var mapHeight = document.getElementById('map').offsetHeight
       htmlToImage
-        .toPng(node)
+        .toPng(node, { width: mapWidth, height: mapHeight })
         .then(dataUrl => {
-          // console.log(dataUrl)
-          // var str = 'map' + this.getNowTime() //以下代码为下载此图片功能
-          // var triggerDownload = $('<a>')
-          //   .attr('href', dataUrl)
-          //   .attr('download', str + '.png')
-          //   .appendTo('body')
-          // triggerDownload[0].click()
-          // triggerDownload.remove()
           var link = document.createElement('a')
           link.download = 'map' + this.getNowTime() + '.png'
           link.href = dataUrl
@@ -951,8 +1086,68 @@ export default {
     // 风险地图
     onRiskMap() {
       if (this.riskMap) {
-        this.allPointTask(this.riskMapPoints)
+        for (const item of this.riskMapRiver) {
+          this.setPolylineFn(item.lineData, 'blue', 3, 0.5, '#FFFFFF', 0, item.name, item.id)
+        }
       }
+    },
+    // 设置绘制的多边形
+    setPolylineFn(lineData, color, weight, opacity, fillColor, fillOpacity, title, id) {
+      let polygon = new T.Polygon(lineData, {
+        color: color, //线颜色
+        weight: weight, //线宽
+        opacity: opacity, //透明度
+        fillColor: fillColor, //填充颜色
+        fillOpacity: fillOpacity, // 填充透明度
+        title: title, // 名字
+        id: id // id
+      })
+      //向地图上添加面
+      this.map.addOverLay(polygon)
+    },
+    // 绘制风险地图
+    drawRiskMap() {
+      this.colorAlertShow = false
+      let config = {
+        // showLabel: true,
+        color: this.borderColor,
+        weight: 3,
+        opacity: this.borderOpacity,
+        fillColor: this.fullColor,
+        fillOpacity: this.fullOpacity
+      }
+      //创建标注工具对象
+      let polygonTool = new T.PolygonTool(this.map, config)
+      if (polygonTool) polygonTool.close()
+      polygonTool.open()
+      polygonTool.setTips(`<p style="padding:0px 4px;">单击确认起点, 双击结束绘制</p>`)
+      polygonTool.addEventListener('draw', this.drawRiskMapEnd)
+      // this.polylineHandler.addEventListener('addpoint', this.addDrawRivering)
+    },
+    // 绘制结束
+    drawRiskMapEnd(index) {
+      console.log(index)
+    },
+    // 点击选择颜色
+    chooseColor(index) {
+      this.colorAlertShow = true
+      if (index == 1) {
+        this.colorIndex = 1
+      } else {
+        this.colorIndex = 2
+      }
+    },
+    // 选择颜色
+    changeColor: debounce(function(index) {
+      if (this.colorIndex == 1) {
+        this.borderColor = index.hex
+      } else {
+        this.fullColor = index.hex
+      }
+    }, 300),
+    // 关闭拾色器
+    handleCloseColor(){
+      // this.colorAlertShow = false
     },
     // 水质
     onWaterQuality() {
@@ -1095,14 +1290,6 @@ export default {
           iconSize: new T.Point(70, 45),
           iconAnchor: new T.Point(35, 45)
         })
-        // var label = new T.Label({
-        //   text: `<img style="width:70px; height:45px;" src="${item.imgUrl}">`,
-        //   position: item.latlng,
-        //   offset: new T.Point(-35, 45)
-        // })
-        // //创建地图文本对象
-        // this.map.addOverLay(label)
-        // label.addEventListener('click', this.taskImageClick)
         styles = [
           {
             url: item.imgUrl,
@@ -1516,10 +1703,16 @@ export default {
   box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.5);
 }
 
+.color_wrap {
+  position: absolute;
+  right: 190px;
+  top: 2px;
+}
+
 .menu {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
+  right: 10px;
+  bottom: 10px;
   width: 40px;
   z-index: 888;
   margin: 0;
