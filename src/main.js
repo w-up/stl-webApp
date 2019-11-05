@@ -27,7 +27,6 @@ import './utils/filter' // 全局过滤器
 import i18n from './locales'
 
 Vue.config.productionTip = false
-
 // mount axios Vue.$http and this.$http
 Vue.use(VueAxios)
 

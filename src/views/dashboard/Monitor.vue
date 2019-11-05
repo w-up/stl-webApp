@@ -7,7 +7,7 @@
           <div id="map" class="map" ></div>
           <div class="leftShow" v-if="noTitleKey === 'addPlan' || nosuperKey === 'taskCard'">
             <div class="left-date">
-              <a-date-picker @change="selectData" />
+              <el-date-picker v-model="picker" type="date" placeholder="选择日期"  style="width:360px" value-format="yyyy-MM-dd" @change="selectData"></el-date-picker>
             </div>
             <!-- 天气 -->
             <div class="weather">
@@ -319,7 +319,7 @@
             <!-- 首页内容展示 -->
             <a-card
               class="mainCard"
-              :tabList="planList"
+              :tabList="planCard"
               :activeTabKey="noTitleKey"
               @tabChange="key => onTabChange(key,'noTitleKey')"
               v-if="firstShow"
@@ -348,7 +348,6 @@
                           <a-select defaultValue @change="handleChange" style="width:100%;">
                             <a-select-option value="jack">Jack</a-select-option>
                             <a-select-option value="lucy">Lucy</a-select-option>
-                            <a-select-option value="disabled" disabled>Disabled</a-select-option>
                           </a-select>
                         </a-col>
                         <a-col :span="3">
@@ -373,7 +372,7 @@
                     >追加任务</a-button>
                     <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
                   </div>
-                  <div class="riverInfo">
+                  <!-- <div class="riverInfo">
                     <div class="river_info">
                       <a-row type="flex" justify="space-between" align="middle">
                         <a-col :span="10" @click="searchMap">专向调查点</a-col>
@@ -396,13 +395,13 @@
                       v-show="cBtn"
                     >追加任务</a-button>
                     <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
-                  </div>
+                  </div> -->
                 </div>
                 <div v-if="ishidden == 2">
                   <creat-group ref="creatGroup"></creat-group>
                 </div>
                 <div v-if="ishidden == 3">
-                  <plan-list ref="planList"></plan-list>
+                  <plan-list ref="planListCard"></plan-list>
                 </div>
               </div>
               <!-- 今日计划 -->
@@ -891,6 +890,7 @@
 </template>
 
 <script>
+import { planPage,planSave} from '@/api/login'
 import '../../assets/css/monitor.less'
 import 'ol/ol.css'
 // import Map from "ol/Map"
@@ -901,12 +901,10 @@ import XYZ from 'ol/source/XYZ'
 import Draw from 'ol/interaction/Draw';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
 import {OSM,Vector as VectorSource} from 'ol/source';
-
-
 import searchRiver from '../modals/searchRiver'
 import addTask from '../modals/addTask'
 import creatGroup from '../modals/creatGroup'
-import planList from '../modals/planList'
+import planListCard from '../modals/planList'
 import addSurvey from '../modals/addSurvey'
 import addNewTask from '../modals/addNewTask'
 import planDetail from '../modals/planDetail'
@@ -1087,7 +1085,7 @@ export default {
     searchRiver,
     addTask,
     creatGroup,
-    planList,
+    planListCard,
     addSurvey,
     addNewTask,
     planDetail,
@@ -1097,16 +1095,21 @@ export default {
   },
   data() {
     return {
-      planList: [
+      picker:'',
+      planCard: [
         {
           key: 'addPlan',
           tab: '新建计划'
         },
         {
           key: 'nowPlan',
-          tab: '今日计划'
+          tab: '当日计划'
         }
       ],
+      planList:{
+        id:'',
+        name:'',
+      },
       superCard: [
         {
           key: 'taskCard',
@@ -1257,11 +1260,53 @@ export default {
   },
   mounted() {
     this.initCruisePlan()
+    this.getPage()
+    this.getPicker()
     // console.log("mount" + this.childNode)
     // this.showTNodeBtn()
     // console.log("mounted"+this.childNode)
   },
   methods: {
+    //获取当前时间
+    getPicker(){
+      function formatDate(now) { 
+          var year=now.getFullYear() //取得4位数的年份
+          var month=now.getMonth()+1  //取得日期中的月份，其中0表示1月，11表示12月
+          var date=now.getDate()      //返回日期月份中的天数（1到31）
+          return year+"-"+month+"-"+date
+        }
+      this.picker = formatDate(new Date())
+      this.getPlanSave()
+    },
+    //计划列表
+    getPage(){
+      
+      planPage().then(res=>{
+        console.log(res);
+        
+      }).catch(err=>{
+
+      })
+    },
+    //计划保存
+    getPlanSave(){
+      var picker = this.picker.split('-')
+      var data = {
+        id:'',
+        projectId:'5da7d092ea6c156d792df816',
+        name:'',
+        year:picker[0],
+        month:picker[1],
+        day:picker[2],
+      }
+      planSave(data).then(res=>{
+        // console.log(res.data.id);
+        this.planList.id = res.data.id
+        this.planList.name = res.data.name
+      }).catch(err=>{
+
+      })
+    },
     getTdLayer(lyr){
       var url = "http://t{0-7}.tianditu.com/DataServer?T=" + lyr + "&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822"
       this.layer = new TileLayer({
@@ -1378,8 +1423,8 @@ export default {
       }
     },
     //日期选择
-    selectData(date, dateString) {
-      console.log(data, dateString)
+    selectData(date) {
+      console.log(date,this.picker)
     },
     //选中巡河方案
     selectPatrol() {},

@@ -473,7 +473,22 @@ export function SuperviseDetail(id) {
     method: 'get',
   })
 }
-
+//巡河
+//巡河计划列表
+export function planPage() {
+  return axios({
+    url: '/server/data/admin/inspect/plan/page?projectId=5da7d092ea6c156d792df816',
+    method: 'get',
+  })
+}
+//巡河计划保存
+export function planSave(data) {
+  return axios({
+    url: '/server/data/admin/inspect/plan/save',
+    method: 'post',
+    data:data
+  })
+}
 
 
 
