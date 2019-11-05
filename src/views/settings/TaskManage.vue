@@ -1324,8 +1324,7 @@ export default {
               this.$message.success('保存成功')
               this.taskCancel()
               this.getLineList()
-            })
-            .catch(err => {
+            }).catch(err => {
               this.$message.error(err.response.data.message)
             })
         } else {

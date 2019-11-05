@@ -343,10 +343,15 @@ export function taskSpotPage(id) {
   })
 }
 //任务点列表
-export function taskSpotList(id) {
+export function taskSpotList(data) {
   return axios({
-    url: '/server/data/admin/task/point/list?riverId='+id,
+    url: '/server/data/admin/task/point/list',
     method: 'get',
+    params:{
+      riverId:data.id,
+      coordinate:data.coordinate,
+      radius:data.radius,
+    }
   })
 }
 //任务线列表
@@ -477,8 +482,11 @@ export function SuperviseDetail(id) {
 //巡河计划列表
 export function planPage() {
   return axios({
-    url: '/server/data/admin/inspect/plan/page?projectId=5da7d092ea6c156d792df816',
+    url: '/server/data/admin/inspect/plan/page?=',
     method: 'get',
+    params:{
+      projectId:'5da7d092ea6c156d792df816'
+    }
   })
 }
 //巡河计划保存
@@ -489,8 +497,80 @@ export function planSave(data) {
     data:data
   })
 }
-
-
+//调查点列表
+export function inspectPointPage(id) {
+  return axios({
+    url: '/server/data/admin/inspect/point/page?planId='+id,
+    method: 'get',
+  })
+}
+//调查点保存
+export function inspectPointSave(data) {
+  return axios({
+    url: '/server/data/admin/inspect/point/save',
+    method: 'post',
+    data:data
+  })
+}
+//调查点删除
+export function inspectPointDel(id) {
+  return axios({
+    url: '/server/data/admin/inspect/point/remove/'+id,
+    method: 'post',
+  })
+}
+//目标列表
+export function targetPage(id) {
+  return axios({
+    url: '/server/data/admin/inspect/target/page',
+    method: 'get',
+    params:{
+      projectId:'5da7d092ea6c156d792df816',
+      planId:id
+    }
+  })
+}
+//目标保存
+export function targetSave(data) {
+  return axios({
+    url: '/server/data/admin/inspect/target/save',
+    method: 'post',
+    data:data
+  })
+}
+//目标删除
+export function targetDel(id) {
+  return axios({
+    url: '/server/data/admin/inspect/target/remove/'+id,
+    method: 'post',
+  })
+}
+//分组列表
+export function groupingPage(id) {
+  return axios({
+    url: '/server/data/admin/inspect/team/list',
+    method: 'get',
+    params:{
+      projectId:'5da7d092ea6c156d792df816',
+      planId:id
+    }
+  })
+}
+//分组保存
+export function groupingSave(data) {
+  return axios({
+    url: '/server/data/admin/inspect/team/save',
+    method: 'post',
+    data:data
+  })
+}
+//分组删除
+export function groupingDel(id) {
+  return axios({
+    url: '/server/data/admin/inspect/team/remove/'+id,
+    method: 'post',
+  })
+}
 
 
 export function getSmsCaptcha (parameter) {
