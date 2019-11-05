@@ -2,6 +2,7 @@ import Vue from 'vue'
 /**
  * 
  * 点击其他部分消失
+ * <div v-clickoutside="handleCloseTfC2Menu" v-show="isShowTfC2Menu" >
  * 
  */
 const clickoutside = Vue.directive('clickoutside', {
