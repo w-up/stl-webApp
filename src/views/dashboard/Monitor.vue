@@ -362,15 +362,15 @@
                         </a-col>
                       </a-row>
                     </div>
-                    <!-- <a-tree
+                    <a-tree
                       checkable
                       defaultExpandAll
                       :defaultSelectedKeys="defaultSelect"
                       v-model="checkedKeys"
                       @select="onSelect"
                       :selectedKeys="selectedKeys"
-                      :treeData="treeData"
-                    ></a-tree> -->
+                      :treeData="item.taskPage"
+                    ></a-tree>
                     <a-button
                       class="addTask_btn commBtn"
                       icon="plus"
@@ -383,8 +383,8 @@
                 <div v-show="ishidden == 2">
                   <creat-group ref="creatGroup" ></creat-group>
                 </div>
-                <div v-if="ishidden == 3">
-                  <plan-list ref="planListCard"></plan-list>
+                <div v-show="ishidden == 3">
+                  <plan-list ref="planList"></plan-list>
                 </div>
               </div>
               <!-- 今日计划 -->
@@ -874,7 +874,7 @@
       @ok="handleOk"
       @cancel="handleCancel">
       <template slot="title">
-          <span>添加调查点</span>
+          <span>调查点编辑/添加</span>
       </template>
        <a-form >
         <a-form-item label="选择任务" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
@@ -887,6 +887,7 @@
             @change="handleChange"
             :filterOption="filterOption"
             v-model="taskId"
+            :disabled="inspectPointId"
           >
             <a-select-option
               :value="item.id"
@@ -902,7 +903,7 @@
 </template>
 
 <script>
-import { planPage,planSave,inspectPointPage,inspectPointSave,inspectPointDel,taskList,taskSpotList,targetPage,targetSave,targetDel} from '@/api/login'
+import { planPage,planSave,inspectPointPage,inspectPointSave,inspectPointDel,taskList,taskSpotList,targetPage,targetSave,targetDel,taskInspectPage} from '@/api/login'
 import '../../assets/css/monitor.less'
 import 'ol/ol.css'
 // import Map from "ol/Map"
@@ -916,7 +917,7 @@ import {OSM,Vector as VectorSource} from 'ol/source';
 import searchRiver from '../modals/searchRiver'
 import addTask from '../modals/addTask'
 import creatGroup from '../modals/creatGroup'
-import planListCard from '../modals/planList'
+import planList from '../modals/planList'
 import addSurvey from '../modals/addSurvey'
 import addNewTask from '../modals/addNewTask'
 import planDetail from '../modals/planDetail'
@@ -1097,7 +1098,7 @@ export default {
     searchRiver,
     addTask,
     creatGroup,
-    planListCard,
+    planList,
     addSurvey,
     addNewTask,
     planDetail,
@@ -1110,6 +1111,7 @@ export default {
       inspectVisible:false,//调查点弹窗
       spotTaskList:[],
       taskId:'',
+      inspectPointId:false,
       picker:'',
       planCard: [
         {
@@ -1121,7 +1123,7 @@ export default {
           tab: '当日计划'
         }
       ],
-      planList:{
+      planList1:{
         id:'5dc0d964ea6c15b288665287',
         name:'计划 2019-11-5',
       },
@@ -1304,15 +1306,12 @@ export default {
         arr.forEach(v => {
           v.name = v.content
         });
-        console.log(arr);
         this.spotTaskList =arr
       })
     },
     //计划列表
     getPage(){
       planPage().then(res=>{
-        console.log(res);
-        
       }).catch(err=>{
 
       })
@@ -1330,63 +1329,93 @@ export default {
       }
       planSave(data).then(res=>{
         // console.log(res.data.id);
-        this.planList.id = res.data.id
-        this.planList.name = res.data.name
+        this.planList1.id = res.data.id
+        this.planList1.name = res.data.name
       }).catch(err=>{
 
       })
     },
     //目标列表
     getinspectPointPage(){
-
-      targetPage(this.planList.id).then(res=>{
-        
+      var list = {
+        id:this.planList1.id
+      }
+      targetPage(list).then(res=>{
         var arr =res.data.data
-        arr.forEach(v => {
-          v. latlng= { lat: 31.20752, lng: 121.51531 } 
-        });
-        console.log(arr);
+        for (let a = 0; a < arr.length; a++) {
+          arr[a].latlng = {
+            lat: '',
+            lng: ''
+          }
+          arr[a].taskPage = []
+          arr[a].clicked = false
+          arr[a].latlng.lat = arr[a].coordinate[1]
+          arr[a].latlng.lng = arr[a].coordinate[0]
+          var data = {
+            id:this.planList1.id,
+            object:arr[a].object.code,
+            objectId:arr[a].objectId
+          }
+          taskInspectPage(data).then(res=>{
+            var ar = res.data.data
+            ar.forEach(v => {
+              v.key = v.id
+              v.title = v.content
+            });
+            arr[a].taskPage = ar
+          })
+        }
         this.taskPage =arr
         this.allPointTask(arr)
       })
     },
     //调查点保存
     handleOk(){
-      var data = {
-        id:'',
-        planId:this.planList.id,
-        name:'',
-        coordinate:this.lng+','+this.lat,
-        radius:'1000'
-      }
-      inspectPointSave(data).then(res=>{
-        this.$message.success('添加调查点成功')
-        var arr = res.data
-        var ar = {
-          id:'',
-          planId:this.planList.id,
-          object:'point',
-          objectId:arr.id,
-          objectName:arr.name
-        }
-        targetSave(ar).then(res=>{
-          console.log(res.data);
-          this.getinspectPointPage()
-        })
+      if (this.inspectPointId==true) {
         this.handleCancel()
-        // this.getinspectPointPage()
-      })
+      }else{
+        var data = {
+          id:this.inspectPointId,
+          planId:this.planList1.id,
+          name:'',
+          coordinate:this.lng+','+this.lat,
+          radius:'1000',
+          fromTaskId:this.taskId
+        }
+        inspectPointSave(data).then(res=>{
+          this.$message.success('添加调查点成功')
+          var arr = res.data
+          var ar = {
+            id:'',
+            planId:this.planList1.id,
+            object:'point',
+            objectId:arr.id,
+            objectName:arr.name,
+            coordinate:this.lng+','+this.lat,
+          }
+          targetSave(ar).then(res=>{
+            console.log(res.data);
+            this.clearMap()
+            this.handleCancel()
+          })
+          // this.getinspectPointPage()
+        })
+      }
+      
     },
     //关闭调查点窗口
     handleCancel(){
+      this.getinspectPointPage()
       this.taskId = ''
+      this.inspectPointId = false
       this.inspectVisible = false
     },
     //目标删除
     getInspectPointDel(id){
       targetDel(id).then(res=>{
        this.$message.success('删除成功')
-        this.getinspectPointPage()
+       this.clearMap()
+      this.getinspectPointPage()
       }).catch(err => {
         this.$message.error(err.response.data.message)
       })
@@ -1407,7 +1436,6 @@ export default {
     allPointTask(arr) {
       this.map.clearOverLays()
       for (const item of arr) {
-        console.log(item.latlng);
         
         this.drawAllPoint(item.latlng)
       }
@@ -1557,13 +1585,12 @@ export default {
     handleChange() {},
     //选中树节点内容
     onCheck(checkedKeys) {
-      console.log('onCheck', checkedKeys)
       this.checkedKeys = checkedKeys
     },
     //生成计划
     newPlan_btn() {
       this.ishidden = 2
-      this.$refs.creatGroup.getList(this.planList.id,this.taskPage)
+      this.$refs.creatGroup.planGeneration(this.planList1.id)
     },
     //底部取消按钮
     canclePlanBtn() {
@@ -1572,6 +1599,7 @@ export default {
     //底部下一步按钮
     showPlanBtn() {
       this.ishidden = 3
+      this.$refs.planList.clickBtn(this.planList1.id)
     },
     //底部上一步按钮
     previousBtn() {
@@ -1699,7 +1727,6 @@ export default {
     },
     // 风险地图
     onRiskMap() {
-      console.log(this.riskMap)
       if (this.riskMap) {
         this.allPointTask(this.riskMapPoints)
       }
@@ -1742,7 +1769,6 @@ export default {
       }
     },
     allPointTask(pointLists, tool) {
-      console.log(pointLists)
       for (const item of pointLists) {
         this.drawAllPoint(item.latlng, tool)
       }
@@ -1767,17 +1793,18 @@ export default {
     },
     // 添加标注图片
     drawAllPoint(latlng, tool) {
-      console.log(latlng, tool);
       tool = new T.Marker(latlng)
       this.map.addOverLay(tool)
       tool.addEventListener('click', this.taskPointClick)
     },
     // 任务点点击事件
     taskPointClick(index) {
-      for (const item of this.historyPoints) {
+      for (const item of this.taskPage) {
         if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
-          console.log(index.lnglat.lat, index.lnglat.lng)
-          this.$refs.riskInfo.riskInfo()
+          this.taskId = item.taskPage[0].title
+          this.inspectPointId = true
+          this.inspectVisible = true
+
         }
       }
     },
@@ -1974,13 +2001,13 @@ export default {
         console.log(res,'周围的点');
         
       })
-      var infoWin = new T.InfoWindow();
-      var sContent = "<div style='width:100px;height:100%;text-align:center;line-height:25px;'><div style='border-bottom:1px solid green;width:100%;height:100%;'>360</div>"+
-                      "<div>人工调查点</div><div>水质监测点</div></div>";
-      infoWin.setContent(sContent);
-      marker.addEventListener("click",function(){
-        marker.openInfoWindow(infoWin);
-      })
+      // var infoWin = new T.InfoWindow();
+      // var sContent = "<div style='width:100px;height:100%;text-align:center;line-height:25px;'><div style='border-bottom:1px solid green;width:100%;height:100%;'>360</div>"+
+      //                 "<div>人工调查点</div><div>水质监测点</div></div>";
+      // infoWin.setContent(sContent);
+      // marker.addEventListener("click",function(){
+      //   marker.openInfoWindow(infoWin);
+      // })
       //向地图上添加圆
       let circle = new T.Circle(new T.LngLat(e.lnglat.lng, e.lnglat.lat), 1000, {
         color: "blue",
