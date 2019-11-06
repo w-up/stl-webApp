@@ -127,7 +127,7 @@
               </a-col>
             </a-row>
             <a-row style="width:100%">
-              <a-col :span="24">填充透明度</a-col>
+              <a-col :span="24">填充不透明度</a-col>
               <a-col :span="24">
                 <a-slider
                   v-model="fullOpacity"
@@ -195,21 +195,8 @@
       <li @click="setCenter">
         <img src="./img/restoration.png" alt="复位" title="复位" />
       </li>
-      <li>
-        <a-popover placement="left" arrowPointAtCenter trigger="click">
-          <template slot="content">
-            <a-radio-group>
-              <a-radio-button value="0" @click="addPoint">点</a-radio-button>
-              <a-radio-button value="1" @click="addLineTool">线</a-radio-button>
-              <a-radio-button value="2" @click="addPolygonTool">面</a-radio-button>
-              <a-radio-button value="3" @click="addLineToolNum">测量</a-radio-button>
-            </a-radio-group>
-          </template>
-          <template slot="title">
-            <span>工具</span>
-          </template>
-          <img src="./img/draw.png" alt="工具" title="工具" />
-        </a-popover>
+      <li @click="toolsShowFun">
+        <img src="./img/draw.png" alt="工具" title="工具" />
       </li>
       <li>
         <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
@@ -533,13 +520,108 @@
         </a-popover>
       </li>
     </ul>
+    <!-- 天气弹窗 -->
     <div class="weather_alert" v-show="weatherShow"></div>
+    <!-- 颜色选择框 -->
+    <a-card
+      size="small"
+      title="地图绘制工具"
+      v-show="toolCard"
+      :style="{top: toolTop + 'px', left: toolLeft + 'px'}"
+      class="custom_card tool_card"
+      style="width: 180px"
+    >
+      <div v-show="toolIndex == 2 || toolIndex == 3">
+        <a-row style="width:100%">
+          <a-col :span="12">边框颜色</a-col>
+          <a-col :span="12" @click="chooseColor(1)">
+            <p
+              style="height:20px;margin:0;border: 2px solid rgba(198, 198, 198, 0.8); background-clip: padding-box;"
+              :style="{background: borderColor}"
+            ></p>
+          </a-col>
+        </a-row>
+        <a-row v-show="toolIndex == 3" style="width:100%">
+          <a-col :span="12">填充颜色</a-col>
+          <a-col :span="12" @click="chooseColor(2)">
+            <p
+              style="height:20px;margin:0;border: 2px solid rgba(198, 198, 198, 0.8); background-clip: padding-box;"
+              :style="{background: fullColor}"
+            ></p>
+          </a-col>
+        </a-row>
+        <a-row style="width:100%">
+          <a-col :span="24">边框透明度</a-col>
+          <a-col :span="24">
+            <a-slider
+              v-model="borderOpacity"
+              :tipFormatter="formatter"
+              :step="10"
+              :min="0"
+              :max="100"
+            />
+          </a-col>
+        </a-row>
+        <a-row v-show="toolIndex == 3" style="width:100%">
+          <a-col :span="24">填充不透明度</a-col>
+          <a-col :span="24">
+            <a-slider
+              v-model="fullOpacity"
+              :tipFormatter="formatter"
+              :step="10"
+              :min="0"
+              :max="100"
+            />
+          </a-col>
+        </a-row>
+      </div>
+      <a-row style="width:100%">
+        <a-col :span="24">绘制类型</a-col>
+        <a-col :span="24">
+          <a-select default-value="1" style="width:100%;">
+            <a-select-option value="1">风险源</a-select-option>
+            <a-select-option value="2">水面漂浮物</a-select-option>
+            <a-select-option value="3">排口</a-select-option>
+            <a-select-option value="4">其他</a-select-option>
+          </a-select>
+        </a-col>
+      </a-row>
+      <a-row style="width:100%; margin-top:10px;" type="flex" justify="space-between">
+        <a-col :span="10">
+          <a-button @click="toolCradCancel" block>取消</a-button>
+        </a-col>
+        <a-col :span="10">
+          <a-button @click="toolCradSave" block>保存</a-button>
+        </a-col>
+      </a-row>
+      <div class="color_wrap" v-show="colorAlertShow">
+        <chrome-picker class v-model="riskMapColor" @input="changeColor(riskMapColor)"></chrome-picker>
+      </div>
+    </a-card>
+    <a-card size="small" v-show="toolsCard" class="custom_card tools_card">
+      <a-button
+        @click="toolsShowFun"
+        shape="circle"
+        size="small"
+        icon="close"
+        class="tools_card_close"
+      />
+      <a-radio-group>
+        <a-radio-button value="0" @click="toolIndexFun(1)">点</a-radio-button>
+        <a-radio-button value="1" @click="toolIndexFun(2)">线</a-radio-button>
+        <a-radio-button value="2" @click="toolIndexFun(3)">面</a-radio-button>
+        <a-radio-button value="3" @click="toolIndexFun(4)">测面</a-radio-button>
+        <a-radio-button value="4" @click="toolIndexFun(5)">测距</a-radio-button>
+      </a-radio-group>
+    </a-card>
     <!-- 风险源信息 -->
     <risk-source-info ref="riskInfo"></risk-source-info>
     <!-- 添加风险源 -->
     <add-risk-source ref="addRisk"></add-risk-source>
     <!-- 照片编辑 -->
     <photo-edit ref="photoEdit"></photo-edit>
+    <!-- 排口 -->
+    <add-outlet ref="addOutlet"></add-outlet>
   </div>
 </template>
 
@@ -548,6 +630,7 @@
 import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
 import PhotoEdit from './modules/PhotoEdit'
+import AddOutlet from './modules/AddOutlet'
 
 import 'ol/ol.css'
 import Map from 'ol/Map'
@@ -586,6 +669,7 @@ export default {
     'risk-source-info': RiskSourceInfo,
     'add-risk-source': AddRiskSource,
     'photo-edit': PhotoEdit,
+    'add-outlet': AddOutlet,
     'chrome-picker': Chrome
   },
   data() {
@@ -675,8 +759,6 @@ export default {
       sharedChecked: false,
       swipeChecked: false,
       showView: true,
-      phonePhotoButton: 0, // 手机照片按钮高度
-      riskMapButton: 0, // 风险地图按钮高度
       customStyle: 'background: #fff;margin: 0;overflow: hidden', // 折叠面板样式
       canDownload: true, // 是否可以图片截图下载
       riskMapColor: {
@@ -692,10 +774,21 @@ export default {
       // 地图对象
       map: null,
 
+      toolsCard: false, //工具卡片
+      toolCard: false, //选中工具卡片
+      toolTop: '', // 选中工具卡位置
+      toolLeft: '', // 选中工具卡位置
       markerTool: '', // 工具-点
       lineTool: '', //工具-线
+      polyline: '', // 线
+      // polygon: '', // 面
       polygonTool: '', //工具-面
       lineToolNum: '', //工具-测距
+      toolIndex: '', // 哪个工具
+      toolIndexLineData: [], // 工具线数据
+      toolIndexPolygonData: [], // 工具面数据
+      toolIndexId: null, // 当前绘制id
+      isToolEdit: false, // 是否是编辑状态
 
       mapLayer: '', // 地图图层
 
@@ -911,7 +1004,6 @@ export default {
     // 手机照片
     phonePhoto() {
       this.watchAllSwitch()
-      console.log(this.phonePhoto)
     },
     // 无人机照片
     UAVPhoto() {
@@ -999,30 +1091,10 @@ export default {
       this.map.setMinZoom(4)
       this.map.setMaxZoom(18)
 
-      // this.phonePhotoTool = new T.MarkTool(this.map, { follow: true })
-      // this.UAVPhotoTool = new T.MarkTool(this.map, { follow: true })
-      this.phonePhotoTool = new T.Marker()
-      this.UAVPhotoTool = new T.Marker()
-      this.markerTool = new T.MarkTool(this.map, { follow: true })
-      this.lineTool = new T.PolylineTool(this.map, {
-        color: this.lineToolColor,
-        weight: 3,
-        opacity: this.lineToolOpacity,
-        fillColor: this.lineToolFillColor,
-        fillOpacity: this.lineToolFillOpacity,
-        showLabel: false
-      })
-      this.polygonTool = new T.PolygonTool(this.map, {
-        color: this.polygonToolColor,
-        weight: 3,
-        opacity: this.polygonToolOpacity,
-        fillColor: this.polygonToolFillColor,
-        fillOpacity: this.polygonToolFillOpacity,
-        showLabel: true
-      })
-      this.lineToolNum = new T.PolylineTool(this.map, {
-        showLabel: true
-      })
+      // this.markerToolInit()
+      // this.lineToolInit()
+      // this.polygonToolInit()
+      // this.lineToolNumInit()
       // this.map = new Map({
       //   target: 'map',
       //   view: new View({
@@ -1057,38 +1129,151 @@ export default {
       let zoom = 10
       this.map.panTo(new T.LngLat(lng, lat), zoom)
     },
-
-    // 工具-点
-    addPoint() {
-      this.markerTool.open()
-      this.markerTool.addEventListener('mouseup', this.addPointed)
+    // 工具
+    toolsShowFun() {
+      this.toolsCard = !this.toolsCard
+      // this.markerTool.close()
+      // this.lineTool.close()
+      // this.polygonTool.close()
+      // this.lineToolNum.close()
     },
-    // 返回标注点的坐标
-    addPointed(e) {
+    // 工具
+    toolIndexFun(index) {
+      this.toolIndex = index
+      if (index === 1) {
+        // 工具-点
+        this.markerTool = new T.MarkTool(this.map, { follow: true })
+        this.markerTool.open()
+        this.markerTool.addEventListener('mouseup', this.toolDrawn)
+      } else if (index === 2) {
+        // 工具-线
+        this.lineTool = new T.PolylineTool(this.map)
+        this.lineTool.open()
+        this.lineTool.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
+        this.lineTool.addEventListener('draw', this.toolDrawn)
+      } else if (index === 3) {
+        // 工具-面
+        this.polygonTool = new T.PolygonTool(this.map)
+        this.polygonTool.open()
+        this.polygonTool.addEventListener('draw', this.toolDrawn)
+      } else if (index === 4) {
+        // 工具-测面
+        this.polygonToolNum = new T.PolygonTool(this.map, { showLabel: true })
+        this.polygonToolNum.open()
+      } else if (index === 5) {
+        // 工具-测距
+        this.lineToolNum = new T.PolylineTool(this.map, { showLabel: true })
+        this.lineToolNum.open()
+        this.lineToolNum.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
+      }
+    },
+    // 绘制保存
+    toolCradSave() {
+      this.toolCard = false
+      console.log(this.isToolEdit)
+      if (this.isToolEdit) {
+        return
+      }
+      if (this.toolIndex === 2) {
+        // 工具-线
+        this.lineTool.clear()
+        let result = this.toolIndexLineData.findIndex(item => {
+          return this.toolIndexId == item.id
+        })
+        console.log(result)
+        console.log(this.toolIndexLineData)
+        this.polyline = new T.Polyline(this.toolIndexLineData[result].lineData, {
+          id: this.toolIndexId
+        })
+        this.polyline.setColor(this.borderColor)
+        this.polyline.setOpacity(this.borderOpacity / 100)
+        this.map.addOverLay(this.polyline)
+        this.polyline.addEventListener('click', this.lineClick)
+      } else if (this.toolIndex === 3) {
+        // 工具-面
+        let result = this.toolIndexPolygonData.findIndex(item => {
+          return this.toolIndexId == item.id
+        })
+        console.log(result)
+        console.log(this.toolIndexPolygonData)
+        this.polygon = new T.Polygon(this.toolIndexPolygonData[result].lineData, {
+          id: this.toolIndexId
+        })
+        this.polygon.setColor(this.borderColor)
+        this.polygon.setFillColor(this.fullColor)
+        this.polygon.setOpacity(this.borderOpacity / 100)
+        this.polygon.setFillOpacity(this.fullOpacity / 100)
+        this.map.addOverLay(this.polygon)
+        this.polygon.addEventListener('click', this.lineClick)
+      }
+    },
+    // 绘制取消
+    toolCradCancel() {
+      this.toolCard = false
+      if (this.isToolEdit) {
+        return
+      }
+      if (this.toolIndex === 1) {
+        // 工具-点
+        this.markerTool.clear()
+      } else if (this.toolIndex === 2) {
+        // 工具-线
+        this.lineTool.clear()
+        this.toolIndexLineData.splice(this.toolIndexLineData.findIndex(item => item.id === this.toolIndexId), 1)
+      } else if (this.toolIndex === 3) {
+        // 工具-面
+        this.polygonTool.clear()
+        this.toolIndexPolygonData.splice(this.toolIndexPolygonData.findIndex(item => item.id === this.toolIndexId), 1)
+      } else if (this.toolIndex === 4) {
+        // 工具-面积
+        this.polygonTool.clear()
+      } else if (this.toolIndex === 5) {
+        // 工具-测距
+        this.lineToolNum.clear()
+      }
+    },
+    // 绘制结束
+    toolDrawn(e) {
+      this.isToolEdit = false
+      let id = new Date().valueOf()
+      if (this.toolIndex === 1) {
+        this.toolCard = true
+        this.markerTool.close()
+        console.log(e)
+        // this.$refs.addRisk.add()
+        // this.$refs.addOutlet.add()
+      } else if (this.toolIndex === 2) {
+        // 工具-线
+        console.log(e)
+        this.toolCard = true
+        this.lineTool.close()
+        this.toolIndexId = id
+        this.toolIndexLineData.push({
+          id: id,
+          lineData: e.currentLnglats
+        })
+      } else if (this.toolIndex === 3) {
+        // 工具-面
+        this.toolCard = true
+        this.polygonTool.close()
+        this.toolIndexId = id
+        this.toolIndexPolygonData.push({
+          id: id,
+          lineData: e.currentLnglats
+        })
+      } else if (this.toolIndex === 4) {
+        // 工具-面积
+        this.polygonTool.close()
+      } else if (this.toolIndex === 5) {
+        // 工具-测距
+        this.lineToolNum.close()
+      }
+    },
+    lineClick(e) {
       console.log(e)
-      this.$refs.addRisk.add()
-    },
-    // 工具-线
-    addLineTool() {
-      this.lineTool.open()
-      this.lineTool.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
-    },
-    // 工具-面
-    addPolygonTool() {
-      let polygonTool = new T.PolygonTool(this.map, {
-        showLabel: true,
-        color: 'blue',
-        weight: 3,
-        opacity: 0.5,
-        fillColor: '#FFFFFF',
-        fillOpacity: 0.5
-      })
-      polygonTool.open()
-    },
-    // 工具-测量
-    addLineToolNum() {
-      this.lineToolNum.open()
-      this.lineToolNum.setTips(`<p style="padding:0px;">单击确认起点, 双击结束绘制</p>`)
+      this.toolCard = true
+      this.toolIndexId = e.target.options.id
+      this.isToolEdit = true
     },
     // 设置时间段
     setTime(date, dateString) {
@@ -1818,6 +2003,35 @@ export default {
 }
 
 .accordion_alert {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 180px;
+  background-color: white;
+  z-index: 889;
+  border-radius: 4px;
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.5);
+}
+.tools_card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  margin: auto;
+  text-align: center;
+  width: 278px;
+  background-color: white;
+  z-index: 889;
+  border-radius: 4px;
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.5);
+  .tools_card_close {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    z-index: 890;
+  }
+}
+.tool_card {
   position: absolute;
   right: 10px;
   top: 10px;
