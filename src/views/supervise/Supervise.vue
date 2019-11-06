@@ -64,63 +64,115 @@
         </div>
       </div>
     </div>
-    <div class="phone_upload" :style="{top: phonePhotoButton + 'px'}" v-show="phonePhoto">
-      <a-upload name="file" :multiple="true" action :headers="headers" @change="phoneUpload">
-        <a-button style="width:180px;" block>
-          <a-icon type="upload" />上传照片
-        </a-button>
-      </a-upload>
+    <div
+      class="accordion_alert"
+      v-show="phonePhoto || riskMap || waterQuality || riverRisk || outlet"
+    >
+      <a-collapse accordion>
+        <a-collapse-panel
+          header="手机照片"
+          :style="customStyle"
+          v-show="phonePhoto"
+          class="custom_list"
+        >
+          <a-upload name="file" :multiple="true" action :headers="headers" @change="phoneUpload">
+            <a-button style="width:178px;" block>
+              <a-icon type="upload" />上传照片
+            </a-button>
+          </a-upload>
+        </a-collapse-panel>
+        <a-collapse-panel
+          header="河岸风险源"
+          :style="customStyle"
+          v-show="riverRisk"
+          class="custom_list"
+        >
+          <a-select default-value="1" style="width:100%;">
+            <a-select-option value="1">Ⅰ级</a-select-option>
+            <a-select-option value="2">Ⅱ级</a-select-option>
+            <a-select-option value="3">Ⅲ级</a-select-option>
+            <a-select-option value="4">Ⅳ级</a-select-option>
+          </a-select>
+        </a-collapse-panel>
+        <a-collapse-panel header="风险地图" :style="customStyle" v-show="riskMap" class="custom_list">
+          <a-card size="small" class="custom_card" style="width: 180px">
+            <a-row style="width:100%">
+              <a-col :span="12">边框颜色</a-col>
+              <a-col :span="12" @click="chooseColor(1)">
+                <p
+                  style="height:20px;margin:0;border: 2px solid rgba(198, 198, 198, 0.8); background-clip: padding-box;"
+                  :style="{background: borderColor}"
+                ></p>
+              </a-col>
+            </a-row>
+            <a-row style="width:100%">
+              <a-col :span="12">填充颜色</a-col>
+              <a-col :span="12" @click="chooseColor(2)">
+                <p
+                  style="height:20px;margin:0;border: 2px solid rgba(198, 198, 198, 0.8); background-clip: padding-box;"
+                  :style="{background: fullColor}"
+                ></p>
+              </a-col>
+            </a-row>
+            <a-row style="width:100%">
+              <a-col :span="24">边框透明度</a-col>
+              <a-col :span="24">
+                <a-slider
+                  v-model="borderOpacity"
+                  :tipFormatter="formatter"
+                  :step="10"
+                  :min="0"
+                  :max="100"
+                />
+              </a-col>
+            </a-row>
+            <a-row style="width:100%">
+              <a-col :span="24">填充透明度</a-col>
+              <a-col :span="24">
+                <a-slider
+                  v-model="fullOpacity"
+                  :tipFormatter="formatter"
+                  :step="10"
+                  :min="0"
+                  :max="100"
+                />
+              </a-col>
+            </a-row>
+            <a-button block @click="drawRiskMap">
+              <a-icon type="edit" />绘制风险地图
+            </a-button>
+          </a-card>
+          <div class="color_wrap" v-show="colorAlertShow">
+            <chrome-picker class v-model="riskMapColor" @input="changeColor(riskMapColor)"></chrome-picker>
+          </div>
+        </a-collapse-panel>
+        <a-collapse-panel
+          header="水质数据"
+          :style="customStyle"
+          v-show="waterQuality"
+          class="custom_list"
+        >
+          <a-select default-value="1" style="width:100%;">
+            <a-select-option value="1">Ⅰ-蓝色</a-select-option>
+            <a-select-option value="2">Ⅱ-蓝色</a-select-option>
+            <a-select-option value="3">Ⅲ-蓝色</a-select-option>
+            <a-select-option value="4">Ⅳ-黄色</a-select-option>
+            <a-select-option value="5">Ⅴ-橙色</a-select-option>
+            <a-select-option value="6">Ⅵ-红色</a-select-option>
+            <a-select-option value="7">Ⅶ-红色</a-select-option>
+            <a-select-option value="8">Ⅷ-红色</a-select-option>
+          </a-select>
+        </a-collapse-panel>
+        <a-collapse-panel header="排口" :style="customStyle" v-show="outlet" class="custom_list">
+          <a-select default-value="1" style="width:100%;">
+            <a-select-option value="1">Ⅰ级</a-select-option>
+            <a-select-option value="2">Ⅱ级</a-select-option>
+            <a-select-option value="3">Ⅲ级</a-select-option>
+            <a-select-option value="4">Ⅳ级</a-select-option>
+          </a-select>
+        </a-collapse-panel>
+      </a-collapse>
     </div>
-    <div class="phone_upload" :style="{top: riskMapButton + 'px'}" v-show="riskMap">
-      <a-card size="small" class="custom_card" title="风险地图" style="width: 180px">
-        <a-row style="width:100%">
-          <a-col :span="12">边框颜色</a-col>
-          <a-col
-            :span="12"
-            @click="chooseColor(1)"
-            v-clickoutside="handleCloseColor"
-            style="height:20px;"
-            :style="{background: borderColor}"
-          ></a-col>
-        </a-row>
-        <a-row style="width:100%">
-          <a-col :span="12">填充颜色</a-col>
-          <a-col
-            :span="12"
-            @click="chooseColor(2)"
-            v-clickoutside="handleCloseColor"
-            style="height:20px;"
-            :style="{background: fullColor}"
-          ></a-col>
-        </a-row>
-        <a-row style="width:100%">
-          <a-col :span="24">边框透明度</a-col>
-          <a-col :span="24">
-            <a-slider v-model="borderOpacity" :step="0.1" :min="0" :max="1" />
-          </a-col>
-        </a-row>
-        <a-row style="width:100%">
-          <a-col :span="24">填充透明度</a-col>
-          <a-col :span="24">
-            <a-slider v-model="fullOpacity" :step="0.1" :min="0" :max="1" />
-          </a-col>
-        </a-row>
-        <a-button block @click="drawRiskMap">
-          <a-icon type="edit" />绘制风险地图
-        </a-button>
-      </a-card>
-      <div class="color_wrap" v-show="colorAlertShow">
-        <chrome-picker class v-model="riskMapColor" @input="changeColor(riskMapColor)"></chrome-picker>
-      </div>
-    </div>
-    <!-- <div class="showMap" v-show="!showView">
-      <div class="half">
-          <div id="roadMap" class="vmap"></div>
-      </div>
-      <div class="half">
-          <div id="aerialMap" class="vmap"></div>
-      </div>
-    </div>-->
     <div class="showMap" id="showmap">
       <div class="half">
         <div id="roadMap" class="vmap"></div>
@@ -135,10 +187,6 @@
       </div>
       <input id="swipe" class="swipe" type="range" />
     </div>
-    <!-- <div class="left">
-      <world-map></world-map>
-    </div>-->
-    <!-- <div class="right">456546</div> -->
 
     <ul class="menu">
       <li @click="compass">
@@ -209,6 +257,16 @@
                   </a-col>
                   <a-col :span="6">
                     <a-switch size="small" v-model="historyData" />
+                  </a-col>
+                </a-row>
+              </a-list-item>
+              <a-list-item>
+                <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                  <a-col :span="18">
+                    <p style="margin:0;">河道显示</p>
+                  </a-col>
+                  <a-col :span="6">
+                    <a-switch size="small" v-model="riverShow" />
                   </a-col>
                 </a-row>
               </a-list-item>
@@ -303,6 +361,48 @@
               <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
                 <template slot="content">
                   <a-list size="small">
+                    <a-popover placement="left" trigger="click">
+                      <template slot="content">
+                        <a-list
+                          size="small"
+                          style="max-height: calc(100vh - 260px); overflow: auto;"
+                        >
+                          <a-list-item v-for="item in 5" :key="item">
+                            <a-row
+                              style="width:160px"
+                              type="flex"
+                              justify="space-between"
+                              align="middle"
+                            >
+                              <a-col :span="18">
+                                <p style="margin:0;">风险源{{item}}</p>
+                              </a-col>
+                              <a-col :span="6">
+                                <a-switch size="small" v-model="riskMap" @click="onRiskMap" />
+                              </a-col>
+                            </a-row>
+                          </a-list-item>
+                        </a-list>
+                      </template>
+                      <template slot="title">
+                        <span>河岸风险源</span>
+                      </template>
+                      <a-list-item>
+                        <a-row
+                          style="width:160px"
+                          type="flex"
+                          justify="space-between"
+                          align="middle"
+                        >
+                          <a-col :span="18">
+                            <p style="margin:0;">河岸风险源</p>
+                          </a-col>
+                          <a-col :span="6">
+                            <a-switch size="small" v-model="riverRisk" @click="onRiverRisk" />
+                          </a-col>
+                        </a-row>
+                      </a-list-item>
+                    </a-popover>
                     <a-list-item>
                       <a-row style="width:160px" type="flex" justify="space-between" align="middle">
                         <a-col :span="18">
@@ -316,7 +416,7 @@
                     <a-list-item>
                       <a-row style="width:160px" type="flex" justify="space-between" align="middle">
                         <a-col :span="18">
-                          <p style="margin:0;">水质</p>
+                          <p style="margin:0;">水质数据</p>
                         </a-col>
                         <a-col :span="6">
                           <a-switch size="small" v-model="waterQuality" @click="onWaterQuality" />
@@ -336,13 +436,35 @@
                     <a-list-item>
                       <a-row style="width:160px" type="flex" justify="space-between" align="middle">
                         <a-col :span="18">
-                          <p style="margin:0;">河岸风险源</p>
+                          <p style="margin:0;">排口</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="riverRisk" @click="onRiverRisk" />
+                          <a-switch size="small" v-model="outlet" @click="onOutlet" />
                         </a-col>
                       </a-row>
                     </a-list-item>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">专项调查点</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="surveyPoint" @click="onSurveyPoint" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
+                  </a-list>
+                </template>
+                <template slot="title">
+                  <span>风险管理</span>
+                </template>
+                <a-list-item>
+                  <p style="margin:0;">风险管理</p>
+                </a-list-item>
+              </a-popover>
+              <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
+                <template slot="content">
+                  <a-list size="small">
                     <a-list-item>
                       <a-row style="width:160px" type="flex" justify="space-between" align="middle">
                         <a-col :span="18">
@@ -373,28 +495,6 @@
                         </a-col>
                       </a-row>
                     </a-list-item>
-                    <a-list-item>
-                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
-                        <a-col :span="18">
-                          <p style="margin:0;">专项调查点</p>
-                        </a-col>
-                        <a-col :span="6">
-                          <a-switch size="small" v-model="surveyPoint" @click="onSurveyPoint" />
-                        </a-col>
-                      </a-row>
-                    </a-list-item>
-                  </a-list>
-                </template>
-                <template slot="title">
-                  <span>风险管理</span>
-                </template>
-                <a-list-item>
-                  <p style="margin:0;">风险管理</p>
-                </a-list-item>
-              </a-popover>
-              <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
-                <template slot="content">
-                  <a-list size="small">
                     <a-list-item>
                       <a-row style="width:160px" type="flex" justify="space-between" align="middle">
                         <a-col :span="18">
@@ -577,27 +677,30 @@ export default {
       showView: true,
       phonePhotoButton: 0, // 手机照片按钮高度
       riskMapButton: 0, // 风险地图按钮高度
+      customStyle: 'background: #fff;margin: 0;overflow: hidden', // 折叠面板样式
       canDownload: true, // 是否可以图片截图下载
       riskMapColor: {
         // 默认颜色
         hex: '#F32C11'
       },
       colorAlertShow: false, // 拾色器显隐
-      colorIndex: '', // 选哪个
+      colorIndex: 1, // 选哪个
       borderColor: '#F32C11', // 边框颜色
       fullColor: '#F32C11', // 填充颜色
-      borderOpacity: 0.8, // 边框透明度
-      fullOpacity: 0.5, //填充透明度
+      borderOpacity: 80, // 边框透明度
+      fullOpacity: 50, //填充透明度
       // 地图对象
       map: null,
 
       markerTool: '', // 工具-点
       lineTool: '', //工具-线
+      polygonTool: '', //工具-面
       lineToolNum: '', //工具-测距
 
       mapLayer: '', // 地图图层
 
       historyData: false, // 历史数据
+      riverShow: false, // 河道显示
       phonePhoto: false, // 手机照片
       photoAlert: false, // 照片弹窗
       phonePhotoTool: '', // 手机照片工具
@@ -607,6 +710,11 @@ export default {
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.21493, lng: 121.49566 } },
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
+      ],
+      riverShowPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.219, lng: 121.499 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.204, lng: 121.479 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.206, lng: 121.471 } }
       ],
       phonePhotoPoints: [
         {
@@ -740,6 +848,12 @@ export default {
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.23555, lng: 121.50555 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22333, lng: 121.51333 } }
       ],
+      outlet: false, // 排口
+      outletPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.22222, lng: 121.52222 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.23555, lng: 121.50555 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.22333, lng: 121.51333 } }
+      ],
       riverRisk: false, // 河岸风险源
       riverRiskPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.20333, lng: 121.49999 } },
@@ -790,17 +904,14 @@ export default {
     historyData() {
       this.watchAllSwitch()
     },
+    // 河道显示
+    riverShow() {
+      this.watchAllSwitch()
+    },
     // 手机照片
     phonePhoto() {
       this.watchAllSwitch()
       console.log(this.phonePhoto)
-      if (this.phonePhoto && this.riskMap) {
-        this.phonePhotoButton = 10
-        this.riskMapButton = 1 * 52
-      } else {
-        this.phonePhotoButton = 10
-        this.riskMapButton = 10
-      }
     },
     // 无人机照片
     UAVPhoto() {
@@ -809,13 +920,6 @@ export default {
     // 风险地图
     riskMap() {
       this.watchAllSwitch()
-      if (this.phonePhoto && this.riskMap) {
-        this.phonePhotoButton = 10
-        this.riskMapButton = 1 * 52
-      } else {
-        this.phonePhotoButton = 10
-        this.riskMapButton = 10
-      }
     },
     // 水质
     waterQuality() {
@@ -823,6 +927,10 @@ export default {
     },
     // 水质漂浮物
     waterFlotage() {
+      this.watchAllSwitch()
+    },
+    // 排口
+    outlet() {
       this.watchAllSwitch()
     },
     // 河岸风险源
@@ -897,7 +1005,20 @@ export default {
       this.UAVPhotoTool = new T.Marker()
       this.markerTool = new T.MarkTool(this.map, { follow: true })
       this.lineTool = new T.PolylineTool(this.map, {
+        color: this.lineToolColor,
+        weight: 3,
+        opacity: this.lineToolOpacity,
+        fillColor: this.lineToolFillColor,
+        fillOpacity: this.lineToolFillOpacity,
         showLabel: false
+      })
+      this.polygonTool = new T.PolygonTool(this.map, {
+        color: this.polygonToolColor,
+        weight: 3,
+        opacity: this.polygonToolOpacity,
+        fillColor: this.polygonToolFillColor,
+        fillOpacity: this.polygonToolFillOpacity,
+        showLabel: true
       })
       this.lineToolNum = new T.PolylineTool(this.map, {
         showLabel: true
@@ -1071,6 +1192,12 @@ export default {
         this.allPointTask(this.historyPoints)
       }
     },
+    // 河道显示
+    onRiverShow() {
+      if (this.riverShow) {
+        this.allPointTask(this.riverShowPoints)
+      }
+    },
     // 手机照片
     onPhonePhoto() {
       if (this.phonePhoto) {
@@ -1112,9 +1239,9 @@ export default {
         // showLabel: true,
         color: this.borderColor,
         weight: 3,
-        opacity: this.borderOpacity,
+        opacity: this.borderOpacity / 100,
         fillColor: this.fullColor,
-        fillOpacity: this.fullOpacity
+        fillOpacity: this.fullOpacity / 100
       }
       //创建标注工具对象
       let polygonTool = new T.PolygonTool(this.map, config)
@@ -1137,18 +1264,17 @@ export default {
         this.colorIndex = 2
       }
     },
+    formatter(value) {
+      return `${value}%`
+    },
     // 选择颜色
     changeColor: debounce(function(index) {
       if (this.colorIndex == 1) {
         this.borderColor = index.hex
-      } else {
+      } else if (this.colorIndex == 2) {
         this.fullColor = index.hex
       }
     }, 300),
-    // 关闭拾色器
-    handleCloseColor(){
-      // this.colorAlertShow = false
-    },
     // 水质
     onWaterQuality() {
       if (this.waterQuality) {
@@ -1159,6 +1285,12 @@ export default {
     onWaterFlotage() {
       if (this.waterFlotage) {
         this.allPointTask(this.waterFlotagePoints)
+      }
+    },
+    // 排口
+    onOutlet() {
+      if (this.outlet) {
+        this.allPointTask(this.outletPoints)
       }
     },
     // 河岸风险源
@@ -1208,6 +1340,8 @@ export default {
       this.map.clearOverLays()
       // 历史数据
       this.onHistoryData()
+      // 河道显示
+      this.onRiverShow()
       // 手机照片
       this.onPhonePhoto()
       // 无人机照片
@@ -1218,6 +1352,8 @@ export default {
       this.onWaterQuality()
       // 水质漂浮物
       this.onWaterFlotage()
+      // 排口
+      this.onOutlet()
       // 河岸风险源
       this.onRiverRisk()
       // 水土流失
@@ -1235,14 +1371,10 @@ export default {
     },
 
     allPointTask(pointLists) {
-      // this.map.clearOverLays()
       console.log(pointLists)
-      // let arr = []
       for (const item of pointLists) {
-        // arr.push(item.latlng)
         this.drawAllPoint(item.latlng, item.name, item.id)
       }
-      // this.map.setViewport(arr)
     },
     // 添加标注图片
     drawAllPoint(latlng, index, id) {
@@ -1275,13 +1407,6 @@ export default {
     },
     // 添加手机照片
     drawAllImage(pointLists) {
-      //创建图片对象
-
-      //向地图上添加自定义标注
-      // let marker = new T.Marker(latlng, { icon: icon })
-      // marker.addEventListener('click', this.taskImageClick)
-      // this.map.addOverLay(marker)
-
       let arrayObj = new Array()
       let styles = new Array()
       for (const item of pointLists) {
@@ -1692,13 +1817,13 @@ export default {
   }
 }
 
-.phone_upload {
+.accordion_alert {
   position: absolute;
   right: 10px;
   top: 10px;
   width: 180px;
   background-color: white;
-  z-index: 888;
+  z-index: 889;
   border-radius: 4px;
   box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.5);
 }
