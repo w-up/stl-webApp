@@ -893,7 +893,7 @@
               :value="item.id"
               v-for="(item, index) in spotTaskList"
               :key="index"
-            >{{item.name}}</a-select-option>
+            >{{item.title}}</a-select-option>
           </a-select>
         </a-form-item>
        </a-form>
@@ -1375,7 +1375,7 @@ export default {
         this.handleCancel()
       }else{
         var data = {
-          id:this.inspectPointId,
+          id:'',
           planId:this.planList1.id,
           name:'',
           coordinate:this.lng+','+this.lat,
@@ -1600,6 +1600,7 @@ export default {
     showPlanBtn() {
       this.ishidden = 3
       this.$refs.planList.clickBtn(this.planList1.id)
+      this.$refs.planList.getstaffInspectPage(this.planList1.id)
     },
     //底部上一步按钮
     previousBtn() {

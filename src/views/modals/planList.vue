@@ -89,7 +89,7 @@
 </template>
 <script>
 import '../../assets/css/planList.less'
-
+import { staffInspectPage,targetPage,groupingPage,deviceInspectPage} from '@/api/login'
 const treeData = [{
   title: '无人机正射影像',
   key: '0-0',
@@ -117,6 +117,7 @@ export default {
     name:'planList',
     data(){
         return{
+            teamId:'',
             checkedKeys: ['0-1-0-0'],
             selectedKeys: [],
             treeData,
@@ -139,7 +140,7 @@ export default {
         }
     },
     created(){
-        this.visible = true;
+
     },
     watch: {
         checkedKeys(val) {
@@ -147,6 +148,20 @@ export default {
         }
   },
     methods:{
+        getstaffInspectPage(id){
+
+            this.teamId = id
+            deviceInspectPage('').then(res=>{
+                var arr= res.data.data
+                console.log(arr);
+                
+            })
+            staffInspectPage('').then(res=>{
+                var arr= res.data.data
+                console.log(arr);
+                
+            })
+        },
         onSelect (selectedKeys, info) {
             console.log('onSelect', info)
             this.selectedKeys = selectedKeys

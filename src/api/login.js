@@ -593,6 +593,22 @@ export function taskInspectPage(data) {
     }
   })
 }
+//巡河人员分页
+export function staffInspectPage(id) {
+  return axios({
+    url: '/server/data/admin/inspect/staff/page?teamId='+id,
+    method: 'get',
+  })
+}
+//巡河设备分页
+export function deviceInspectPage(id) {
+  return axios({
+    url: '/server/data/admin/inspect/device/page?teamId='+id,
+    method: 'get',
+  })
+}
+
+
 
 export function getSmsCaptcha (parameter) {
   return axios({
