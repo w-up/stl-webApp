@@ -520,13 +520,14 @@ export function inspectPointDel(id) {
   })
 }
 //目标列表
-export function targetPage(id) {
+export function targetPage(data) {
   return axios({
     url: '/server/data/admin/inspect/target/page',
     method: 'get',
     params:{
       projectId:'5da7d092ea6c156d792df816',
-      planId:id
+      planId:data.id,
+      teamId:data.teamId
     }
   })
 }
@@ -543,6 +544,14 @@ export function targetDel(id) {
   return axios({
     url: '/server/data/admin/inspect/target/remove/'+id,
     method: 'post',
+  })
+}
+//目标设置分组
+export function targetSetTeam(data) {
+  return axios({
+    url: '/server/data/admin/inspect/target/set/team',
+    method: 'post',
+    data:data
   })
 }
 //分组列表
@@ -571,7 +580,19 @@ export function groupingDel(id) {
     method: 'post',
   })
 }
-
+//巡河任务分页
+export function taskInspectPage(data) {
+  return axios({
+    url: '/server/data/admin/inspect/task/page',
+    method: 'get',
+    params:{
+      projectId:'5da7d092ea6c156d792df816',
+      planId:data.id,
+      Object:data.Object,
+      objectId:data.objectId
+    }
+  })
+}
 
 export function getSmsCaptcha (parameter) {
   return axios({
