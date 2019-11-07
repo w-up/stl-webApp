@@ -137,6 +137,7 @@ export default {
                     }
                     rolePreservation(data).then(res => {
                         this.$message.success('成功');
+                        
                         this.backPage()
                     }).catch(err => {
                         this.$message.error(err.response.data.message);
@@ -148,6 +149,9 @@ export default {
             
         },
         backPage(){
+            this.list.name = ''
+            this.list.type= ''
+            this.id=''
             this.$router.go(-1)
         }
     }

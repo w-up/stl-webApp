@@ -19,7 +19,7 @@
           </a-form-item>
         </a-form>
       </div>
-      <a-button type="primary" icon="plus" style="margin:15px 0" @click="add">添加</a-button>
+      <a-button type="primary" icon="plus" style="margin:15px 0" @click="add('')">添加</a-button>
       <a-table :columns="columns" :dataSource="data" bordered>
         <template slot="state" slot-scope="row">
           <a v-if="row.actived==true">启用</a>

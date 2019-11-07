@@ -1308,7 +1308,7 @@ export default {
           for (let a = 0; a < this.personnelList.length; a++) {
             if (this.roleId[i] == this.personnelList[a].id) {
               if (this.lineList.roleNum != '') {
-                this.lineList.roleNum = ',' + this.lineList.roleNum + this.personnelList[a].num
+                this.lineList.roleNum =  this.lineList.roleNum +','+this.personnelList[a].num
               } else {
                 this.lineList.roleNum = this.personnelList[a].num
               }
@@ -1336,7 +1336,8 @@ export default {
           for (let a = 0; a < this.personnelList.length; a++) {
             if (this.spotList.roleId[i] == this.personnelList[a].id) {
               if (data.roleNum != '') {
-                data.roleNum = ',' + data.roleNum + this.personnelList[a].num
+                
+                data.roleNum =  data.roleNum +','+this.personnelList[a].num
               } else {
                 data.roleNum = this.personnelList[a].num
               }
