@@ -10,7 +10,7 @@ function cloneSingleNode(nativeNode) {
     // 跨域照片解决
     if (nativeNode.tagName == "IMG") {
         var readNowUrl = document.location.origin;
-        nativeNode.src = nativeNode.src.replace(/http:\/\/t[0-7]\.tianditu\.gov\.cn/, `${readNowUrl} + /tianditu`);
+        nativeNode.src = nativeNode.src.replace(/http:\/\/t[0-7]\.tianditu\.gov\.cn/, `${readNowUrl}/tianditu`);
     }
     if (nativeNode instanceof HTMLCanvasElement) {
         return utils_1.createImage(nativeNode.toDataURL());
