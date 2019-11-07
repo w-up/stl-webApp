@@ -108,7 +108,7 @@
           <el-input v-model="equipmentList.type" placeholder="请输入" style="width:200px" />
         </el-form-item>
         <el-form-item label="设备数量">
-          <el-input  placeholder="请输入" style="width:200px" />
+          <el-input  placeholder="请输入" v-model="equipmentList.amount" style="width:200px" />
         </el-form-item>
         <el-form-item label="设备聚隆编号">
           <el-input v-model="equipmentList.number" placeholder="请输入" style="width:200px" />
@@ -140,7 +140,7 @@
   </div>
 </template>
 <script>
-import { structureEquipment, equipmentTypeList,equipmentTypeSave,equipmentTypeDel,equipmentNewsList,equipmentNewsSave,equipmentNewsDel,relatedList } from '@/api/login'
+import { structureEquipment, equipmentTypeList,equipmentTypeSave,equipmentTypeDel,equipmentNewsList,equipmentNewsSave,equipmentNewsDel,relatedList,structDeviceList } from '@/api/login'
 const treeData = [
   {
     label: '全部',
@@ -192,7 +192,7 @@ const columns1 = [
   },
   {
     title: '数量',
-    dataIndex: 'code1'
+    dataIndex: 'amount'
   },
   {
     title: '状态',
@@ -226,8 +226,10 @@ export default {
         id:'',
         name: '',
         type: '',
-        number: ''
+        number: '',
+        amount:'',
       },
+      uavList:[],
       checkedList:[],
       ruleValidate: {
         name: [{ required: true, message: '不能为空', trigger: 'blur' }],
@@ -236,28 +238,6 @@ export default {
       data1: [
        
       ],
-      uavList: [
-        {
-          name: 'Marvic 2 Pro',
-          id: '1'
-        },
-        {
-          name: 'Marvic 2 Pro',
-          id: '2'
-        },
-        {
-          name: 'Marvic 3',
-          id: '3'
-        },
-        {
-          name: 'Marvic 3',
-          id: '3'
-        },
-        {
-          name: 'Marvic 3',
-          id: '3'
-        }
-      ],
       form: this.$form.createForm(this)
     }
   },
@@ -265,6 +245,11 @@ export default {
   mounted(){
     this.getList()
     this.getstructure()
+    structDeviceList().then(res=>{
+      var arr =  res.data
+      console.log(arr);
+      
+    })
   },
   methods: {
     getstructure(){//树
@@ -279,7 +264,6 @@ export default {
             }
           }
         }
-        console.log(arr);
         this.treeData[0].children = arr
       }).catch(err => {
       })
@@ -291,7 +275,6 @@ export default {
       }
       equipmentTypeList(data).then(res => {
         var sz = res.data
-        console.log(sz);
         for (let i = 0; i < sz.length; i++) {
           sz[i].key=i+1
         }
@@ -338,6 +321,7 @@ export default {
         name:this.equipmentList.name,
         model:this.equipmentList.type,
         code:this.equipmentList.number,
+        amount:this.equipmentList.amount,
         relatedDeviceId:this.checkedList,
         relatedDeviceNum:'',
       }
@@ -366,6 +350,7 @@ export default {
       this.equipmentList.id=''
       this.equipmentList.name=''
       this.equipmentList.type=''
+      this.equipmentList.amount=''
       this.equipmentList.number=''
       this.checkedList=[]
     },

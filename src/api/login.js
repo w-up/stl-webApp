@@ -77,7 +77,6 @@ export function roleList (parameter) {
   return axios({
     url: '/server/data/admin/auth/role/page?type='+parameter,
     method: 'get',
-    data: parameter
   })
 }
 //角色详情
@@ -189,7 +188,13 @@ export function relatedList (parameter) {
   })
 }
 
-
+//设备三层结构
+export function structDeviceList () {
+  return axios({
+    url: '/server/data/admin/device/struct',
+    method: 'get',
+  })
+}
 //项目类型列表
 export function projectTypeList (parameter) {
   return axios({
@@ -596,7 +601,7 @@ export function taskInspectPage(data) {
 //巡河人员分页
 export function staffInspectPage(id) {
   return axios({
-    url: '/server/data/admin/inspect/staff/page?teamId='+id,
+    url: '/server/data/admin/inspect/task/roles?teamId='+id,
     method: 'get',
   })
 }

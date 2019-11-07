@@ -2,7 +2,7 @@
 <div>
     <a-card title="新增/编辑用户">
         <a-button  slot="extra" @click="backPage">返回上一页</a-button>
-        <el-form ref="formValidate" :model="list" :rules="ruleValidate" >
+        <el-form ref="formValidate" :model="list" :rules="ruleValidate" label-width="100px">
             <h3>用户信息</h3>
             <el-form-item label="手机号" prop="phone">
                 <el-input v-model="list.phone" placeholder="请输入" style="width:200px"></el-input>
@@ -33,20 +33,20 @@
             <el-form-item label="角色" >
                 <div v-if="jurisdiction=='worker'">
                     <p>外勤</p>
-                    <a-checkbox-group >
-                        <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
+                    <a-checkbox-group v-model="list.roleId">
+                        <a-checkbox v-for="(option, index) in externalList" :value="option.id" :key="index">{{option.name}}</a-checkbox>
                     </a-checkbox-group>
                 </div>
                 <div v-if="jurisdiction=='admin'">
                     <p>内业</p>
-                    <a-checkbox-group >
-                        <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
+                    <a-checkbox-group v-model="list.roleId">
+                        <a-checkbox v-for="(option, index) in externalList" :value="option.id" :key="index">{{option.name}}</a-checkbox>
                     </a-checkbox-group>
                 </div>
                 <div v-if="jurisdiction=='viewer'">
                 <p>外部用户</p>
-                    <a-checkbox-group >
-                        <a-checkbox v-for="(option, index) in externalList"  :key="index">{{option.name}}</a-checkbox>
+                    <a-checkbox-group v-model="list.roleId">
+                        <a-checkbox v-for="(option, index) in externalList" :value="option.id" :key="index">{{option.name}}</a-checkbox>
                     </a-checkbox-group>
                 </div>
             </el-form-item>
@@ -65,7 +65,7 @@
 </div>
 </template>
 <script>
-import { userDetails, userPreservation } from '@/api/login'
+import { userDetails, userPreservation,roleList} from '@/api/login'
 export default {
     data(){
         return{
@@ -78,6 +78,8 @@ export default {
                 password:'',
                 sex:'',
                 type:'worker',
+                roleId:[],
+
             },  
             ruleValidate: {
                 phone: [
@@ -135,7 +137,10 @@ export default {
         
         if (this.$route.query.id!='') {
             this.getList()
+        }else{
+            this.getRoleList()
         }
+
           
     },
     methods:{
@@ -148,9 +153,18 @@ export default {
                 this.list.type=arr.type.code
                 this.list.name=arr.name
                 this.list.phone=arr.mobile
+                this.list.number = arr.code
+                this.getRoleList()
             }).catch(err => {
                
                 
+            })
+            
+        },
+        getRoleList(){
+            roleList(this.list.type).then(res=>{
+                this.list.roleId = []
+                this.externalList = res.data.data
             })
         },
         preservation(){
@@ -161,6 +175,7 @@ export default {
                         name:this.list.name,
                         mobile:this.list.phone,
                         type:this.list.type,
+                        roleId:this.list.roleId.join(',')
                     }
                     if (this.id) {
                         data.id = this.id
@@ -179,6 +194,8 @@ export default {
         },
         handleChange(value) {
             this.jurisdiction=value
+            this.getRoleList()
+
         },
         backPage(){
             this.$router.go(-1)

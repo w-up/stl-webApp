@@ -1124,8 +1124,8 @@ export default {
         }
       ],
       planList1:{
-        id:'5dc0d964ea6c15b288665287',
-        name:'计划 2019-11-5',
+        id:'',
+        name:'',
       },
       superCard: [
         {
@@ -1280,7 +1280,6 @@ export default {
     this.initCruisePlan()
     this.getPage()
     this.getPicker()
-    this.getinspectPointPage()
     this.getTask()
     // console.log("mount" + this.childNode)
     // this.showTNodeBtn()
@@ -1296,7 +1295,7 @@ export default {
           return year+"-"+month+"-"+date
         }
       this.picker = formatDate(new Date())
-      // this.getPlanSave()
+      this.getPlanSave()
     },
     //任务点列表
     getTask(){
@@ -1331,6 +1330,7 @@ export default {
         // console.log(res.data.id);
         this.planList1.id = res.data.id
         this.planList1.name = res.data.name
+        this.getinspectPointPage()
       }).catch(err=>{
 
       })
@@ -1342,31 +1342,33 @@ export default {
       }
       targetPage(list).then(res=>{
         var arr =res.data.data
-        for (let a = 0; a < arr.length; a++) {
-          arr[a].latlng = {
-            lat: '',
-            lng: ''
+        if (arr.length >0) {
+          for (let a = 0; a < arr.length; a++) {
+            arr[a].latlng = {
+              lat: '',
+              lng: ''
+            }
+            arr[a].taskPage = []
+            arr[a].clicked = false
+            arr[a].latlng.lat = arr[a].coordinate[1]
+            arr[a].latlng.lng = arr[a].coordinate[0]
+            var data = {
+              id:this.planList1.id,
+              object:arr[a].object.code,
+              objectId:arr[a].objectId
+            }
+            taskInspectPage(data).then(res=>{
+              var ar = res.data.data
+              ar.forEach(v => {
+                v.key = v.id
+                v.title = v.content
+              });
+              arr[a].taskPage = ar
+            })
           }
-          arr[a].taskPage = []
-          arr[a].clicked = false
-          arr[a].latlng.lat = arr[a].coordinate[1]
-          arr[a].latlng.lng = arr[a].coordinate[0]
-          var data = {
-            id:this.planList1.id,
-            object:arr[a].object.code,
-            objectId:arr[a].objectId
-          }
-          taskInspectPage(data).then(res=>{
-            var ar = res.data.data
-            ar.forEach(v => {
-              v.key = v.id
-              v.title = v.content
-            });
-            arr[a].taskPage = ar
-          })
+          this.taskPage =arr
+          this.allPointTask(arr)
         }
-        this.taskPage =arr
-        this.allPointTask(arr)
       })
     },
     //调查点保存
