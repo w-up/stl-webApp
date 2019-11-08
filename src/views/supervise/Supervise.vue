@@ -63,6 +63,9 @@
           </a-popover>
         </div>
       </div>
+      <div class="compass_pointer" @click="compass" title="指北针">
+        <img class="pointer" src="../../assets/img/compassPointer.png" alt="指北针" />
+      </div>
     </div>
     <div
       class="accordion_alert"
@@ -141,6 +144,19 @@
             <a-button block @click="drawRiskMap">
               <a-icon type="edit" />绘制风险地图
             </a-button>
+            <a-row
+              v-show="isRiskSaveShow"
+              style="width:100%; margin-top:10px;"
+              type="flex"
+              justify="space-between"
+            >
+              <a-col :span="10">
+                <a-button @click="riskCradCancel" block>取消</a-button>
+              </a-col>
+              <a-col :span="10">
+                <a-button @click="riskCradSave" block>保存</a-button>
+              </a-col>
+            </a-row>
           </a-card>
           <div class="color_wrap" v-show="colorAlertShow">
             <chrome-picker class v-model="riskMapColor" @input="changeColor(riskMapColor)"></chrome-picker>
@@ -189,14 +205,11 @@
     </div>
 
     <ul class="menu">
-      <li @click="compass">
-        <img src="./img/compass.png" alt="指北针" title="指北针" />
-      </li>
       <li @click="setCenter">
-        <img src="./img/restoration.png" alt="复位" title="复位" />
+        <img src="../../assets/img/restoration.png" alt="复位" title="复位" />
       </li>
       <li @click="toolsShowFun">
-        <img src="./img/draw.png" alt="工具" title="工具" />
+        <img src="../../assets/img/draw.png" alt="工具" title="工具" />
       </li>
       <li>
         <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
@@ -221,17 +234,23 @@
           <template slot="title">
             <span>图像</span>
           </template>
-          <img src="./img/map.png" alt="图像" title="图像" />
+          <img src="../../assets/img/map.png" alt="图像" title="图像" />
         </a-popover>
       </li>
       <li>
-        <img src="./img/screenshot.png" id="export-png" @click="printImage" alt="截图" title="截图" />
+        <img
+          src="../../assets/img/screenshot.png"
+          id="export-png"
+          @click="printImage"
+          alt="截图"
+          title="截图"
+        />
       </li>
       <li @click="mapZoomIn">
-        <img src="./img/max.png" alt="放大" title="放大" />
+        <img src="../../assets/img/max.png" alt="放大" title="放大" />
       </li>
       <li @click="mapZoomOut">
-        <img src="./img/min.png" alt="缩小" title="缩小" />
+        <img src="../../assets/img/min.png" alt="缩小" title="缩小" />
       </li>
       <li>
         <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
@@ -516,7 +535,7 @@
           <template slot="title">
             <span>更多</span>
           </template>
-          <img src="./img/more.png" alt="更多" title="更多" />
+          <img src="../../assets/img/more.png" alt="更多" title="更多" />
         </a-popover>
       </li>
     </ul>
@@ -771,6 +790,13 @@ export default {
       fullColor: '#F32C11', // 填充颜色
       borderOpacity: 80, // 边框透明度
       fullOpacity: 50, //填充透明度
+
+      riskPolygonData: [], // 工具面数据
+      riskIndexId: null, // 当前绘制id
+      isRiskEdit: false, // 是否是编辑状态
+      isRiskSaveShow: false, // 是否显示保存取消
+      editIndex: '', //编辑的是哪个riskmap / tool
+
       // 地图对象
       map: null,
 
@@ -785,6 +811,7 @@ export default {
       polygonTool: '', //工具-面
       lineToolNum: '', //工具-测距
       toolIndex: '', // 哪个工具
+      toolIndexPointData: [], // 工具点数据
       toolIndexLineData: [], // 工具线数据
       toolIndexPolygonData: [], // 工具面数据
       toolIndexId: null, // 当前绘制id
@@ -1132,14 +1159,11 @@ export default {
     // 工具
     toolsShowFun() {
       this.toolsCard = !this.toolsCard
-      // this.markerTool.close()
-      // this.lineTool.close()
-      // this.polygonTool.close()
-      // this.lineToolNum.close()
     },
     // 工具
     toolIndexFun(index) {
       this.toolIndex = index
+      this.editIndex = 'tool'
       if (index === 1) {
         // 工具-点
         this.markerTool = new T.MarkTool(this.map, { follow: true })
@@ -1171,40 +1195,53 @@ export default {
     toolCradSave() {
       this.toolCard = false
       console.log(this.isToolEdit)
-      if (this.isToolEdit) {
-        return
-      }
-      if (this.toolIndex === 2) {
+      if (this.toolIndex === 1) {
+      } else if (this.toolIndex === 2) {
         // 工具-线
         this.lineTool.clear()
         let result = this.toolIndexLineData.findIndex(item => {
           return this.toolIndexId == item.id
         })
+        this.toolIndexLineData[result].borderColor = this.borderColor
+        this.toolIndexLineData[result].borderOpacity = this.borderOpacity / 100
         console.log(result)
         console.log(this.toolIndexLineData)
+        if (this.isToolEdit) {
+          this.watchAllSwitch()
+          return
+        }
         this.polyline = new T.Polyline(this.toolIndexLineData[result].lineData, {
           id: this.toolIndexId
         })
+        this.map.addOverLay(this.polyline)
         this.polyline.setColor(this.borderColor)
         this.polyline.setOpacity(this.borderOpacity / 100)
-        this.map.addOverLay(this.polyline)
         this.polyline.addEventListener('click', this.lineClick)
       } else if (this.toolIndex === 3) {
         // 工具-面
+        this.polygonTool.clear()
         let result = this.toolIndexPolygonData.findIndex(item => {
           return this.toolIndexId == item.id
         })
         console.log(result)
         console.log(this.toolIndexPolygonData)
+        this.toolIndexPolygonData[result].borderColor = this.borderColor
+        this.toolIndexPolygonData[result].fullColor = this.fullColor
+        this.toolIndexPolygonData[result].borderOpacity = this.borderOpacity / 100
+        this.toolIndexPolygonData[result].fullOpacity = this.fullOpacity / 100
+        if (this.isToolEdit) {
+          this.watchAllSwitch()
+          return
+        }
         this.polygon = new T.Polygon(this.toolIndexPolygonData[result].lineData, {
           id: this.toolIndexId
         })
+        this.map.addOverLay(this.polygon)
         this.polygon.setColor(this.borderColor)
         this.polygon.setFillColor(this.fullColor)
         this.polygon.setOpacity(this.borderOpacity / 100)
         this.polygon.setFillOpacity(this.fullOpacity / 100)
-        this.map.addOverLay(this.polygon)
-        this.polygon.addEventListener('click', this.lineClick)
+        this.polygon.addEventListener('click', this.polygonClick)
       }
     },
     // 绘制取消
@@ -1216,6 +1253,7 @@ export default {
       if (this.toolIndex === 1) {
         // 工具-点
         this.markerTool.clear()
+        this.toolIndexPointData.splice(this.toolIndexPointData.findIndex(item => item.id === this.toolIndexId), 1)
       } else if (this.toolIndex === 2) {
         // 工具-线
         this.lineTool.clear()
@@ -1235,10 +1273,16 @@ export default {
     // 绘制结束
     toolDrawn(e) {
       this.isToolEdit = false
+      this.colorAlertShow = false
       let id = new Date().valueOf()
+      this.toolIndexId = id
       if (this.toolIndex === 1) {
         this.toolCard = true
         this.markerTool.close()
+        this.toolIndexPointData.push({
+          id: id,
+          latlng: e.currentLnglat
+        })
         console.log(e)
         // this.$refs.addRisk.add()
         // this.$refs.addOutlet.add()
@@ -1247,7 +1291,6 @@ export default {
         console.log(e)
         this.toolCard = true
         this.lineTool.close()
-        this.toolIndexId = id
         this.toolIndexLineData.push({
           id: id,
           lineData: e.currentLnglats
@@ -1256,7 +1299,6 @@ export default {
         // 工具-面
         this.toolCard = true
         this.polygonTool.close()
-        this.toolIndexId = id
         this.toolIndexPolygonData.push({
           id: id,
           lineData: e.currentLnglats
@@ -1269,11 +1311,52 @@ export default {
         this.lineToolNum.close()
       }
     },
+    // 点击编辑工具线
     lineClick(e) {
       console.log(e)
       this.toolCard = true
+      this.colorAlertShow = false
+      this.toolIndex = 2
       this.toolIndexId = e.target.options.id
       this.isToolEdit = true
+    },
+    // 点击编辑工具面
+    polygonClick(e) {
+      console.log(e)
+      this.toolCard = true
+      this.colorAlertShow = false
+      this.toolIndex = 3
+      this.toolIndexId = e.target.options.id
+      this.isToolEdit = true
+    },
+    // 绘制工具画的点
+    toolDrawPoint() {
+      this.allPointTask(this.toolIndexPointData)
+    },
+    // 绘制工具画的线
+    toolDrawLine() {
+      if (this.toolIndexLineData.length !== 0) {
+        for (const item of this.toolIndexLineData) {
+          this.drawLine(item.lineData, item.borderColor, 3, item.borderOpacity, item.id, '')
+        }
+      }
+    },
+    // 绘制工具画的面
+    toolDrawPolygon() {
+      if (this.toolIndexPolygonData.length !== 0) {
+        for (const item of this.toolIndexPolygonData) {
+          this.setPolylineFn(
+            item.lineData,
+            item.borderColor,
+            3,
+            item.borderOpacity,
+            item.fullColor,
+            item.fullOpacity,
+            '',
+            item.id
+          )
+        }
+      }
     },
     // 设置时间段
     setTime(date, dateString) {
@@ -1399,9 +1482,47 @@ export default {
     onRiskMap() {
       if (this.riskMap) {
         for (const item of this.riskMapRiver) {
-          this.setPolylineFn(item.lineData, 'blue', 3, 0.5, '#FFFFFF', 0, item.name, item.id)
+          let polygon = new T.Polygon(item.lineData, {
+            color: 'blue', //线颜色
+            weight: 3, //线宽
+            opacity: 0.5, //透明度
+            fillColor: '#FFFFFF', //填充颜色
+            fillOpacity: 0, // 填充透明度
+            title: item.name, // 名字
+            id: item.id // id
+          })
+          //向地图上添加面
+          this.map.addOverLay(polygon)
+        }
+        // 风险地图绘制的面
+        if (this.riskPolygonData.length != 0) {
+          for (const item of this.riskPolygonData) {
+            this.setRiskPolyline(
+              item.lineData,
+              item.borderColor,
+              3,
+              item.borderOpacity,
+              item.fullColor,
+              item.fullOpacity,
+              '',
+              item.id
+            )
+          }
         }
       }
+    },
+    // 绘制线
+    drawLine(points, color, weight, opacity, id, name) {
+      let line = new T.Polyline(points, {
+        color: color, //线颜色
+        weight: weight, //线宽
+        opacity: opacity, //透明度
+        id: id,
+        name: name
+      })
+      //向地图上添加线
+      this.map.addOverLay(line)
+      line.addEventListener('click', this.lineClick)
     },
     // 设置绘制的多边形
     setPolylineFn(lineData, color, weight, opacity, fillColor, fillOpacity, title, id) {
@@ -1416,29 +1537,98 @@ export default {
       })
       //向地图上添加面
       this.map.addOverLay(polygon)
+      polygon.addEventListener('click', this.polygonClick)
+    },
+    // 设置绘制的多边形
+    setRiskPolyline(lineData, color, weight, opacity, fillColor, fillOpacity, title, id) {
+      let polygon = new T.Polygon(lineData, {
+        color: color, //线颜色
+        weight: weight, //线宽
+        opacity: opacity, //透明度
+        fillColor: fillColor, //填充颜色
+        fillOpacity: fillOpacity, // 填充透明度
+        title: title, // 名字
+        id: id // id
+      })
+      //向地图上添加面
+      this.map.addOverLay(polygon)
+      polygon.addEventListener('click', this.riskPolygonClick)
     },
     // 绘制风险地图
     drawRiskMap() {
       this.colorAlertShow = false
-      let config = {
+      //创建标注工具对象
+      this.polygonTool = new T.PolygonTool(this.map, {
         // showLabel: true,
         color: this.borderColor,
         weight: 3,
         opacity: this.borderOpacity / 100,
         fillColor: this.fullColor,
         fillOpacity: this.fullOpacity / 100
-      }
-      //创建标注工具对象
-      let polygonTool = new T.PolygonTool(this.map, config)
-      if (polygonTool) polygonTool.close()
-      polygonTool.open()
-      polygonTool.setTips(`<p style="padding:0px 4px;">单击确认起点, 双击结束绘制</p>`)
-      polygonTool.addEventListener('draw', this.drawRiskMapEnd)
+      })
+      this.polygonTool.open()
+      this.polygonTool.setTips(`<p style="padding:0px 4px;">单击确认起点, 双击结束绘制</p>`)
+      this.polygonTool.addEventListener('draw', this.drawRiskMapEnd)
       // this.polylineHandler.addEventListener('addpoint', this.addDrawRivering)
     },
     // 绘制结束
-    drawRiskMapEnd(index) {
-      console.log(index)
+    drawRiskMapEnd(e) {
+      console.log(e.currentLnglats)
+      this.isRiskEdit = false
+      this.colorAlertShow = false
+      let id = new Date().valueOf()
+      this.riskIndexId = id
+      this.polygonTool.close()
+      this.riskPolygonData.push({
+        id: id,
+        lineData: e.currentLnglats
+      })
+      this.isRiskSaveShow = true
+    },
+    // 风险地图绘制保存
+    riskCradSave() {
+      this.isRiskSaveShow = false
+      this.colorAlertShow = false
+      console.log(this.isRiskEdit)
+      this.polygonTool.clear()
+      let result = this.riskPolygonData.findIndex(item => {
+        return this.riskIndexId == item.id
+      })
+      console.log(result)
+      console.log(this.riskPolygonData)
+      this.riskPolygonData[result].borderColor = this.borderColor
+      this.riskPolygonData[result].fullColor = this.fullColor
+      this.riskPolygonData[result].borderOpacity = this.borderOpacity / 100
+      this.riskPolygonData[result].fullOpacity = this.fullOpacity / 100
+      if (this.isRiskEdit) {
+        this.watchAllSwitch()
+        return
+      }
+      this.polygon = new T.Polygon(this.riskPolygonData[result].lineData, {
+        id: this.riskIndexId
+      })
+      this.map.addOverLay(this.polygon)
+      this.polygon.setColor(this.borderColor)
+      this.polygon.setFillColor(this.fullColor)
+      this.polygon.setOpacity(this.borderOpacity / 100)
+      this.polygon.setFillOpacity(this.fullOpacity / 100)
+      this.polygon.addEventListener('click', this.riskPolygonClick)
+    },
+    // 风险地图绘制取消
+    riskCradCancel() {
+      this.isRiskSaveShow = false
+      this.colorAlertShow = false
+      if (this.isRiskEdit) {
+        return
+      }
+      this.polygonTool.clear()
+      this.riskPolygonData.splice(this.riskPolygonData.findIndex(item => item.id === this.riskIndexId), 1)
+    },
+    // 风险地图编辑颜色
+    riskPolygonClick(e) {
+      this.riskIndexId = e.target.options.id
+      this.isRiskEdit = true
+      this.isRiskSaveShow = true
     },
     // 点击选择颜色
     chooseColor(index) {
@@ -1523,6 +1713,12 @@ export default {
     // 监听所有的开关属性
     watchAllSwitch() {
       this.map.clearOverLays()
+      // 绘制工具画的点
+      this.toolDrawPoint()
+      // 绘制工具画的线
+      this.toolDrawLine()
+      // 绘制工具画的面
+      this.toolDrawPolygon()
       // 历史数据
       this.onHistoryData()
       // 河道显示
@@ -2048,9 +2244,27 @@ export default {
   top: 2px;
 }
 
-.menu {
+.compass_pointer {
   position: fixed;
   right: 10px;
+  bottom: 325px;
+  width: 60px;
+  height: 60px;
+  z-index: 888;
+  border-radius: 50%;
+  padding: 15px;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
+  background: white url('../../assets/img/leftRightArrows.png') no-repeat center center / 80%;
+  text-align: center;
+  .pointer {
+    width: 30px;
+    height: 30px;
+    transform: rotate(0deg);
+  }
+}
+.menu {
+  position: fixed;
+  right: 20px;
   bottom: 10px;
   width: 40px;
   z-index: 888;
