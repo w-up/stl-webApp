@@ -216,17 +216,15 @@ export default {
   methods: {
     getList() {
       //河道列表
-      getRiverList()
-        .then(res => {
-          let arr = res.data.data
-          arr.forEach(v => {
-            v.lineData = v.region
-            v.clicked = false
-          })
-          this.riverList = arr
-          this.drawAllRiver()
+      getRiverList().then(res => {
+        let arr = res.data.data
+        arr.forEach(v => {
+          v.lineData = v.region
+          v.clicked = false
         })
-        .catch(err => {})
+        this.riverList = arr
+        this.drawAllRiver()
+      }).catch(err => {})
     },
     initMap() {
       //初始化地图控件
@@ -249,24 +247,6 @@ export default {
         } else {
           this.setPolylineFn(item.lineData, 'blue', 3, 1, 0, item.name, item.id)
         }
-        // // 文字标注
-        // let latArr = [],
-        //   lngArr = []
-        // for (const itemPoint of item.lineData) {
-        //   latArr.push(Number(itemPoint.lat))
-        //   lngArr.push(Number(itemPoint.lng))
-        // }
-        // let lat = (Math.max(...latArr) + Math.min(...latArr)) / 2
-        // let lng = (Math.max(...lngArr) + Math.min(...lngArr)) / 2
-        // let latlngobj = { lat: lat, lng: lng }
-        // let label = new T.Label({
-        //   text: `<b>${item.name}<b>`,
-        //   position: latlngobj,
-        //   offset: new T.Point(-40, 0)
-        // })
-        // this.map.addOverLay(label)
-        // label.setLngLat(latlngobj)
-        // this.map.addEventListener('zoomend', this.zoomChange)
       }
     },
     zoomChange() {

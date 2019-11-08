@@ -167,7 +167,6 @@
                 >
                   <el-checkbox-group v-model="roleId">
                     <div v-for="(city, index)  in personnelList" :key="index" style>
-                      <!-- <a-checkbox @change="peopleChoose">主飞手</a-checkbox> -->
                       <el-checkbox :label="city.id" style="width: 100px;">{{city.name}}</el-checkbox>
                       <a-input-number
                         size="small"
@@ -186,99 +185,31 @@
                   :wrapper-col="formItemLayout.wrapperCol"
                 ></a-form-item>
                 <a-collapse size="small" style="margin-top:10px;" :bordered="false">
-                  <a-collapse-panel :style="customStyle">
-                    <template slot="header">
-                      <!-- <a-checkbox @change.stop="peopleChoose">无人机设备</a-checkbox> -->
-                      无人机设备
-                    </template>
-                    <a-row style="width:100%">
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">无人机主机</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">无人机机翼</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">无人机电池</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                    </a-row>
-                  </a-collapse-panel>
-                  <a-collapse-panel :style="customStyle">
-                    <template slot="header" @change.stop="peopleChoose">
-                      <!-- <a-checkbox>采水设备</a-checkbox> -->
-                      采水设备
-                    </template>
-                    <a-row style="width:100%">
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">容器</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">手套</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">试纸</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                    </a-row>
+                  <a-collapse-panel :style="customStyle" v-for=" item in equipmentList" :key="item.id">
+                    <template slot="header"> {{item.name}}</template>
+                    <a-collapse size="small" style="margin-top:10px;" :bordered="false">
+                      <a-collapse-panel :style="customStyle" v-for=" option in item.children" :key="option.id">
+                        <template slot="header"> {{option.name}}</template>
+                        <a-checkbox-group  style="display:flex;flex-wrap:wrap;" v-model="deviceTypeId">
+                          <a-row style="width:100%" v-for="index in option.children" :key="index.id">
+                            <a-col :span="12" offset="4" style="height:30px;">
+                              <a-checkbox :value="index.id" @change="peopleChoose">{{index.name}}</a-checkbox>
+                            </a-col>
+                            <a-col :span="8" style="height:30px;text-align:right;">
+                              <a-input-number
+                                size="small"
+                                :min="1"
+                                :max="100000"
+                                :defaultValue="1"
+                                @change="peopleNum"
+                                v-model="index.num"
+                                style="width: 70px;"
+                              />
+                            </a-col>
+                          </a-row>
+                        </a-checkbox-group>
+                      </a-collapse-panel>
+                    </a-collapse>
                   </a-collapse-panel>
                 </a-collapse>
                 <a-form-item
@@ -449,7 +380,6 @@
                 >
                   <el-checkbox-group v-model="spotList.roleId">
                     <div v-for="(city, index)  in personnelList" :key="index" style>
-                      <!-- <a-checkbox @change="peopleChoose">主飞手</a-checkbox> -->
                       <el-checkbox :label="city.id" style="width: 100px;">{{city.name}}</el-checkbox>
                       <a-input-number
                         size="small"
@@ -457,7 +387,7 @@
                         :max="100000"
                         :defaultValue="1"
                         v-model="city.num"
-                        style="width: 70px;margin-left:5px"
+                        style="width: 50px;margin-left:5px"
                       />
                     </div>
                   </el-checkbox-group>
@@ -468,99 +398,31 @@
                   :wrapper-col="formItemLayout.wrapperCol"
                 ></a-form-item>
                 <a-collapse size="small" style="margin-top:10px;" :bordered="false">
-                  <a-collapse-panel :style="customStyle">
-                    <template slot="header">
-                      <!-- <a-checkbox @change.stop="peopleChoose">无人机设备</a-checkbox> -->
-                      无人机设备
-                    </template>
-                    <a-row style="width:100%">
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">无人机主机</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">无人机机翼</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">无人机电池</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                    </a-row>
-                  </a-collapse-panel>
-                  <a-collapse-panel :style="customStyle">
-                    <template slot="header">
-                      <!-- <a-checkbox @change="peopleChoose">采水设备</a-checkbox> -->
-                      采水设备
-                    </template>
-                    <a-row style="width:100%">
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">容器</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">手套</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                      <a-col :span="12" offset="4" style="height:30px;">
-                        <a-checkbox @change="peopleChoose">试纸</a-checkbox>
-                      </a-col>
-                      <a-col :span="8" style="height:30px;text-align:right;">
-                        <a-input-number
-                          size="small"
-                          :min="1"
-                          :max="100000"
-                          :defaultValue="1"
-                          @change="peopleNum"
-                          style="width: 70px;"
-                        />
-                      </a-col>
-                    </a-row>
+                  <a-collapse-panel :style="customStyle" v-for=" item in equipmentList" :key="item.id">
+                    <template slot="header"> {{item.name}}</template>
+                    <a-collapse size="small" style="margin-top:10px;" :bordered="false">
+                      <a-collapse-panel :style="customStyle" v-for=" option in item.children" :key="option.id">
+                        <template slot="header"> {{option.name}}</template>
+                        <a-checkbox-group  style="display:flex;flex-wrap:wrap;" v-model="deviceTypeId">
+                          <a-row style="width:100%" v-for="index in option.children" :key="index.id">
+                            <a-col :span="12" offset="4" style="height:30px;">
+                              <a-checkbox :value="index.id" @change="peopleChoose">{{index.name}}</a-checkbox>
+                            </a-col>
+                            <a-col :span="8" style="height:30px;text-align:right;">
+                              <a-input-number
+                                size="small"
+                                :min="1"
+                                :max="100000"
+                                :defaultValue="1"
+                                @change="peopleNum"
+                                v-model="index.num"
+                                style="width: 70px;"
+                              />
+                            </a-col>
+                          </a-row>
+                        </a-checkbox-group>
+                      </a-collapse-panel>
+                    </a-collapse>
                   </a-collapse-panel>
                 </a-collapse>
               </a-form>
@@ -630,7 +492,8 @@ import {
   getRiverList,
   taskSpotPage,
   taskPointDel,
-  taskRemove
+  taskRemove,
+  structDeviceList
 } from '@/api/login'
 const formItemLayout = {
   labelCol: { span: 8 },
@@ -655,6 +518,7 @@ export default {
       alertShow: false,
       fileList: [], //上传列表
       personnelList: [], //人员列表
+      equipmentList:[],//设备列表
       //线任务数据
       lineList: {
         id: '',
@@ -673,10 +537,13 @@ export default {
         roleId: '',
         roleNum: '',
         deviceId: '',
+        deviceTypeNum:'',
+        deviceTypeId:'',
         deviceNum: '',
         riverId: ''
       },
       roleId: [], //分配人员角色
+      deviceTypeId: [], //任务分配设备
       deviceId: [], //分配设备
       riverId: [], //关联河道
       spotList: {
@@ -692,6 +559,7 @@ export default {
         duty: '',
         template: '',
         roleId: [],
+        deviceTypeNum:'',
         roleNum: ''
       },
       headers: {
@@ -816,6 +684,7 @@ export default {
     this.getLineList()
     this.getRoleList()
     this.riverListGet()
+    this.getStructDeviceList()
     this.headers.Authorization = Vue.ls.get(ACCESS_TOKEN)
   },
   watch: {
@@ -860,6 +729,12 @@ export default {
           this.personnelList = arr
         })
         .catch(err => {})
+    },
+    getStructDeviceList(){
+      structDeviceList().then(res=>{
+        var arr = res.data
+        this.equipmentList = arr
+      })
     },
     //任务点列表
     gettTaskPointList(key) {
@@ -1120,8 +995,7 @@ export default {
     },
     // 编辑
     choosePointEdit(id) {
-      getTaskDetail(id)
-        .then(res => {
+      getTaskDetail(id).then(res => {
           var arr = res.data
           this.spotList.title = arr.info.title
           this.spotList.id = arr.info.id
@@ -1133,21 +1007,35 @@ export default {
           this.spotList.template = arr.info.template.code
           this.attachmentJpg = arr.info.kmz
           var sz = []
+          var zs= []
+          
           for (let i = 0; i < arr.staff.length; i++) {
             sz.push(arr.staff[i].role.id)
-            console.log('1')
             for (let a = 0; a < this.personnelList.length; a++) {
               if (arr.staff[i].role.id == this.personnelList[a].id) {
                 this.personnelList[a].num = arr.staff[i].amount
-                console.log('2')
                 break
               }
             }
           }
           this.spotList.roleId = sz
+          for(const item of arr.device){
+            zs.push(item.deviceType.id)
+            for(const d of this.equipmentList){
+              for (const cc of d.children) {
+                for (const aa of cc.children) {
+                  if (item.deviceType.id == aa.id) {
+                    aa.num = item.amount
+                    break
+                  }
+                }
+              }
+            }
+          }
+          this.deviceTypeId=zs
+          
           console.log(arr)
-        })
-        .catch(err => {})
+        }).catch(err => {})
       this.addTask()
     },
     // 选择任务点
@@ -1221,8 +1109,8 @@ export default {
     },
 
     // 线路人员选择
-    peopleChoose(e) {
-      console.log(`checked = ${e.target.checked}`)
+    peopleChoose(checkedValues) {
+     
     },
     // 线路人员配置人数
     peopleNum(value) {
@@ -1284,6 +1172,7 @@ export default {
         this.lineList.deviceId = ''
         this.lineList.deviceNum = ''
         this.lineList.riverId = ''
+        this.lineList.roleNum = ''
         this.roleId = []
         this.deviceId = []
         this.riverId = []
@@ -1299,8 +1188,10 @@ export default {
         this.spotList.template = ''
         this.spotList.roleId = []
         this.spotList.roleNum = ''
+        this.spotList.deviceTypeNum = ''
         this.attachmentJpg = ''
       }
+      this.deviceTypeId = []
     },
     taskSave() {
       if (this.actionTab == 1) {
@@ -1315,8 +1206,24 @@ export default {
             }
           }
         }
+        for (const item of this.deviceTypeId) {
+          for (const ar of this.equipmentList) {
+            for (const arrr of ar.children) {
+              for (const arr of arrr.children) {
+                if (item == arr.id) {
+                  if (this.lineList.deviceTypeNum != '') {
+                    this.lineList.deviceTypeNum =  this.lineList.deviceTypeNum +','+arr.num
+                  } else {
+                    this.lineList.deviceTypeNum = arr.num
+                  }
+                }
+              }
+            } 
+          }
+        }
         this.lineList.roleId = this.roleId.join(',')
         this.lineList.riverId = this.riverId.join(',')
+        this.lineList.deviceTypeId = this.deviceTypeId.join(',')
         var data = this.lineList
         if (this.fileList.length == 0) {
           getTaskSave(data)
@@ -1344,6 +1251,23 @@ export default {
             }
           }
         }
+        for (const item of this.deviceTypeId) {
+          for (const ar of this.equipmentList) {
+            for (const arrr of ar.children) {
+              for (const arr of arrr.children) {
+                if (item == arr.id) {
+                  if (data.deviceTypeNum != '') {
+                    data.deviceTypeNum =  data.deviceTypeNum +','+arr.num
+                  } else {
+                    data.deviceTypeNum = arr.num
+                  }
+                }
+              
+              } 
+            }
+          }
+        }
+        data.deviceTypeId = this.deviceTypeId.join(',')
         data.roleId = data.roleId.join(',')
         if (this.fileList.length == 0) {
           getTaskSave(data)
@@ -1433,14 +1357,14 @@ export default {
 
 .left {
   position: relative;
-  width: calc(100% - 300px);
+  width: calc(100% - 400px);
   height: 100%;
   display: inline-block;
   vertical-align: top;
 }
 .right {
   position: relative;
-  width: 300px;
+  width: 400px;
   height: 100%;
   display: inline-block;
   vertical-align: top;

@@ -116,25 +116,26 @@ export default {
                 var arr = res.data
                 
                 for (const item of arr) {
+                    deviceInspectPage(item.id).then(res=>{
+                        var arr= res.data.data
+                        console.log(arr);
+                        
+                    })
                     item.roles = []
                     staffInspectPage(item.id).then(res=>{
                         var ar= res.data
                         ar.forEach(v => {
                            v. workerId = []
+                           v.name = v.role.name
                         });
                         item.roles = ar
                     })
                     
                 }
                 this.planTab = arr
-                console.log(arr);
             })
-            // this.teamId = id
-            // deviceInspectPage('').then(res=>{
-            //     var arr= res.data.data
-            //     console.log(arr);
-                
-            // })
+            this.teamId = id
+            
             
         },
         onSelect (selectedKeys, info) {

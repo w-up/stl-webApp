@@ -130,7 +130,7 @@ export function paramDel (parameter) {
   })
 }
 //设备管理结构列表
-export function structureEquipment (parameter) {
+export function structureEquipment () {
   return axios({
     url: '/server/data/admin/device/type/tree',
     method: 'get',
@@ -185,14 +185,18 @@ export function relatedList (parameter) {
   return axios({
     url: '/server/data/admin/device/related/'+parameter.id,
     method: 'get',
+    
   })
 }
 
 //设备三层结构
-export function structDeviceList () {
+export function structDeviceList (key) {
   return axios({
     url: '/server/data/admin/device/struct',
     method: 'get',
+    params:{
+      level:key
+    }
   })
 }
 //项目类型列表

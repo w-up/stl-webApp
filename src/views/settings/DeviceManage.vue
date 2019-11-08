@@ -113,28 +113,27 @@
         <el-form-item label="设备聚隆编号">
           <el-input v-model="equipmentList.number" placeholder="请输入" style="width:200px" />
         </el-form-item>
-        <el-form-item label="关联设备"></el-form-item>
+        <h3 style="margin-bottom:25px">关联设备</h3>
         <!-- <el-form-item label="无人机类型"></el-form-item> -->
-        <el-form-item >
-           <el-checkbox-group  style="display:flex;flex-wrap:wrap;" v-model="checkedList">
-              <div
-              v-for="(option, index) in uavList"
-              :key="index"
-              style="width:260px;margin:0 5px 10px 0"
-              >
-                <el-checkbox :label="option.id">{{option.name}}</el-checkbox>
-                <a-input-number :min="1" :max="100000"  v-model="option.num" style="margin-left:5px"/>
-              </div>
-               <!-- <a-row>
-                  <a-col :span="12" v-for="(option, index) in uavList" :key="index">
-                    <div style="display:flex">
-                      <el-checkbox :label="option.id">{{option.name}}</el-checkbox>
-                      <a-input-number :min="1" :max="100000"  v-model="option.num" style="margin-left:5px;width:70px"/>
-                    </div>
+        <div v-for="option in classificationList" :key="option.id" style="padding-left:10px">
+          <p >{{option.name}}</p>
+          <div v-for="item in option.children" :key="item.id" style="padding-left:20px">
+            <p >{{item.name}}</p>
+            <el-checkbox-group  style="display:flex;flex-wrap:wrap;" v-model="checkedList">
+              <div  style="width:260px;margin:0 5px 10px 0" v-for="index in item.children" :key="index.id">
+                <a-row>
+                  <a-col :span="12" offset="4" style="height:30px;">
+                    <el-checkbox :label="index.id">{{index.name}}</el-checkbox>
                   </a-col>
-                </a-row> -->
+                  <a-col :span="8" style="height:30px;text-align:right;">
+                    <a-input-number :min="1" :max="100000"  v-model="index.num" />
+                  </a-col>
+                </a-row>
+              </div>
             </el-checkbox-group>
-        </el-form-item>
+          </div>
+          <a-divider />
+        </div>
       </el-form>
     </a-modal>
   </div>
@@ -229,6 +228,7 @@ export default {
         number: '',
         amount:'',
       },
+      classificationList:[],
       uavList:[],
       checkedList:[],
       ruleValidate: {
@@ -245,13 +245,15 @@ export default {
   mounted(){
     this.getList()
     this.getstructure()
-    structDeviceList().then(res=>{
-      var arr =  res.data
-      console.log(arr);
-      
-    })
+    this.getstructDeviceList()
   },
   methods: {
+    getstructDeviceList(){
+      structDeviceList().then(res=>{
+        var arr =  res.data
+        this.classificationList= arr 
+      })
+    },
     getstructure(){//树
       structureEquipment().then(res => {
         var arr =res.data
@@ -322,16 +324,20 @@ export default {
         model:this.equipmentList.type,
         code:this.equipmentList.number,
         amount:this.equipmentList.amount,
-        relatedDeviceId:this.checkedList,
+        relatedDeviceId:this.checkedList.join(','),
         relatedDeviceNum:'',
       }
-      for (let i = 0; i < this.checkedList.length; i++) {
-        for (let a = 0; a < this.uavList.length; a++) {
-          if (this.checkedList[i]==this.uavList[a].id) {
-            if (data.relatedDeviceNum!='') {
-              data.relatedDeviceNum=data.relatedDeviceNum + this.uavList[a].num +','
-            }else{
-              data.relatedDeviceNum=this.uavList[a].num +','
+      for (const item of this.checkedList) {
+        for (const aa of this.classificationList) {
+          for (const vv of aa.children) {
+            for (const bb of vv.children) {
+              if (item == bb.id) {
+                if (data.relatedDeviceNum!='') {
+                  data.relatedDeviceNum=data.relatedDeviceNum + bb.num +','
+                }else{
+                  data.relatedDeviceNum=bb.num +','
+                }
+              }
             }
           }
         }
@@ -353,6 +359,7 @@ export default {
       this.equipmentList.amount=''
       this.equipmentList.number=''
       this.checkedList=[]
+      this.getstructDeviceList()
     },
     getList1(){
       //设备列表
@@ -393,6 +400,7 @@ export default {
       this.equipmentModel =true
       this.equipmentList.id=row.id
       this.equipmentList.name=row.name
+      this.equipmentList.amount=row.amount
       this.equipmentList.type=row.model
       this.equipmentList.number=row.code
       var data ={
@@ -401,12 +409,16 @@ export default {
       relatedList(data).then(res => {
         var arr = res.data.data
         var sz = []
-        for (let i = 0; i < arr.length; i++) {
-          sz.push(arr[i].device.id)
-          for (let a = 0; a < this.uavList.length; a++) {
-            if (arr[i].device.id==this.uavList[a].id) {
-              this.uavList[a].num=arr[i].num
-              break
+        for (const item of arr) {
+          sz.push(item.device.id)
+          for (const aa of this.classificationList) {
+            for (const vv of aa.children) {
+              for (const bb of vv.children) {
+                if (item.device.id== bb.id) {
+                  bb.num = item.num
+                  break
+                }
+              }
             }
           }
         }

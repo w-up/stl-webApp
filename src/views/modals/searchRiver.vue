@@ -21,13 +21,12 @@
                 :notFoundContent="null"
             >
                 <!-- <a-spin v-if="loading" size="small" /> -->
-                <a-select-option v-for="d in riverData" :key="d.value">{{d.text}}</a-select-option>
+                <a-select-option v-for="d in riverList" :key="d.id">{{d.name}}</a-select-option>
             </a-select>
         </div> 
     </div>
 </template>
 <script>
-
 export default {
     name:'searchRiver',
     data(){
@@ -38,14 +37,16 @@ export default {
                 {text:'松花江',value:'song'},
                 {text:'长江',value:'chang'}
             ],
+            riverList:[],
             value: undefined,
             // loading:true
             // fetching: false
         }
     },
-    methods:{
-        show(){
+    methods:{ 
+        show(riverList){
             this.visible = true;
+            this.riverList = riverList
         },
         close(){
             this.visible = false;
@@ -58,8 +59,10 @@ export default {
             console.log('fetching user', value);
             this.riverData = this.riverData;
         },
-        handleChange(value) {
-            this.value = value;
+        handleChange(id) {
+            console.log(name);
+            
+            this.$parent.$parent.$parent.chooseRiver(id)
             // this.riverData = this.riverData;
         }
     }
