@@ -365,28 +365,6 @@ export default {
       // this.map.clearOverLays() //将之前绘制的清除
       this.polylineHandler.clear() //清除之前绘制的多边形
       this.setPolylineFn(e.currentLnglats, 'blue', 3, 0.8, 0)
-      // this.polygon = new T.Polygon(e.currentLnglats, {
-      //   color: 'blue', //线颜色
-      //   weight: 3, //线宽
-      //   opacity: 0.5, //透明度
-      //   fillColor: '#FFFFFF', //填充颜色
-      //   fillOpacity: 0 // 填充透明度
-      // })
-      // //向地图上添加面
-      // this.map.addOverLay(this.polygon)
-      // this.polygon.addEventListener('click', this.polygonClick)
-      // console.log(e.currentPolyline.Qr.lat)
-      // let lat = (e.currentPolyline.Qr.Lq.lat + e.currentPolyline.Qr.kq.lat) / 2
-      // let lng = (e.currentPolyline.Qr.Lq.lng + e.currentPolyline.Qr.kq.lng) / 2
-      // let latlngobj = { lat: lat, lng: lng }
-      // // 文字标注
-      // let label = new T.Label({
-      //   text: '<b>文字标注!!!<b>',
-      //   position: latlngobj,
-      //   offset: new T.Point(-40, -30)
-      // })
-      // this.map.addOverLay(label)
-      // label.setLngLat(latlngobj)
       this.$refs.addRiver.add(e.currentLnglats)
     },
     // 设置绘制的多边形
@@ -394,14 +372,14 @@ export default {
       this.polygon = new T.Polygon(lineData, {
         color: color, //线颜色
         weight: weight, //线宽
-        opacity: 0.5, //透明度
+        opacity: opacity, //透明度
         fillColor: '#FFFFFF', //填充颜色
         fillOpacity: fillOpacity, // 填充透明度
         title: title,
         id: id
       })
       //向地图上添加面
-      this.map.addOverLay(this.polygon, {})
+      this.map.addOverLay(this.polygon)
       this.polygon.addEventListener('click', this.polygonClick)
       this.polygon.addEventListener('mouseover', this.polygonMouseover)
       this.polygon.addEventListener('mousemove', this.polygonMousemove)
