@@ -903,7 +903,7 @@
 </template>
 
 <script>
-import { planPage,planSave,inspectPointPage,inspectPointSave,inspectPointDel,taskList,taskSpotList,targetPage,targetSave,targetDel,taskInspectPage} from '@/api/login'
+import { planPage,planSave,inspectPointPage,inspectPointSave,inspectPointDel,taskList,taskSpotList,targetPage,targetSave,targetDel,taskInspectPage,getRiverList } from '@/api/login'
 import '../../assets/css/monitor.less'
 import 'ol/ol.css'
 // import Map from "ol/Map"
@@ -1124,8 +1124,8 @@ export default {
         }
       ],
       planList1:{
-        id:'',
-        name:'',
+        id:'5dc0d964ea6c15b288665287',
+        name:'计划 2019-11-5',
       },
       superCard: [
         {
@@ -1239,7 +1239,9 @@ export default {
             }
           ]
         }
-      ]
+      ],
+      riverList:[],
+      asasd:{}
     }
   },
   watch: {
@@ -1281,11 +1283,24 @@ export default {
     this.getPage()
     this.getPicker()
     this.getTask()
+    this.getinspectPointPage()
+    this.getList()
     // console.log("mount" + this.childNode)
     // this.showTNodeBtn()
     // console.log("mounted"+this.childNode)
   },
   methods: {
+    getList() {
+      //河道列表
+      getRiverList().then(res => {
+          let arr = res.data.data
+          arr.forEach(v => {
+            v.lineData = v.region
+            v.clicked = false
+          })
+          this.riverList = arr
+      }).catch(err => {})
+    },
     //获取当前时间
     getPicker(){
       function formatDate(now) { 
@@ -1295,7 +1310,7 @@ export default {
           return year+"-"+month+"-"+date
         }
       this.picker = formatDate(new Date())
-      this.getPlanSave()
+      // this.getPlanSave()
     },
     //任务点列表
     getTask(){
@@ -1344,29 +1359,36 @@ export default {
         var arr =res.data.data
         if (arr.length >0) {
           for (let a = 0; a < arr.length; a++) {
-            arr[a].latlng = {
-              lat: '',
-              lng: ''
+            if (arr[a].object.code != 'river') {
+               arr[a].latlng = {
+                lat: '',
+                lng: ''
+              }
+              arr[a].taskPage = []
+              arr[a].clicked = false
+              arr[a].code = arr[a].object.code
+              arr[a].latlng.lat = arr[a].coordinate[1]
+              arr[a].latlng.lng = arr[a].coordinate[0]
+              var data = {
+                id:this.planList1.id,
+                object:arr[a].object.code,
+                objectId:arr[a].objectId
+              }
+              taskInspectPage(data).then(res=>{
+                var ar = res.data.data
+                ar.forEach(v => {
+                  v.key = v.id
+                  v.title = v.content
+
+                });
+                arr[a].taskPage = ar
+              })
             }
-            arr[a].taskPage = []
-            arr[a].clicked = false
-            arr[a].latlng.lat = arr[a].coordinate[1]
-            arr[a].latlng.lng = arr[a].coordinate[0]
-            var data = {
-              id:this.planList1.id,
-              object:arr[a].object.code,
-              objectId:arr[a].objectId
-            }
-            taskInspectPage(data).then(res=>{
-              var ar = res.data.data
-              ar.forEach(v => {
-                v.key = v.id
-                v.title = v.content
-              });
-              arr[a].taskPage = ar
-            })
           }
+          console.log(arr);
+          
           this.taskPage =arr
+          
           this.allPointTask(arr)
         }
       })
@@ -1441,6 +1463,108 @@ export default {
         
         this.drawAllPoint(item.latlng)
       }
+    },
+    // 绘制所有河流
+    drawAllRiver(arr) {
+      // this.map.clearOverLays() //将之前绘制的清除
+      for (const item of this.riverList) {
+        if (item.clicked == true) {
+          this.setPolylineFn(item.lineData, 'red', 3, 1, 0, item.name, item.id)
+        } else {
+          this.setPolylineFn(item.lineData, 'blue', 3, 1, 0, item.name, item.id)
+        }
+      }
+    },
+    // 设置绘制的多边形
+    setPolylineFn(lineData, color, weight, opacity, fillOpacity, title, id) {
+      this.polygon = new T.Polygon(lineData, {
+        color: color, //线颜色
+        weight: weight, //线宽
+        opacity: 0.5, //透明度
+        fillColor: '#FFFFFF', //填充颜色
+        fillOpacity: fillOpacity, // 填充透明度
+        title: title,
+        id: id
+      })
+      //向地图上添加面
+      this.map.addOverLay(this.polygon, {})
+      this.polygon.addEventListener('click', this.polygonClick)
+    },
+    // 选中河流
+    chooseRiver(id) {
+      for (const item of this.riverList) {
+        if (item.id == id) {
+          item.clicked = true
+          this.map.setViewport(item.lineData)
+          // this.map.zoomOut()
+          // this.map.addEventListener('zoomend', this.zoomChange)
+        } else {
+          item.clicked = false
+        }
+        this.drawAllRiver()
+      }
+    },
+    //多边形点击事件
+    polygonClick(index){
+      let arr = [],
+        findIndex1 = '',
+        findIndex2 = '',
+        findIndex3 = '',
+        findIndex4 = '',
+        id = ''
+      arr.push(index.target.Qr.Lq.lat)
+      arr.push(index.target.Qr.kq.lat)
+      arr.push(index.target.Qr.Lq.lng)
+      arr.push(index.target.Qr.kq.lng)
+      // console.log(arr);
+
+      findIndex1 = this.findIndexLocal(arr[0], 'lat', this.riverList)
+      findIndex2 = this.findIndexLocal(arr[1], 'lat', this.riverList)
+      findIndex3 = this.findIndexLocal(arr[2], 'lng', this.riverList)
+      findIndex4 = this.findIndexLocal(arr[3], 'lng', this.riverList)
+      // console.log(findIndex1, findIndex2,findIndex3,findIndex4)
+      if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
+        id = this.riverList[findIndex1].id
+        for (const item of this.riverList) {
+          if (item.id == id) {
+            item.clicked = true
+            console.log(item);
+            this.asasd = item
+            this.infoVisible = true
+          } else {
+            item.clicked = false
+          }
+        }
+      }
+    },
+    // 查找函数 value:要查的坐标, latlng:查的是lng经度还是lat纬度, lineDataArr:被查询的数组
+    findIndexLocal(value, latlng, lineDataArr) {
+      let result = '', // 查询结果
+        resultArr = [], // 查询结果数组
+        res = '' // 返回列表的第几个
+      if (latlng == 'lat') {
+        // 纬度
+        for (let i = 0; i < lineDataArr.length; i++) {
+          result = lineDataArr[i].lineData.findIndex(item => {
+            return value == item.lat
+          })
+          resultArr.push(result)
+        }
+      } else {
+        // 经度
+        for (let i = 0; i < lineDataArr.length; i++) {
+          result = lineDataArr[i].lineData.findIndex(item => {
+            return value == item.lng
+          })
+          resultArr.push(result)
+        }
+      }
+      for (const item of resultArr) {
+        res = resultArr.findIndex(item => {
+          return item != -1
+        })
+      }
+      return res
     },
     cancel(){
     },
@@ -1661,7 +1785,21 @@ export default {
       this.noTitleKey = 'nowPlan'
     },
     showOk(){
-      this.infoVisible = true;
+      
+      var ar = {
+        id:'',
+        planId:this.planList1.id,
+        object:'river',
+        objectId:this.asasd.id,
+        objectName:this.asasd.name,
+      }
+      targetSave(ar).then(res=>{
+        this.$message.success('成功')
+        console.log(res.data);
+        this.infoVisible = false
+        this.clearMap()
+        this.handleCancel()
+      })
     }, 
     showCancel(){
       this.infoVisible = false;
@@ -1796,6 +1934,8 @@ export default {
     },
     // 添加标注图片
     drawAllPoint(latlng, tool) {
+      console.log(latlng);
+      
       tool = new T.Marker(latlng)
       this.map.addOverLay(tool)
       tool.addEventListener('click', this.taskPointClick)
@@ -1876,13 +2016,12 @@ export default {
     onChangeSwitch() {},
     //添加河道按钮事件
     addRiverBtn() {
-      this.$refs.selectPatrol.show()
-      this.$refs.addSurvey.close()
       this.clearMap()
-      console.log(this.riverData)
-      //描绘河道
-      this.searchMap()
-      // this.showOk()
+      this.drawAllRiver()
+      this.$refs.selectPatrol.show(this.riverList)
+      this.$refs.addSurvey.close()
+      // //描绘河道
+      // this.searchMap()
       // this.addTaskPoint();
     },
     //添加任务点
@@ -2099,7 +2238,7 @@ export default {
       var point = e.lnglat
       marker1 = new T.Marker(point)
       var markerInfoWin = new T.InfoWindow(content)
-      marker1.openInfoWindow(markerInfoWin,point)
+      marker1.openInfoWindow(markerInfoWin,point) 
     },
     //高亮河道
     searchMap(){
@@ -2162,10 +2301,6 @@ export default {
       this.setPolygonLine(val, 'red', 3, 0)
       // val.addEventListener('click', this.polygonClick) 
     },
-    //多边形点击事件
-    polygonClick(index){
-      
-    },
     //描绘线  
     addPolyLine(lineData){
       var lines = new T.PolyLine(lineData)
@@ -2210,6 +2345,7 @@ export default {
 <style lang="less" scoped>
 .splitter-pane splitter-paneL vertical {
   width: 72%;
+  
 }
 .splitter-pane-resizer vertical {
   left: 72%;
