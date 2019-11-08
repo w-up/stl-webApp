@@ -351,7 +351,7 @@
                           <p style="margin:0;">360全景图</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+                          <a-switch size="small" v-model="panorama" />
                         </a-col>
                       </a-row>
                     </a-list-item>
@@ -641,6 +641,8 @@
     <photo-edit ref="photoEdit"></photo-edit>
     <!-- 排口 -->
     <add-outlet ref="addOutlet"></add-outlet>
+    <!-- 360全景图 -->
+    <look-panorama ref="panorama"></look-panorama>
   </div>
 </template>
 
@@ -650,6 +652,7 @@ import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
 import PhotoEdit from './modules/PhotoEdit'
 import AddOutlet from './modules/AddOutlet'
+import LookPanorama from './modules/LookPanorama'
 
 import 'ol/ol.css'
 import Map from 'ol/Map'
@@ -689,6 +692,7 @@ export default {
     'add-risk-source': AddRiskSource,
     'photo-edit': PhotoEdit,
     'add-outlet': AddOutlet,
+    'look-panorama': LookPanorama,
     'chrome-picker': Chrome
   },
   data() {
@@ -826,6 +830,12 @@ export default {
       phonePhotoTool: '', // 手机照片工具
       UAVPhoto: false, // 无人机照片
       UAVPhotoTool: '', // 无人机照片工具
+      panorama: false, // 360照片
+      panoramaPoints: [
+        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.21493, lng: 121.49566 } },
+        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
+        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
+      ],
       historyPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.21493, lng: 121.49566 } },
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
@@ -1034,6 +1044,10 @@ export default {
     },
     // 无人机照片
     UAVPhoto() {
+      this.watchAllSwitch()
+    },
+    // 360全景图
+    panorama() {
       this.watchAllSwitch()
     },
     // 风险地图
@@ -1478,6 +1492,22 @@ export default {
         this.allPointTask(this.UAVPhotoPoints)
       }
     },
+    // 360全景图
+    onPanorama() {
+      if (this.panorama) {
+        let markerTool
+        for (const item of this.panoramaPoints) {
+          markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
+          this.map.addOverLay(markerTool)
+          markerTool.addEventListener('click', this.panoramaPointClick)
+        }
+      }
+    },
+    // 360点点击事件
+    panoramaPointClick(e) {
+      console.log(e)
+      this.$refs.panorama.add()
+    },
     // 风险地图
     onRiskMap() {
       if (this.riskMap) {
@@ -1727,6 +1757,8 @@ export default {
       this.onPhonePhoto()
       // 无人机照片
       this.onUAVPhoto()
+      // 360全景图
+      this.onPanorama()
       // 风险地图
       this.onRiskMap()
       // 水质
@@ -1757,7 +1789,7 @@ export default {
         this.drawAllPoint(item.latlng, item.name, item.id)
       }
     },
-    // 添加标注图片
+    // 添加标注
     drawAllPoint(latlng, index, id) {
       let markerTool = new T.Marker(latlng, { title: index, id: id })
       this.map.addOverLay(markerTool)
@@ -2247,12 +2279,12 @@ export default {
 .compass_pointer {
   position: fixed;
   right: 10px;
-  bottom: 325px;
-  width: 60px;
-  height: 60px;
+  bottom: 332px;
+  width: 56px;
+  height: 56px;
   z-index: 888;
   border-radius: 50%;
-  padding: 15px;
+  padding: 13px;
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
   background: white url('../../assets/img/leftRightArrows.png') no-repeat center center / 80%;
   text-align: center;
@@ -2266,7 +2298,7 @@ export default {
   position: fixed;
   right: 20px;
   bottom: 10px;
-  width: 40px;
+  width: 36px;
   z-index: 888;
   margin: 0;
   padding: 0;
@@ -2276,10 +2308,10 @@ export default {
     background: white;
     border-radius: 50%;
     box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
-    margin-top: 5px;
+    margin-top: 10px;
     img {
       width: 100%;
-      height: 40px;
+      height: 36px;
       padding: 10px;
     }
   }
