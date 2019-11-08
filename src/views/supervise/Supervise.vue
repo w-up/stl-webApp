@@ -63,6 +63,9 @@
           </a-popover>
         </div>
       </div>
+      <div class="compass_pointer" @click="compass" title="指北针">
+        <img class="pointer" src="../../assets/img/compassPointer.png" alt="指北针" />
+      </div>
     </div>
     <div
       class="accordion_alert"
@@ -202,14 +205,11 @@
     </div>
 
     <ul class="menu">
-      <li @click="compass">
-        <img src="./img/compass.png" alt="指北针" title="指北针" />
-      </li>
       <li @click="setCenter">
-        <img src="./img/restoration.png" alt="复位" title="复位" />
+        <img src="../../assets/img/restoration.png" alt="复位" title="复位" />
       </li>
       <li @click="toolsShowFun">
-        <img src="./img/draw.png" alt="工具" title="工具" />
+        <img src="../../assets/img/draw.png" alt="工具" title="工具" />
       </li>
       <li>
         <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
@@ -234,17 +234,23 @@
           <template slot="title">
             <span>图像</span>
           </template>
-          <img src="./img/map.png" alt="图像" title="图像" />
+          <img src="../../assets/img/map.png" alt="图像" title="图像" />
         </a-popover>
       </li>
       <li>
-        <img src="./img/screenshot.png" id="export-png" @click="printImage" alt="截图" title="截图" />
+        <img
+          src="../../assets/img/screenshot.png"
+          id="export-png"
+          @click="printImage"
+          alt="截图"
+          title="截图"
+        />
       </li>
       <li @click="mapZoomIn">
-        <img src="./img/max.png" alt="放大" title="放大" />
+        <img src="../../assets/img/max.png" alt="放大" title="放大" />
       </li>
       <li @click="mapZoomOut">
-        <img src="./img/min.png" alt="缩小" title="缩小" />
+        <img src="../../assets/img/min.png" alt="缩小" title="缩小" />
       </li>
       <li>
         <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
@@ -529,7 +535,7 @@
           <template slot="title">
             <span>更多</span>
           </template>
-          <img src="./img/more.png" alt="更多" title="更多" />
+          <img src="../../assets/img/more.png" alt="更多" title="更多" />
         </a-popover>
       </li>
     </ul>
@@ -1153,10 +1159,6 @@ export default {
     // 工具
     toolsShowFun() {
       this.toolsCard = !this.toolsCard
-      // this.markerTool.close()
-      // this.lineTool.close()
-      // this.polygonTool.close()
-      // this.lineToolNum.close()
     },
     // 工具
     toolIndexFun(index) {
@@ -2242,9 +2244,27 @@ export default {
   top: 2px;
 }
 
-.menu {
+.compass_pointer {
   position: fixed;
   right: 10px;
+  bottom: 325px;
+  width: 60px;
+  height: 60px;
+  z-index: 888;
+  border-radius: 50%;
+  padding: 15px;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
+  background: white url('../../assets/img/leftRightArrows.png') no-repeat center center / 80%;
+  text-align: center;
+  .pointer {
+    width: 30px;
+    height: 30px;
+    transform: rotate(0deg);
+  }
+}
+.menu {
+  position: fixed;
+  right: 20px;
   bottom: 10px;
   width: 40px;
   z-index: 888;
