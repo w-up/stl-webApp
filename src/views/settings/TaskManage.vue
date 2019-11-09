@@ -537,7 +537,7 @@ export default {
         roleId: '',
         roleNum: '',
         deviceId: '',
-        deviceTypeNum:'',
+        deviceNum:'',
         deviceTypeId:'',
         deviceNum: '',
         riverId: ''
@@ -559,7 +559,7 @@ export default {
         duty: '',
         template: '',
         roleId: [],
-        deviceTypeNum:'',
+        deviceNum:'',
         roleNum: ''
       },
       headers: {
@@ -1020,11 +1020,11 @@ export default {
           }
           this.spotList.roleId = sz
           for(const item of arr.device){
-            zs.push(item.deviceType.id)
+            zs.push(item.device.id)
             for(const d of this.equipmentList){
               for (const cc of d.children) {
                 for (const aa of cc.children) {
-                  if (item.deviceType.id == aa.id) {
+                  if (item.device.id == aa.id) {
                     aa.num = item.amount
                     break
                   }
@@ -1211,10 +1211,10 @@ export default {
             for (const arrr of ar.children) {
               for (const arr of arrr.children) {
                 if (item == arr.id) {
-                  if (this.lineList.deviceTypeNum != '') {
-                    this.lineList.deviceTypeNum =  this.lineList.deviceTypeNum +','+arr.num
+                  if (this.lineList.deviceNum != '') {
+                    this.lineList.deviceNum =  this.lineList.deviceNum +','+arr.num
                   } else {
-                    this.lineList.deviceTypeNum = arr.num
+                    this.lineList.deviceNum = arr.num
                   }
                 }
               }
@@ -1223,7 +1223,7 @@ export default {
         }
         this.lineList.roleId = this.roleId.join(',')
         this.lineList.riverId = this.riverId.join(',')
-        this.lineList.deviceTypeId = this.deviceTypeId.join(',')
+        this.lineList.deviceId = this.deviceTypeId.join(',')
         var data = this.lineList
         if (this.fileList.length == 0) {
           getTaskSave(data)
@@ -1256,10 +1256,10 @@ export default {
             for (const arrr of ar.children) {
               for (const arr of arrr.children) {
                 if (item == arr.id) {
-                  if (data.deviceTypeNum != '') {
-                    data.deviceTypeNum =  data.deviceTypeNum +','+arr.num
+                  if (data.deviceNum != '') {
+                    data.deviceNum =  data.deviceNum +','+arr.num
                   } else {
-                    data.deviceTypeNum = arr.num
+                    data.deviceNum = arr.num
                   }
                 }
               
@@ -1267,7 +1267,7 @@ export default {
             }
           }
         }
-        data.deviceTypeId = this.deviceTypeId.join(',')
+        data.deviceId = this.deviceTypeId.join(',')
         data.roleId = data.roleId.join(',')
         if (this.fileList.length == 0) {
           getTaskSave(data)

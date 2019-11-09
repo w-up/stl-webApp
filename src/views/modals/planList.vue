@@ -16,7 +16,7 @@
         </div>
 
         <!-- 弹框 -->
-        <a-modal title="计划A" :width="600" :visible="visible" @ok="submitPlan" @cancel="cancleBtn" class="modal_plan">
+        <a-modal title="计划A" :width="1200" :visible="visible" @ok="submitPlan" @cancel="cancleBtn" class="modal_plan">
             <span class="editIcon" @click="editModalTitle" v-if="editShow"><a-icon type="edit" /></span>
             <span style="position:absolute;top:12px;left:60px;" v-if="!editShow"><a-input placeholder="计划A" style="width:150px;margin-left:20px;"/></span>
             <div class="modal-body">
@@ -25,33 +25,22 @@
                         <div class="card-info">
                             <a-form :form="planForm" @submit="submitPlan">
                                 <div><span style="font-size:16px;font-weight:500;color: #1F1F1F;">人员:</span>
-                                    <a-form-item :label="item.name" :label-col="labelCol" :wrapper-col="wrapperCol" v-for="item in option.roles"  :key="item.id">
-                                        <!-- <el-checkbox-group >
-                                            <el-checkbox v-for="chec in item.users"  :key="chec.id" :label="chec.id">{{chec.name}}</el-checkbox>
-                                        </el-checkbox-group> -->
-                                        <a-checkbox-group v-model="item.workerId" @change="sadsadasdsa(item.workerId,item.id)">
+                                    <a-form-item :label="item.name+' ('+item.amount+'人)'" :label-col="labelCol" :wrapper-col="wrapperCol" v-for="item in option.roles"  :key="item.id">
+                                        <a-checkbox-group v-model="item.workerId" >
                                             <a-checkbox v-for="chec in item.users"  :key="chec.id" :value="chec.id">{{chec.name}}</a-checkbox>
                                         </a-checkbox-group>
                                     </a-form-item>
                                 </div>
-                                <!-- <div style="margin-top:13px;"><span style="font-size:16px;font-weight:500;color: #1F1F1F;">设备：</span>
-                                    <a-input placeholder="请输入配件名称搜索" style="width:200px;margin-right:20px;margin-bottom:15px;"></a-input> 
-                                    <a-button>添加</a-button>
-                                    <a-form-item label="无人机类" :label-col="labelCol" :wrapper-col="wrapperCol">
-                                        <span style="margin-right:30px;margin-left:10px;">
-                                            <a-checkbox @change="personChange">无人机</a-checkbox>
-                                            <a-input-number class="changeNumber" :min="1" :max="20" v-model="number" @change="numberChange"/>
-                                        </span>
-                                        <span style="margin-right:30px;">
-                                            <a-checkbox @change="personChange">无人机</a-checkbox>
-                                            <a-input-number class="changeNumber" :min="1" :max="10" v-model="number" @change="numberChange"/>
-                                        </span>
-                                        <span>
-                                            <a-checkbox @change="personChange">无人机</a-checkbox>
-                                            <a-input-number class="changeNumber" :min="1" :max="10" v-model="number" @change="numberChange"/>
-                                        </span>
+                                <div><span style="font-size:16px;font-weight:500;color: #1F1F1F;">设备:</span>
+                                    <a-form-item :label="item.name" :label-col="labelCol" :wrapper-col="wrapperCol" v-for="item in option.devices"  :key="item.id">
+                                        <a-checkbox-group v-model="item.workerId" @change="sadsadasdsa()" style="width:100%;display:flex">
+                                            <div  style="width:200px;margin:0 15px 10px 0;display:flex;justify-content:space-between"  v-for="devi in item.devices"  :key="devi.device.id">
+                                                <a-checkbox disabled :value="devi.device.id" >{{devi.device.name}}</a-checkbox>
+                                                <a-input-number class="changeNumber" :min="devi.amount1"  v-model="devi.amount" />
+                                            </div>
+                                        </a-checkbox-group>
                                     </a-form-item>
-                                </div> -->
+                                </div>
                             </a-form>
                         </div> 
                     </a-tab-pane>
@@ -62,7 +51,7 @@
 </template>
 <script>
 import '../../assets/css/planList.less'
-import { staffInspectPage,targetPage,groupingPage,deviceInspectPage} from '@/api/login'
+import { staffInspectPage,targetPage,groupingPage,deviceInspectPage,memberRiverSave,equipmentRiverSave,planPublish} from '@/api/login'
 const treeData = [{
   title: '无人机正射影像',
   key: '0-0',
@@ -91,12 +80,12 @@ export default {
             personList,
             personOne:[],
             labelCol:{
-                xs:{span:24},
-                sm:{span:4},
+                xs:{span:15},
+                sm:{span:3},
             },
             wrapperCol:{
-                xs:{span:24},
-                sm:{span:20},
+                xs:{span:15},
+                sm:{span:18},
             },
             number:20,
             editShow:true
@@ -112,16 +101,25 @@ export default {
     },
     methods:{
         getstaffInspectPage(id){
+            this.id = id
             groupingPage(id).then(res=>{
                 var arr = res.data
-                
                 for (const item of arr) {
-                    deviceInspectPage(item.id).then(res=>{
-                        var arr= res.data.data
-                        console.log(arr);
-                        
-                    })
                     item.roles = []
+                    item.devices=[]
+                    deviceInspectPage(item.id).then(res=>{
+                        var arrr= res.data
+                        arrr.forEach(v => {
+                           v. workerId = []
+                           v.name = v.deviceType.name
+                           v.id = v.deviceType.id
+                           for (const item of v.devices) {
+                                item.amount1 = item.amount
+                                v. workerId.push(item.device.id)
+                           }
+                        });
+                        item.devices=arrr  
+                    })
                     staffInspectPage(item.id).then(res=>{
                         var ar= res.data
                         ar.forEach(v => {
@@ -130,13 +128,12 @@ export default {
                         });
                         item.roles = ar
                     })
-                    
                 }
+                console.log(arr);
+                
                 this.planTab = arr
             })
             this.teamId = id
-            
-            
         },
         onSelect (selectedKeys, info) {
             console.log('onSelect', info)
@@ -156,8 +153,49 @@ export default {
         },
         //表单提交
         submitPlan(e){
-            // e.preventDefault();
-            console.log(e);
+            console.log(this)
+            this.$emit('getPage')
+            // var worker =''
+            // var amount = ''
+            // for(const item of this.planTab){
+            //     worker =''
+            //     amount = ''
+            //     for(const role of item.roles){
+            //         var data ={
+            //             id:'',
+            //             teamId:item.id,
+            //             roleId:role.role.id,
+            //             workerId:role.workerId.join(',')
+            //         }
+            //         memberRiverSave(data).then(res=>{
+
+            //         })
+
+            //     }
+            //     for(const devices of item.devices){
+            //         for(const am of devices.workerId){
+            //             // worker.push(am.workerId)
+            //             worker = worker +am+','
+            //         }
+            //         for( const devi of devices.devices){
+            //             amount = amount +devi.amount+','
+            //             // amount.push(devi.amount)
+            //         }
+            //     }
+            //     var arr ={
+            //         id:'',
+            //         teamId:item.id,
+            //         deviceId:worker,
+            //         amount:amount
+            //     }
+            //     equipmentRiverSave(arr).then(res=>{
+
+            //     })
+            // }
+            // planPublish(this.id).then(res=>{
+            //     this.$message.success('成功');
+                
+            // })
             this.visible = false;
         },
         //人员修改
