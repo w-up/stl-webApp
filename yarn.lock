@@ -11204,6 +11204,11 @@ vue-jest@^3.0.4:
     tsconfig "^7.0.0"
     vue-template-es2015-compiler "^1.6.0"
 
+vue-krpano@^1.5.3:
+  version "1.5.3"
+  resolved "https://registry.npm.taobao.org/vue-krpano/download/vue-krpano-1.5.3.tgz#2a4396bf89ddd8750eed60f025e93bd8b59a15c5"
+  integrity sha1-KkOWv4nd2HUO7WDwJek72LWaFcU=
+
 vue-loader@^15.7.0:
   version "15.7.1"
   resolved "https://registry.npm.taobao.org/vue-loader/download/vue-loader-15.7.1.tgz?cache=0&sync_timestamp=1563435501637&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fvue-loader%2Fdownload%2Fvue-loader-15.7.1.tgz#6ccacd4122aa80f69baaac08ff295a62e3aefcfd"
