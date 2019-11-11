@@ -61,7 +61,10 @@ export default {
            checked:false,
            clickPoint:false,
            clickLine:false,
-           clickPolygon:false
+           clickPolygon:false,
+           lineLnglats:[],
+           markLnglat:{},
+           polygonDate:[]
         }
     },
     methods:{
@@ -74,8 +77,24 @@ export default {
             this.clickLine = false
             this.clickPolygon = false
         },
+        //获取绘制线坐标
+        getLineDate(currentLnglats){
+            this.lineLnglats = currentLnglats
+            console.log(this.lineLnglats)
+        },
+        //获取绘制点坐标
+        getMarkDate(currentLnglat){
+            this.markLnglat = currentLnglat
+            console.log(this.markLnglat)
+        },
+        //获取绘制面坐标
+        getPolygonDate(currentLnglats){
+            this.polygonDate = currentLnglats
+            console.log(this.polygonDate)
+        },
         addPlanInfo(){
             // this.isShow = false;
+            console.log(this);
         },
         submitPlan(){
             
