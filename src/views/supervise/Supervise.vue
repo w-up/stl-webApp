@@ -673,7 +673,8 @@ import { Chrome } from 'vue-color'
 
 // import { debounce } from '../../utils/utilsTool'
 
-function debounce(func, wait = 1000) {
+// 防抖函数
+function debounce(func, wait = 500) {
   //可以放入项目中的公共方法中进行调用
   let timeout
   return function(event) {
@@ -1506,7 +1507,10 @@ export default {
     // 360点点击事件
     panoramaPointClick(e) {
       console.log(e)
-      this.$refs.panorama.add()
+      // this.$refs.panorama.add()
+      this.$router.push({
+        path: "/supervise/Vtour"
+      })
     },
     // 风险地图
     onRiskMap() {
