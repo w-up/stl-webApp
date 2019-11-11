@@ -15,6 +15,8 @@
   >
     <a-spin :spinning="confirmLoading">
       <a-card class="content">
+        <!-- <krpano :xml="xml" :scene="scene" :lazy-load="true" :hooks="hooks"></krpano> -->
+        <!-- <krpano :xml="xml" style="width:500px;height:400px"></!--> -->
         <div id="krpanoDIV" style="width:100%;height:100%;">
           <noscript>
             <table style="width:100%;height:100%;">
@@ -47,16 +49,29 @@
 </template>
 
 <script>
-// import '../js/krpano'
-// let krpano = null
-// function krpano_onready_callback(krpano_interface) {
-//   krpano = krpano_interface
-// }
+import '../js/krpano'
+let krpano = null
+function krpano_onready_callback(krpano_interface) {
+  krpano = krpano_interface
+}
+import Krpano from 'vue-krpano'
 export default {
+  components: {
+    krpano: Krpano
+  },
   data() {
+    const vm = this
     return {
       visible: false,
-      confirmLoading: false
+      confirmLoading: false,
+      // xml: '../js/test.xml',
+      // scene: '全景图测试',
+      // hooks: {
+      //   sceneChanged(scene) {
+      //     //event handler
+      //   }
+      // },
+      // init: ''
     }
   },
   computed: {},
@@ -69,6 +84,18 @@ export default {
     //   passQueryParameters: true,
     //   onready: krpano_onready_callback //回调函数，获取Krpano 对象 })
     // })
+    // setTimeout(() => {
+    //   this.$nextTick(() => {
+    //     embedpano({
+    //       xml: '../js/test.xml',
+    //       target: 'krpanoDIV',
+    //       html5: 'only',
+    //       consolelog: true,
+    //       passQueryParameters: true,
+    //       onready: krpano_onready_callback //回调函数，获取Krpano 对象 })
+    //     })
+    //   })
+    // }, 1000)
   },
   methods: {
     add() {
