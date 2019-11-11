@@ -389,12 +389,12 @@
               </div>
               <!-- 今日计划 -->
               <div v-if="noTitleKey === 'nowPlan'">
-                <a-collapse v-model="activePlanKey" class="active_plan">
-                  <a-collapse-panel key="1" class="collapse_header">
+                <a-collapse v-model="activePlanKey" class="active_plan" v-for=" item in planListPage" :key="item.plan.id">
+                  <a-collapse-panel :key="item.plan.id" class="collapse_header">
                     <template slot="header">
                       <a-row type="flex" justify="space-between" align="middle">
                         <a-col :span="8">
-                          <span>计划一</span>
+                          <span>{{item.plan.name}}</span>
                         </a-col>
                         <a-col :span="16">
                           <a-progress :percent="70" />
@@ -402,12 +402,12 @@
                       </a-row>
                     </template>
                     <div class="planGroup">
-                      <a-collapse v-model="activeGroupKey">
-                        <a-collapse-panel key="11" class="collapse_group">
+                      <a-collapse v-model="activeGroupKey" v-for=" index in item.teams" :key="index.team.id">
+                        <a-collapse-panel :key="index.team.id" class="collapse_group">
                           <template slot="header">
                             <a-row type="flex" justify="space-between" align="middle">
                               <a-col :span="8">
-                                <span>组一</span>
+                                <span>{{index.team.name}}</span>
                               </a-col>
                               <a-col :span="16">
                                 <a-progress :percent="70" />
@@ -418,10 +418,11 @@
                             <a-collapse
                               v-model="activeRiverKey"
                               style="border-bottom:1px solid d9d9d9;"
+                              v-for=" targetId in index.targets" :key="targetId.id"
                             >
-                              <a-collapse-panel key="111" class="collapse_river">
+                              <a-collapse-panel :key="targetId.target.id" class="collapse_river">
                                 <template slot="header">
-                                  <div @click="searchMap">黄浦江</div>
+                                  <div @click="searchMap">{{targetId.target.objectName}}</div>
                                 </template>
                                 <div style="padding:10px 10px;">
                                   <div>
@@ -430,27 +431,27 @@
                                       v-model="checkedKeys"
                                       @select="onSelect"
                                       :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
+                                      :treeData="targetId.incomplete"
                                     ></a-tree>
                                   </div>
                                   <div class>
                                     <div class="riverGroup_success">已完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="sutreeData" class="tree_succ">
+                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="targetId.complete" class="tree_succ">
                                       <template slot="custom" slot-scope="item">
-                                        <span>{{ item.title }}</span>
+                                        <span>{{ item.name }}</span>
                                         <span class="">
-                                          <a-button class="but_type" :id="item.key" v-if="item.isChildNode"  @click="()=> searchItme(item)">查看</a-button>
+                                          <a-button class="but_type" :id="item.id" v-if="item.isChildNode"  @click="()=> searchItme(item)">查看</a-button>
                                         </span>
                                       </template>
                                     </a-tree>
                                   </div>
                                   <div>
-                                    <div class="riverGroup_warning">异常</div>
+                                    <div class="riverGroup_warning">已取消</div>
                                     <a-tree
                                       v-model="checkedKeys"
                                       @select="onSelect"
                                       :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
+                                      :treeData="targetId.anomalous"
                                     ></a-tree>
                                   </div>
                                 </div>
@@ -469,67 +470,6 @@
                           </div>
                         </a-collapse-panel>
                       </a-collapse>
-                      <!-- <a-collapse v-model="activeTwo">
-                        <a-collapse-panel key="11" class="collapse_group">
-                          <template slot="header">
-                            <a-row type="flex" justify="space-between" align="middle">
-                              <a-col :span="8">
-                                <span>组二</span>
-                              </a-col>
-                              <a-col :span="16">
-                                <a-progress :percent="70" />
-                              </a-col>
-                            </a-row>
-                          </template>
-                          <div class="river_group">
-                            <a-collapse
-                              v-model="activeTwo"
-                              style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;"
-                            >
-                              <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
-                                <div style="padding:10px 10px;">
-                                  <div>
-                                    <div class="riverGroup_info">未完成</div>
-                                    <a-tree
-                                      v-model="checkedKeys"
-                                      @select="onSelect"
-                                      :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
-                                    ></a-tree>
-                                  </div>
-                                  <div>
-                                    <div class="riverGroup_success">已完成</div>
-                                    <a-tree
-                                      v-model="checkedKeys"
-                                      @select="onSelect"
-                                      :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
-                                    ></a-tree>
-                                  </div>
-                                  <div>
-                                    <div class="riverGroup_warning">异常</div>
-                                    <a-tree
-                                      v-model="checkedKeys"
-                                      @select="onSelect"
-                                      :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
-                                    ></a-tree>
-                                  </div>
-                                </div>
-                                <div class="addTaskBtn">
-                                  <a-button
-                                    class="addTask_btn commBtn"
-                                    icon="plus"
-                                    @click="addTaskBtn"
-                                    v-show="cBtn"
-                                  >追加任务</a-button>
-                                  <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
-                                </div>
-                              </a-collapse-panel>
-                            </a-collapse>
-                          </div>
-                        </a-collapse-panel>
-                      </a-collapse> -->
                     </div>
                     <div class="btn_group">
                       <a-row type="flex" justify="space-around">
@@ -631,67 +571,6 @@
                           </div>
                         </a-collapse-panel>
                       </a-collapse>
-                      <!-- <a-collapse v-model="activeTwo">
-                        <a-collapse-panel key="11" class="collapse_group">
-                          <template slot="header">
-                            <a-row type="flex" justify="space-between" align="middle">
-                              <a-col :span="8">
-                                <span>组二</span>
-                              </a-col>
-                              <a-col :span="16">
-                                <a-progress :percent="70" />
-                              </a-col>
-                            </a-row>
-                          </template>
-                          <div class="river_group">
-                            <a-collapse
-                              v-model="activeTwo"
-                              style="background-color:#FFFFFF;border-bottom:1px solid d9d9d9;"
-                            >
-                              <a-collapse-panel header="黄浦江" key="111" class="collapse_river">
-                                <div style="padding:10px 10px;">
-                                  <div>
-                                    <div class="riverGroup_info">未完成</div>
-                                    <a-tree
-                                      v-model="checkedKeys"
-                                      @select="onSelect"
-                                      :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
-                                    ></a-tree>
-                                  </div>
-                                  <div>
-                                    <div class="riverGroup_success">已完成</div>
-                                    <a-tree
-                                      v-model="checkedKeys"
-                                      @select="onSelect"
-                                      :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
-                                    ></a-tree>
-                                  </div>
-                                  <div>
-                                    <div class="riverGroup_warning">异常</div>
-                                    <a-tree
-                                      v-model="checkedKeys"
-                                      @select="onSelect"
-                                      :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
-                                    ></a-tree>
-                                  </div>
-                                </div>
-                                <div class="addTaskBtn">
-                                  <a-button
-                                    class="addTask_btn commBtn"
-                                    icon="plus"
-                                    @click="addTaskBtn"
-                                    v-show="cBtn"
-                                  >追加任务</a-button>
-                                  <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
-                                </div>
-                              </a-collapse-panel>
-                            </a-collapse>
-                          </div>
-                        </a-collapse-panel>
-                      </a-collapse> -->
                     </div>
                     <div class="btn_group">
                       <a-button class="addTask_btn" @click="detailPlan">详情</a-button>
@@ -740,15 +619,6 @@
                                 </a-col>
                               </a-row>
                             </a-checkbox-group>
-                            <!-- <a-list bordered :dataSource="personInfo">
-                              <a-list-item slot="renderItem" slot-scope="item">
-                                <a
-                                  slot="actions"
-                                  syle="width:10px;height:10px;border-radius:50%;background-color:green;"
-                                ></a>
-                                {{item.name}}&nbsp;({{item.position}})
-                              </a-list-item>
-                            </a-list> -->
                           </div>
                         </a-collapse-panel>
                       </a-collapse>
@@ -903,7 +773,7 @@
 </template>
 
 <script>
-import { planPage,planSave,inspectPointPage,inspectPointSave,inspectPointDel,taskList,taskSpotList,targetPage,targetSave,targetDel,taskInspectPage,getRiverList } from '@/api/login'
+import { planPage,planSave,inspectPointPage,inspectPointSave,inspectPointDel,taskList,taskSpotList,targetPage,targetSave,targetDel,taskInspectPage,getRiverList,groupingPage } from '@/api/login'
 import '../../assets/css/monitor.less'
 import 'ol/ol.css'
 // import Map from "ol/Map"
@@ -1124,8 +994,8 @@ export default {
         }
       ],
       planList1:{
-        id:'5dc0d964ea6c15b288665287',
-        name:'计划 2019-11-5',
+        id:'',
+        name:'',
       },
       superCard: [
         {
@@ -1280,13 +1150,12 @@ export default {
   },
   mounted() {
     this.initCruisePlan()
-    this.getPage()
     this.getPicker()
     this.getTask()
-    this.getinspectPointPage()
+    // this.getinspectPointPage()
     this.getList()
+    this.getPage()
     // console.log("mount" + this.childNode)
-    // this.showTNodeBtn()
     // console.log("mounted"+this.childNode)
   },
   methods: {
@@ -1310,7 +1179,7 @@ export default {
           return year+"-"+month+"-"+date
         }
       this.picker = formatDate(new Date())
-      // this.getPlanSave()
+      this.getPlanSave()
     },
     //任务点列表
     getTask(){
@@ -1325,10 +1194,70 @@ export default {
     },
     //计划列表
     getPage(){
-      planPage().then(res=>{
+      var picker = this.picker.split('-')
+      var data ={
+        status:'publish',
+        year:picker[0],
+        month:picker[1],
+        day:picker[2],
+      }
+      planPage(data).then(res=>{
+        var arr = res.data
+        console.log(arr);
+        this.planListPage = arr
+        for (const item of arr) {
+          for (const a of item.teams) {
+            for (const b of a.targets) {
+              for (const c of b.incomplete) {
+                c.key = c.id
+                c.title = c.name
+              }
+            }
+          }
+        }
       }).catch(err=>{
 
       })
+      // planPage(data).then(res=>{
+      //   var arr = res.data.data
+      //   for (const item of arr) {
+      //     item.grouping = []
+      //     groupingPage(item.id).then(res=>{
+      //       var grouping = res.data
+      //       item.grouping = grouping
+      //       console.log(grouping,'grouping');
+      //       for(const index of grouping){
+      //         index.target = []
+      //         var tar = {
+      //           id:item.id,
+      //           teamId:index.id
+      //         }
+      //         targetPage(tar).then(res=>{
+      //           var target1 = res.data.data
+      //           index.target = target1
+      //           console.log(target1,'target');
+      //            for(const target of target1){
+      //              target.taskInspect = []
+      //              var sss = {
+      //               id:item.id,
+      //               object:target.object.code,
+      //               objectId:target.objectId
+      //             }
+      //             taskInspectPage(sss).then(res=>{
+      //               var taskInspect = res.data.data
+      //               target.taskInspect = taskInspect
+      //               console.log(taskInspect,'taskInspect');
+      //             })
+      //            }
+      //         })
+      //       }
+      //     })
+      //   }
+      //   this.planListPage = arr
+      //   console.log(arr,'arr');
+      // }).catch(err=>{
+
+      // })
     },
     //计划保存
     getPlanSave(){
@@ -1357,6 +1286,8 @@ export default {
       }
       targetPage(list).then(res=>{
         var arr =res.data.data
+        console.log(arr);
+        
         if (arr.length >0) {
           for (let a = 0; a < arr.length; a++) {
             if (arr[a].object.code != 'river') {
@@ -1386,9 +1317,7 @@ export default {
             }
           }
           console.log(arr);
-          
           this.taskPage =arr
-          
           this.allPointTask(arr)
         }
       })
@@ -1691,6 +1620,8 @@ export default {
     //日期选择
     selectData(date) {
       console.log(date,this.picker)
+       this.getPage()
+       this.getPlanSave()
     },
     //选中巡河方案
     selectPatrol() {},
@@ -1934,7 +1865,6 @@ export default {
     },
     // 添加标注图片
     drawAllPoint(latlng, tool) {
-      console.log(latlng);
       
       tool = new T.Marker(latlng)
       this.map.addOverLay(tool)
@@ -2065,6 +1995,8 @@ export default {
     },
     //河道计划点击事件
     onSelect(selectedKeys, info) {
+      console.log(info);
+      
       this.clearMap()
       this.selectedKeys = selectedKeys
       this.treeinfo = info.node.dataRef
