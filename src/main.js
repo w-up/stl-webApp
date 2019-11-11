@@ -19,6 +19,10 @@ import 'viewerjs/dist/viewer.css'
 
 // mock
 //import './mock' // 模拟数据
+Vue.prototype.embedpano = window.embedpano
+// 引入360全景图
+// import Krpano from "vue-krpano";
+// Vue.use(Krpano);
 
 import bootstrap from './core/bootstrap'
 import './core/use'
