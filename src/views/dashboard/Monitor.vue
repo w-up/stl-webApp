@@ -1197,9 +1197,9 @@ export default {
       var picker = this.picker.split('-')
       var data ={
         status:'publish',
-        year:'2019',
-        month:'11',
-        day:'09',
+        year:picker[0],
+        month:picker[1],
+        day:picker[2],
       }
       planPage(data).then(res=>{
         var arr = res.data
