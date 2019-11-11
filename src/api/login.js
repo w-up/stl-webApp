@@ -491,7 +491,7 @@ export function SuperviseDetail(id) {
 //巡河计划列表
 export function planPage(data) {
   return axios({
-    url: '/server/data/admin/inspect/plan/page?=',
+    url: '/server/data/admin/inspect/plan/day',
     method: 'get',
     params:{
       projectId:'5da7d092ea6c156d792df816',

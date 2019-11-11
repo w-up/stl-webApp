@@ -389,12 +389,12 @@
               </div>
               <!-- 今日计划 -->
               <div v-if="noTitleKey === 'nowPlan'">
-                <a-collapse v-model="activePlanKey" class="active_plan" v-for=" item in planListPage" :key="item.id">
-                  <a-collapse-panel key="1" class="collapse_header">
+                <a-collapse v-model="activePlanKey" class="active_plan" v-for=" item in planListPage" :key="item.plan.id">
+                  <a-collapse-panel :key="item.plan.id" class="collapse_header">
                     <template slot="header">
                       <a-row type="flex" justify="space-between" align="middle">
                         <a-col :span="8">
-                          <span>{{item.name}}</span>
+                          <span>{{item.plan.name}}</span>
                         </a-col>
                         <a-col :span="16">
                           <a-progress :percent="70" />
@@ -402,12 +402,12 @@
                       </a-row>
                     </template>
                     <div class="planGroup">
-                      <a-collapse v-model="activeGroupKey" v-for=" index in item.grouping" :key="index.id">
-                        <a-collapse-panel :key="index.id" class="collapse_group">
+                      <a-collapse v-model="activeGroupKey" v-for=" index in item.teams" :key="index.team.id">
+                        <a-collapse-panel :key="index.team.id" class="collapse_group">
                           <template slot="header">
                             <a-row type="flex" justify="space-between" align="middle">
                               <a-col :span="8">
-                                <span>{{index.name}}</span>
+                                <span>{{index.team.name}}</span>
                               </a-col>
                               <a-col :span="16">
                                 <a-progress :percent="70" />
@@ -418,42 +418,42 @@
                             <a-collapse
                               v-model="activeRiverKey"
                               style="border-bottom:1px solid d9d9d9;"
-                              v-for=" targetId in index.target" :key="targetId.id"
+                              v-for=" targetId in index.targets" :key="targetId.id"
                             >
-                              <a-collapse-panel :key="targetId.id" class="collapse_river">
+                              <a-collapse-panel :key="targetId.target.id" class="collapse_river">
                                 <template slot="header">
-                                  <div @click="searchMap">{{targetId.objectName}}</div>
+                                  <div @click="searchMap">{{targetId.target.objectName}}</div>
                                 </template>
                                 <div style="padding:10px 10px;">
-                                  <!-- <div>
+                                  <div>
                                     <div class="riverGroup_info">未完成</div>
                                     <a-tree
                                       v-model="checkedKeys"
                                       @select="onSelect"
                                       :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
+                                      :treeData="targetId.incomplete"
                                     ></a-tree>
-                                  </div> -->
+                                  </div>
                                   <div class>
                                     <div class="riverGroup_success">已完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="sutreeData" class="tree_succ">
+                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="targetId.complete" class="tree_succ">
                                       <template slot="custom" slot-scope="item">
-                                        <span>{{ item.title }}</span>
+                                        <span>{{ item.name }}</span>
                                         <span class="">
-                                          <a-button class="but_type" :id="item.key" v-if="item.isChildNode"  @click="()=> searchItme(item)">查看</a-button>
+                                          <a-button class="but_type" :id="item.id" v-if="item.isChildNode"  @click="()=> searchItme(item)">查看</a-button>
                                         </span>
                                       </template>
                                     </a-tree>
                                   </div>
-                                  <!-- <div>
+                                  <div>
                                     <div class="riverGroup_warning">已取消</div>
                                     <a-tree
                                       v-model="checkedKeys"
                                       @select="onSelect"
                                       :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
+                                      :treeData="targetId.anomalous"
                                     ></a-tree>
-                                  </div> -->
+                                  </div>
                                 </div>
                                 <div class="addTaskBtn">
                                   <!-- <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button> -->
@@ -1197,50 +1197,67 @@ export default {
       var picker = this.picker.split('-')
       var data ={
         status:'publish',
-        year:picker[0],
-        month:picker[1],
-        day:picker[2],
+        year:'2019',
+        month:'11',
+        day:'09',
       }
       planPage(data).then(res=>{
-        var arr = res.data.data
-        for (const item of arr) {
-          item.grouping = []
-          groupingPage(item.id).then(res=>{
-            var grouping = res.data
-            item.grouping = grouping
-            console.log(grouping,'grouping');
-            for(const index of grouping){
-              index.target = []
-              var tar = {
-                id:item.id,
-                teamId:index.id
-              }
-              targetPage(tar).then(res=>{
-                var target1 = res.data.data
-                index.target = target1
-                console.log(target1,'target');
-                 for(const target of target1){
-                   target.taskInspect = []
-                   var sss = {
-                    id:item.id,
-                    object:target.object.code,
-                    objectId:target.objectId
-                  }
-                  taskInspectPage(sss).then(res=>{
-                    var taskInspect = res.data.data
-                    target.taskInspect = taskInspect
-                    console.log(taskInspect,'taskInspect');
-                  })
-                 }
-              })
-            }
-          })
-        }
+        var arr = res.data
+        console.log(arr);
         this.planListPage = arr
-        console.log(arr,'arr');
+        for (const item of arr) {
+          for (const a of item.teams) {
+            for (const b of a.targets) {
+              for (const c of b.incomplete) {
+                c.key = c.id
+                c.title = c.name
+              }
+            }
+          }
+        }
       }).catch(err=>{
 
       })
+      // planPage(data).then(res=>{
+      //   var arr = res.data.data
+      //   for (const item of arr) {
+      //     item.grouping = []
+      //     groupingPage(item.id).then(res=>{
+      //       var grouping = res.data
+      //       item.grouping = grouping
+      //       console.log(grouping,'grouping');
+      //       for(const index of grouping){
+      //         index.target = []
+      //         var tar = {
+      //           id:item.id,
+      //           teamId:index.id
+      //         }
+      //         targetPage(tar).then(res=>{
+      //           var target1 = res.data.data
+      //           index.target = target1
+      //           console.log(target1,'target');
+      //            for(const target of target1){
+      //              target.taskInspect = []
+      //              var sss = {
+      //               id:item.id,
+      //               object:target.object.code,
+      //               objectId:target.objectId
+      //             }
+      //             taskInspectPage(sss).then(res=>{
+      //               var taskInspect = res.data.data
+      //               target.taskInspect = taskInspect
+      //               console.log(taskInspect,'taskInspect');
+      //             })
+      //            }
+      //         })
+      //       }
+      //     })
+      //   }
+      //   this.planListPage = arr
+      //   console.log(arr,'arr');
+      // }).catch(err=>{
+
+      // })
     },
     //计划保存
     getPlanSave(){
