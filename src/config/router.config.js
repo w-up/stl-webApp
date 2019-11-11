@@ -42,6 +42,12 @@ export const asyncRouterMap = [
             name: 'Supervise',
             component: () => import('@/views/supervise/Supervise'),
             meta: { title: '监管', permission: [ 'dashboard' ] }
+          },
+          {
+            path: '/supervise/Vtour',
+            name: 'Vtour',
+            component: () => import('@/views/supervise/Vtour'),
+            meta: { title: '360全景图', permission: [ 'dashboard' ] }
           }
         ]
       },
