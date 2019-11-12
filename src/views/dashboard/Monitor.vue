@@ -1234,10 +1234,12 @@ export default {
     },
     //显示河道或调查点
     judgeDate() {
-      console.log('length' + riverMontion.length)
+      this.clearMap()
+      // console.log('length' + riverMontion.length)
       for (var i = 0; i < this.riverMontion.length; i++) {
         var code = this.riverMontion[i].code
-        console.log('code: ' + code)
+        // console.log('code: ' + code)
+        console.log(this.riverMontion[i].clicked)
         if (code == 'point') {
           if (this.riverMontion[i].taskPage) {
             for (var pageMarker of this.riverMontion[i].taskPage) {
@@ -1254,7 +1256,6 @@ export default {
       }
     },
     showSurverPoint(arr) { 
-      console.log(arr)
       let icon = new T.Icon({
         iconUrl: 'http://api.tianditu.gov.cn/img/map/markerA.png',
         iconSize: new T.Point(19, 27),
@@ -1275,7 +1276,6 @@ export default {
       }else{
         this.addCircle(this.lng,this.lat,1000,'blue',2,arr.id)
       }
-     
       //向地图上添加圆
       // this.circle = new T.Circle(new T.LngLat(this.lng, this.lat), 1000, {
       //   color: 'blue',
@@ -1290,6 +1290,7 @@ export default {
       // this.circle.addEventListener('click',this.clickCircle)
     },
     addCircle(lng,lat,radius,color,weight,id){
+      // this.map.removeOverLay(this.circle)
       this.circle = new T.Circle(new T.LngLat(lng, lat), radius, {
         color: color,
         weight: weight,
@@ -1311,9 +1312,14 @@ export default {
           point = item
           console.log(point)
           this.inspectVisible = true
+        }else{
+          item.clicked = false
         }
+        this.judgeDate()
       }
-      this.showSurverPoint()
+      // this.showSurverPoint(point)
+      
+      console.log("***************")
     },
     //获取当前时间
     getPicker() {
@@ -1479,7 +1485,7 @@ export default {
     },
     choosePointTask(id) {
       console.log(id)
-      // this.map.removeOverLay(this.circle)
+      // this.clearMap()
       for (const item of riverMontion) {
         if (item.id === id) {
           console.log(item)
@@ -1489,16 +1495,17 @@ export default {
           console.log('-----------------')
           console.log(item.latlng)
           this.map.setViewport(item.latlng)
-          if (item.code == 'point') {
-            console.log(item.latlng)
-            this.showSurverPoint(item)
-          }
-          if (item.code == 'river') {
-            this.drawAllRiver(item)
-          }
+          // if (item.code == 'point') {
+          //   console.log(item.latlng) 
+          //   this.showSurverPoint(item)
+          // }
+          // if (item.code == 'river') {
+          //   this.drawAllRiver(item)
+          // }
         } else {
           item.clicked = false
         }
+        this.judgeDate()
       }
     },
     allPointTask(arr) {
@@ -1600,8 +1607,8 @@ export default {
         } else {
           item.clicked = false
         }
+         this.drawOneRiver(item)
       }
-      this.drawOneRiver(item)
     },
      polygonClick(index) {
       console.log(index)
