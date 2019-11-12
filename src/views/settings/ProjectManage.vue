@@ -116,8 +116,12 @@ const columns1 = [
     dataIndex: 'key'
   },
   {
-    title: '二级分类名称',
+    title: '项目名称',
     dataIndex: 'name'
+  },
+  {
+    title: '项目ID',
+    dataIndex: 'id'
   },
   {
     title: '操作',

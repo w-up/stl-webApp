@@ -502,6 +502,19 @@ export function planPage(data) {
     }
   })
 }
+export function planPageList(data) {
+  return axios({
+    url: '/server/data/admin/inspect/plan/list',
+    method: 'get',
+    params:{
+      projectId:'5da7d092ea6c156d792df816',
+      status:data.status,
+      year:data.year,
+      month:data.month,
+      day:data.day
+    }
+  })
+}
 //巡河计划保存
 export function planSave(data) {
   return axios({
@@ -555,6 +568,24 @@ export function targetPage(data) {
 export function inspectTaskSave(data) {
   return axios({
     url: '/server/data/admin/inspect/task/save',
+    method: 'post',
+    data:data
+  })
+}
+//任务批量选定
+export function taskChoose(ids) {
+  return axios({
+    url: '/server/data/admin/inspect/task/choose',
+    method: 'post',
+    data:{
+      ids:ids
+    }
+  })
+}
+//任务加入已有计划
+export function joinPlanTask(data) {
+  return axios({
+    url: '/server/data/admin/inspect/task/join/plan',
     method: 'post',
     data:data
   })
