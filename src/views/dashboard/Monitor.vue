@@ -374,7 +374,7 @@
                     <a-button
                       class="addTask_btn commBtn"
                       icon="plus"
-                      @click="addTaskBtn(item.id)"
+                      @click="addTaskBtn(item.id,item.objectName,item.code)"
                       v-show="cBtn"
                     >追加任务</a-button>
                     <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
@@ -985,33 +985,33 @@ const cardData = [
 ]
 
 const riverMontion = [
-  {
-    id: 0,
-    objectName: '监测点1',
-    code: 'point',
-    clicked: false,
-    latlng: { lat: 31.219, lng: 121.499 },
-    taskPage: [
-      { key: '0-1', title: 'a', latlng: { lat: 31.21882, lng: 121.50364 } },
-      { key: '0-2', title: 'b', latlng: { lat: 31.21265, lng: 121.50227 } }
-    ]
-  },
-  { id: 1, objectName: '监测点2', code: 'point', clicked: false, latlng: { lat: 31.204, lng: 121.479 } },
-  {
-    id: 2,
-    objectName: '黄浦江',
-    code: 'river',
-    clicked: false,
-    latlng: [
-      { lat: 31.21882, lng: 121.50364 },
-      { lat: 31.21265, lng: 121.50227 },
-      { lat: 31.20583, lng: 121.49703 },
-      { lat: 31.19915, lng: 121.49197 },
-      { lat: 31.19702, lng: 121.49591 },
-      { lat: 31.2164, lng: 121.50757 },
-      { lat: 31.21948, lng: 121.50758 }
-    ]
-  }
+  // {
+  //   id: 0,
+  //   objectName: '监测点1',
+  //   code: 'point',
+  //   clicked: false,
+  //   latlng: { lat: 31.219, lng: 121.499 },
+  //   taskPage: [
+  //     { key: '0-1', title: 'a', latlng: { lat: 31.21882, lng: 121.50364 } },
+  //     { key: '0-2', title: 'b', latlng: { lat: 31.21265, lng: 121.50227 } }
+  //   ]
+  // },
+  // { id: 1, objectName: '监测点2', code: 'point', clicked: false, latlng: { lat: 31.204, lng: 121.479 } },
+  // {
+  //   id: 2,
+  //   objectName: '黄浦江',
+  //   code: 'river',
+  //   clicked: false,
+  //   latlng: [
+  //     { lat: 31.21882, lng: 121.50364 },
+  //     { lat: 31.21265, lng: 121.50227 },
+  //     { lat: 31.20583, lng: 121.49703 },
+  //     { lat: 31.19915, lng: 121.49197 },
+  //     { lat: 31.19702, lng: 121.49591 },
+  //     { lat: 31.2164, lng: 121.50757 },
+  //     { lat: 31.21948, lng: 121.50758 }
+  //   ]
+  // }
 ]
 export default {
   name: 'Analysis',
@@ -1029,6 +1029,7 @@ export default {
   },
   data() {
     return {
+      planListPage:[],//计划列表
       inspectVisible: false, //调查点弹窗
       spotTaskList: [],
       taskId: '',
@@ -1214,7 +1215,7 @@ export default {
     // this.getinspectPointPage()
     this.getList()
     this.getPage()
-    this.judgeDate()
+    //this.judgeDate()
     // console.log("mount" + this.childNode)
     // console.log("mounted"+this.childNode)
   },
@@ -1304,13 +1305,14 @@ export default {
       this.circle.addEventListener('click',this.clickCircle)
     },
     clickCircle(e) {
-      console.log(e)
       var point = []
-      for (const item of riverMontion) {
+      for (const item of this.riverMontion) {
         if (e.lnglat.lat == item.latlng.lat && e.lnglat.lng == item.latlng.lng) {
           item.clicked = true
           point = item
-          console.log(point)
+          console.log(item)
+          this.taskId = item.taskPage[0].title
+          this.inspectPointId = true
           this.inspectVisible = true
         }else{
           item.clicked = false
@@ -1330,7 +1332,7 @@ export default {
         return year + '-' + month + '-' + date
       }
       this.picker = formatDate(new Date())
-      // this.getPlanSave()
+      this.getPlanSave()
     },
     //任务点列表
     getTask() {
@@ -1354,8 +1356,6 @@ export default {
       planPage(data)
         .then(res => {
           var arr = res.data
-          console.log(arr)
-          this.planListPage = arr
           for (const item of arr) {
             for (const a of item.teams) {
               for (const b of a.targets) {
@@ -1366,6 +1366,7 @@ export default {
               }
             }
           }
+          this.planListPage = arr
         })
         .catch(err => {})
     },
@@ -1420,14 +1421,15 @@ export default {
                 ar.forEach(v => {
                   v.key = v.id
                   v.title = v.content
+                  v.latlng = v.region[0]
                 })
                 arr[a].taskPage = ar
               })
             }
           }
           console.log(arr)
-          this.taskPage = arr
-          this.allPointTask(arr)
+          this.riverMontion = arr
+          this.judgeDate(arr)
         }
       })
     },
@@ -1486,14 +1488,11 @@ export default {
     choosePointTask(id) {
       console.log(id)
       // this.clearMap()
-      for (const item of riverMontion) {
+      for (const item of this.riverMontion) {
         if (item.id === id) {
-          console.log(item)
           item.clicked = true
           // let arr = []
           // arr.push(item.latlng)
-          console.log('-----------------')
-          console.log(item.latlng)
           this.map.setViewport(item.latlng)
           // if (item.code == 'point') {
           //   console.log(item.latlng) 
@@ -1818,8 +1817,7 @@ export default {
     },
     //选中巡河方案
     selectPatrol() {},
-    addTaskBtn(id) {
-      console.log(id)
+    addTaskBtn(id,name,code) {
 
       // if (condition) {
 
@@ -1827,7 +1825,7 @@ export default {
       this.clearMap()
       console.log(this.$refs.addTask)
 
-      this.$refs.addTask[0].show()
+      this.$refs.addTask[0].show(this.planList1.id,id,name,code)
       this.cBtn = false
       // this.$refs.addTask.chooseLocation()
     },
@@ -2255,7 +2253,6 @@ export default {
     //取消追加任务
     cancelAddTask() {
       this.clearMap()
-      this.$refs.addTask.cancle()
       this.cBtn = true
     },
     //添加调查点

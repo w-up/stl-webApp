@@ -551,6 +551,14 @@ export function targetPage(data) {
     }
   })
 }
+//任务保存
+export function inspectTaskSave(data) {
+  return axios({
+    url: '/server/data/admin/inspect/task/save',
+    method: 'post',
+    data:data
+  })
+}
 //目标保存
 export function targetSave(data) {
   return axios({
