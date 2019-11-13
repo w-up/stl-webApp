@@ -1395,6 +1395,7 @@ export default {
                 b.latlng =b.target.coordinate
                 b.clicked = false
                 b.code = b.target.object.code
+
                 for (const c of b.incomplete) {
                   c.key = c.id
                   c.title = c.name
