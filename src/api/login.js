@@ -502,6 +502,26 @@ export function planPage(data) {
     }
   })
 }
+export function planPageList(data) {
+  return axios({
+    url: '/server/data/admin/inspect/plan/list',
+    method: 'get',
+    params:{
+      projectId:'5da7d092ea6c156d792df816',
+      status:data.status,
+      year:data.year,
+      month:data.month,
+      day:data.day
+    }
+  })
+}
+//巡河计划详情
+export function planDetail(id) {
+  return axios({
+    url: '/server/data/admin/inspect/plan/detail/'+id,
+    method: 'get',
+  })
+}
 //巡河计划保存
 export function planSave(data) {
   return axios({
@@ -549,6 +569,32 @@ export function targetPage(data) {
       planId:data.id,
       teamId:data.teamId
     }
+  })
+}
+//任务保存
+export function inspectTaskSave(data) {
+  return axios({
+    url: '/server/data/admin/inspect/task/save',
+    method: 'post',
+    data:data
+  })
+}
+//任务批量选定
+export function taskChoose(ids) {
+  return axios({
+    url: '/server/data/admin/inspect/task/choose',
+    method: 'post',
+    data:{
+      ids:ids
+    }
+  })
+}
+//任务加入已有计划
+export function joinPlanTask(data) {
+  return axios({
+    url: '/server/data/admin/inspect/task/join/plan',
+    method: 'post',
+    data:data
   })
 }
 //目标保存
@@ -613,17 +659,23 @@ export function taskInspectPage(data) {
     }
   })
 }
-//巡河人员分页
+//巡河分组人员分页
 export function staffInspectPage(id) {
   return axios({
     url: '/server/data/admin/inspect/task/roles?teamId='+id,
     method: 'get',
   })
 }
-//巡河设备分页
+//巡河分组设备分页
 export function deviceInspectPage(id) {
   return axios({
     url: '/server/data/admin/inspect/task/devices?teamId='+id,
+    method: 'get',
+  })
+}
+export function asdasdasdasd(id) {
+  return axios({
+    url: '/server/data/admin/inspect/device/page?teamId='+id,
     method: 'get',
   })
 }
@@ -643,7 +695,24 @@ export function memberRiverSave(data) {
     data:data
   })
 }
-
+//监管
+//人工数据分页
+export function dataManual(projectId) {
+  return axios({
+    url: '/server/data/admin/regulator/manual/data/page',
+    method: 'get',
+    data:{
+      projectId:projectId
+    }
+  })
+}
+//人工数据详情
+export function dataDetails(id) {
+  return axios({
+    url: '/server/data/admin/regulator/manual/data/detail/'+id,
+    method: 'get',
+  })
+}
 
 export function getSmsCaptcha (parameter) {
   return axios({
