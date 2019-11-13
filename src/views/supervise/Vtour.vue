@@ -39,7 +39,8 @@ export default {
         // latitude_range: [0,0],//禁止上下滑动
         // mousewheel: false,    // 禁止鼠标滚轮缩放
         // navbar: false,
-        navbar: ['autorotate', 'zoom', 'markers', 'caption', 'fullscreen'],
+        // navbar: ['autorotate', 'zoom', 'markers', 'caption', 'fullscreen'],
+        navbar: ['autorotate', 'zoom', 'caption', 'fullscreen'],
         theta_offset: 1000 // 旋转速度
         // markers: this.markersData
       })
