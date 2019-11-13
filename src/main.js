@@ -15,15 +15,6 @@ import 'video.js/dist/video-js.css'
 import Viewer from 'v-viewer' // 查看图片
 import 'viewerjs/dist/viewer.css'
 
-
-
-// mock
-//import './mock' // 模拟数据
-Vue.prototype.embedpano = window.embedpano
-// 引入360全景图
-// import Krpano from "vue-krpano";
-// Vue.use(Krpano);
-
 import bootstrap from './core/bootstrap'
 import './core/use'
 import './permission' // 权限控制
