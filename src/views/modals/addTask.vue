@@ -24,7 +24,7 @@
                     <a-radio-button value="line" @click="addLineTool">线</a-radio-button>
                     <a-radio-button value="surface" @click="addPolygonTool">面</a-radio-button>
                 </a-radio-group>
-                <a-button v-show="btnShow" style="width:90%;">查看</a-button>
+                <a-button v-show="btnShow" @click="searchDraw" style="width:90%;">查看</a-button>
             </a-form-item>
             <a-form-item label="任务职位" :label-col="{ span: 6}" :wrapper-col="{ span: 16 }">
                 <a-select
@@ -108,9 +108,11 @@ export default {
         },
         cancle(){
             this.isShow = false
+            
             this.clickPoint = false
             this.clickLine = false
             this.clickPolygon = false
+            console.log(this.clickPoint)
         },
         handleChange1(index) {
             console.log(`selected ${index}`)
@@ -143,8 +145,13 @@ export default {
             console.log(this.polygonDate)
         },
         addPlanInfo(){
+            console.log("****************")
+            console.log(this.markLnglat)
+            console.log(this.lineLnglats)
+            console.log(this.polygonDate)
             var data = this.list
             if (data.locationType == 'point') {
+                debugger
                 data.region = this.markLnglat.lng +','+this.markLnglat.lat
             }
             if (data.locationType == 'line') {
@@ -186,6 +193,10 @@ export default {
         },
         cancleBtn(){
             this.isShow = false
+            this.markLnglat = {}
+            this.lineLnglats= []
+            this.polygonDate = []
+            console.log(this.markLnglat)
             this.$emit('cancleBtn')
         },
         addPoint(){
@@ -223,6 +234,20 @@ export default {
             if(this.btnShow == false){
                 this.btnShow = true
             } 
+        },
+        //查看绘制
+        searchDraw(){
+            if(this.markLnglat){
+                console.log(this.markLnglat)
+                // this.$emit('searchMarkDraw',this.markLnglat)
+            }
+            if(this.lineLnglats){
+                console.log(this.lineLnglats)
+                
+            }
+            if(this.polygonDate){
+                console.log(this.polygonDate)
+            }
         }
     }
 }
