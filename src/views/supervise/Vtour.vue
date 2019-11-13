@@ -4,51 +4,45 @@
   </div>
 </template>
 <script>
-import './js/tour.js'
-
+import PhotoSphereViewer from 'photo-sphere-viewer'
+import 'photo-sphere-viewer/dist/photo-sphere-viewer.css'
 export default {
   name: 'vtour',
+  components: {},
   data() {
     return {
-      show: false,
-      krpano: ''
+      factoryLink: require('./img/test36001.jpg'),
     }
   },
   mounted() {
-    // 加载动态JS文件
-    var _doc = document.getElementsByTagName('head')[0]
-    console.log(_doc)
-    var js = document.createElement('script')
-    js.setAttribute('type', 'text/javascript')
-    js.setAttribute('src', './src/views/supervise/js/tour.js') // jsUrl是JS文件的路径
-    _doc.appendChild(js)
-
-    setTimeout(() => {
-      embedpano({
-        swf: './js/tour.swf', // krpano全景圖的swf文件路徑
-        xml: './js/tour.xml', // krpano全景圖的xml文件路徑
-        target: 'pano',
-        html5: 'auto',
-        mobilescale: 1.0,
-        flash: 'auto',
-        passQueryParameters: true
-      })
-      this.krpano = document.getElementById('krpanoSWFObject') // 保存全景圖對象
-    }, 2000);
-
-    // this.embedpano({
-    //   swf: './js/tour.swf',
-    //   xml: './js/tour.xml',
-    //   target: 'pano',
-    //   html5: 'auto',
-    //   mobilescale: 1.0,
-    //   passQueryParameters: false
-    // })
+    this.initPhotoSphere()
   },
   methods: {
-    getorder(msg) {
-      console.log(msg)
-      this.show = msg
+    initPhotoSphere() {
+      this.PSV = PhotoSphereViewer({
+        container: document.getElementById('pano'),
+        panorama: this.factoryLink,
+        caption: '黄浦江支流',
+        size: {
+          width: '100%',
+          height: '100%'
+        },
+        time_anim: false,
+        default_long: 1.4441088145446443,
+        default_lat: 0.0800613513013615,
+        default_long: Math.PI / 2,
+        default_fov: 90,
+        sphere_correction: { pan: 30.01, tilt: 0, roll: 0 },
+        // max_fov: 100,         // 最大缩放值
+        // min_fov: 99,          // 最小缩放值
+        // default_fov: 100, // 默认缩放值，在1-179之间
+        // latitude_range: [0,0],//禁止上下滑动
+        // mousewheel: false,    // 禁止鼠标滚轮缩放
+        // navbar: false,
+        navbar: ['autorotate', 'zoom', 'markers', 'caption', 'fullscreen'],
+        theta_offset: 1000 // 旋转速度
+        // markers: this.markersData
+      })
     }
   }
 }
