@@ -515,6 +515,13 @@ export function planPageList(data) {
     }
   })
 }
+//巡河计划详情
+export function planDetail(id) {
+  return axios({
+    url: '/server/data/admin/inspect/plan/detail/'+id,
+    method: 'get',
+  })
+}
 //巡河计划保存
 export function planSave(data) {
   return axios({
@@ -652,17 +659,23 @@ export function taskInspectPage(data) {
     }
   })
 }
-//巡河人员分页
+//巡河分组人员分页
 export function staffInspectPage(id) {
   return axios({
     url: '/server/data/admin/inspect/task/roles?teamId='+id,
     method: 'get',
   })
 }
-//巡河设备分页
+//巡河分组设备分页
 export function deviceInspectPage(id) {
   return axios({
     url: '/server/data/admin/inspect/task/devices?teamId='+id,
+    method: 'get',
+  })
+}
+export function asdasdasdasd(id) {
+  return axios({
+    url: '/server/data/admin/inspect/device/page?teamId='+id,
     method: 'get',
   })
 }
@@ -682,7 +695,24 @@ export function memberRiverSave(data) {
     data:data
   })
 }
-
+//监管
+//人工数据分页
+export function dataManual(projectId) {
+  return axios({
+    url: '/server/data/admin/regulator/manual/data/page',
+    method: 'get',
+    data:{
+      projectId:projectId
+    }
+  })
+}
+//人工数据详情
+export function dataDetails(id) {
+  return axios({
+    url: '/server/data/admin/regulator/manual/data/detail/'+id,
+    method: 'get',
+  })
+}
 
 export function getSmsCaptcha (parameter) {
   return axios({

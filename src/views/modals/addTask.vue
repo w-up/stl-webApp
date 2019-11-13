@@ -52,6 +52,7 @@
                 </a-upload>
             </a-form-item> -->
             <a-form-item :wrapper-col="{span:24}" style="text-align:center;margin-top:10px;">
+                
                 <a-button @click="cancleBtn" style="display:inline-block;width:40%;margin-right:10px;">取消</a-button>
                 <a-button type="primary" @click="addPlanInfo" style="display:inline-block;width:40%;color:#FFFFFF;">添加</a-button>
             </a-form-item>
@@ -145,13 +146,9 @@ export default {
             console.log(this.polygonDate)
         },
         addPlanInfo(){
-            console.log("****************")
-            console.log(this.markLnglat)
-            console.log(this.lineLnglats)
-            console.log(this.polygonDate)
+            console.log(this);
             var data = this.list
             if (data.locationType == 'point') {
-                debugger
                 data.region = this.markLnglat.lng +','+this.markLnglat.lat
             }
             if (data.locationType == 'line') {
@@ -178,7 +175,7 @@ export default {
                 this.list.region=''
                 this.list.roleId=[]
                 this.isShow = false
-                this.$emit('getinspectPointPage')
+                this.$parent.$parent.$parent.$parent.getinspectPointPage()
                 this.$emit('cancleBtn')
                 
             })

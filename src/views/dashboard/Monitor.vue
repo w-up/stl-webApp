@@ -374,7 +374,7 @@
                     <a-button
                       class="addTask_btn commBtn"
                       icon="plus"
-                      @click="addTaskBtn(item.id,item.objectName,item.code)"
+                      @click="addTaskBtn(item.objectId,item.objectName,item.code)"
                       v-show="cBtn"
                     >追加任务</a-button>
                     <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
@@ -474,10 +474,10 @@
                     <div class="btn_group">
                       <a-row type="flex" justify="space-around">
                         <a-col :span="10">
-                          <a-button class="groupBtn" @click="detailPlan">详情</a-button>
+                          <!-- <a-button class="groupBtn" @click="detailPlan(item.plan.id)">详情</a-button> -->
                         </a-col>
                         <a-col :span="10">
-                          <a-button class="groupBtn" @click="supervision_btn" v-if="!undone">监管</a-button>
+                          <a-button class="groupBtn" @click="supervision_btn(item.plan.id)" v-if="!undone">监管</a-button>
                           <a-button class="groupBtn" @click="updateTime" v-if="undone">修改时间</a-button>
                         </a-col>
                       </a-row>
@@ -493,12 +493,12 @@
               v-if="!firstShow"
             >
               <div v-if="nosuperKey === 'taskCard'">
-                <a-collapse v-model="activePlanKey" class="active_plan">
-                  <a-collapse-panel key="1" class="collapse_header">
+                <a-collapse v-model="activePlanKey" class="active_plan" v-for=" item in planListPage1" :key="item.plan.id">
+                  <a-collapse-panel :key="item.plan.id" class="collapse_header">
                     <template slot="header">
                       <a-row type="flex" justify="space-between" align="middle">
                         <a-col :span="8">
-                          <span>计划一</span>
+                          <span>{{item.plan.name}}</span>
                         </a-col>
                         <a-col :span="16">
                           <a-progress :percent="70" />
@@ -506,12 +506,12 @@
                       </a-row>
                     </template>
                     <div class="planGroup">
-                      <a-collapse v-model="activeGroupKey">
-                        <a-collapse-panel key="11" class="collapse_group">
+                      <a-collapse v-model="activeGroupKey" v-for=" index in item.teams" :key="index.team.id">
+                        <a-collapse-panel :key="index.team.id" class="collapse_group">
                           <template slot="header">
                             <a-row type="flex" justify="space-between" align="middle">
                               <a-col :span="8">
-                                <span>组一</span>
+                                <span>{{index.team.name}}</span>
                               </a-col>
                               <a-col :span="16">
                                 <a-progress :percent="70" />
@@ -522,37 +522,35 @@
                             <a-collapse
                               v-model="activeRiverKey"
                               style="border-bottom:1px solid d9d9d9;"
+                              v-for=" targetId in index.targets" :key="targetId.id"
                             >
-                              <a-collapse-panel key="111" class="collapse_river">
+                              <a-collapse-panel :key="targetId.target.id" class="collapse_river">
                                 <template slot="header">
-                                  <div @click="searchMap">黄浦江</div>
+                                  <div >{{targetId.target.objectName}}</div>
                                 </template>
                                 <div style="padding:10px 10px;">
                                   <div>
                                     <div class="riverGroup_info">未完成</div>
                                     <a-tree
                                       v-model="checkedKeys"
-                                      @select="onSelect"
                                       :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
+                                      :treeData="targetId.incomplete"
                                     ></a-tree>
                                   </div>
-                                  <div>
+                                  <div class>
                                     <div class="riverGroup_success">已完成</div>
-                                    <a-tree
-                                      v-model="checkedKeys"
-                                      @select="onSelect"
-                                      :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
-                                    ></a-tree>
+                                    <a-tree v-model="checkedKeys" :selectedKeys="selectedKeys" :treeData="targetId.complete" class="tree_succ">
+                                      <template slot="custom" slot-scope="item">
+                                        <span>{{ item.name }}</span>
+                                      </template>
+                                    </a-tree>
                                   </div>
                                   <div>
-                                    <div class="riverGroup_warning">异常</div>
+                                    <div class="riverGroup_warning">已取消</div>
                                     <a-tree
                                       v-model="checkedKeys"
-                                      @select="onSelect"
                                       :selectedKeys="selectedKeys"
-                                      :treeData="treeData"
+                                      :treeData="targetId.anomalous"
                                     ></a-tree>
                                   </div>
                                 </div>
@@ -572,19 +570,16 @@
                         </a-collapse-panel>
                       </a-collapse>
                     </div>
-                    <div class="btn_group">
-                      <a-button class="addTask_btn" @click="detailPlan">详情</a-button>
-                    </div>
                   </a-collapse-panel>
                 </a-collapse>
               </div>
               <div v-if="nosuperKey === 'personCard'">
-                <a-collapse v-model="activePlanKey" class="active_plan">
-                  <a-collapse-panel key="1" class="collapse_header">
+                <a-collapse v-model="activePlanKey" class="active_plan" v-for=" item in planListPage1" :key="item.plan.id">
+                  <a-collapse-panel :key="item.plan.id" class="collapse_header">
                     <template slot="header">
                       <a-row type="flex" justify="space-between" align="middle">
                         <a-col :span="8">
-                          <span>计划一</span>
+                          <span>{{item.plan.name}}</span>
                         </a-col>
                         <a-col :span="16">
                           <a-progress :percent="70" />
@@ -592,33 +587,66 @@
                       </a-row>
                     </template>
                     <div class="planGroup">
-                      <a-collapse v-model="activeGroupKey">
-                        <a-collapse-panel key="11">
+                      <a-collapse v-model="activeGroupKey" v-for=" index in item.teams" :key="index.team.id">
+                        <a-collapse-panel :key="index.team.id" class="collapse_group">
                           <template slot="header">
                             <a-row type="flex" justify="space-between" align="middle">
                               <a-col :span="8">
-                                <span>组一</span>
+                                <span>{{index.team.name}}</span>
                               </a-col>
                               <a-col :span="16">
                                 <a-progress :percent="70" />
                               </a-col>
                             </a-row>
                           </template>
-                          <div class="plan_personInfo">
-                            <a-checkbox-group @change="onChange">
-                              <a-row>
-                                <a-col class="person_check" :span="24" v-for="(item,index) in personInfo" :key="index">
-                                  <a-row type="flex" justify="space-around" align="middle">
-                                    <a-col :span="20">
-                                      <a-checkbox class="checkboxClass" :value="item.id" >{{item.name}}&nbsp;({{item.position}})</a-checkbox>
-                                    </a-col>
-                                    <a-col :span="4" style="line-height:30px;">
-                                      <div style="line-height:30px;width:10px;height:10px;border-radius:50%;background-color:green;"></div>
-                                    </a-col>
-                                  </a-row> 
-                                </a-col>
-                              </a-row>
-                            </a-checkbox-group>
+                          <div class="river_group">
+                            <a-collapse
+                              v-model="activeRiverKey"
+                              style="border-bottom:1px solid d9d9d9;"
+                              v-for=" targetId in index.targets" :key="targetId.id"
+                            >
+                              <a-collapse-panel :key="targetId.target.id" class="collapse_river">
+                                <template slot="header">
+                                  <div >{{targetId.target.objectName}}</div>
+                                </template>
+                                <div style="padding:10px 10px;">
+                                  <div>
+                                    <div class="riverGroup_info">未完成</div>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="targetId.incomplete"
+                                    ></a-tree>
+                                  </div>
+                                  <div class>
+                                    <div class="riverGroup_success">已完成</div>
+                                    <a-tree v-model="checkedKeys" :selectedKeys="selectedKeys" :treeData="targetId.complete" class="tree_succ">
+                                      <template slot="custom" slot-scope="item">
+                                        <span>{{ item.name }}</span>
+                                      </template>
+                                    </a-tree>
+                                  </div>
+                                  <div>
+                                    <div class="riverGroup_warning">已取消</div>
+                                    <a-tree
+                                      v-model="checkedKeys"
+                                      :selectedKeys="selectedKeys"
+                                      :treeData="targetId.anomalous"
+                                    ></a-tree>
+                                  </div>
+                                </div>
+                                <div class="addTaskBtn">
+                                  <!-- <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button> -->
+                                  <a-button
+                                    class="addTask_btn commBtn"
+                                    icon="plus"
+                                    @click="addTaskBtn"
+                                    v-show="cBtn"
+                                  >追加任务</a-button>
+                                  <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
+                                </div>
+                              </a-collapse-panel>
+                            </a-collapse>
                           </div>
                         </a-collapse-panel>
                       </a-collapse>
@@ -766,7 +794,8 @@ import {
   groupingPage,
   planPageList,
   taskChoose,
-  joinPlanTask
+  joinPlanTask,
+  dataManual
 } from '@/api/login'
 import '../../assets/css/monitor.less'
 import 'ol/ol.css'
@@ -1004,6 +1033,7 @@ export default {
     return {
       planExisting:[],//已有计划
       planListPage:[],//计划列表
+      planListPage1:[],//计划列表
       inspectVisible: false, //调查点弹窗
       spotTaskList: [],
       taskId: '',
@@ -1218,8 +1248,7 @@ export default {
             v.clicked = false
           })
           this.riverList = arr
-        })
-        .catch(err => {})
+        }).catch(err => {})
     },
     //显示河道或调查点
     judgeDate() {
@@ -1246,21 +1275,15 @@ export default {
     },
     judgeDate1(id) {
       this.clearMap()
-      // console.log('length' + riverMontion.length)
-      
       for(const item of this.planListPage){
         for(const a of item.teams){
           for(const b of a.targets){
             var code = b.code
             if (code == 'point') {
-            
-              // this.addTaskPoint(b.latlng)
-              // this.showSurverPoint(planListPage[i].latlng,planListPage[i].id)
               this.showSurverPoint1(b)
             }
             if (code == 'river') {
-              console.log(b[i].latlng)
-              this.drawAllRiver(b[i])
+              this.drawAllRiver(b)
             }  
           }
         }
@@ -1392,10 +1415,14 @@ export default {
           for (const item of arr) {
             for (const a of item.teams) {
               for (const b of a.targets) {
-                b.latlng =b.target.coordinate
                 b.clicked = false
                 b.code = b.target.object.code
-
+                b.code = b.target.object.code
+                if (b.target.object.code =='point') {
+                  b.latlng =b.target.coordinate
+                }else{
+                  b.latlng =b.target.region 
+                }
                 for (const c of b.incomplete) {
                   c.key = c.id
                   c.title = c.name
@@ -1455,8 +1482,16 @@ export default {
               var ar = res.data.data
               ar.forEach(v => {
                 v.key = v.id
-                v.title = v.content
+                v.title = v.name
                 v.latlng = v.region[0]
+                v.code =v.status.code
+                if (v.status.code != 'hold') {
+                  arr[a].taskChoose.push(v.id)
+                }else{
+                  v.clicked = false
+                }
+                console.log(v.clicked);
+                
               })
               arr[a].taskPage = ar
             })
@@ -1526,18 +1561,15 @@ export default {
           for(const b of a.targets){
             if (b.target.id == id) {
               console.log(b.id);
-              
               b.clicked = true
-              // let arr = []
-              // arr.push(b.latlng)
-              this.map.setViewport(b.latlng)
-              // if (b.code == 'point') {
-              //   console.log(item.latlng) 
-              //   this.showSurverPoint(item)
-              // }
-              // if (item.code == 'river') {
-              //   this.drawAllRiver(item)
-              // }
+              
+              if (b.code == 'point') {
+                console.log(item.latlng) 
+                this.map.setViewport(b.latlng)
+              }
+              if (item.code == 'river') {
+                this.drawAllRiver(item)
+              }
             } else {
               b.clicked = false
             }
@@ -1850,11 +1882,16 @@ export default {
         for(const index of item.taskChoose)
         ids.push(index)
       }
-      taskChoose(ids.join(',')).then(res=>{
+      if (ids.length !=0) {
+        taskChoose(ids.join(',')).then(res=>{
 
-      })
-      this.ishidden = 2
-      this.$refs.creatGroup.planGeneration(this.planList1.id)
+        })
+        this.ishidden = 2
+        this.$refs.creatGroup.planGeneration(this.planList1.id)
+      }else{
+        this.$message.warning('请选择任务');
+      }
+      
     },
     //底部取消按钮
     canclePlanBtn() {
@@ -1862,9 +1899,41 @@ export default {
     },
     //底部下一步按钮
     showPlanBtn() {
-      this.ishidden = 3
-      this.$refs.planList.clickBtn(this.planList1.id)
-      this.$refs.planList.getstaffInspectPage(this.planList1.id)
+      this.$refs.creatGroup.judge()
+      // this.ishidden = 3
+      // this.$refs.planList.getstaffInspectPage(this.planList1.id)
+    },
+    showPlanJudge(list){
+      console.log(list);
+      
+      if (list.lenght!=0) {
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].taskList.length !=0) {
+            this.ishidden = 3
+            this.$refs.planList.getstaffInspectPage(this.planList1.id)
+            break
+          }else{
+            if (i+1 == list.length) {
+              this.$message.warning('请往分组添加调查点或河道')
+            }
+          }
+          
+        }
+        // for (const item of list) {
+        //   if (item.taskList.length !=0) {
+            
+        //   }else{
+        //     this.$message.warning('请往分组添加调查点或河道');
+        //   }
+        // }
+        
+      }else{
+        this.$message.warning('请先创建分组');
+      }
+      
+    },
+    getNowPlan(){
+      this.noTitleKey ='nowPlan'
     },
     //底部上一步按钮
     previousBtn() {
@@ -1887,19 +1956,20 @@ export default {
       this.$refs.addNewTask.showtask()
     },
     //当日计划模块详情按钮
-    detailPlan() {
-      this.$refs.planDetail.show()
+    detailPlan(id) {
+      this.$refs.planDetail.show(id)
       // this.$refs.communication.show()
     },
     //今日计划模块监管按钮
-    supervision_btn() {
-      console.log('今日计划')
-      console.log(this.firstShow)
+    supervision_btn(key) {
+      this.planListPage1=[]
+      for(const item of this.planListPage){
+        if (item.plan.id == key) {
+          this.planListPage1.push(item)
+        }
+        
+      }
       this.firstShow = !this.firstShow
-      console.log(this.firstShow)
-      // if(this.firstShow == true){
-      //   this.ishidden == 1
-      // }
       if (this.firstShow == false) {
         this.ishidden = 4
         this.loadPoint()
@@ -2133,19 +2203,21 @@ export default {
     loadPoint() {
       //随机标注点
       var bounds = this.map.getBounds()
-      var ref = this.$refs
       var sw = bounds.getSouthWest()
       var ne = bounds.getNorthEast()
       var lngSpan = Math.abs(sw.lng - ne.lng)
       var latSpan = Math.abs(ne.lat - sw.lat)
-      for (var i = 0; i < 25; i++) {
-        var point = new T.LngLat(sw.lng + lngSpan * (Math.random() * 0.7), ne.lat - latSpan * (Math.random() * 0.7))
-        var marker = new T.Marker(point)
-        this.map.addOverLay(marker)
-        marker.addEventListener('click', function() {
-          ref.communication.show()
-        })
-      }
+      dataManual('5da7d092ea6c156d792df816').then(res=>{
+        var arr = res.data.data
+        for (const item of arr) {
+          var marker = new T.Marker(item.coordinate,{id:item.id})
+          this.map.addOverLay(marker)
+          marker.addEventListener('click',this.taskPointClick )
+        }
+      })
+    },
+    taskPointClick(index){
+      this.$refs.communication.show(index)
     },
     //车辆轴迹
     cardTrack() {

@@ -37,6 +37,7 @@
     </a-modal>
 </template>
 <script>
+import { dataDetails} from '@/api/login'
 export default {
     name:'',
     data(){
@@ -71,7 +72,12 @@ export default {
         }
     },
     methods:{
-        show(){
+        show(index){
+            dataDetails(index.target.options.id).then(res=>{
+                console.log(res);
+            })
+            
+            
             this.visible = true;
         },
         cmtHandle(){
