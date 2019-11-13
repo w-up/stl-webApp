@@ -340,7 +340,7 @@
                       <a-button @click="addSurveyPoint" class="commBtn">添加调查点</a-button>
                     </a-col>
                   </a-row>
-                  <div class="riverInfo" v-for="item in riverMontion"  :key="item.value">
+                  <div class="riverInfo" v-for="(item,index) in riverMontion"  :key="item.value">
                     <div class="river_info">
                       <a-row type="flex" justify="space-between" align="middle" >
                         <a-col :span="8" @click="choosePointTask(item.id)">{{item.objectName}}</a-col>
@@ -366,7 +366,7 @@
                       checkable
                       defaultExpandAll
                       :defaultSelectedKeys="defaultSelect"
-                      v-model="item.taskChoose"
+                      v-model="checkedKeys"
                       @select="onSelect"
                       :selectedKeys="selectedKeys"
                       :treeData="item.taskPage"
@@ -374,10 +374,10 @@
                     <a-button
                       class="addTask_btn commBtn"
                       icon="plus"
-                      @click="addTaskBtn(item.id,item.objectName,item.code)"
+                      @click="addTaskBtn(index, item.id)"
                       v-show="cBtn"
                     >追加任务</a-button>
-                    <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
+                    <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool" @searchMarkDraw ="searchMarkDraw"></add-task>
                   </div>
                 </div>
                 <div v-show="ishidden == 2">
@@ -422,7 +422,7 @@
                             >
                               <a-collapse-panel :key="targetId.target.id" class="collapse_river">
                                 <template slot="header">
-                                  <div  @click="choosePointTask1(targetId.target.id)">{{targetId.target.objectName}}</div>
+                                  <div @click="searchMap">{{targetId.target.objectName}}</div>
                                 </template>
                                 <div style="padding:10px 10px;">
                                   <div>
@@ -639,7 +639,7 @@
                   <a-popover title="加入计划" placement="topLeft" trigger="click" :width="100">
                     <template slot="content">
                       <a-list size="small">
-                        <a-list-item v-for="item in planExisting" :key="item.id">
+                        <a-list-item>
                           <a-row
                             type="flex"
                             justify="space-around"
@@ -647,16 +647,46 @@
                             style="width:100%;"
                           >
                             <a-col :span="18">
-                              <span>{{item.name}}</span>
+                              <span>计划一</span>
                             </a-col>
                             <a-col :span="6">
-                              <a-icon type="plus" @click="addToPlan(item.id)" class="addToPlan" />
+                              <a-icon type="plus" @click="addToPlan" class="addToPlan" />
+                            </a-col>
+                          </a-row>
+                        </a-list-item>
+                        <a-list-item>
+                          <a-row
+                            type="flex"
+                            justify="space-around"
+                            align="middle"
+                            style="width:100%;"
+                          >
+                            <a-col :span="18">
+                              <span>计划二</span>
+                            </a-col>
+                            <a-col :span="6">
+                              <a-icon type="plus" @click="addToPlan" class="addToPlan" />
+                            </a-col>
+                          </a-row>
+                        </a-list-item>
+                        <a-list-item>
+                          <a-row
+                            type="flex"
+                            justify="space-around"
+                            align="middle"
+                            style="width:100%;"
+                          >
+                            <a-col :span="18">
+                              <span>计划三</span>
+                            </a-col>
+                            <a-col :span="6">
+                              <a-icon type="plus" @click="addToPlan" class="addToPlan" />
                             </a-col>
                           </a-row>
                         </a-list-item>
                       </a-list>
                     </template>
-                    <a-button class="groupBtn" @click="getplanPageList">加入已有计划</a-button>
+                    <a-button class="groupBtn">加入已有计划</a-button>
                   </a-popover>
                 </a-col>
               </a-row>
@@ -763,10 +793,7 @@ import {
   targetDel,
   taskInspectPage,
   getRiverList,
-  groupingPage,
-  planPageList,
-  taskChoose,
-  joinPlanTask
+  groupingPage
 } from '@/api/login'
 import '../../assets/css/monitor.less'
 import 'ol/ol.css'
@@ -958,33 +985,33 @@ const cardData = [
 ]
 
 const riverMontion = [
-  // {
-  //   id: 0,
-  //   objectName: '监测点1',
-  //   code: 'point',
-  //   clicked: false,
-  //   latlng: { lat: 31.219, lng: 121.499 },
-  //   taskPage: [
-  //     { key: '0-1', title: 'a', latlng: { lat: 31.21882, lng: 121.50364 } },
-  //     { key: '0-2', title: 'b', latlng: { lat: 31.21265, lng: 121.50227 } }
-  //   ]
-  // },
-  // { id: 1, objectName: '监测点2', code: 'point', clicked: false, latlng: { lat: 31.204, lng: 121.479 } },
-  // {
-  //   id: 2,
-  //   objectName: '黄浦江',
-  //   code: 'river',
-  //   clicked: false,
-  //   latlng: [
-  //     { lat: 31.21882, lng: 121.50364 },
-  //     { lat: 31.21265, lng: 121.50227 },
-  //     { lat: 31.20583, lng: 121.49703 },
-  //     { lat: 31.19915, lng: 121.49197 },
-  //     { lat: 31.19702, lng: 121.49591 },
-  //     { lat: 31.2164, lng: 121.50757 },
-  //     { lat: 31.21948, lng: 121.50758 }
-  //   ]
-  // }
+  {
+    id: 0,
+    objectName: '监测点1',
+    code: 'point',
+    clicked: false,
+    latlng: { lat: 31.219, lng: 121.499 },
+    taskPage: [
+      { key: '0-1', title: 'a', latlng: { lat: 31.21882, lng: 121.50364 } },
+      { key: '0-2', title: 'b', latlng: { lat: 31.21265, lng: 121.50227 } }
+    ]
+  },
+  { id: 1, objectName: '监测点2', code: 'point', clicked: false, latlng: { lat: 31.204, lng: 121.479 } },
+  {
+    id: 2,
+    objectName: '黄浦江',
+    code: 'river',
+    clicked: false,
+    latlng: [
+      { lat: 31.21882, lng: 121.50364 },
+      { lat: 31.21265, lng: 121.50227 },
+      { lat: 31.20583, lng: 121.49703 },
+      { lat: 31.19915, lng: 121.49197 },
+      { lat: 31.19702, lng: 121.49591 },
+      { lat: 31.2164, lng: 121.50757 },
+      { lat: 31.21948, lng: 121.50758 }
+    ]
+  }
 ]
 export default {
   name: 'Analysis',
@@ -1002,8 +1029,6 @@ export default {
   },
   data() {
     return {
-      planExisting:[],//已有计划
-      planListPage:[],//计划列表
       inspectVisible: false, //调查点弹窗
       spotTaskList: [],
       taskId: '',
@@ -1072,6 +1097,8 @@ export default {
       polygon: '', // 多边形对象
       markerInfo: '', //任务弹出框
       treenfo: [],
+      thisPageList:null, //添加任务子组件
+      thisPageListIndex:'',
       infoVisible: false,
       firstShow: true,
       childNode: '',
@@ -1189,25 +1216,11 @@ export default {
     // this.getinspectPointPage()
     this.getList()
     this.getPage()
-    //this.judgeDate()
+    this.judgeDate()
     // console.log("mount" + this.childNode)
     // console.log("mounted"+this.childNode)
   },
   methods: {
-    getplanPageList(){
-      var picker = this.picker.split('-')
-      var data = {
-        status: 'publish',
-        year: picker[0],
-        month: picker[1],
-        day: picker[2]
-      }
-      planPageList(data).then(res=>{
-        console.log(res);
-        this.planExisting = res.data
-        
-      })
-    },
     getList() {
       //河道列表
       getRiverList()
@@ -1242,51 +1255,6 @@ export default {
           console.log(this.riverMontion[i].latlng)
           this.drawAllRiver(this.riverMontion[i])
         }
-      }
-    },
-    judgeDate1(id) {
-      this.clearMap()
-      // console.log('length' + riverMontion.length)
-      
-      for(const item of this.planListPage){
-        for(const a of item.teams){
-          for(const b of a.targets){
-            var code = b.code
-            if (code == 'point') {
-            
-              // this.addTaskPoint(b.latlng)
-              // this.showSurverPoint(planListPage[i].latlng,planListPage[i].id)
-              this.showSurverPoint1(b)
-            }
-            if (code == 'river') {
-              console.log(b[i].latlng)
-              this.drawAllRiver(b[i])
-            }  
-          }
-        }
-      }
-    },
-    showSurverPoint1(arr) { 
-      console.log(arr);
-      
-      let icon = new T.Icon({
-        iconUrl: 'http://api.tianditu.gov.cn/img/map/markerA.png',
-        iconSize: new T.Point(19, 27),
-        iconAnchor: new T.Point(10, 25)
-      })
-      //向地图上添加中心标注
-      this.lng = arr.latlng.lng
-      this.lat = arr.latlng.lat
-      let marker = new T.Marker(new T.LngLat(this.lng, this.lat), { icon: icon })
-      this.map.addOverLay(marker)
-      var data = {
-        coordinate: this.lng + ',' + this.lat,
-        radius: '1000'
-      }
-      if(arr.clicked == true){
-        this.addCircle(this.lng,this.lat,1000,'red',2,arr.id)
-      }else{
-        this.addCircle(this.lng,this.lat,1000,'blue',2,arr.id)
       }
     },
     showSurverPoint(arr) { 
@@ -1338,14 +1306,13 @@ export default {
       this.circle.addEventListener('click',this.clickCircle)
     },
     clickCircle(e) {
+      console.log(e)
       var point = []
-      for (const item of this.riverMontion) {
+      for (const item of riverMontion) {
         if (e.lnglat.lat == item.latlng.lat && e.lnglat.lng == item.latlng.lng) {
           item.clicked = true
           point = item
-          console.log(item)
-          this.taskId = item.taskPage[0].title
-          this.inspectPointId = true
+          console.log(point)
           this.inspectVisible = true
         }else{
           item.clicked = false
@@ -1365,7 +1332,7 @@ export default {
         return year + '-' + month + '-' + date
       }
       this.picker = formatDate(new Date())
-      this.getPlanSave()
+      // this.getPlanSave()
     },
     //任务点列表
     getTask() {
@@ -1389,26 +1356,18 @@ export default {
       planPage(data)
         .then(res => {
           var arr = res.data
+          console.log(arr)
+          this.planListPage = arr
           for (const item of arr) {
             for (const a of item.teams) {
               for (const b of a.targets) {
-                b.latlng = {
-                  lat: '',
-                  lng: ''
-                }
-                b.clicked = false
-                b.code = b.target.object.code
-                b.latlng.lat = b.target.coordinate[1]
-                b.latlng.lng = b.target.coordinate[0]
                 for (const c of b.incomplete) {
                   c.key = c.id
                   c.title = c.name
-                  c.latlng  = c.region[0]
                 }
               }
             }
           }
-          this.planListPage = arr
         })
         .catch(err => {})
     },
@@ -1439,9 +1398,10 @@ export default {
       }
       targetPage(list).then(res => {
         var arr = res.data.data
+        console.log(arr)
+
         if (arr.length > 0) {
           for (let a = 0; a < arr.length; a++) {
-             arr[a].taskChoose = []
             if (arr[a].object.code != 'river') {
               arr[a].latlng = {
                 lat: '',
@@ -1462,15 +1422,14 @@ export default {
                 ar.forEach(v => {
                   v.key = v.id
                   v.title = v.content
-                  v.latlng = v.region[0]
                 })
                 arr[a].taskPage = ar
               })
             }
           }
           console.log(arr)
-          this.riverMontion = arr
-          this.judgeDate(arr)
+          this.taskPage = arr
+          this.allPointTask(arr)
         }
       })
     },
@@ -1526,41 +1485,17 @@ export default {
           this.$message.error(err.response.data.message)
         })
     },
-    choosePointTask1(id) {
-      console.log(id)
-      for(const item of this.planListPage){
-        for(const a of item.teams){
-          for(const b of a.targets){
-            if (b.target.id == id) {
-              console.log(b.id);
-              
-              b.clicked = true
-              // let arr = []
-              // arr.push(b.latlng)
-              this.map.setViewport(b.latlng)
-              // if (b.code == 'point') {
-              //   console.log(item.latlng) 
-              //   this.showSurverPoint(item)
-              // }
-              // if (item.code == 'river') {
-              //   this.drawAllRiver(item)
-              // }
-            } else {
-              b.clicked = false
-            }
-          }
-        }
-        this.judgeDate1(id)
-      }
-    },
     choosePointTask(id) {
       console.log(id)
       // this.clearMap()
-      for (const item of this.riverMontion) {
+      for (const item of riverMontion) {
         if (item.id === id) {
+          console.log(item)
           item.clicked = true
           // let arr = []
           // arr.push(item.latlng)
+          console.log('-----------------')
+          console.log(item.latlng)
           this.map.setViewport(item.latlng)
           // if (item.code == 'point') {
           //   console.log(item.latlng) 
@@ -1624,6 +1559,9 @@ export default {
       //向地图上添加面
       this.map.addOverLay(this.polygon, {})
       this.polygon.addEventListener('click', this.polylineClick)
+      // this.polygon.addEventListener('mouseover',this.polygonMouseover)
+      // this.polygon.addEventListener('mousemove',this.polygonMousemove)
+      // this.polygon.addEventListener('mouseout',this.polygonMouseout)
     },
     // 设置绘制的多边形
     setPolygonFn(lineData, color, weight, opacity, fillOpacity, title, id) {
@@ -1639,6 +1577,9 @@ export default {
       //向地图上添加面
       this.map.addOverLay(this.polygon, {})
       this.polygon.addEventListener('click', this.polygonClick)
+      // this.polygon.addEventListener('mouseover',this.polygonMouseover)
+      // this.polygon.addEventListener('mousemove',this.polygonMousemove)
+      // this.polygon.addEventListener('mouseout',this.polygonMouseout)
     },
     // 选中河流
     chooseRiver(id) {
@@ -1685,6 +1626,39 @@ export default {
       }
       this.drawRiver()
     },
+    // polygonMouseover(index){
+    //   console.log(index)
+    //   for(var item of this.riverMontion){
+    //     if(item.id == index.target.options.id){
+    //       item.clicked = true
+    //       this.defaultLineTask = item.objectName
+          
+    //     }else{
+    //       item.clicked = false
+    //     }
+    //   }  
+    //   let event = event || window.event //兼容写法
+    //   this.alertLeft = event.pageX + 10
+    //   this.alertTop = event.pageY - 44
+    //   this.alertShow = true
+    //   this.drawAllRiver(item)
+    // },
+    // polygonMousemove(){
+     
+     
+    // },
+    // polygonMouseout(){ 
+    //   var outRiver = []
+    //   for (var item of this.riverMontion) {
+    //     item.clicked = false
+    //     if(item.code == 'river'){
+    //       outRiver = item
+    //     }
+    //   } 
+    //   this.alertShow = false
+    //   console.log(outRiver.clicked)
+    //   this.drawOneRiver(outRiver)
+    // },
     // 查找函数 value:要查的坐标, latlng:查的是lng经度还是lat纬度, lineDataArr:被查询的数组
     findIndexLocal(value, latlng, lineDataArr) {
       let result = '', // 查询结果
@@ -1788,6 +1762,9 @@ export default {
         for (var j = 0; j < this.sutreeData.length; j++) {
           this.diguiTree(this.sutreeData[j])
         }
+        // var tag = document.getElementsByClassName("mainCard")
+        // var btm = document.getElementsByClassName("mainCard").lastChild
+        // btm.style.bottom = '0px'
       }
       this.clearMap()
     },
@@ -1801,6 +1778,16 @@ export default {
           this.diguiTree(item.children[i])
         }
       }
+
+      // for (var i in item) {
+      //   if (item[i].children == null) {
+      //     console.log(item[i])
+      //     this.childNode = true
+      //     return
+      //   } else {
+      //     this.diguiTree(item[i].children)
+      //   }
+      // }
     },
     onsuperChange(key, type) {
       this[type] = key
@@ -1827,23 +1814,40 @@ export default {
     },
     //日期选择
     selectData(date) {
-      this.clearMap()
-      this.riverMontion= []
       console.log(date, this.picker)
       this.getPage()
       this.getPlanSave()
     },
     //选中巡河方案
     selectPatrol() {},
-    addTaskBtn(id,name,code) {
+    addTaskBtn(index, id) {
+      console.log("addTaskBtn", index, id)
 
       // if (condition) {
 
       // }
       this.clearMap()
-      console.log(this.$refs.addTask)
+      console.log("排序前", this.$refs.addTask)
+      var pageList = [];
+      this.$refs.addTask.forEach(function(item){
+        pageList.push(item);
+      })
+      for(var i = 0; i< pageList.length; i++){
+        console.log(pageList[i]._uid)
+        for(var j = 0; j< pageList.length-i-1; j++){
+          
+          if(pageList[j]._uid > pageList[j+1]._uid){
+            var temp = pageList[j];
+            pageList[j] = pageList[j+1];
+            pageList[j+1] = temp;
+          }
+        }
+      }
+      this.thisPageList =pageList;
+      console.log("排序后", this.thisPageList)
 
-      this.$refs.addTask[0].show(this.planList1.id,id,name,code)
+      this.thisPageListIndex = index
+      this.thisPageList[index].show()
       this.cBtn = false
       // this.$refs.addTask.chooseLocation()
     },
@@ -1855,14 +1859,6 @@ export default {
     },
     //生成计划
     newPlan_btn() {
-      var ids = []
-      for(const item of this.riverMontion){
-        for(const index of item.taskChoose)
-        ids.push(index)
-      }
-      taskChoose(ids.join(',')).then(res=>{
-
-      })
       this.ishidden = 2
       this.$refs.creatGroup.planGeneration(this.planList1.id)
     },
@@ -1928,22 +1924,9 @@ export default {
       this.$refs.updateTime.show()
     },
     //加入已有计划
-    addToPlan(id) {
-      var ids = []
-      for(const item of this.riverMontion){
-        for(const index of item.taskChoose)
-        ids.push(index)
-      }
-      var data = {
-        sourcePlanId:this.planList1.id,
-        taskIds:ids.join(','),
-        targetPlanId:id
-      }
-      joinPlanTask(data).then(res=>{
-
-      })
-      this.ishidden = 2
-      this.$refs.creatGroup.planGeneration(id)
+    addToPlan() {
+      this.$message.success('加入成功')
+      this.noTitleKey = 'nowPlan'
     },
     showOk() {
       this.infoVisible = false
@@ -2287,11 +2270,13 @@ export default {
     getLineDate(e) {
       console.log(e)
       console.log(e.currentLnglats)
-      this.$refs.addTask[0].getLineDate(e.currentLnglats)
+       this.thisPageList[this.thisPageListIndex].getLineDate(e.currentLnglats)
+      // this.$refs.addTask[0].getLineDate(e.currentLnglats)
     },
     //取消追加任务
     cancelAddTask() {
       this.clearMap()
+      // this.$refs.addTask[0].cancle()
       this.cBtn = true
     },
     //添加调查点
@@ -2360,6 +2345,7 @@ export default {
     addPoint(clickPoint) {
       this.clearMap()
       console.log('aaaaaaaaaa')
+      console.log(this.thisPageListIndex)
       this.clickPoint = clickPoint
       if (this.markerTool && this.clickPoint == false) {
         this.markerTool.clear()
@@ -2372,7 +2358,8 @@ export default {
     },
     addPointDate(e) {
       console.log(e.currentLnglat)
-      this.$refs.addTask[0].getMarkDate(e.currentLnglat)
+       this.thisPageList[this.thisPageListIndex].getMarkDate(e.currentLnglat)
+      // this.$refs.addTask[0].getMarkDate(e.currentLnglat)
     },
     //画面
     addPolygonTool(clickPolygon) {
@@ -2396,7 +2383,15 @@ export default {
     },
     addPolygonDate(e) {
       console.log(e.currentLnglats)
-      this.$refs.addTask[0].getPolygonDate(e.currentLnglats)
+      console.log(this.thisPageListIndex)
+      this.thisPageList[this.thisPageListIndex].getPolygonDate(e.currentLnglats)
+      // this.$refs.addTask[0].getPolygonDate(e.currentLnglats)
+    },
+    searchMarkDraw(e){
+      console.log(e)
+      this.map.setViewport(e)
+      // this.addTaskPoint(e)
+      console.log("hhh")
     },
     //清空地图
     clearMap() {
