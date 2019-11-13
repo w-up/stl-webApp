@@ -276,6 +276,16 @@
                   </a-col>
                 </a-row>
               </a-list-item>
+              <a-list-item>
+                <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                  <a-col :span="18">
+                    <p style="margin:0;">街道显示</p>
+                  </a-col>
+                  <a-col :span="6">
+                    <a-switch size="small" v-model="riverShow" />
+                  </a-col>
+                </a-row>
+              </a-list-item>
               <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
                 <template slot="content">
                   <a-list size="small">
@@ -1508,8 +1518,12 @@ export default {
     panoramaPointClick(e) {
       console.log(e)
       // this.$refs.panorama.add()
+      // this.$refs.panorama.initPhotoSphere()
       this.$router.push({
-        path: "/supervise/Vtour"
+        path: "/supervise/Vtour",
+        query: {
+          id: "12345"
+        }
       })
     },
     // 风险地图
