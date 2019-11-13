@@ -854,7 +854,56 @@ export default {
       // this.$message.error('Click on No')
     },
     // 线点击事件
-    taskLineClick() {
+    taskLineClick(item) {
+      console.log(item.target.options.id);
+      getTaskDetail(item.target.options.id).then(res => {
+          var arr = res.data
+          this.lineList.title = arr.info.title
+          this.lineList.id = arr.info.id
+          this.lineList.content = arr.info.content
+          this.lineList.altitude = arr.info.altitude
+          this.lineList.duration = arr.info.duration
+          this.lineList.remark = arr.info.remark
+          this.lineList.duty = arr.info.duty
+          this.lineList.template = arr.info.template.code
+          // this.attachmentJpg = arr.info.kmz
+          this.lineList.times = arr.info.times
+          this.lineList.length = arr.info.length
+          this.lineList.velocity = arr.info.velocity
+          var sz = []
+          var zs= []
+          var aa =[]
+          for(const item of arr.line.rivers){
+            aa.push(item.id)
+          }
+          this.riverId =aa
+          for (let i = 0; i < arr.staff.length; i++) {
+            sz.push(arr.staff[i].role.id)
+            for (let a = 0; a < this.personnelList.length; a++) {
+              if (arr.staff[i].role.id == this.personnelList[a].id) {
+                this.personnelList[a].num = arr.staff[i].amount
+                break
+              }
+            }
+          }
+          this.roleId = sz
+          for(const item of arr.device){
+            zs.push(item.device.id)
+            for(const d of this.equipmentList){
+              for (const cc of d.children) {
+                for (const aa of cc.children) {
+                  if (item.device.id == aa.id) {
+                    aa.num = item.amount
+                    break
+                  }
+                }
+              }
+            }
+          }
+          this.deviceTypeId=zs
+          
+          console.log(arr)
+        }).catch(err => {})
       this.addTask()
     },
     // 线移入事件

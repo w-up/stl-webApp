@@ -345,9 +345,9 @@
                       <a-row type="flex" justify="space-between" align="middle" >
                         <a-col :span="8" @click="choosePointTask(item.id)">{{item.objectName}}</a-col>
                         <a-col :span="10">
-                          <a-select defaultValue @change="handleChange" style="width:100%;">
+                          <!-- <a-select defaultValue @change="handleChange" style="width:100%;">
                             <a-select-option value="jack">Jack</a-select-option>
-                          </a-select>
+                          </a-select> -->
                         </a-col>
                         <a-col :span="3">
                           <a-popconfirm
@@ -702,7 +702,7 @@
             <span>河道信息</span>
         </template>
         <div>
-          <p>河道总长：320km</p>
+          <p>河道名称：{{asasd.name}} {{asasd.objectName}}</p>
         </div>
         <template slot="footer">
           <a-button key="" @click="showCancel">取消</a-button>
@@ -1392,14 +1392,9 @@ export default {
           for (const item of arr) {
             for (const a of item.teams) {
               for (const b of a.targets) {
-                b.latlng = {
-                  lat: '',
-                  lng: ''
-                }
+                b.latlng =b.target.coordinate
                 b.clicked = false
                 b.code = b.target.object.code
-                b.latlng.lat = b.target.coordinate[1]
-                b.latlng.lng = b.target.coordinate[0]
                 for (const c of b.incomplete) {
                   c.key = c.id
                   c.title = c.name
@@ -1443,30 +1438,27 @@ export default {
           for (let a = 0; a < arr.length; a++) {
              arr[a].taskChoose = []
             if (arr[a].object.code != 'river') {
-              arr[a].latlng = {
-                lat: '',
-                lng: ''
-              }
-              arr[a].taskPage = []
+              arr[a].latlng =arr[a].coordinate
+            }else{
+              arr[a].latlng = arr[a].region
+            }
+            arr[a].taskPage = []
               arr[a].clicked = false
               arr[a].code = arr[a].object.code
-              arr[a].latlng.lat = arr[a].coordinate[1]
-              arr[a].latlng.lng = arr[a].coordinate[0]
-              var data = {
-                id: this.planList1.id,
-                object: arr[a].object.code,
-                objectId: arr[a].objectId
-              }
-              taskInspectPage(data).then(res => {
-                var ar = res.data.data
-                ar.forEach(v => {
-                  v.key = v.id
-                  v.title = v.content
-                  v.latlng = v.region[0]
-                })
-                arr[a].taskPage = ar
-              })
+            var data = {
+              id: this.planList1.id,
+              object: arr[a].object.code,
+              objectId: arr[a].objectId
             }
+            taskInspectPage(data).then(res => {
+              var ar = res.data.data
+              ar.forEach(v => {
+                v.key = v.id
+                v.title = v.content
+                v.latlng = v.region[0]
+              })
+              arr[a].taskPage = ar
+            })
           }
           console.log(arr)
           this.riverMontion = arr
@@ -1662,7 +1654,6 @@ export default {
       for (var item of this.riverMontion) {
         if (item.id == index.target.options.id) {
           item.clicked = true
-          console.log(item)
           this.asasd = item
           this.infoVisible = true
         } else {
@@ -1671,12 +1662,10 @@ export default {
          this.drawOneRiver(item)
       }
     },
-     polygonClick(index) {
-      console.log(index)
+    polygonClick(index) {
       for (var item of this.riverList) {
         if (item.id == index.target.options.id) {
           item.clicked = true
-          console.log(item)
           this.asasd = item
           this.infoVisible = true
         } else {
@@ -1951,12 +1940,17 @@ export default {
       // arrInfo.clicked = false
       // console.log(arrInfo)
       // this.drawOneRiver(arrInfo)
+      var reh = ''
+      for(const item of this.asasd.region){
+        reh = reh +item.lng +','+item.lat +'|'
+      }
       var ar = {
         id: '',
         planId: this.planList1.id,
         object: 'river',
         objectId: this.asasd.id,
-        objectName: this.asasd.name
+        objectName: this.asasd.name,
+        region:reh
       }
       targetSave(ar).then(res => {
         this.$message.success('成功')
