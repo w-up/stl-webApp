@@ -713,7 +713,19 @@ export function dataDetails(id) {
     method: 'get',
   })
 }
-
+//人工轨迹分页
+export function locusManual(data) {
+  return axios({
+    url: '/server/data/admin/regulator/manual/locus/page',
+    method: 'get',
+    data:{
+      projectId:data.projectId,
+      year:data.year,
+      month:data.month,
+      day:data.day
+    }
+  })
+}
 export function getSmsCaptcha (parameter) {
   return axios({
     url: api.SendSms,

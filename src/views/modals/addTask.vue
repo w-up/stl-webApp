@@ -176,6 +176,7 @@ export default {
                 this.list.roleId=[]
                 this.isShow = false
                 this.$parent.$parent.$parent.$parent.getinspectPointPage()
+                this.$parent.$parent.$parent.$parent.getPage()
                 this.$emit('cancleBtn')
                 
             })

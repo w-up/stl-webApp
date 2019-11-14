@@ -332,6 +332,7 @@
                     type="flex"
                     justify="center"
                     style="margin-bottom:15px;margin-top:15px;text-align:center;"
+                    v-show="hidingJudgment"
                   >
                     <a-col :span="12">
                       <a-button style="padding:0 22px;color:#1890ff;" @click="addRiverBtn">添加河道</a-button>
@@ -460,7 +461,7 @@
                                   <a-button
                                     class="addTask_btn commBtn"
                                     icon="plus"
-                                    @click="addTaskBtn"
+                                    @click="addTaskBtn1(item.plan.id,targetId.target.objectId,targetId.target.objectName,targetId.target.object.code)"
                                     v-show="cBtn"
                                   >追加任务</a-button>
                                   <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
@@ -554,16 +555,15 @@
                                     ></a-tree>
                                   </div>
                                 </div>
-                                <div class="addTaskBtn">
-                                  <!-- <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button> -->
+                                <!-- <div class="addTaskBtn">
                                   <a-button
                                     class="addTask_btn commBtn"
                                     icon="plus"
-                                    @click="addTaskBtn"
+                                    @click="addTaskBtn1(item.plan.id,targetId.target.objectId,targetId.target.objectName,targetId.target.object.code)"
                                     v-show="cBtn"
                                   >追加任务</a-button>
                                   <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
-                                </div>
+                                </div> -->
                               </a-collapse-panel>
                             </a-collapse>
                           </div>
@@ -599,7 +599,23 @@
                               </a-col>
                             </a-row>
                           </template>
-                          <div class="river_group">
+                          <div class="plan_personInfo">
+                            <a-checkbox-group @change="onChange">
+                              <a-row>
+                                <a-col class="person_check" :span="24" v-for="(asdsad,asassa) in personInfo" :key="asassa">
+                                  <a-row type="flex" justify="space-around" align="middle">
+                                    <a-col :span="20">
+                                      <a-checkbox class="checkboxClass" :value="asdsad.id" >{{asdsad.name}}&nbsp;({{asdsad.position}})</a-checkbox>
+                                    </a-col>
+                                    <a-col :span="4" style="line-height:30px;">
+                                      <div style="line-height:30px;width:10px;height:10px;border-radius:50%;background-color:green;"></div>
+                                    </a-col>
+                                  </a-row> 
+                                </a-col>
+                              </a-row>
+                            </a-checkbox-group>
+                          </div>
+                          <!-- <div class="river_group">
                             <a-collapse
                               v-model="activeRiverKey"
                               style="border-bottom:1px solid d9d9d9;"
@@ -635,19 +651,9 @@
                                     ></a-tree>
                                   </div>
                                 </div>
-                                <div class="addTaskBtn">
-                                  <!-- <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button> -->
-                                  <a-button
-                                    class="addTask_btn commBtn"
-                                    icon="plus"
-                                    @click="addTaskBtn"
-                                    v-show="cBtn"
-                                  >追加任务</a-button>
-                                  <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
-                                </div>
                               </a-collapse-panel>
                             </a-collapse>
-                          </div>
+                          </div> -->
                         </a-collapse-panel>
                       </a-collapse>
                     </div>
@@ -795,7 +801,8 @@ import {
   planPageList,
   taskChoose,
   joinPlanTask,
-  dataManual
+  dataManual,
+  locusManual
 } from '@/api/login'
 import '../../assets/css/monitor.less'
 import 'ol/ol.css'
@@ -818,91 +825,6 @@ import situtionInfo from './modules/situtionInfo'
 import updateTime from './modules/updateTime'
 import communication from './modules/communication'
 
-const sutreeData = [
-  {
-    title: '人工调查点',
-    key: '0-0',
-    scopedSlots: { title: 'custom' },
-    children: [
-      {
-        title: '调查点1',
-        key: '0-0-0',
-        scopedSlots: { title: 'custom' },
-        riverData: [
-          {
-            lat: 31.24539,
-            lng: 121.48686
-          }
-        ]
-      },
-      {
-        title: '调查点2',
-        key: '0-0-1',
-        scopedSlots: { title: 'custom' },
-        riverData: [
-          {
-            lat: 31.21882,
-            lng: 121.50364
-          }
-        ]
-      },
-      {
-        title: '调查点3',
-        key: '0-0-2',
-        scopedSlots: { title: 'custom' },
-        riverData: [
-          {
-            lat: 31.25153,
-            lng: 121.52409
-          }
-        ]
-      }
-    ]
-  }
-]
-
-const treeData = [
-  {
-    title: '人工调查点',
-    value: '0-1',
-    key: '0-1',
-    children: [
-      {
-        title: '调查点1',
-        value: '0-1-0',
-        key: '0-1-0',
-        riverData: [
-          {
-            lat: 31.24539,
-            lng: 121.48686
-          }
-        ]
-      },
-      {
-        title: '调查点2',
-        value: '0-1-1',
-        key: '0-1-1',
-        riverData: [
-          {
-            lat: 31.21882,
-            lng: 121.50364
-          }
-        ]
-      },
-      {
-        title: '调查点3',
-        value: '0-1-2',
-        key: '0-1-2',
-        riverData: [
-          {
-            lat: 31.25153,
-            lng: 121.52409
-          }
-        ]
-      }
-    ]
-  }
-]
 
 const personInfo = [
   {
@@ -1031,6 +953,7 @@ export default {
   },
   data() {
     return {
+      hidingJudgment:false,//计划显示方案
       planExisting:[],//已有计划
       planListPage:[],//计划列表
       planListPage1:[],//计划列表
@@ -1069,8 +992,6 @@ export default {
       checkedKeys: [],
       selectedKeys: [],
       defaultSelect: [], //默认选中树节点
-      treeData,
-      sutreeData,
       riverMontion, //新建计划列表模拟数据
       LineData, //模拟河道内任务点数据
       clickId:'',
@@ -1219,11 +1140,9 @@ export default {
     // this.getinspectPointPage()
     this.getList()
     this.getPage()
-    //this.judgeDate()
-    // console.log("mount" + this.childNode)
-    // console.log("mounted"+this.childNode)
   },
   methods: {
+
     getplanPageList(){
       var picker = this.picker.split('-')
       var data = {
@@ -1403,20 +1322,31 @@ export default {
     //计划列表
     getPage() {
       var picker = this.picker.split('-')
+      function tab(date1){
+        var oDate1 = new Date(date1);
+        var oDate2 = new Date();
+        if(oDate1.getTime() > oDate2.getTime()){
+          return true
+        } else {
+          return false
+        }
+      }
+      this.hidingJudgment = tab(this.picker)
       var data = {
         status: 'publish',
         year: picker[0],
         month: picker[1],
         day: picker[2]
       }
-      planPage(data)
-        .then(res => {
+      planPage(data).then(res => {
           var arr = res.data
+          var k = 0
           for (const item of arr) {
+            k = k + 1
+            item.plan.name = item.plan.name.slice(0,2) +'-'+  k
             for (const a of item.teams) {
               for (const b of a.targets) {
                 b.clicked = false
-                b.code = b.target.object.code
                 b.code = b.target.object.code
                 if (b.target.object.code =='point') {
                   b.latlng =b.target.coordinate
@@ -1804,14 +1734,14 @@ export default {
         this.ishidden = 1
       }
       if (key == 'nowPlan') {
-        //判断子节点
-        var sutree = this.sutreeData
-        console.log(this.sutreeData.length)
-        for (var j = 0; j < this.sutreeData.length; j++) {
-          this.diguiTree(this.sutreeData[j])
-        }
+        // //判断子节点
+        // var sutree = this.sutreeData
+        // console.log(this.sutreeData.length)
+        // for (var j = 0; j < this.sutreeData.length; j++) {
+        //   this.diguiTree(this.sutreeData[j])
+        // }
       }
-      this.clearMap()
+      // this.clearMap()
     },
     diguiTree(item) {
       // 没有children了，所以是叶子节点
@@ -1844,7 +1774,6 @@ export default {
             cbArr[i].click()
           }
         }, 500)
-        // this.addTaskPoint(this.cardData)
       }
     },
     //日期选择
@@ -1866,6 +1795,18 @@ export default {
       console.log(this.$refs.addTask)
 
       this.$refs.addTask[0].show(this.planList1.id,id,name,code)
+      this.cBtn = false
+      // this.$refs.addTask.chooseLocation()
+    },
+    addTaskBtn1(planId,id,name,code) {
+
+      // if (condition) {
+
+      // }
+      this.clearMap()
+      console.log(this.$refs.addTask)
+
+      this.$refs.addTask[0].show(planId,id,name,code)
       this.cBtn = false
       // this.$refs.addTask.chooseLocation()
     },
@@ -2227,6 +2168,17 @@ export default {
         opacity: 0.9, //线的透明度
         lineStyle: 'solid' //线的样式
       }
+      var picker = this.picker.split('-')
+      var data = {
+        projectId: '5da7d092ea6c156d792df816',
+        year: picker[0],
+        month: picker[1],
+        day: picker[2]
+      }
+      locusManual(data).then(res=>{
+        console.log(res.data);
+        
+      })
       var line = new T.Polyline(this.cardData, lineconfig) //创建线条的对象
       //向地图上添加线
       this.map.addOverLay(line)
@@ -2263,9 +2215,8 @@ export default {
           var lnglat = new T.LngLat(riverData[i].lng, riverData[i].lat)
           var marker = new T.Marker(lnglat)
           this.map.addOverLay(marker)
-          marker.addEventListener('mouseover', this.mouseOverTask)
-          // marker.addEventListener("mouseout",this.mouseOutTask)
-          marker.addEventListener('mousedown', this.mouseOverTask)
+          // marker.addEventListener('mouseover', this.mouseOverTask)
+          // marker.addEventListener('mousedown', this.mouseOverTask)
           this.showPosition(marker)
         }
       } else {
@@ -2327,14 +2278,6 @@ export default {
         this.map.setZoom('13')
         this.addTaskPoint(info.latlng)
 
-        // if(info.riverData.length > 1){
-        //   this.addPolyLine(info.children[i].riverData)
-        // }
-        // if(info.riverData.length == 1){
-        //   this.map.setViewport(info.riverData)
-        //   this.map.setZoom("13")
-        //   this.addTaskPoint(info.riverData)
-        // }
       }
     },
     //追加任务画线
@@ -2583,34 +2526,34 @@ export default {
     treeHover() {
       // this.selectedKeys
     },
-    mouseOverTask(e) {
-      var getLng = e.lnglat.getLng()
-      var getLat = e.lnglat.getLat()
-      for (var i = 0; i < this.treeData.length; i++) {
-        if (this.treeData[i].children) {
-          for (var item of this.treeData[i].children) {
-            if (getLat == item.riverData[i].lat && getLng == item.riverData[i].lng) {
-              var mouseSelect = item.key
-              this.selectedKeys = mouseSelect.split(',')
-            }
-          }
-        }
-      }
-    },
-    mouseOutTask(e) {
-      var getLng = e.lnglat.getLng()
-      var getLat = e.lnglat.getLat()
-      for (var i = 0; i < this.treeData.length; i++) {
-        if (this.treeData[i].children) {
-          for (var item of this.treeData[i].children) {
-            if (getLat == item.riverData[i].lat && getLng == item.riverData[i].lng) {
-              var mouseSelect = this.treeData[i].key
-              this.selectedKeys = mouseSelect.split(',')
-            }
-          }
-        }
-      }
-    }
+    // mouseOverTask(e) {
+    //   var getLng = e.lnglat.getLng()
+    //   var getLat = e.lnglat.getLat()
+    //   for (var i = 0; i < this.treeData.length; i++) {
+    //     if (this.treeData[i].children) {
+    //       for (var item of this.treeData[i].children) {
+    //         if (getLat == item.riverData[i].lat && getLng == item.riverData[i].lng) {
+    //           var mouseSelect = item.key
+    //           this.selectedKeys = mouseSelect.split(',')
+    //         }
+    //       }
+    //     }
+    //   }
+    // },
+    // mouseOutTask(e) {
+    //   var getLng = e.lnglat.getLng()
+    //   var getLat = e.lnglat.getLat()
+    //   for (var i = 0; i < this.treeData.length; i++) {
+    //     if (this.treeData[i].children) {
+    //       for (var item of this.treeData[i].children) {
+    //         if (getLat == item.riverData[i].lat && getLng == item.riverData[i].lng) {
+    //           var mouseSelect = this.treeData[i].key
+    //           this.selectedKeys = mouseSelect.split(',')
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   }
 }
 </script>
