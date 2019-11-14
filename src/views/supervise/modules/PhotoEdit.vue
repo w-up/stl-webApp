@@ -17,16 +17,9 @@
       <a-divider orientation="left"></a-divider>
       <a-row style="width:100%; margin-top:10px;" type="flex" justify="space-around">
         <a-col :span="3">
-          <a-button block>画笔</a-button>
-        </a-col>
-        <a-col :span="3">
-          <a-button block>文字</a-button>
-        </a-col>
-        <a-col :span="3">
-          <a-button block @click="clipImage">裁剪</a-button>
-        </a-col>
-        <a-col :span="3">
-          <a-button block @click="lastStep">上一步</a-button>
+          <a-button block>
+            原图 <a-switch size="small" defaultChecked />
+          </a-button>
         </a-col>
         <a-col :span="3">
           <a-button block>保存</a-button>
