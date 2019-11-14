@@ -1,26 +1,6 @@
 <template>
   <div class="supervise">
     <div id="map" ref="worldMap" v-show="showView">
-      <div class="weather">
-        <img src="../../assets/sun.png" alt="天气" />
-        <h3>29</h3>
-        <div class="text">
-          <div class="top">
-            <span class="degree_logo">℃</span>
-            <span class="weather_detail">晴(实时)</span>
-            <span class="date">9月16日 星期一</span>
-          </div>
-          <p class="degree">晴转多云 24～29℃</p>
-        </div>
-        <div class="weather_right">
-          <a-icon
-            class="right_icon"
-            :class="{'right_icon_active':weatherShow == true}"
-            @click="weatherFun"
-            type="caret-left"
-          />
-        </div>
-      </div>
       <div class="time_line">
         <ul class="time_ul">
           <li v-for="item in timeData" :key="item.id">
@@ -65,6 +45,26 @@
       </div>
       <div class="compass_pointer" @click="compass" title="指北针">
         <img class="pointer" src="../../assets/img/compassPointer.png" alt="指北针" />
+      </div>
+    </div>
+    <div class="weather">
+      <img src="../../assets/sun.png" alt="天气" />
+      <h3>29</h3>
+      <div class="text">
+        <div class="top">
+          <span class="degree_logo">℃</span>
+          <span class="weather_detail">晴(实时)</span>
+          <span class="date">9月16日 星期一</span>
+        </div>
+        <p class="degree">晴转多云 24～29℃</p>
+      </div>
+      <div class="weather_right">
+        <a-icon
+          class="right_icon"
+          :class="{'right_icon_active':weatherShow == true}"
+          @click="weatherFun"
+          type="caret-left"
+        />
       </div>
     </div>
     <div
@@ -1520,9 +1520,9 @@ export default {
       // this.$refs.panorama.add()
       // this.$refs.panorama.initPhotoSphere()
       this.$router.push({
-        path: "/supervise/Vtour",
+        path: '/supervise/Vtour',
         query: {
-          id: "12345"
+          id: '12345'
         }
       })
     },
