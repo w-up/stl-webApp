@@ -11,7 +11,7 @@ export default {
   components: {},
   data() {
     return {
-      factoryLink: require('./img/test36001.jpg'),
+      factoryLink: require('./img/test3602.jpg'),
     }
   },
   mounted() {
