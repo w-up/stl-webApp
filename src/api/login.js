@@ -579,6 +579,13 @@ export function inspectTaskSave(data) {
     data:data
   })
 }
+//任务保存
+export function inspectTaskDetail(id) {
+  return axios({
+    url: '/server/data/admin/inspect/task/detail/'+id,
+    method: 'get',
+  })
+}
 //任务批量选定
 export function taskChoose(ids) {
   return axios({
