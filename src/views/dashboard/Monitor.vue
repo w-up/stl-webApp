@@ -332,7 +332,6 @@
                     type="flex"
                     justify="center"
                     style="margin-bottom:15px;margin-top:15px;text-align:center;"
-                    v-show="hidingJudgment"
                   >
                     <a-col :span="12">
                       <a-button style="padding:0 22px;color:#1890ff;" @click="addRiverBtn">添加河道</a-button>
@@ -423,7 +422,21 @@
                             >
                               <a-collapse-panel :key="targetId.target.id" class="collapse_river">
                                 <template slot="header">
-                                  <div  @click="choosePointTask1(targetId.target.id)">{{targetId.target.objectName}}</div>
+                                  <a-row type="flex" justify="space-between" align="middle">
+                                    <a-col :span="16">
+                                      <div  @click="choosePointTask1(targetId.target.id)">{{targetId.target.objectName}}</div>
+                                    </a-col>
+                                    <a-col :span="8">
+                                      <a-popconfirm
+                                        :title="'是否确认删除'+targetId.target.objectName+'?'"
+                                        okText="确认"
+                                        cancelText="取消"
+                                        @confirm="del(targetId.target.id)"
+                                      >
+                                        <a>删除</a>
+                                      </a-popconfirm>
+                                    </a-col>
+                                  </a-row>
                                 </template>
                                 <div style="padding:10px 10px;">
                                   <div>
@@ -437,11 +450,11 @@
                                   </div>
                                   <div class>
                                     <div class="riverGroup_success">已完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="targetId.complete" class="tree_succ">
+                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="targetId.incomplete" class="tree_succ">
                                       <template slot="custom" slot-scope="item">
                                         <span>{{ item.name }}</span>
                                         <span class="">
-                                          <a-button class="but_type" :id="item.id" v-if="item.isChildNode"  @click="()=> searchItme(item)">查看</a-button>
+                                          <a-button class="but_type"   @click="()=> searchItme()">查看</a-button>
                                         </span>
                                       </template>
                                     </a-tree>
@@ -667,7 +680,7 @@
             <div v-if="ishidden == 1">
               <a-row type="flex" justify="space-around">
                 <a-col :span="10">
-                  <a-button class="groupBtn" @click="newPlan_btn">生成计划</a-button>
+                  <a-button class="groupBtn" @click="newPlan_btn"  v-show="hidingJudgment">生成计划</a-button>
                 </a-col>
                 <a-col :span="10">
                   <a-popover title="加入计划" placement="topLeft" trigger="click" :width="100">
@@ -690,7 +703,7 @@
                         </a-list-item>
                       </a-list>
                     </template>
-                    <a-button class="groupBtn" @click="getplanPageList">加入已有计划</a-button>
+                    <a-button class="groupBtn" @click="getplanPageList">加入计划</a-button>
                   </a-popover>
                 </a-col>
               </a-row>
@@ -802,7 +815,8 @@ import {
   taskChoose,
   joinPlanTask,
   dataManual,
-  locusManual
+  locusManual,
+  inspectTaskDetail
 } from '@/api/login'
 import '../../assets/css/monitor.less'
 import 'ol/ol.css'
@@ -953,7 +967,7 @@ export default {
   },
   data() {
     return {
-      hidingJudgment:false,//计划显示方案
+      hidingJudgment:true,//计划显示方案
       planExisting:[],//已有计划
       planListPage:[],//计划列表
       planListPage1:[],//计划列表
@@ -1321,25 +1335,34 @@ export default {
     },
     //计划列表
     getPage() {
-      var picker = this.picker.split('-')
-      function tab(date1){
-        var oDate1 = new Date(date1);
-        var oDate2 = new Date();
-        if(oDate1.getTime() > oDate2.getTime()){
-          return true
-        } else {
-          return false
-        }
-      }
-      this.hidingJudgment = tab(this.picker)
+      var picker = this.picker.split('-') 
       var data = {
         status: 'publish',
         year: picker[0],
         month: picker[1],
         day: picker[2]
       }
+      function tab(date1){
+        var oDate1 = new Date(date1);
+        var oDate2 = new Date();
+        if(oDate1.getTime() > oDate2.getTime()){
+          console.log(true);
+          
+          return true
+        } else {
+           console.log(false);
+          return false
+        }
+      }
+      var hidingJudgment = tab(this.picker)
+      this.planListPage = []
       planPage(data).then(res => {
           var arr = res.data
+          // if (arr.length>0) {
+          //   this.hidingJudgment = false
+          // }else{
+          //   this.hidingJudgment = true
+          // }
           var k = 0
           for (const item of arr) {
             k = k + 1
@@ -1357,13 +1380,27 @@ export default {
                   c.key = c.id
                   c.title = c.name
                   c.latlng  = c.region[0]
+                  c.scopedSlots ={
+                    title:'custom'
+                  }
                 }
               }
             }
           }
           this.planListPage = arr
+          if (this.planListPage.length ==0 && hidingJudgment == true) {
+            this.hidingJudgment = true
+          }else{
+            this.hidingJudgment =  false
+          }
+        }).catch(err => {
+          if (err.response.data.success == false && hidingJudgment == true) {
+            this.hidingJudgment = true
+          }else{
+            this.hidingJudgment = false
+          }
         })
-        .catch(err => {})
+        
     },
     //计划保存
     getPlanSave() {
@@ -1472,15 +1509,22 @@ export default {
       this.inspectPointId = false
       this.inspectVisible = false
     },
+    //今日计划河道（目标）删除
+    del(id){
+      targetDel(id).then(res=>{
+        this.$message.success('删除成功')
+        this.getPage()
+      }).catch(err => {
+        this.$message.error(err.response.data.message)
+      })
+    },
     //目标删除
     getInspectPointDel(id) {
-      targetDel(id)
-        .then(res => {
+      targetDel(id).then(res => {
           this.$message.success('删除成功')
           this.clearMap()
           this.getinspectPointPage()
-        })
-        .catch(err => {
+        }).catch(err => {
           this.$message.error(err.response.data.message)
         })
     },
@@ -1921,7 +1965,7 @@ export default {
     },
     searchItme(e) {
       this.$refs.situtionInfo.show()
-      console.log(e.key)
+      // console.log(e.key)
       // console.log('选中查看按钮' + val)
     },
     //今日计划模块修改时间
@@ -2209,58 +2253,86 @@ export default {
     },
     //添加任务点
     addTaskPoint(riverData) {
-      // console.log(riverData.length)
-      if (riverData.length != undefined) {
-        for (var i = 0; i < riverData.length; i++) {
-          var lnglat = new T.LngLat(riverData[i].lng, riverData[i].lat)
+      console.log(riverData);
+      if (riverData.region.length != undefined) {
+        console.log('1');
+        
+        for (var i = 0; i < riverData.region.length; i++) {
+          var lnglat = new T.LngLat(riverData.region[i].lng, riverData.region[i].lat)
           var marker = new T.Marker(lnglat)
           this.map.addOverLay(marker)
           // marker.addEventListener('mouseover', this.mouseOverTask)
           // marker.addEventListener('mousedown', this.mouseOverTask)
-          this.showPosition(marker)
+          this.showPosition(marker,riverData)
         }
       } else {
-        var lnglat = new T.LngLat(riverData.lng, riverData.lat)
+        var lnglat = new T.LngLat(riverData.region.lng, riverData.region.lat)
         var marker = new T.Marker(lnglat)
         this.map.addOverLay(marker)
-        this.showPosition(marker)
+        this.showPosition(marker,riverData)
       }
     },
     //地图上信息弹框
-    showPosition(marker) {
-      marker.addEventListener('click', function() {
-        var html =
-          "<div style='margin:0px;'>" +
-          "<div style='line-height:30px;font-size:18px;margin-bottom:5px'>" +
-          '采集水样标本</div>' +
-          "<div style='line-height:25px;'>" +
-          "<div><span style='color:;'>任务名称</span>：水样调查" +
-          '</div>' +
-          '<div>任务内容：现场测定：ph、溶解氧、浊度（3次）、电导率、透明度' +
-          '</div>' +
-          '<div>位置信息：上海市徐汇区龙川北路422-5' +
-          '</div>' +
-          '<div>备注：' +
-          '<div>当月计划执行次数：5' +
-          '</div>' +
-          '<div>当月待执行次数：2' +
-          '</div>' +
-          '</div>' +
-          '</div>' +
-          '</div>'
-        var infoWin = new T.InfoWindow(html)
-        marker.openInfoWindow(infoWin)
+    showPosition(marker,riverData) {
+      console.log(riverData);
+      
+      inspectTaskDetail('5dc61a560162272d8ae529d7').then(res=>{
+        console.log(res.data);
+        marker.addEventListener('click', function() {
+          var html =
+            "<div style='margin:0px;'>" +
+            "<div style='line-height:30px;font-size:18px;margin-bottom:5px'>" +riverData.name+
+            '</div>' +
+            "<div style='line-height:25px;'>" +
+            "<div><span style='color:;'>任务名称</span>：" +res.data.name+
+            '</div>' +
+            '<div>任务内容：' +res.data.content+
+            '</div>' 
+            // +'<div>位置信息：上海市徐汇区龙川北路422-5' +
+            // '</div>' 
+            // +'<div>备注：' +
+            // '<div>当月计划执行次数：5' +
+            // '</div>' +
+            // '<div>当月待执行次数：2' +
+            // '</div>' +
+            // '</div>' +
+            // '</div>' +
+            // '</div>'
+          var infoWin = new T.InfoWindow(html)
+          marker.openInfoWindow(infoWin)
+        })
       })
+      // marker.addEventListener('click', function() {
+      //   var html =
+      //     "<div style='margin:0px;'>" +
+      //     "<div style='line-height:30px;font-size:18px;margin-bottom:5px'>" +
+      //     '采集水样标本</div>' +
+      //     "<div style='line-height:25px;'>" +
+      //     "<div><span style='color:;'>任务名称</span>：水样调查" +
+      //     '</div>' +
+      //     '<div>任务内容：现场测定：ph、溶解氧、浊度（3次）、电导率、透明度' +
+      //     '</div>' +
+      //     '<div>位置信息：上海市徐汇区龙川北路422-5' +
+      //     '</div>' +
+      //     '<div>备注：' +
+      //     '<div>当月计划执行次数：5' +
+      //     '</div>' +
+      //     '<div>当月待执行次数：2' +
+      //     '</div>' +
+      //     '</div>' +
+      //     '</div>' +
+      //     '</div>'
+      //   var infoWin = new T.InfoWindow(html)
+      //   marker.openInfoWindow(infoWin)
+      // })
     },
     //河道计划点击事件
     onSelect(selectedKeys, info) {
-      console.log(info)
       console.log(selectedKeys)
       this.clearMap()
       this.selectedKeys = selectedKeys
       this.treeinfo = info.node.dataRef
       var info = info.node.dataRef
-      console.log(info)
       if (info.children) {
         for (var i = 0; i < info.children.length; i++) {
           if (info.children[i].riverData.length > 1) {
@@ -2276,7 +2348,7 @@ export default {
       } else {
         this.map.setViewport(info.latlng)
         this.map.setZoom('13')
-        this.addTaskPoint(info.latlng)
+        this.addTaskPoint(info)
 
       }
     },
