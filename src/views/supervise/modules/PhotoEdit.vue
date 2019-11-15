@@ -12,13 +12,15 @@
   >
     <a-spin :spinning="confirmLoading">
       <div class="content">
-        <tui-image-editor :include-ui="useDefaultUI" :options="options"></tui-image-editor>
+        <tui-image-editor ref="tuiImageEditor" :options="options"></tui-image-editor>
+        <!-- <tui-image-editor :include-ui="useDefaultUI" :options="options"></tui-image-editor> -->
       </div>
       <a-divider orientation="left"></a-divider>
       <a-row style="width:100%; margin-top:10px;" type="flex" justify="space-around">
         <a-col :span="3">
           <a-button block>
-            原图 <a-switch size="small" defaultChecked />
+            原图
+            <a-switch size="small" defaultChecked />
           </a-button>
         </a-col>
         <a-col :span="3">
@@ -57,7 +59,14 @@ var blackTheme = {
   'submenu.activeIcon.path': iconb
 }
 
-import { ImageEditor } from '@toast-ui/vue-image-editor'
+// import { ImageEditor } from '@toast-ui/vue-image-editor'
+// var ImageEditor = require('tui-image-editor')
+var locale_ru_RU = {
+  // override default English locale to your custom
+  // etc...
+}
+
+import ImageEditor from '@toast-ui/vue-image-editor/src/ImageEditor.vue'
 
 export default {
   data() {
@@ -68,8 +77,13 @@ export default {
       useDefaultUI: true,
       options: {
         loadImage: {
-          path: require('../../../assets/loginBg.jpg'),
-          name: 'SampleImage'
+          path: '../../../assets/loginBg.jpg',
+          name: ''
+        },
+        locale: {
+          crop: '裁剪',
+          Delete: '删除',
+          'Delete-all': '全删'
         },
         cssMaxWidth: 700,
         cssMaxHeight: 500,
@@ -84,7 +98,34 @@ export default {
     'tui-image-editor': ImageEditor
   },
   computed: {},
-  mounted() {},
+  mounted() {
+    // this.$refs.tuiImageEditor.invoke('startDrawingMode', 'FREE_DRAWING', {
+    //   width: 10,
+    //   color: 'rgba(255, 0, 0, 0.5)'
+    // })
+    // var instance = new ImageEditor(document.querySelector('#tui-image-editor'), {
+    //   includeUI: {
+    //     loadImage: {
+    //       path: '../../../assets/loginBg.jpg',
+    //       name: 'SampleImage'
+    //     },
+    //     theme: blackTheme, // or whiteTheme
+    //     menu: ['shape', 'filter'],
+    //     initMenu: 'filter',
+    //     uiSize: {
+    //       width: '1000px',
+    //       height: '700px'
+    //     },
+    //     menuBarPosition: 'bottom'
+    //   },
+    //   cssMaxWidth: 700,
+    //   cssMaxHeight: 500,
+    //   selectionStyle: {
+    //     cornerSize: 20,
+    //     rotatingPointOffset: 70
+    //   }
+    // })
+  },
   methods: {
     // 裁剪
     clipImage() {},
