@@ -1,6 +1,7 @@
 <template>
   <div class="supervise">
     <div id="map" ref="worldMap" v-show="showView">
+      <div class="time_quantum" v-show="!canDownload">{{timeQuantum}}</div>
       <div class="compass_pointer" @click="compass" title="指北针">
         <img class="pointer" src="../../assets/img/compassPointer.png" alt="指北针" />
       </div>
@@ -787,6 +788,7 @@ export default {
           ]
         }
       ],
+      timeQuantum: "", // 时间段
       weatherShow: false, //天气弹窗
       mapType: 'a',
       checked: false,
@@ -1386,6 +1388,7 @@ export default {
     // 设置时间段
     setTime(date, dateString) {
       console.log(date, dateString)
+      this.timeQuantum = `${dateString[0]} — ${dateString[1]}`
     },
     // 更多
     onSelect(keys) {
@@ -2291,7 +2294,16 @@ export default {
   right: 190px;
   top: 2px;
 }
-
+.time_quantum {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 666;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.9);
+}
 .compass_pointer {
   position: absolute;
   right: 10px;
