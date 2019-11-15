@@ -1,50 +1,50 @@
 <template>
   <div class="supervise">
     <div id="map" ref="worldMap" v-show="showView">
-      <div class="time_line">
-        <ul class="time_ul">
-          <li v-for="item in timeData" :key="item.id">
-            <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6>
-            <a-tooltip
-              placement="right"
-              class="time_item"
-              trigger="hover"
-              v-for="day in item.month"
-              :key="day.id"
-              @click="timeLineItem(item.title, day.title)"
-              :class="{'time_item_clicked':day.clicked == true}"
-            >
-              <template slot="title">
-                <span>{{item.title}}.{{day.title}}</span>
-              </template>
-              <div class="line_style">
-                <div
-                  class="line"
-                  :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
-                ></div>
-              </div>
-              <p>
-                <span
-                  :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
-                >{{day.title}}</span>
-              </p>
-            </a-tooltip>
-          </li>
-        </ul>
-        <div class="time_set">
-          <a-popover placement="rightBottom" trigger="click">
-            <template slot="content">
-              <a-range-picker @change="setTime" />
-            </template>
-            <template slot="title">
-              <span>设置时间段</span>
-            </template>
-            <a-button type="primary" icon="setting" block></a-button>
-          </a-popover>
-        </div>
-      </div>
       <div class="compass_pointer" @click="compass" title="指北针">
         <img class="pointer" src="../../assets/img/compassPointer.png" alt="指北针" />
+      </div>
+    </div>
+    <div class="time_line">
+      <ul class="time_ul">
+        <li v-for="item in timeData" :key="item.id">
+          <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6>
+          <a-tooltip
+            placement="right"
+            class="time_item"
+            trigger="hover"
+            v-for="day in item.month"
+            :key="day.id"
+            @click="timeLineItem(item.title, day.title)"
+            :class="{'time_item_clicked':day.clicked == true}"
+          >
+            <template slot="title">
+              <span>{{item.title}}.{{day.title}}</span>
+            </template>
+            <div class="line_style">
+              <div
+                class="line"
+                :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
+              ></div>
+            </div>
+            <p>
+              <span
+                :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
+              >{{day.title}}</span>
+            </p>
+          </a-tooltip>
+        </li>
+      </ul>
+      <div class="time_set">
+        <a-popover placement="rightBottom" trigger="click">
+          <template slot="content">
+            <a-range-picker @change="setTime" />
+          </template>
+          <template slot="title">
+            <span>设置时间段</span>
+          </template>
+          <a-button type="primary" icon="setting" block></a-button>
+        </a-popover>
       </div>
     </div>
     <div class="weather">
@@ -1516,13 +1516,10 @@ export default {
     },
     // 360点点击事件
     panoramaPointClick(e) {
-      console.log(e)
-      // this.$refs.panorama.add()
-      // this.$refs.panorama.initPhotoSphere()
       this.$router.push({
         path: '/supervise/Vtour',
         query: {
-          id: '12345'
+          id: e.target.options.id
         }
       })
     },
@@ -2157,6 +2154,7 @@ export default {
   top: 0;
   width: 68px;
   height: 100%;
+  height: calc(100% - 40px);
   background-color: rgba(255, 255, 255, 0.9);
   z-index: 888;
   ul {
@@ -2295,9 +2293,9 @@ export default {
 }
 
 .compass_pointer {
-  position: fixed;
+  position: absolute;
   right: 10px;
-  bottom: 332px;
+  top: 10px;
   width: 56px;
   height: 56px;
   z-index: 888;
