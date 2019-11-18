@@ -1440,7 +1440,7 @@ export default {
       let starty, startm, startd
       if (endm <= 3) {
         starty = endy - 1
-        startm = endm + 8
+        startm = endm + 9
       } else {
         starty = endy
         startm = endm - 3
