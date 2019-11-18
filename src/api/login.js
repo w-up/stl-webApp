@@ -491,7 +491,7 @@ export function SuperviseDetail(id) {
 //巡河计划列表
 export function planPage(data) {
   return axios({
-    url: '/server/data/admin/inspect/plan/day',
+    url: '/server/data/admin/inspect/plan/day/task',
     method: 'get',
     params:{
       projectId:'5da7d092ea6c156d792df816',
@@ -579,7 +579,7 @@ export function inspectTaskSave(data) {
     data:data
   })
 }
-//任务保存
+//任务详情
 export function inspectTaskDetail(id) {
   return axios({
     url: '/server/data/admin/inspect/task/detail/'+id,
@@ -723,10 +723,11 @@ export function dataDetails(id) {
 //人工轨迹分页
 export function locusManual(data) {
   return axios({
-    url: '/server/data/admin/regulator/manual/locus/page',
+    url: '/server/data/admin/inspect/plan/day/locus',
     method: 'get',
-    data:{
-      projectId:data.projectId,
+    params:{
+      // projectId:'5da7d092ea6c156d792df816',
+      status:data.status,
       year:data.year,
       month:data.month,
       day:data.day

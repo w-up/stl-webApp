@@ -9,7 +9,7 @@
       <a-button type="primary" icon="plus" style="margin-bottom:15px" @click="visible=true">添加</a-button>
       <a-table :columns="columns" :dataSource="data" bordered>
         <template slot="operation" slot-scope="row">
-          <div v-if="row.name !='风险源'&&row.name !='排口' ">
+          <div v-if="row.name !='风险源'&&row.name !='排口'&&row.name !='水面漂浮物' ">
             <a @click="add(row.id)">编辑</a>
             <a-divider type="vertical" />
             <a-popconfirm
@@ -29,7 +29,7 @@
       @ok="handleOk"
       @cancel="handleCancel"
     >
-      <el-form ref="formValidate" :model="list" :rules="ruleValidate" :label-width="110">
+      <el-form ref="formValidate" :model="list" :rules="ruleValidate" label-width="100px">
         <el-form-item label="绘制类型" prop="name">
           <el-input v-model="list.name" placeholder="请输入" style="width:200px"/>
         </el-form-item>

@@ -450,11 +450,11 @@
                                   </div>
                                   <div class>
                                     <div class="riverGroup_success">已完成</div>
-                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="targetId.incomplete" class="tree_succ">
+                                    <a-tree v-model="checkedKeys" @select="onSelect" :selectedKeys="selectedKeys" :treeData="targetId.complete" class="tree_succ">
                                       <template slot="custom" slot-scope="item">
                                         <span>{{ item.name }}</span>
                                         <span class="">
-                                          <a-button class="but_type"   @click="()=> searchItme()">查看</a-button>
+                                          <a-button class="but_type"   @click="searchItme(item.id)">查看</a-button>
                                         </span>
                                       </template>
                                     </a-tree>
@@ -491,7 +491,7 @@
                           <!-- <a-button class="groupBtn" @click="detailPlan(item.plan.id)">详情</a-button> -->
                         </a-col>
                         <a-col :span="10">
-                          <a-button class="groupBtn" @click="supervision_btn(item.plan.id)" v-if="!undone">监管</a-button>
+                          <a-button class="groupBtn" @click="supervision_btn(item.plan.id)" v-show="hidingJudgment1">监管</a-button>
                           <a-button class="groupBtn" @click="updateTime" v-if="undone">修改时间</a-button>
                         </a-col>
                       </a-row>
@@ -587,7 +587,7 @@
                 </a-collapse>
               </div>
               <div v-if="nosuperKey === 'personCard'">
-                <a-collapse v-model="activePlanKey" class="active_plan" v-for=" item in planListPage1" :key="item.plan.id">
+                <a-collapse v-model="activePlanKey" class="active_plan" v-for=" item in regulatoryPage" :key="item.plan.id">
                   <a-collapse-panel :key="item.plan.id" class="collapse_header">
                     <template slot="header">
                       <a-row type="flex" justify="space-between" align="middle">
@@ -615,10 +615,10 @@
                           <div class="plan_personInfo">
                             <a-checkbox-group @change="onChange">
                               <a-row>
-                                <a-col class="person_check" :span="24" v-for="(asdsad,asassa) in personInfo" :key="asassa">
+                                <a-col class="person_check" :span="24" v-for="(asdsad,asassa) in index.staffs" :key="asassa">
                                   <a-row type="flex" justify="space-around" align="middle">
                                     <a-col :span="20">
-                                      <a-checkbox class="checkboxClass" :value="asdsad.id" >{{asdsad.name}}&nbsp;({{asdsad.position}})</a-checkbox>
+                                      <a-checkbox class="checkboxClass" :value="asdsad.id" >{{asdsad.name}}&nbsp;({{asdsad.role}})</a-checkbox>
                                     </a-col>
                                     <a-col :span="4" style="line-height:30px;">
                                       <div style="line-height:30px;width:10px;height:10px;border-radius:50%;background-color:green;"></div>
@@ -627,46 +627,7 @@
                                 </a-col>
                               </a-row>
                             </a-checkbox-group>
-                          </div>
-                          <!-- <div class="river_group">
-                            <a-collapse
-                              v-model="activeRiverKey"
-                              style="border-bottom:1px solid d9d9d9;"
-                              v-for=" targetId in index.targets" :key="targetId.id"
-                            >
-                              <a-collapse-panel :key="targetId.target.id" class="collapse_river">
-                                <template slot="header">
-                                  <div >{{targetId.target.objectName}}</div>
-                                </template>
-                                <div style="padding:10px 10px;">
-                                  <div>
-                                    <div class="riverGroup_info">未完成</div>
-                                    <a-tree
-                                      v-model="checkedKeys"
-                                      :selectedKeys="selectedKeys"
-                                      :treeData="targetId.incomplete"
-                                    ></a-tree>
-                                  </div>
-                                  <div class>
-                                    <div class="riverGroup_success">已完成</div>
-                                    <a-tree v-model="checkedKeys" :selectedKeys="selectedKeys" :treeData="targetId.complete" class="tree_succ">
-                                      <template slot="custom" slot-scope="item">
-                                        <span>{{ item.name }}</span>
-                                      </template>
-                                    </a-tree>
-                                  </div>
-                                  <div>
-                                    <div class="riverGroup_warning">已取消</div>
-                                    <a-tree
-                                      v-model="checkedKeys"
-                                      :selectedKeys="selectedKeys"
-                                      :treeData="targetId.anomalous"
-                                    ></a-tree>
-                                  </div>
-                                </div>
-                              </a-collapse-panel>
-                            </a-collapse>
-                          </div> -->
+                          </div>>
                         </a-collapse-panel>
                       </a-collapse>
                     </div>
@@ -968,6 +929,8 @@ export default {
   data() {
     return {
       hidingJudgment:true,//计划显示方案
+      hidingJudgment1:true,
+      regulatoryPage:[],//监管列表
       planExisting:[],//已有计划
       planListPage:[],//计划列表
       planListPage1:[],//计划列表
@@ -1354,7 +1317,21 @@ export default {
           return false
         }
       }
+      function tab1(date1){
+        var oDate1 = new Date(date1);
+        var oDate2 = new Date();
+        if(oDate1.getTime() > oDate2.getTime()){
+          console.log(true);
+          return false
+          
+        } else {
+          console.log(false);
+         
+          return true
+        }
+      }
       var hidingJudgment = tab(this.picker)
+      this.hidingJudgment1 = tab1(this.picker)
       this.planListPage = []
       planPage(data).then(res => {
           var arr = res.data
@@ -1394,11 +1371,14 @@ export default {
             this.hidingJudgment =  false
           }
         }).catch(err => {
-          if (err.response.data.success == false && hidingJudgment == true) {
-            this.hidingJudgment = true
-          }else{
-            this.hidingJudgment = false
+          if (err.response !=undefined) {
+            if (err.response.data.success == false && hidingJudgment == true) {
+              this.hidingJudgment = true
+            }else{
+              this.hidingJudgment = false
+            }
           }
+          
         })
         
     },
@@ -1806,9 +1786,6 @@ export default {
       }
       if (key == 'personCard') {
         this.cardTrack()
-        // for(var i = 0;i< this.personInfo.length;i++){
-        //   console.log(this.personInfo[i].point)
-        // }
         //默认全部选中  当页面渲染完成时执行
         setTimeout(function() {
           var cbArr = document.getElementsByClassName('checkboxClass')
@@ -1963,8 +1940,8 @@ export default {
     changeInfo(key) {
       console.log(key)
     },
-    searchItme(e) {
-      this.$refs.situtionInfo.show()
+    searchItme(id) {
+      this.$refs.situtionInfo.show(id)
       // console.log(e.key)
       // console.log('选中查看按钮' + val)
     },
@@ -2029,29 +2006,57 @@ export default {
       this.checkPoint(checkedValues)
     },
     checkPoint(vals) {
-      for (var i = 0; i < this.personInfo.length; i++) {
-        var item = this.personInfo[i]
-        if (this.isExistInArr(vals, item.id)) {
-          //当前节点被选中
-          //判断当前节点是否已经存在于地图上
-          if (!this.mapMarkers.has(item.id)) {
-            //new一个marker，并以键值形式存储，以备后续操作
-            var lnglat = new T.LngLat(item.point.lng, item.point.lat)
-            var marker = new T.Marker(lnglat)
-            this.map.addOverLay(marker)
-            //存放当前marker
-            this.mapMarkers.set(item.id, marker)
-          }
-        } else {
-          //当前节点被取消勾选
-          if (this.mapMarkers.has(item.id)) {
-            //从地图删除
-            this.map.removeOverLay(this.mapMarkers.get(item.id))
-            //同时从暂存的mapMarkers中删除
-            this.mapMarkers.delete(item.id)
+      for (const reg of this.regulatoryPage) {
+        for( const index of reg.teams){
+          for( const staffs of index.staffs){
+            var item = staffs
+            if (this.isExistInArr(vals, item.id)) {
+              //当前节点被选中
+              //判断当前节点是否已经存在于地图上
+              if (!this.mapMarkers.has(item.id)) {
+                //new一个marker，并以键值形式存储，以备后续操作
+                var lnglat = new T.LngLat(item.point.lng, item.point.lat)
+                var marker = new T.Marker(lnglat)
+                this.map.addOverLay(marker)
+                //存放当前marker
+                this.mapMarkers.set(item.id, marker)
+              }
+            } else {
+              //当前节点被取消勾选
+              if (this.mapMarkers.has(item.id)) {
+                //从地图删除
+                this.map.removeOverLay(this.mapMarkers.get(item.id))
+                //同时从暂存的mapMarkers中删除
+                this.mapMarkers.delete(item.id)
+              }
+            }
           }
         }
+        
       }
+      // for (var i = 0; i < this.personInfo.length; i++) {
+      //   var item = this.personInfo[i]
+      //   if (this.isExistInArr(vals, item.id)) {
+      //     //当前节点被选中
+      //     //判断当前节点是否已经存在于地图上
+      //     if (!this.mapMarkers.has(item.id)) {
+      //       //new一个marker，并以键值形式存储，以备后续操作
+      //       var lnglat = new T.LngLat(item.point.lng, item.point.lat)
+      //       var marker = new T.Marker(lnglat)
+      //       this.map.addOverLay(marker)
+      //       //存放当前marker
+      //       this.mapMarkers.set(item.id, marker)
+      //     }
+      //   } else {
+      //     //当前节点被取消勾选
+      //     if (this.mapMarkers.has(item.id)) {
+      //       //从地图删除
+      //       this.map.removeOverLay(this.mapMarkers.get(item.id))
+      //       //同时从暂存的mapMarkers中删除
+      //       this.mapMarkers.delete(item.id)
+      //     }
+      //   }
+      // }
       console.log('当前markers=================：', this.mapMarkers.keys())
       console.log('当前markers000000000000000000：', this.mapMarkers.values())
     },
@@ -2217,16 +2222,31 @@ export default {
         projectId: '5da7d092ea6c156d792df816',
         year: picker[0],
         month: picker[1],
-        day: picker[2]
+        day: picker[2],
+        status:'publish'
       }
       locusManual(data).then(res=>{
         console.log(res.data);
-        
+        var arr = res.data
+        var k = 0
+        for (const item of arr) {
+          k = k + 1
+          item.plan.name = item.plan.name.slice(0,2) +'-'+  k
+          for (const a of item.teams) {
+            for (const b of a.staffs) {
+              b.id = b.staff.id
+              b.name = b.staff.worker.name
+              b.role = b.staff.role.name
+              b.point  = b.locus
+            }
+          }
+        }
+        this.regulatoryPage = arr
       })
-      var line = new T.Polyline(this.cardData, lineconfig) //创建线条的对象
-      //向地图上添加线
-      this.map.addOverLay(line)
-      this.addIcon()
+      // var line = new T.Polyline(this.cardData, lineconfig) //创建线条的对象
+      // //向地图上添加线
+      // this.map.addOverLay(line)
+      // this.addIcon()
     },
     //添加车辆起点图标
     addIcon() {
@@ -2253,10 +2273,7 @@ export default {
     },
     //添加任务点
     addTaskPoint(riverData) {
-      console.log(riverData);
       if (riverData.region.length != undefined) {
-        console.log('1');
-        
         for (var i = 0; i < riverData.region.length; i++) {
           var lnglat = new T.LngLat(riverData.region[i].lng, riverData.region[i].lat)
           var marker = new T.Marker(lnglat)
@@ -2274,10 +2291,7 @@ export default {
     },
     //地图上信息弹框
     showPosition(marker,riverData) {
-      console.log(riverData);
-      
-      inspectTaskDetail('5dc61a560162272d8ae529d7').then(res=>{
-        console.log(res.data);
+      inspectTaskDetail(riverData.id).then(res=>{
         marker.addEventListener('click', function() {
           var html =
             "<div style='margin:0px;'>" +
@@ -2328,7 +2342,6 @@ export default {
     },
     //河道计划点击事件
     onSelect(selectedKeys, info) {
-      console.log(selectedKeys)
       this.clearMap()
       this.selectedKeys = selectedKeys
       this.treeinfo = info.node.dataRef
