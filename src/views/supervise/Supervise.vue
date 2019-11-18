@@ -68,6 +68,9 @@
         />
       </div>
     </div>
+    <a-card size="small" class="custom_card map_level">
+      <span>层级: {{mapLevel}}</span>
+    </a-card>
     <div
       class="accordion_alert"
       v-show="phonePhoto || riskMap || waterQuality || riverRisk || outlet"
@@ -788,7 +791,7 @@ export default {
           ]
         }
       ],
-      timeQuantum: "", // 时间段
+      timeQuantum: '', // 时间段
       weatherShow: false, //天气弹窗
       mapType: 'a',
       checked: false,
@@ -1039,7 +1042,8 @@ export default {
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.25031, lng: 121.51681 } },
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24304, lng: 121.49392 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.2645, lng: 121.49356 } }
-      ]
+      ],
+      mapLevel: '' // 地图层级
     }
   },
   watch: {
@@ -1173,6 +1177,11 @@ export default {
       //   ]
       //   // interactions: defaultInteractions().extend([new DragRotateAndZoom()])
       // })
+      this.mapLevel = this.map.getZoom()
+      this.map.addEventListener('zoomend', this.getMapZoom)
+    },
+    getMapZoom() {
+      this.mapLevel = this.map.getZoom()
     },
     // 指北针
     compass() {},
@@ -2151,6 +2160,12 @@ export default {
   border-radius: 10px;
   padding: 10px;
 }
+.map_level {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 888;
+}
 .time_line {
   position: absolute;
   left: 0;
@@ -2325,7 +2340,7 @@ export default {
 .menu {
   position: fixed;
   right: 20px;
-  bottom: 10px;
+  bottom: 60px;
   width: 36px;
   z-index: 888;
   margin: 0;
