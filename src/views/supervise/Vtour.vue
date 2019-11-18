@@ -1,6 +1,12 @@
 <template>
   <div id="wrapper">
-    <div id="pano"></div>
+    <div class="left">
+      <div id="pano"></div>
+      <a-button class="log_out" @click="logOut">退出360</a-button>
+    </div>
+    <div class="right">
+      <div id="map" ref="worldMap"></div>
+    </div>
   </div>
 </template>
 <script>
@@ -11,18 +17,85 @@ export default {
   components: {},
   data() {
     return {
-      factoryLink: require('./img/test3602.jpg'),
+      // 地图对象
+      map: {},
+      panoramaPoints: [
+        {
+          id: 0,
+          name: '监测点1',
+          clicked: false,
+          latlng: { lat: 31.21493, lng: 121.49566 },
+          url: require('./img/test36001.jpg')
+        },
+        {
+          id: 1,
+          name: '监测点2',
+          clicked: false,
+          latlng: { lat: 31.22344, lng: 121.47892 },
+          url: require('./img/test3602.jpg')
+        },
+        {
+          id: 2,
+          name: '监测点3',
+          clicked: false,
+          latlng: { lat: 31.20649, lng: 121.47712 },
+          url: require('./img/test36001.jpg')
+        }
+      ],
+      panoramaLink: '', // 360链接
+      panoramaName: '', // 360名字
+      panoramaId: this.$route.query.id, // 360id
     }
   },
   mounted() {
-    this.initPhotoSphere()
+    this.initMap()
   },
   methods: {
+    initMap() {
+      //初始化地图控件
+      let zoom = 14
+      this.map = new T.Map('map')
+      this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      //创建比例尺控件对象
+      //添加比例尺控件
+      this.map.addControl(new T.Control.Scale())
+      this.map.setMinZoom(4)
+      this.map.setMaxZoom(18)
+      this.onPanorama()
+    },
+    // 360全景图
+    onPanorama() {
+      let markerTool
+      for (const item of this.panoramaPoints) {
+        markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
+        this.map.addOverLay(markerTool)
+        markerTool.addEventListener('click', this.panoramaPointClick)
+        if (this.panoramaId == item.id) {
+          this.panoramaLink = item.url
+          this.panoramaName = item.name
+        }
+      }
+      this.initPhotoSphere()
+    },
+    // 360点点击事件
+    panoramaPointClick(e) {
+      for (const item of this.panoramaPoints) {
+        if (e.target.options.id == item.id) {
+          if (this.panoramaId != item.id) {
+            this.panoramaLink = item.url
+            this.panoramaName = item.name
+            this.panoramaId = item.id
+            this.PSV.setPanorama(item.url)
+            this.PSV.setCaption(item.name)
+          }
+        }
+      }
+    },
     initPhotoSphere() {
       this.PSV = PhotoSphereViewer({
         container: document.getElementById('pano'),
-        panorama: this.factoryLink,
-        caption: '黄浦江支流',
+        panorama: this.panoramaLink,
+        caption: this.panoramaName,
         size: {
           width: '100%',
           height: '100%'
@@ -40,23 +113,52 @@ export default {
         // mousewheel: false,    // 禁止鼠标滚轮缩放
         // navbar: false,
         // navbar: ['autorotate', 'zoom', 'markers', 'caption', 'fullscreen'],
-        navbar: ['autorotate', 'zoom', 'caption', 'fullscreen'],
+        navbar: ['autorotate', 'zoom', 'caption', 'download', 'fullscreen'],
         theta_offset: 1000 // 旋转速度
         // markers: this.markersData
       })
+    },
+    logOut() {
+      this.$router.go(-1)
     }
   }
 }
 </script>
-<style scoped>
+<style lang="less" scoped>
 #wrapper {
   position: relative;
   height: calc(100vh - 64px);
   width: 100vw;
 }
+.left {
+  position: relative;
+  width: calc(100% - 300px);
+  height: 100%;
+  display: inline-block;
+  vertical-align: top;
+  .log_out {
+    position: absolute;
+    right: 10px;
+    bottom: 50px;
+    z-index: 888;
+  }
+}
+.right {
+  position: relative;
+  width: 300px;
+  height: 100%;
+  display: inline-block;
+  vertical-align: top;
+  background-color: white;
+}
 #pano {
   height: 100%;
   width: 100%;
+}
+#map {
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 </style>
 

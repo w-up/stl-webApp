@@ -1422,7 +1422,7 @@ export default {
 }
 .task_face {
   width: 100%;
-  height: calc(100vh - 210px);
+  height: calc(100vh - 205px);
   overflow: auto;
 }
 

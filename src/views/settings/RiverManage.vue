@@ -216,15 +216,17 @@ export default {
   methods: {
     getList() {
       //河道列表
-      getRiverList().then(res => {
-        let arr = res.data.data
-        arr.forEach(v => {
-          v.lineData = v.region
-          v.clicked = false
+      getRiverList()
+        .then(res => {
+          let arr = res.data.data
+          arr.forEach(v => {
+            v.lineData = v.region
+            v.clicked = false
+          })
+          this.riverList = arr
+          this.drawAllRiver()
         })
-        this.riverList = arr
-        this.drawAllRiver()
-      }).catch(err => {})
+        .catch(err => {})
     },
     initMap() {
       //初始化地图控件
@@ -243,9 +245,9 @@ export default {
       for (const item of this.riverList) {
         if (item.clicked == true) {
           // this.setBounds(item.lineData)
-          this.setPolylineFn(item.lineData, 'red', 3, 1, 0, item.name, item.id)
+          this.setPolylineFn(item.lineData, 'red', 3, 0.5, 0, item.name, item.id)
         } else {
-          this.setPolylineFn(item.lineData, 'blue', 3, 1, 0, item.name, item.id)
+          this.setPolylineFn(item.lineData, 'blue', 3, 0.5, 0, item.name, item.id)
         }
       }
     },
@@ -344,7 +346,7 @@ export default {
       //创建面对象
       // this.map.clearOverLays() //将之前绘制的清除
       this.polylineHandler.clear() //清除之前绘制的多边形
-      this.setPolylineFn(e.currentLnglats, 'blue', 3, 0.8, 0)
+      this.setPolylineFn(e.currentLnglats, 'blue', 3, 0.5, 0)
       this.$refs.addRiver.add(e.currentLnglats)
     },
     // 设置绘制的多边形
@@ -368,34 +370,13 @@ export default {
     // 多边形点击事件
     polygonClick(index) {
       console.log(index)
-      let arr = [],
-        findIndex1 = '',
-        findIndex2 = '',
-        findIndex3 = '',
-        findIndex4 = '',
-        id = ''
-      arr.push(index.target.Qr.Lq.lat)
-      arr.push(index.target.Qr.kq.lat)
-      arr.push(index.target.Qr.Lq.lng)
-      arr.push(index.target.Qr.kq.lng)
-      // console.log(arr);
-
-      findIndex1 = this.findIndexLocal(arr[0], 'lat', this.riverList)
-      findIndex2 = this.findIndexLocal(arr[1], 'lat', this.riverList)
-      findIndex3 = this.findIndexLocal(arr[2], 'lng', this.riverList)
-      findIndex4 = this.findIndexLocal(arr[3], 'lng', this.riverList)
-      // console.log(findIndex1, findIndex2,findIndex3,findIndex4)
-      if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
-        id = this.riverList[findIndex1].id
-        for (const item of this.riverList) {
-          if (item.id == id) {
-            item.clicked = true
-            console.log(item.id)
-            this.$refs.addRiver.getRiver(item.id)
-            this.$refs.addRiver.add()
-          } else {
-            item.clicked = false
-          }
+      for (const item of this.riverList) {
+        if (item.id == index.target.options.id) {
+          item.clicked = true
+          this.$refs.addRiver.getRiver(item.id)
+          this.$refs.addRiver.add()
+        } else {
+          item.clicked = false
         }
       }
     },
@@ -404,34 +385,15 @@ export default {
       if (this.once == 1) {
         return
       }
-      let arr = [],
-        findIndex1 = '',
-        findIndex2 = '',
-        findIndex3 = '',
-        findIndex4 = '',
-        id = ''
-      arr.push(index.target.Qr.Lq.lat)
-      arr.push(index.target.Qr.kq.lat)
-      arr.push(index.target.Qr.Lq.lng)
-      arr.push(index.target.Qr.kq.lng)
-      findIndex1 = this.findIndexLocal(arr[0], 'lat', this.riverList)
-      findIndex2 = this.findIndexLocal(arr[1], 'lat', this.riverList)
-      findIndex3 = this.findIndexLocal(arr[2], 'lng', this.riverList)
-      findIndex4 = this.findIndexLocal(arr[3], 'lng', this.riverList)
-
-      // console.log(findIndex1, findIndex2,findIndex3,findIndex4)
-      if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
-        id = this.riverList[findIndex1].id
-        for (const item of this.riverList) {
-          if (item.id == id) {
-            item.clicked = true
-            this.defaultRiver = item.name
-          } else {
-            item.clicked = false
-          }
+      for (const item of this.riverList) {
+        if (item.id == index.target.options.id) {
+          item.clicked = true
+          this.defaultRiver = item.name
+        } else {
+          item.clicked = false
         }
-        this.drawAllRiver()
       }
+      this.drawAllRiver()
       this.once++
     },
     polygonMousemove() {
@@ -449,35 +411,6 @@ export default {
       }
       this.drawAllRiver()
       // this.setBounds(value.lineData)
-    },
-    // 查找函数 value:要查的坐标, latlng:查的是lng经度还是lat纬度, lineDataArr:被查询的数组
-    findIndexLocal(value, latlng, lineDataArr) {
-      let result = '', // 查询结果
-        resultArr = [], // 查询结果数组
-        res = '' // 返回列表的第几个
-      if (latlng == 'lat') {
-        // 纬度
-        for (let i = 0; i < lineDataArr.length; i++) {
-          result = lineDataArr[i].lineData.findIndex(item => {
-            return value == item.lat
-          })
-          resultArr.push(result)
-        }
-      } else {
-        // 经度
-        for (let i = 0; i < lineDataArr.length; i++) {
-          result = lineDataArr[i].lineData.findIndex(item => {
-            return value == item.lng
-          })
-          resultArr.push(result)
-        }
-      }
-      for (const item of resultArr) {
-        res = resultArr.findIndex(item => {
-          return item != -1
-        })
-      }
-      return res
     },
     // 上传按钮
     addUploadRiver() {
@@ -556,6 +489,11 @@ export default {
   vertical-align: top;
   // padding: 10px;
   background-color: white;
+  .right_content {
+    width: 100%;
+    height: calc(100vh - 170px);
+    overflow: auto;
+  }
 }
 
 .ant-spin-container {
@@ -565,12 +503,6 @@ export default {
   .active_item {
     background-color: #eee;
   }
-}
-
-.right_content {
-  width: 100%;
-  height: calc(100vh - 170px);
-  overflow-y: scroll;
 }
 
 .bottom_add {

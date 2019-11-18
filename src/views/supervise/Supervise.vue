@@ -1,50 +1,51 @@
 <template>
   <div class="supervise">
     <div id="map" ref="worldMap" v-show="showView">
-      <div class="time_line">
-        <ul class="time_ul">
-          <li v-for="item in timeData" :key="item.id">
-            <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6>
-            <a-tooltip
-              placement="right"
-              class="time_item"
-              trigger="hover"
-              v-for="day in item.month"
-              :key="day.id"
-              @click="timeLineItem(item.title, day.title)"
-              :class="{'time_item_clicked':day.clicked == true}"
-            >
-              <template slot="title">
-                <span>{{item.title}}.{{day.title}}</span>
-              </template>
-              <div class="line_style">
-                <div
-                  class="line"
-                  :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
-                ></div>
-              </div>
-              <p>
-                <span
-                  :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
-                >{{day.title}}</span>
-              </p>
-            </a-tooltip>
-          </li>
-        </ul>
-        <div class="time_set">
-          <a-popover placement="rightBottom" trigger="click">
-            <template slot="content">
-              <a-range-picker @change="setTime" />
-            </template>
-            <template slot="title">
-              <span>设置时间段</span>
-            </template>
-            <a-button type="primary" icon="setting" block></a-button>
-          </a-popover>
-        </div>
-      </div>
+      <div class="time_quantum" v-show="!canDownload">{{timeQuantum}}</div>
       <div class="compass_pointer" @click="compass" title="指北针">
         <img class="pointer" src="../../assets/img/compassPointer.png" alt="指北针" />
+      </div>
+    </div>
+    <div class="time_line">
+      <ul class="time_ul">
+        <li v-for="item in timeData" :key="item.id">
+          <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6>
+          <a-tooltip
+            placement="right"
+            class="time_item"
+            trigger="hover"
+            v-for="day in item.month"
+            :key="day.id"
+            @click="timeLineItem(item.title, day.title)"
+            :class="{'time_item_clicked':day.clicked == true}"
+          >
+            <template slot="title">
+              <span>{{item.title}}.{{day.title}}</span>
+            </template>
+            <div class="line_style">
+              <div
+                class="line"
+                :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
+              ></div>
+            </div>
+            <p>
+              <span
+                :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
+              >{{day.title}}</span>
+            </p>
+          </a-tooltip>
+        </li>
+      </ul>
+      <div class="time_set">
+        <a-popover placement="rightBottom" trigger="click">
+          <template slot="content">
+            <a-range-picker @change="setTime" />
+          </template>
+          <template slot="title">
+            <span>设置时间段</span>
+          </template>
+          <a-button type="primary" icon="setting" block></a-button>
+        </a-popover>
       </div>
     </div>
     <div class="weather">
@@ -71,7 +72,7 @@
       class="accordion_alert"
       v-show="phonePhoto || riskMap || waterQuality || riverRisk || outlet"
     >
-      <a-collapse accordion>
+      <a-collapse accordion class="custom_collapse">
         <a-collapse-panel
           header="手机照片"
           :style="customStyle"
@@ -90,7 +91,16 @@
           v-show="riverRisk"
           class="custom_list"
         >
-          <a-select default-value="1" style="width:100%;">
+          <a-select
+            showSearch
+            mode="tags"
+            :allowClear="true"
+            placeholder="请选择河岸风险源等级"
+            optionFilterProp="children"
+            style="width: 100%"
+            @change="riverRiskChange"
+            :filterOption="riverRiskFilterOption"
+          >
             <a-select-option value="1">Ⅰ级</a-select-option>
             <a-select-option value="2">Ⅱ级</a-select-option>
             <a-select-option value="3">Ⅲ级</a-select-option>
@@ -168,7 +178,16 @@
           v-show="waterQuality"
           class="custom_list"
         >
-          <a-select default-value="1" style="width:100%;">
+          <a-select
+            showSearch
+            mode="tags"
+            :allowClear="true"
+            placeholder="请选择水质数据等级"
+            optionFilterProp="children"
+            style="width: 100%"
+            @change="waterQualityChange"
+            :filterOption="waterQualityFilterOption"
+          >
             <a-select-option value="1">Ⅰ-蓝色</a-select-option>
             <a-select-option value="2">Ⅱ-蓝色</a-select-option>
             <a-select-option value="3">Ⅲ-蓝色</a-select-option>
@@ -180,7 +199,16 @@
           </a-select>
         </a-collapse-panel>
         <a-collapse-panel header="排口" :style="customStyle" v-show="outlet" class="custom_list">
-          <a-select default-value="1" style="width:100%;">
+          <a-select
+            showSearch
+            mode="tags"
+            :allowClear="true"
+            placeholder="请选择排口等级"
+            optionFilterProp="children"
+            style="width: 100%"
+            @change="waterQualityChange"
+            :filterOption="waterQualityFilterOption"
+          >
             <a-select-option value="1">Ⅰ级</a-select-option>
             <a-select-option value="2">Ⅱ级</a-select-option>
             <a-select-option value="3">Ⅲ级</a-select-option>
@@ -787,6 +815,7 @@ export default {
           ]
         }
       ],
+      timeQuantum: '', // 时间段
       weatherShow: false, //天气弹窗
       mapType: 'a',
       checked: false,
@@ -1172,6 +1201,22 @@ export default {
       //   // interactions: defaultInteractions().extend([new DragRotateAndZoom()])
       // })
     },
+    // 河岸风险源
+    riverRiskChange(value) {
+      console.log(value)
+    },
+    // 河岸风险源过滤
+    riverRiskFilterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
+    // 水质监测点
+    waterQualityChange(value) {
+      console.log(value)
+    },
+    // 水质监测点过滤
+    waterQualityFilterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
     // 指北针
     compass() {},
     // 复位
@@ -1386,6 +1431,7 @@ export default {
     // 设置时间段
     setTime(date, dateString) {
       console.log(date, dateString)
+      this.timeQuantum = `${dateString[0]} — ${dateString[1]}`
     },
     // 更多
     onSelect(keys) {
@@ -1516,13 +1562,10 @@ export default {
     },
     // 360点点击事件
     panoramaPointClick(e) {
-      console.log(e)
-      // this.$refs.panorama.add()
-      // this.$refs.panorama.initPhotoSphere()
       this.$router.push({
         path: '/supervise/Vtour',
         query: {
-          id: '12345'
+          id: e.target.options.id
         }
       })
     },
@@ -2157,6 +2200,7 @@ export default {
   top: 0;
   width: 68px;
   height: 100%;
+  height: calc(100% - 40px);
   background-color: rgba(255, 255, 255, 0.9);
   z-index: 888;
   ul {
@@ -2247,12 +2291,11 @@ export default {
     text-align: center;
   }
 }
-
 .accordion_alert {
   position: absolute;
   right: 10px;
   top: 10px;
-  width: 180px;
+  width: 200px;
   background-color: white;
   z-index: 889;
   border-radius: 4px;
@@ -2293,11 +2336,20 @@ export default {
   right: 190px;
   top: 2px;
 }
-
+.time_quantum {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 666;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.9);
+}
 .compass_pointer {
-  position: fixed;
+  position: absolute;
   right: 10px;
-  bottom: 332px;
+  top: 10px;
   width: 56px;
   height: 56px;
   z-index: 888;

@@ -17,7 +17,7 @@
     <div class="right">
       <h3 style="font-size: 16px; font-weight: 600; margin:10px 0 0 10px; text-align:center;">街道管理</h3>
       <a-divider style="margin: 10px 0 10px;" />
-      <div style="padding: 0 10px">
+      <div class="right_content">
         <a-select
           showSearch
           :allowClear="true"
@@ -232,10 +232,9 @@ export default {
       this.map.clearOverLays() //将之前绘制的清除
       for (const item of this.riverList) {
         if (item.clicked == true) {
-          // this.setBounds(item.lineData)
-          this.setPolylineFn(item.lineData, 'red', 3, 1, 0)
+          this.setPolylineFn(item.lineData, 'red', 3, 1, 0, item.id, item.name)
         } else {
-          this.setPolylineFn(item.lineData, 'blue', 3, 1, 0)
+          this.setPolylineFn(item.lineData, 'blue', 3, 1, 0, item.id, item.name)
         }
       }
     },
@@ -285,13 +284,6 @@ export default {
         this.drawAllRiver()
       }
     },
-    // 绘制高亮
-    setBounds(lineArr) {
-      this.setPolylineFn(lineArr, 'red', 3, 0.8, 0)
-      this.polygon.addEventListener('click', this.polygonClick)
-      this.polygon.addEventListener('mouseover', this.polygonMouseover)
-      this.polygon.addEventListener('mouseout', this.polygonMouseout)
-    },
     // 河流删除
     confirmDelete(index) {
       // console.log(index)
@@ -314,16 +306,14 @@ export default {
     // 绘制按钮
     addDrawRiver() {
       //创建标注工具对象
-      this.polygonTool = new T.PolygonTool(this.map, {
-        showLabel: true,
+      if (this.polylineHandler) this.polylineHandler.close()
+      this.polylineHandler = new T.PolylineTool(this.map, {
         color: 'blue',
         weight: 3,
         opacity: 0.5,
         fillColor: '#FFFFFF',
-        fillOpacity: 0.3
+        fillOpacity: 0
       })
-      if (this.polylineHandler) this.polylineHandler.close()
-      this.polylineHandler = new T.PolylineTool(this.map)
       this.polylineHandler.open()
       this.polylineHandler.setTips(`<p style="padding:0px;">单击确认起点, 双击完成绘制</p>`)
       this.$notification.warning({
@@ -332,10 +322,6 @@ export default {
       })
       this.addRiverShow = false
       this.polylineHandler.addEventListener('draw', this.addDrawRivered)
-      this.polylineHandler.addEventListener('addpoint', this.addDrawRivering)
-    },
-    addDrawRivering(e) {
-      console.log(e)
     },
     // 绘制完成
     addDrawRivered(e) {
@@ -344,30 +330,19 @@ export default {
       //创建面对象
       // this.map.clearOverLays() //将之前绘制的清除
       this.polylineHandler.clear() //清除之前绘制的多边形
-      this.setPolylineFn(e.currentLnglats, 'blue', 3, 0)
-      console.log(e.currentPolyline.Qr.lat)
-      // let lat = (e.currentPolyline.Qr.Lq.lat + e.currentPolyline.Qr.kq.lat) / 2
-      // let lng = (e.currentPolyline.Qr.Lq.lng + e.currentPolyline.Qr.kq.lng) / 2
-      // let latlngobj = { lat: lat, lng: lng }
-      // // 文字标注
-      // let label = new T.Label({
-      //   text: '<b>文字标注!!!<b>',
-      //   position: latlngobj,
-      //   offset: new T.Point(-40, -30)
-      // })
-      // this.map.addOverLay(label)
-      // label.setLngLat(latlngobj)
-
+      this.setPolylineFn(e.currentLnglats, 'blue', 3, 0.5, 0)
       this.$refs.addStreet.add(e.currentLnglats)
     },
     // 设置绘制的多边形
-    setPolylineFn(lineData, color, weight, opacity, fillOpacity) {
+    setPolylineFn(lineData, color, weight, opacity, fillOpacity, id, title) {
       this.polygon = new T.Polygon(lineData, {
         color: color, //线颜色
         weight: weight, //线宽
         opacity: 0.5, //透明度
         fillColor: '#FFFFFF', //填充颜色
-        fillOpacity: fillOpacity // 填充透明度
+        fillOpacity: fillOpacity, // 填充透明度
+        id: id,
+        title: title
       })
       //向地图上添加面
       this.map.addOverLay(this.polygon)
@@ -379,32 +354,13 @@ export default {
     // 多边形点击事件
     polygonClick(index) {
       this.$refs.addStreet.add()
-      let arr = [],
-        findIndex1 = '',
-        findIndex2 = '',
-        findIndex3 = '',
-        findIndex4 = '',
-        id = ''
-      arr.push(index.target.Qr.Lq.lat)
-      arr.push(index.target.Qr.kq.lat)
-      arr.push(index.target.Qr.Lq.lng)
-      arr.push(index.target.Qr.kq.lng)
-      // console.log(arr);
-
-      findIndex1 = this.findIndexLocal(arr[0], 'lat', this.riverList)
-      findIndex2 = this.findIndexLocal(arr[1], 'lat', this.riverList)
-      findIndex3 = this.findIndexLocal(arr[2], 'lng', this.riverList)
-      findIndex4 = this.findIndexLocal(arr[3], 'lng', this.riverList)
-      // console.log(findIndex1, findIndex2,findIndex3,findIndex4)
-      if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
-        id = this.riverList[findIndex1].id
-        for (const item of this.riverList) {
-          this.$refs.addStreet.getStreet(item.id)
-          if (item.id == findIndex1) {
-            item.clicked = true
-          } else {
-            item.clicked = false
-          }
+      console.log(index)
+      for (const item of this.riverList) {
+        this.$refs.addStreet.getStreet(item.id)
+        if (item.id == index.target.options.id) {
+          item.clicked = true
+        } else {
+          item.clicked = false
         }
       }
     },
@@ -413,34 +369,15 @@ export default {
       if (this.once == 1) {
         return
       }
-      let arr = [],
-        findIndex1 = '',
-        findIndex2 = '',
-        findIndex3 = '',
-        findIndex4 = '',
-        id = ''
-      arr.push(index.target.Qr.Lq.lat)
-      arr.push(index.target.Qr.kq.lat)
-      arr.push(index.target.Qr.Lq.lng)
-      arr.push(index.target.Qr.kq.lng)
-      findIndex1 = this.findIndexLocal(arr[0], 'lat', this.riverList)
-      findIndex2 = this.findIndexLocal(arr[1], 'lat', this.riverList)
-      findIndex3 = this.findIndexLocal(arr[2], 'lng', this.riverList)
-      findIndex4 = this.findIndexLocal(arr[3], 'lng', this.riverList)
-
-      // console.log(findIndex1, findIndex2,findIndex3,findIndex4)
-      if ((findIndex1 == findIndex2) == (findIndex3 == findIndex4)) {
-        id = this.riverList[findIndex1].id
-        for (const item of this.riverList) {
-          if (item.id == id) {
-            item.clicked = true
-            this.defaultRiver = item.name
-          } else {
-            item.clicked = false
-          }
+      for (const item of this.riverList) {
+        if (item.id == index.target.options.id) {
+          item.clicked = true
+          this.defaultRiver = item.name
+        } else {
+          item.clicked = false
         }
-        this.drawAllRiver()
       }
+      this.drawAllRiver()
       this.once++
     },
     polygonMousemove() {
@@ -457,42 +394,9 @@ export default {
         item.clicked = false
       }
       this.drawAllRiver()
-      // this.setBounds(value.lineData)
-    },
-    // 查找函数 value:要查的坐标, latlng:查的是lng经度还是lat纬度, lineDataArr:被查询的数组
-    findIndexLocal(value, latlng, lineDataArr) {
-      let result = '', // 查询结果
-        resultArr = [], // 查询结果数组
-        res = '' // 返回列表的第几个
-      if (latlng == 'lat') {
-        // 纬度
-        for (let i = 0; i < lineDataArr.length; i++) {
-          result = lineDataArr[i].lineData.findIndex(item => {
-            return value == item.lat
-          })
-          resultArr.push(result)
-        }
-      } else {
-        // 经度
-        for (let i = 0; i < lineDataArr.length; i++) {
-          result = lineDataArr[i].lineData.findIndex(item => {
-            return value == item.lng
-          })
-          resultArr.push(result)
-        }
-      }
-      for (const item of resultArr) {
-        res = resultArr.findIndex(item => {
-          return item != -1
-        })
-      }
-      return res
     },
     // 上传按钮
     addUploadRiver() {
-      console.log('123')
-      console.log(currentDistance)
-      console.log(allPolylines)
       this.$refs.addStreet.add()
       this.addRiverShow = false
     }
@@ -577,6 +481,12 @@ export default {
   vertical-align: top;
   // padding: 10px;
   background-color: white;
+  .right_content {
+    padding: 0 10px;
+    width: 100%;
+    height: calc(100vh - 170px);
+    overflow: auto;
+  }
 }
 
 .ant-spin-container {
