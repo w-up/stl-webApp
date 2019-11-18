@@ -6,9 +6,6 @@
     </div>
     <div class="right">
       <div id="map" ref="worldMap"></div>
-      <a-card size="small" class="custom_card map_level">
-        <span>层级: {{mapLevel}}</span>
-      </a-card>
     </div>
   </div>
 </template>
@@ -48,7 +45,6 @@ export default {
       panoramaLink: '', // 360链接
       panoramaName: '', // 360名字
       panoramaId: this.$route.query.id, // 360id
-      mapLevel: '' // 地图层级
     }
   },
   mounted() {
@@ -66,11 +62,6 @@ export default {
       this.map.setMinZoom(4)
       this.map.setMaxZoom(18)
       this.onPanorama()
-      this.mapLevel = this.map.getZoom()
-      this.map.addEventListener('zoomend', this.getMapZoom)
-    },
-    getMapZoom() {
-      this.mapLevel = this.map.getZoom()
     },
     // 360全景图
     onPanorama() {
@@ -159,12 +150,6 @@ export default {
   display: inline-block;
   vertical-align: top;
   background-color: white;
-  .map_level {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    z-index: 888;
-  }
 }
 #pano {
   height: 100%;
