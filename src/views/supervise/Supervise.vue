@@ -37,9 +37,18 @@
         </li>
       </ul>
       <div class="time_set">
-        <a-popover placement="rightBottom" trigger="click">
+        <a-popover
+          placement="rightBottom"
+          trigger="click"
+          v-model="timeSetShow"
+          @visibleChange="setTimeShow"
+        >
           <template slot="content">
-            <a-range-picker @change="setTime" />
+            <a-range-picker
+              @change="setTime"
+              :defaultValue="[moment(startDate, dateFormat), moment(endDate, dateFormat)]"
+              :format="dateFormat"
+            />
           </template>
           <template slot="title">
             <span>设置时间段</span>
@@ -60,12 +69,11 @@
         <p class="degree">晴转多云 24～29℃</p>
       </div>
       <div class="weather_right">
-        <a-icon
-          class="right_icon"
-          :class="{'right_icon_active':weatherShow == true}"
-          @click="weatherFun"
-          type="caret-left"
-        />
+        <a-icon class="right_icon" type="caret-left" />
+        <!-- 天气弹窗 -->
+        <div class="weather_alert">
+          <div class="weather_content"></div>12356
+        </div>
       </div>
     </div>
     <div
@@ -577,8 +585,6 @@
         </a-popover>
       </li>
     </ul>
-    <!-- 天气弹窗 -->
-    <div class="weather_alert" v-show="weatherShow"></div>
     <!-- 颜色选择框 -->
     <a-card
       size="small"
@@ -692,6 +698,8 @@ import PhotoEdit from './modules/PhotoEdit'
 import AddOutlet from './modules/AddOutlet'
 import LookPanorama from './modules/LookPanorama'
 
+import moment from 'moment' // 时间格式
+
 import 'ol/ol.css'
 import Map from 'ol/Map'
 import View from 'ol/View'
@@ -740,6 +748,7 @@ export default {
         // 文件上传
         authorization: 'authorization-text'
       },
+      timeSetShow: false, // 时间弹窗显隐
       timeData: [
         {
           id: 0,
@@ -816,7 +825,9 @@ export default {
         }
       ],
       timeQuantum: '', // 时间段
-      weatherShow: false, //天气弹窗
+      dateFormat: 'YYYY-MM-DD',
+      startDate: '', // 开始日期
+      endDate: '', // 结束日期
       mapType: 'a',
       checked: false,
       sharedChecked: false,
@@ -1138,30 +1149,9 @@ export default {
   mounted() {
     let that = this
     this.initMap()
-    // this.watchAllSwitch()
-    // this.photoAlert = true
+    this.getTimeQuantum() // 获取时间段
   },
   methods: {
-    // 时间轴
-    timeLineItem(mouth, index) {
-      for (const item of this.timeData) {
-        if (mouth == item.title) {
-          for (const value of item.month) {
-            if (value.level != 2) {
-              if (value.title == index) {
-                value.clicked = true
-              } else {
-                value.clicked = false
-              }
-            }
-          }
-        }
-      }
-    },
-    // 天气
-    weatherFun() {
-      this.weatherShow = !this.weatherShow
-    },
     initMap() {
       // 初始化地图控件
       let zoom = 14
@@ -1428,11 +1418,61 @@ export default {
         }
       }
     },
+    // 设置时间段显隐
+    setTimeShow(index) {
+      if (!this.historyData) {
+        this.$message.warning('请先开启 查看历史数据 后再选择日期')
+        this.timeSetShow = false
+      }
+    },
     // 设置时间段
     setTime(date, dateString) {
       console.log(date, dateString)
-      this.timeQuantum = `${dateString[0]} — ${dateString[1]}`
+      this.startDate = dateString[0]
+      this.endDate = dateString[1]
+      this.timeQuantum = `${dateString[0]} ~ ${dateString[1]}`
     },
+    getTimeQuantum() {
+      let myDate = new Date()
+      let endy = myDate.getFullYear() //获取完整的年份(4位,1970-????)
+      let endm = myDate.getMonth() + 1 //获取当前月份(0-11,0代表1月)
+      let endd = myDate.getDate() //获取当前日(1-31)
+      let starty, startm, startd
+      if (endm <= 3) {
+        starty = endy - 1
+        startm = endm + 8
+      } else {
+        starty = endy
+        startm = endm - 3
+      }
+      this.startDate = `${starty}-${startm}-${endd}`
+      this.endDate = `${endy}-${endm}-${endd}`
+      this.timeQuantum = `${this.startDate} ~ ${this.endDate}`
+      console.log(this.timeQuantum)
+    },
+    // 时间轴
+    timeLineItem(mouth, index) {
+      console.log(mouth, index)
+      for (const item of this.timeData) {
+        if (mouth == item.title) {
+          for (const value of item.month) {
+            if (value.level != 2) {
+              if (value.title == index) {
+                value.clicked = true
+              } else {
+                value.clicked = false
+              }
+            }
+          }
+        } else {
+          for (const value of item.month) {
+            value.clicked = false
+          }
+        }
+      }
+    },
+    // 时间格式
+    moment,
     // 更多
     onSelect(keys) {
       console.log('Trigger Select', keys)
@@ -2105,10 +2145,9 @@ export default {
   z-index: 888;
   background-color: rgba(255, 255, 255, 1);
   opacity: 0.9;
-  overflow: hidden;
   border-radius: 10px;
   border: 1px solid rgb(204, 204, 204);
-  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.05);
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
   padding: 13px;
   display: flex;
   display: -webkit-flex;
@@ -2158,6 +2197,7 @@ export default {
     }
   }
   .weather_right {
+    position: relative;
     width: 46px;
     height: 100%;
     border-left: 1px solid rgba(216, 216, 216, 0.26);
@@ -2173,7 +2213,12 @@ export default {
       -moz-transition: 0.5s; /* Firefox 4 */
       -webkit-transition: 0.5s; /* Safari and Chrome */
     }
-    .right_icon_active {
+  }
+  .weather_right:hover {
+    .weather_alert {
+      display: block;
+    }
+    .right_icon {
       color: #1890ff;
       transform: rotate(180deg);
       -ms-transform: rotate(180deg); /* IE 9 */
@@ -2183,16 +2228,20 @@ export default {
   }
 }
 .weather_alert {
+  display: none;
   position: absolute;
-  left: 490px;
-  top: 10px;
+  left: 50px;
+  top: -14px;
   z-index: 888;
-  width: 320px;
-  height: 320px;
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
-  padding: 10px;
+  padding-left: 20px;
+  .weather_content {
+    width: 320px;
+    height: 320px;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 10px;
+  }
 }
 .time_line {
   position: absolute;
