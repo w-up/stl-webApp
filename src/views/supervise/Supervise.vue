@@ -68,14 +68,11 @@
         />
       </div>
     </div>
-    <a-card size="small" class="custom_card map_level">
-      <span>层级: {{mapLevel}}</span>
-    </a-card>
     <div
       class="accordion_alert"
       v-show="phonePhoto || riskMap || waterQuality || riverRisk || outlet"
     >
-      <a-collapse accordion>
+      <a-collapse accordion class="custom_collapse">
         <a-collapse-panel
           header="手机照片"
           :style="customStyle"
@@ -94,7 +91,16 @@
           v-show="riverRisk"
           class="custom_list"
         >
-          <a-select default-value="1" style="width:100%;">
+          <a-select
+            showSearch
+            mode="tags"
+            :allowClear="true"
+            placeholder="请选择河岸风险源等级"
+            optionFilterProp="children"
+            style="width: 100%"
+            @change="riverRiskChange"
+            :filterOption="riverRiskFilterOption"
+          >
             <a-select-option value="1">Ⅰ级</a-select-option>
             <a-select-option value="2">Ⅱ级</a-select-option>
             <a-select-option value="3">Ⅲ级</a-select-option>
@@ -172,7 +178,16 @@
           v-show="waterQuality"
           class="custom_list"
         >
-          <a-select default-value="1" style="width:100%;">
+          <a-select
+            showSearch
+            mode="tags"
+            :allowClear="true"
+            placeholder="请选择水质数据等级"
+            optionFilterProp="children"
+            style="width: 100%"
+            @change="waterQualityChange"
+            :filterOption="waterQualityFilterOption"
+          >
             <a-select-option value="1">Ⅰ-蓝色</a-select-option>
             <a-select-option value="2">Ⅱ-蓝色</a-select-option>
             <a-select-option value="3">Ⅲ-蓝色</a-select-option>
@@ -184,7 +199,16 @@
           </a-select>
         </a-collapse-panel>
         <a-collapse-panel header="排口" :style="customStyle" v-show="outlet" class="custom_list">
-          <a-select default-value="1" style="width:100%;">
+          <a-select
+            showSearch
+            mode="tags"
+            :allowClear="true"
+            placeholder="请选择排口等级"
+            optionFilterProp="children"
+            style="width: 100%"
+            @change="waterQualityChange"
+            :filterOption="waterQualityFilterOption"
+          >
             <a-select-option value="1">Ⅰ级</a-select-option>
             <a-select-option value="2">Ⅱ级</a-select-option>
             <a-select-option value="3">Ⅲ级</a-select-option>
@@ -1042,8 +1066,7 @@ export default {
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.25031, lng: 121.51681 } },
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24304, lng: 121.49392 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.2645, lng: 121.49356 } }
-      ],
-      mapLevel: '' // 地图层级
+      ]
     }
   },
   watch: {
@@ -1177,11 +1200,22 @@ export default {
       //   ]
       //   // interactions: defaultInteractions().extend([new DragRotateAndZoom()])
       // })
-      this.mapLevel = this.map.getZoom()
-      this.map.addEventListener('zoomend', this.getMapZoom)
     },
-    getMapZoom() {
-      this.mapLevel = this.map.getZoom()
+    // 河岸风险源
+    riverRiskChange(value) {
+      console.log(value)
+    },
+    // 河岸风险源过滤
+    riverRiskFilterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
+    // 水质监测点
+    waterQualityChange(value) {
+      console.log(value)
+    },
+    // 水质监测点过滤
+    waterQualityFilterOption(input, option) {
+      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
     // 指北针
     compass() {},
@@ -2160,12 +2194,6 @@ export default {
   border-radius: 10px;
   padding: 10px;
 }
-.map_level {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  z-index: 888;
-}
 .time_line {
   position: absolute;
   left: 0;
@@ -2263,12 +2291,11 @@ export default {
     text-align: center;
   }
 }
-
 .accordion_alert {
   position: absolute;
   right: 10px;
   top: 10px;
-  width: 180px;
+  width: 200px;
   background-color: white;
   z-index: 889;
   border-radius: 4px;
@@ -2340,7 +2367,7 @@ export default {
 .menu {
   position: fixed;
   right: 20px;
-  bottom: 60px;
+  bottom: 10px;
   width: 36px;
   z-index: 888;
   margin: 0;
