@@ -719,6 +719,14 @@
         <a-radio-button value="4" @click="toolIndexFun(5)">测距</a-radio-button>
       </a-radio-group>
     </a-card>
+    <!-- 鼠标跟随弹窗 -->
+    <div
+      class="mouse_alert"
+      v-show="alertShow"
+      :style="{left: alertLeft + 'px', top: alertTop + 'px'}"
+    >
+      <span>{{defaultRiver}}</span>
+    </div>
     <!-- 风险源信息 -->
     <risk-source-info ref="riskInfo"></risk-source-info>
     <!-- 添加风险源 -->
@@ -1013,65 +1021,13 @@ export default {
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.22344, lng: 121.47892 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
       ],
-      riverShowPoints: [
-        // {
-        //   id: 0,
-        //   name: '黄浦江',
-        //   clicked: true,
-        //   lineData: [
-        //     { lat: 31.21882, lng: 121.50364 },
-        //     { lat: 31.21265, lng: 121.50227 },
-        //     { lat: 31.20583, lng: 121.49703 },
-        //     { lat: 31.19915, lng: 121.49197 },
-        //     { lat: 31.19702, lng: 121.49591 },
-        //     { lat: 31.2164, lng: 121.50757 },
-        //     { lat: 31.21948, lng: 121.50758 }
-        //   ]
-        // },
-        // {
-        //   id: 1,
-        //   name: '大治河',
-        //   clicked: false,
-        //   lineData: [
-        //     { lat: 31.25153, lng: 121.52409 },
-        //     { lat: 31.25355, lng: 121.53085 },
-        //     { lat: 31.25858, lng: 121.53934 },
-        //     { lat: 31.25535, lng: 121.54334 },
-        //     { lat: 31.2499, lng: 121.53353 },
-        //     { lat: 31.24786, lng: 121.52737 }
-        //   ]
-        // }
-      ],
-      streetShowPoints: [
-        // {
-        //   id: 0,
-        //   name: '黄浦江',
-        //   clicked: true,
-        //   lineData: [
-        //     { lat: 31.21882, lng: 121.50364 },
-        //     { lat: 31.21265, lng: 121.50227 },
-        //     { lat: 31.20583, lng: 121.49703 },
-        //     { lat: 31.19915, lng: 121.49197 },
-        //     { lat: 31.19702, lng: 121.49591 },
-        //     { lat: 31.2164, lng: 121.50757 },
-        //     { lat: 31.21948, lng: 121.50758 }
-        //   ]
-        // },
-        // {
-        //   id: 1,
-        //   name: '大治河',
-        //   clicked: false,
-        //   lineData: [
-        //     { lat: 31.25153, lng: 121.52409 },
-        //     { lat: 31.25355, lng: 121.53085 },
-        //     { lat: 31.25858, lng: 121.53934 },
-        //     { lat: 31.25535, lng: 121.54334 },
-        //     { lat: 31.2499, lng: 121.53353 },
-        //     { lat: 31.24786, lng: 121.52737 },
-        //     { lat: 31.24682, lng: 121.51709 }
-        //   ]
-        // }
-      ],
+      alertLeft: -1000,
+      alertTop: -1000,
+      alertShow: false, // 名字弹窗
+      defaultRiver: '', // 河道街道名字
+      once: 0, // 移入次数
+      riverShowList: [], // 河道
+      streetShowList: [], //街道
       phonePhotoPoints: [
         {
           id: 0,
@@ -1332,23 +1288,27 @@ export default {
     this.getTimeQuantum() // 获取时间段
   },
   methods: {
-    getRiverStreeList(){
-      getStreetList().then(res => {
-        let arr = res.data.data
-        arr.forEach(v => {
-          v.lineData = v.region
-          v.clicked = false
+    getRiverStreeList() {
+      getStreetList()
+        .then(res => {
+          let arr = res.data.data
+          arr.forEach(v => {
+            v.lineData = v.region
+            v.clicked = false
+          })
+          this.streetShowList = arr
         })
-        this.streetShowPoints = arr
-      }).catch(err => {})
-      getRiverList().then(res => {
-        let arr = res.data.data
-        arr.forEach(v => {
-          v.lineData = v.region
-          v.clicked = false
+        .catch(err => {})
+      getRiverList()
+        .then(res => {
+          let arr = res.data.data
+          arr.forEach(v => {
+            v.lineData = v.region
+            v.clicked = false
+          })
+          this.riverShowList = arr
         })
-        this.riverShowPoints = arr
-      }).catch(err => {})
+        .catch(err => {})
     },
     initMap() {
       // 初始化地图控件
@@ -1769,7 +1729,7 @@ export default {
     // 河道显示
     onRiverShow() {
       if (this.riverShow) {
-        for (const item of this.riverShowPoints) {
+        for (const item of this.riverShowList) {
           let polygon = new T.Polygon(item.lineData, {
             color: 'blue', //线颜色
             weight: 3, //线宽
@@ -1781,13 +1741,58 @@ export default {
           })
           //向地图上添加面
           this.map.addOverLay(polygon)
+          polygon.addEventListener('click', this.polygonClick)
+          polygon.addEventListener('mouseover', this.polygonMouseover)
+          polygon.addEventListener('mousemove', this.polygonMousemove)
+          polygon.addEventListener('mouseout', this.polygonMouseout)
         }
+      }
+    },
+    // 多边形点击事件
+    polygonClick(index) {
+      console.log(index)
+      for (const item of this.riverShowList) {
+        if (item.id == index.target.options.id) {
+          item.clicked = true
+        } else {
+          item.clicked = false
+        }
+      }
+    },
+    // 多边形移入事件
+    polygonMouseover(index) {
+      if (this.once == 1) {
+        return
+      }
+      for (const item of this.riverShowList) {
+        if (item.id == index.target.options.id) {
+          item.clicked = true
+          this.defaultRiver = item.name
+          console.log(this.defaultRiver)
+        } else {
+          item.clicked = false
+        }
+      }
+      this.once++
+    },
+    polygonMousemove() {
+      let event = event || window.event //兼容写法
+      this.alertLeft = event.pageX + 10
+      this.alertTop = event.pageY - 44
+      this.alertShow = true
+    },
+    // 多边形移出事件
+    polygonMouseout() {
+      this.once--
+      this.alertShow = false
+      for (const item of this.riverShowList) {
+        item.clicked = false
       }
     },
     // 街道显示
     onStreetShow() {
       if (this.streetShow) {
-        for (const item of this.streetShowPoints) {
+        for (const item of this.streetShowList) {
           let polygon = new T.Polygon(item.lineData, {
             color: 'blue', //线颜色
             weight: 3, //线宽
@@ -1799,7 +1804,52 @@ export default {
           })
           //向地图上添加面
           this.map.addOverLay(polygon)
+          polygon.addEventListener('click', this.polygonStreetClick)
+          polygon.addEventListener('mouseover', this.polygonStreetMouseover)
+          polygon.addEventListener('mousemove', this.polygonStreetMousemove)
+          polygon.addEventListener('mouseout', this.polygonStreetMouseout)
         }
+      }
+    },
+    // 多边形点击事件
+    polygonStreetClick(index) {
+      console.log(index)
+      for (const item of this.streetShowList) {
+        if (item.id == index.target.options.id) {
+          item.clicked = true
+        } else {
+          item.clicked = false
+        }
+      }
+    },
+    // 多边形移入事件
+    polygonStreetMouseover(index) {
+      if (this.once == 1) {
+        return
+      }
+      for (const item of this.streetShowList) {
+        if (item.id == index.target.options.id) {
+          item.clicked = true
+          this.defaultRiver = item.name
+          console.log(this.defaultRiver)
+        } else {
+          item.clicked = false
+        }
+      }
+      this.once++
+    },
+    polygonStreetMousemove() {
+      let event = event || window.event //兼容写法
+      this.alertLeft = event.pageX + 10
+      this.alertTop = event.pageY - 44
+      this.alertShow = true
+    },
+    // 多边形移出事件
+    polygonStreetMouseout() {
+      this.once--
+      this.alertShow = false
+      for (const item of this.streetShowList) {
+        item.clicked = false
       }
     },
     // 手机照片
@@ -2112,7 +2162,6 @@ export default {
     },
 
     allPointTask(pointLists) {
-      console.log(pointLists)
       for (const item of pointLists) {
         this.drawAllPoint(item.latlng, item.name, item.id)
       }
@@ -2319,6 +2368,20 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.mouse_alert {
+  position: absolute;
+  z-index: 999;
+  border: 1px solid #333;
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 0 4px;
+  border-radius: 3px;
+  box-shadow: 3px 3px 5px 0 rgba(0, 0, 0, 0.5);
+  span {
+    color: rgba(255, 0, 0, 0.8);
+    font-size: 14px;
+  }
+}
 .supervise {
   position: relative;
   height: calc(100vh - 64px);
