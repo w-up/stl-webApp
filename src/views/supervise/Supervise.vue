@@ -733,6 +733,7 @@
 </template>
 
 <script>
+import { getRiverList, getStreetList } from '@/api/login'
 import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
 import PhotoEdit from './modules/PhotoEdit'
@@ -1013,63 +1014,63 @@ export default {
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
       ],
       riverShowPoints: [
-        {
-          id: 0,
-          name: '黄浦江',
-          clicked: true,
-          lineData: [
-            { lat: 31.21882, lng: 121.50364 },
-            { lat: 31.21265, lng: 121.50227 },
-            { lat: 31.20583, lng: 121.49703 },
-            { lat: 31.19915, lng: 121.49197 },
-            { lat: 31.19702, lng: 121.49591 },
-            { lat: 31.2164, lng: 121.50757 },
-            { lat: 31.21948, lng: 121.50758 }
-          ]
-        },
-        {
-          id: 1,
-          name: '大治河',
-          clicked: false,
-          lineData: [
-            { lat: 31.25153, lng: 121.52409 },
-            { lat: 31.25355, lng: 121.53085 },
-            { lat: 31.25858, lng: 121.53934 },
-            { lat: 31.25535, lng: 121.54334 },
-            { lat: 31.2499, lng: 121.53353 },
-            { lat: 31.24786, lng: 121.52737 }
-          ]
-        }
+        // {
+        //   id: 0,
+        //   name: '黄浦江',
+        //   clicked: true,
+        //   lineData: [
+        //     { lat: 31.21882, lng: 121.50364 },
+        //     { lat: 31.21265, lng: 121.50227 },
+        //     { lat: 31.20583, lng: 121.49703 },
+        //     { lat: 31.19915, lng: 121.49197 },
+        //     { lat: 31.19702, lng: 121.49591 },
+        //     { lat: 31.2164, lng: 121.50757 },
+        //     { lat: 31.21948, lng: 121.50758 }
+        //   ]
+        // },
+        // {
+        //   id: 1,
+        //   name: '大治河',
+        //   clicked: false,
+        //   lineData: [
+        //     { lat: 31.25153, lng: 121.52409 },
+        //     { lat: 31.25355, lng: 121.53085 },
+        //     { lat: 31.25858, lng: 121.53934 },
+        //     { lat: 31.25535, lng: 121.54334 },
+        //     { lat: 31.2499, lng: 121.53353 },
+        //     { lat: 31.24786, lng: 121.52737 }
+        //   ]
+        // }
       ],
       streetShowPoints: [
-        {
-          id: 0,
-          name: '黄浦江',
-          clicked: true,
-          lineData: [
-            { lat: 31.21882, lng: 121.50364 },
-            { lat: 31.21265, lng: 121.50227 },
-            { lat: 31.20583, lng: 121.49703 },
-            { lat: 31.19915, lng: 121.49197 },
-            { lat: 31.19702, lng: 121.49591 },
-            { lat: 31.2164, lng: 121.50757 },
-            { lat: 31.21948, lng: 121.50758 }
-          ]
-        },
-        {
-          id: 1,
-          name: '大治河',
-          clicked: false,
-          lineData: [
-            { lat: 31.25153, lng: 121.52409 },
-            { lat: 31.25355, lng: 121.53085 },
-            { lat: 31.25858, lng: 121.53934 },
-            { lat: 31.25535, lng: 121.54334 },
-            { lat: 31.2499, lng: 121.53353 },
-            { lat: 31.24786, lng: 121.52737 },
-            { lat: 31.24682, lng: 121.51709 }
-          ]
-        }
+        // {
+        //   id: 0,
+        //   name: '黄浦江',
+        //   clicked: true,
+        //   lineData: [
+        //     { lat: 31.21882, lng: 121.50364 },
+        //     { lat: 31.21265, lng: 121.50227 },
+        //     { lat: 31.20583, lng: 121.49703 },
+        //     { lat: 31.19915, lng: 121.49197 },
+        //     { lat: 31.19702, lng: 121.49591 },
+        //     { lat: 31.2164, lng: 121.50757 },
+        //     { lat: 31.21948, lng: 121.50758 }
+        //   ]
+        // },
+        // {
+        //   id: 1,
+        //   name: '大治河',
+        //   clicked: false,
+        //   lineData: [
+        //     { lat: 31.25153, lng: 121.52409 },
+        //     { lat: 31.25355, lng: 121.53085 },
+        //     { lat: 31.25858, lng: 121.53934 },
+        //     { lat: 31.25535, lng: 121.54334 },
+        //     { lat: 31.2499, lng: 121.53353 },
+        //     { lat: 31.24786, lng: 121.52737 },
+        //     { lat: 31.24682, lng: 121.51709 }
+        //   ]
+        // }
       ],
       phonePhotoPoints: [
         {
@@ -1327,9 +1328,28 @@ export default {
   mounted() {
     let that = this
     this.initMap()
+    this.getRiverStreeList()
     this.getTimeQuantum() // 获取时间段
   },
   methods: {
+    getRiverStreeList(){
+      getStreetList().then(res => {
+        let arr = res.data.data
+        arr.forEach(v => {
+          v.lineData = v.region
+          v.clicked = false
+        })
+        this.streetShowPoints = arr
+      }).catch(err => {})
+      getRiverList().then(res => {
+        let arr = res.data.data
+        arr.forEach(v => {
+          v.lineData = v.region
+          v.clicked = false
+        })
+        this.riverShowPoints = arr
+      }).catch(err => {})
+    },
     initMap() {
       // 初始化地图控件
       let zoom = 14
@@ -1337,7 +1357,6 @@ export default {
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
       //添加比例尺控件
       this.map.addControl(new T.Control.Scale())
-
       // this.markerToolInit()
       // this.lineToolInit()
       // this.polygonToolInit()
