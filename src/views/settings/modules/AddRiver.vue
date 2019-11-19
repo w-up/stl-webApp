@@ -190,18 +190,18 @@
             <a-button>修改河道区域</a-button>
             <a-button>关闭河道</a-button>
           </a-button-group> -->
-          <a-col :span="3">
+          <a-col :span="6">
             <a-button block @click="handleCancel">取消</a-button>
           </a-col>
-          <a-col :span="3">
+          <a-col :span="6">
             <a-button block @click="saveRiver">保存</a-button>
           </a-col>
-          <a-col :span="3">
+          <!-- <a-col :span="3">
             <a-button block>修改河道区域</a-button>
           </a-col>
           <a-col :span="3">
             <a-button block>关闭河道</a-button>
-          </a-col>
+          </a-col> -->
         </a-row>
     </a-spin>
   </a-modal>
@@ -513,7 +513,6 @@ export default {
       this.list.areaList1=[],
       this.coordinate=[],
       this.visible = false
-      this.$parent.del1()
     },
     // 选择地址
     onChange(value, selectedOptions) {
