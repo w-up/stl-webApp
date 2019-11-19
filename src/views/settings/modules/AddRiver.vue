@@ -513,7 +513,6 @@ export default {
       this.list.areaList1=[],
       this.coordinate=[],
       this.visible = false
-      this.$parent.del1()
     },
     // 选择地址
     onChange(value, selectedOptions) {

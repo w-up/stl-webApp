@@ -453,14 +453,15 @@ export default {
       }
     },
     uploadSave(data){
-      // this.spotList = data
-      // console.log(this.spotList);
+      this.spotList = data
+      console.log(this.spotList)
       this.$refs.upload.submit()
     },
     del1(){
       this.fileList = []
     },
     handleSuccess(response, file, fileList) {
+      console.log(this.spotList,'111')
       this.getList()
       this.$message.success('保存成功')
       this.fileList = []
