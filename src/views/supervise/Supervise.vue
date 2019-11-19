@@ -57,7 +57,58 @@
         </a-popover>
       </div>
     </div>
-    <div class="weather">
+    <!-- <div class="time_line time_line_right" v-show="sharedChecked || swipeChecked">
+      <ul class="time_ul">
+        <li v-for="item in timeDataRight" :key="item.id">
+          <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6>
+          <a-tooltip
+            placement="right"
+            class="time_item"
+            trigger="hover"
+            v-for="day in item.month"
+            :key="day.id"
+            @click="timeLineItem(item.title, day.title)"
+            :class="{'time_item_clicked':day.clicked == true}"
+          >
+            <template slot="title">
+              <span>{{item.title}}.{{day.title}}</span>
+            </template>
+            <div class="line_style">
+              <div
+                class="line"
+                :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
+              ></div>
+            </div>
+            <p>
+              <span
+                :class="{'time_bg_red':day.level == 0,'time_bg_blue':day.level == 1,'time_bg_gray':day.level == 2}"
+              >{{day.title}}</span>
+            </p>
+          </a-tooltip>
+        </li>
+      </ul>
+      <div class="time_set">
+        <a-popover
+          placement="rightBottom"
+          trigger="click"
+          v-model="timeSetShow"
+          @visibleChange="setTimeShow"
+        >
+          <template slot="content">
+            <a-range-picker
+              @change="setTime"
+              :defaultValue="[moment(startDate, dateFormat), moment(endDate, dateFormat)]"
+              :format="dateFormat"
+            />
+          </template>
+          <template slot="title">
+            <span>设置时间段</span>
+          </template>
+          <a-button type="primary" icon="setting" block></a-button>
+        </a-popover>
+      </div>
+    </div> -->
+    <div class="weather" v-show="!sharedChecked && !swipeChecked">
       <img src="../../assets/sun.png" alt="天气" />
       <h3>29</h3>
       <div class="text">
@@ -72,7 +123,7 @@
         <a-icon class="right_icon" type="caret-left" />
         <!-- 天气弹窗 -->
         <div class="weather_alert">
-          <div class="weather_content"></div>12356
+          <div class="weather_content">12356</div>
         </div>
       </div>
     </div>
@@ -225,6 +276,7 @@
         </a-collapse-panel>
       </a-collapse>
     </div>
+    <!-- 双球 -->
     <div class="showMap" id="showmap">
       <div class="half">
         <div id="roadMap" class="vmap"></div>
@@ -233,6 +285,7 @@
         <div id="aerialMap" class="vmap"></div>
       </div>
     </div>
+    <!-- 卷帘 -->
     <div id="layerMap" class="layerMap">
       <div class="main">
         <div id="lmap" class="lmap"></div>
@@ -318,7 +371,7 @@
                     <p style="margin:0;">街道显示</p>
                   </a-col>
                   <a-col :span="6">
-                    <a-switch size="small" v-model="riverShow" />
+                    <a-switch size="small" v-model="streetShow" />
                   </a-col>
                 </a-row>
               </a-list-item>
@@ -331,13 +384,7 @@
                           <p style="margin:0;">双球对比</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch
-                            size="small"
-                            checkedChildren="开"
-                            unCheckedChildren="关"
-                            v-model="sharedChecked"
-                            @click="sharedView"
-                          />
+                          <a-switch size="small" v-model="sharedChecked" @click="sharedView" />
                         </a-col>
                       </a-row>
                       <!-- <p style="margin:0;">双球对比</p> -->
@@ -348,13 +395,7 @@
                           <p style="margin:0;">卷帘对比</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch
-                            size="small"
-                            checkedChildren="开"
-                            unCheckedChildren="关"
-                            v-model="swipeChecked"
-                            @click="layerSwipe"
-                          />
+                          <a-switch size="small" v-model="swipeChecked" @click="layerSwipe" />
                         </a-col>
                       </a-row>
                       <!-- <p style="margin:0;">卷帘对比</p> -->
@@ -691,7 +732,6 @@
 </template>
 
 <script>
-// import WorldMap from "../../components/map/WorldMap.vue";
 import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
 import PhotoEdit from './modules/PhotoEdit'
@@ -828,6 +868,83 @@ export default {
       dateFormat: 'YYYY-MM-DD',
       startDate: '', // 开始日期
       endDate: '', // 结束日期
+      timeDataRight: [
+        {
+          id: 0,
+          title: '2019.09',
+          month: [
+            { id: '30', title: '30', level: 0, clicked: false },
+            { id: '29', title: '29', level: 1, clicked: false },
+            { id: '28', title: '28', level: 2, clicked: false },
+            { id: '27', title: '27', level: 2, clicked: false },
+            { id: '26', title: '26', level: 1, clicked: false },
+            { id: '25', title: '25', level: 1, clicked: false },
+            { id: '24', title: '24', level: 1, clicked: false },
+            { id: '23', title: '23', level: 0, clicked: false },
+            { id: '22', title: '22', level: 0, clicked: false },
+            { id: '21', title: '21', level: 2, clicked: false },
+            { id: '20', title: '20', level: 2, clicked: false },
+            { id: '19', title: '19', level: 1, clicked: false },
+            { id: '18', title: '18', level: 0, clicked: false },
+            { id: '17', title: '17', level: 2, clicked: false },
+            { id: '16', title: '16', level: 2, clicked: false },
+            { id: '15', title: '15', level: 0, clicked: false },
+            { id: '14', title: '14', level: 1, clicked: false },
+            { id: '13', title: '13', level: 0, clicked: false },
+            { id: '12', title: '12', level: 1, clicked: false },
+            { id: '11', title: '11', level: 1, clicked: false },
+            { id: '10', title: '10', level: 0, clicked: false },
+            { id: '09', title: '09', level: 1, clicked: false },
+            { id: '08', title: '08', level: 0, clicked: false },
+            { id: '07', title: '07', level: 2, clicked: false },
+            { id: '06', title: '06', level: 0, clicked: false },
+            { id: '05', title: '05', level: 2, clicked: false },
+            { id: '04', title: '04', level: 2, clicked: false },
+            { id: '03', title: '03', level: 0, clicked: false },
+            { id: '02', title: '02', level: 1, clicked: false },
+            { id: '01', title: '01', level: 1, clicked: false }
+          ]
+        },
+        {
+          id: 1,
+          title: '2019.08',
+          month: [
+            { id: '31', title: '31', level: 0, clicked: false },
+            { id: '30', title: '30', level: 0, clicked: false },
+            { id: '29', title: '29', level: 1, clicked: false },
+            { id: '28', title: '28', level: 2, clicked: false },
+            { id: '27', title: '27', level: 2, clicked: false },
+            { id: '26', title: '26', level: 1, clicked: false },
+            { id: '25', title: '25', level: 1, clicked: false },
+            { id: '24', title: '24', level: 1, clicked: false },
+            { id: '23', title: '23', level: 0, clicked: false },
+            { id: '22', title: '22', level: 0, clicked: false },
+            { id: '21', title: '21', level: 2, clicked: false },
+            { id: '20', title: '20', level: 2, clicked: false },
+            { id: '19', title: '19', level: 1, clicked: false },
+            { id: '18', title: '18', level: 0, clicked: false },
+            { id: '17', title: '17', level: 2, clicked: false },
+            { id: '16', title: '16', level: 2, clicked: false },
+            { id: '15', title: '15', level: 0, clicked: false },
+            { id: '14', title: '14', level: 1, clicked: false },
+            { id: '13', title: '13', level: 0, clicked: false },
+            { id: '12', title: '12', level: 1, clicked: false },
+            { id: '11', title: '11', level: 1, clicked: false },
+            { id: '10', title: '10', level: 0, clicked: false },
+            { id: '09', title: '09', level: 1, clicked: false },
+            { id: '08', title: '08', level: 0, clicked: false },
+            { id: '07', title: '07', level: 2, clicked: false },
+            { id: '06', title: '06', level: 0, clicked: false },
+            { id: '05', title: '05', level: 2, clicked: false },
+            { id: '04', title: '04', level: 2, clicked: false },
+            { id: '03', title: '03', level: 0, clicked: false },
+            { id: '02', title: '02', level: 1, clicked: false },
+            { id: '01', title: '01', level: 1, clicked: false }
+          ]
+        }
+      ],
+      startDateRight: '', // 开始日期
+      endDateRight: '', // 结束日期
       mapType: 'a',
       checked: false,
       sharedChecked: false,
@@ -876,6 +993,7 @@ export default {
 
       historyData: false, // 历史数据
       riverShow: false, // 河道显示
+      streetShow: false, // 街道显示
       phonePhoto: false, // 手机照片
       photoAlert: false, // 照片弹窗
       phonePhotoTool: '', // 手机照片工具
@@ -893,9 +1011,63 @@ export default {
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.20649, lng: 121.47712 } }
       ],
       riverShowPoints: [
-        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.219, lng: 121.499 } },
-        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.204, lng: 121.479 } },
-        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.206, lng: 121.471 } }
+        {
+          id: 0,
+          name: '黄浦江',
+          clicked: true,
+          lineData: [
+            { lat: 31.21882, lng: 121.50364 },
+            { lat: 31.21265, lng: 121.50227 },
+            { lat: 31.20583, lng: 121.49703 },
+            { lat: 31.19915, lng: 121.49197 },
+            { lat: 31.19702, lng: 121.49591 },
+            { lat: 31.2164, lng: 121.50757 },
+            { lat: 31.21948, lng: 121.50758 }
+          ]
+        },
+        {
+          id: 1,
+          name: '大治河',
+          clicked: false,
+          lineData: [
+            { lat: 31.25153, lng: 121.52409 },
+            { lat: 31.25355, lng: 121.53085 },
+            { lat: 31.25858, lng: 121.53934 },
+            { lat: 31.25535, lng: 121.54334 },
+            { lat: 31.2499, lng: 121.53353 },
+            { lat: 31.24786, lng: 121.52737 }
+          ]
+        }
+      ],
+      streetShowPoints: [
+        {
+          id: 0,
+          name: '黄浦江',
+          clicked: true,
+          lineData: [
+            { lat: 31.21882, lng: 121.50364 },
+            { lat: 31.21265, lng: 121.50227 },
+            { lat: 31.20583, lng: 121.49703 },
+            { lat: 31.19915, lng: 121.49197 },
+            { lat: 31.19702, lng: 121.49591 },
+            { lat: 31.2164, lng: 121.50757 },
+            { lat: 31.21948, lng: 121.50758 }
+          ]
+        },
+        {
+          id: 1,
+          name: '大治河',
+          clicked: false,
+          lineData: [
+            { lat: 31.25153, lng: 121.52409 },
+            { lat: 31.25355, lng: 121.53085 },
+            { lat: 31.25858, lng: 121.53934 },
+            { lat: 31.25535, lng: 121.54334 },
+            { lat: 31.2499, lng: 121.53353 },
+            { lat: 31.24786, lng: 121.52737 },
+            { lat: 31.24682, lng: 121.51709 }
+          ]
+        }
       ],
       phonePhotoPoints: [
         {
@@ -1089,6 +1261,10 @@ export default {
     riverShow() {
       this.watchAllSwitch()
     },
+    // 街道显示
+    streetShow() {
+      this.watchAllSwitch()
+    },
     // 手机照片
     phonePhoto() {
       this.watchAllSwitch()
@@ -1159,8 +1335,6 @@ export default {
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
       //添加比例尺控件
       this.map.addControl(new T.Control.Scale())
-      this.map.setMinZoom(4)
-      this.map.setMaxZoom(18)
 
       // this.markerToolInit()
       // this.lineToolInit()
@@ -1574,7 +1748,37 @@ export default {
     // 河道显示
     onRiverShow() {
       if (this.riverShow) {
-        this.allPointTask(this.riverShowPoints)
+        for (const item of this.riverShowPoints) {
+          let polygon = new T.Polygon(item.lineData, {
+            color: 'blue', //线颜色
+            weight: 3, //线宽
+            opacity: 0.5, //透明度
+            fillColor: '#FFFFFF', //填充颜色
+            fillOpacity: 0, // 填充透明度
+            title: item.name, // 名字
+            id: item.id // id
+          })
+          //向地图上添加面
+          this.map.addOverLay(polygon)
+        }
+      }
+    },
+    // 街道显示
+    onStreetShow() {
+      if (this.streetShow) {
+        for (const item of this.streetShowPoints) {
+          let polygon = new T.Polygon(item.lineData, {
+            color: 'blue', //线颜色
+            weight: 3, //线宽
+            opacity: 0.5, //透明度
+            fillColor: '#FFFFFF', //填充颜色
+            fillOpacity: 0, // 填充透明度
+            title: item.name, // 名字
+            id: item.id // id
+          })
+          //向地图上添加面
+          this.map.addOverLay(polygon)
+        }
       }
     },
     // 手机照片
@@ -1854,6 +2058,8 @@ export default {
       this.onHistoryData()
       // 河道显示
       this.onRiverShow()
+      // 街道显示
+      this.onStreetShow()
       // 手机照片
       this.onPhonePhoto()
       // 无人机照片
@@ -2023,8 +2229,7 @@ export default {
         var show = document.getElementById('showmap')
         show.style.display = 'block'
         this.showMap()
-      }
-      if (this.sharedChecked == false) {
+      } else if (this.sharedChecked == false) {
         var show = document.getElementById('showmap')
         show.style.display = 'none'
         this.showView = true
@@ -2200,7 +2405,7 @@ export default {
     position: relative;
     width: 46px;
     height: 100%;
-    border-left: 1px solid rgba(216, 216, 216, 0.26);
+    border-left: 1px solid rgba(216, 216, 216, 0.56);
     display: flex;
     display: -webkit-flex;
     align-items: center;
@@ -2226,21 +2431,21 @@ export default {
       -webkit-transform: rotate(180deg); /* Safari 和 Chrome */
     }
   }
-}
-.weather_alert {
-  display: none;
-  position: absolute;
-  left: 50px;
-  top: -14px;
-  z-index: 888;
-  padding-left: 20px;
-  .weather_content {
-    width: 320px;
-    height: 320px;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.4);
-    border-radius: 10px;
-    padding: 10px;
+  .weather_alert {
+    display: none;
+    position: absolute;
+    left: 50px;
+    top: -13px;
+    z-index: 888;
+    padding-left: 20px;
+    .weather_content {
+      width: 320px;
+      height: 320px;
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      padding: 10px;
+    }
   }
 }
 .time_line {
@@ -2248,7 +2453,6 @@ export default {
   left: 0;
   top: 0;
   width: 68px;
-  height: 100%;
   height: calc(100% - 40px);
   background-color: rgba(255, 255, 255, 0.9);
   z-index: 888;
@@ -2340,6 +2544,9 @@ export default {
     text-align: center;
   }
 }
+// .time_line_right {
+//   right: 68px;
+// }
 .accordion_alert {
   position: absolute;
   right: 10px;
