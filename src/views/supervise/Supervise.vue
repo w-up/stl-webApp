@@ -57,7 +57,8 @@
         </a-popover>
       </div>
     </div>
-    <!-- <div class="time_line time_line_right" v-show="sharedChecked || swipeChecked">
+    <!-- 右侧时间轴 -->
+    <div class="time_line time_line_right" v-show="sharedChecked || swipeChecked">
       <ul class="time_ul">
         <li v-for="item in timeDataRight" :key="item.id">
           <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6>
@@ -91,7 +92,7 @@
         <a-popover
           placement="rightBottom"
           trigger="click"
-          v-model="timeSetShow"
+          v-model="timeSetShowRight"
           @visibleChange="setTimeShow"
         >
           <template slot="content">
@@ -107,7 +108,7 @@
           <a-button type="primary" icon="setting" block></a-button>
         </a-popover>
       </div>
-    </div> -->
+    </div>
     <div class="weather" v-show="!sharedChecked && !swipeChecked">
       <img src="../../assets/sun.png" alt="天气" />
       <h3>29</h3>
@@ -293,7 +294,7 @@
       <input id="swipe" class="swipe" type="range" />
     </div>
 
-    <ul class="menu">
+    <ul class="menu" :class="{menu_right:(sharedChecked || swipeChecked)}">
       <li @click="setCenter">
         <img src="../../assets/img/restoration.png" alt="复位" title="复位" />
       </li>
@@ -789,6 +790,7 @@ export default {
         authorization: 'authorization-text'
       },
       timeSetShow: false, // 时间弹窗显隐
+      timeSetShowRight: false, // 右侧时间弹窗显隐
       timeData: [
         {
           id: 0,
@@ -2450,7 +2452,7 @@ export default {
 }
 .time_line {
   position: absolute;
-  left: 0;
+  // left: 0;
   top: 0;
   width: 68px;
   height: calc(100% - 40px);
@@ -2544,9 +2546,9 @@ export default {
     text-align: center;
   }
 }
-// .time_line_right {
-//   right: 68px;
-// }
+.time_line_right {
+  right: 0;
+}
 .accordion_alert {
   position: absolute;
   right: 10px;
@@ -2641,6 +2643,9 @@ export default {
       padding: 10px;
     }
   }
+}
+.menu_right {
+  right: 80px;
 }
 
 .ant-col-6 {
