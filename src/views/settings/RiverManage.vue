@@ -66,7 +66,7 @@
                   cancelText="取消"
                 >
                   <a href="#">删除</a>
-                </a-popconfirm>
+                </a-popconfirm> 
               </a-col>
             </a-row>
           </a-list-item>
@@ -74,7 +74,26 @@
         <a-popover title trigger="click" v-model="addRiverShow" class="bottom_add">
           <template slot="content">
             <a-button block @click="addDrawRiver()">绘制</a-button>
-            <a-button block @click="addUploadRiver" style="margin-top: 10px;">上传KMZ</a-button>
+            <el-upload
+              class="upload-demo"
+              ref="upload"
+              :data="spotList"
+              name="kmz"
+              :headers="headers"
+              action="/server/data/admin/river/save"
+              :on-preview="handlePreview"
+              :on-success="handleSuccess"
+              :on-change="uploadChange"
+              :show-file-list="false"
+              :on-remove="handleRemove"
+              :file-list="fileList"
+              accept=".kmz, .kml"
+              :limit="1"
+              :auto-upload="false"
+            >
+              <a-button  block style="margin-top: 10px;">上传KMZ</a-button>
+            </el-upload>
+            <!-- <a-button block @click="addUploadRiver" style="margin-top: 10px;">上传KMZ</a-button> -->
           </template>
           <a-button type="primary" block>添加河道</a-button>
         </a-popover>
@@ -95,6 +114,8 @@
 
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
+import Vue from 'vue'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 import AddRiver from './modules/AddRiver.vue'
 import { getRiverList, delRiver } from '@/api/login'
 export default {
@@ -105,6 +126,11 @@ export default {
   },
   data() {
     return {
+      upload:'0',
+      fileList: [], //上传列表
+      spotList:{
+        projectId:'5da7d092ea6c156d792df816'
+      },
       addList: '1111',
       alertLeft: -1000,
       alertTop: -1000,
@@ -201,6 +227,10 @@ export default {
       ],
       addRiverShow: false,
       // 地图对象
+      headers: {
+        Authorization: '',
+        'X-TENANT-ID': 'jl:jlgis@2019'
+      },
       map: {},
       polylineHandler: '',
       polygonTool: '', // 创建标注工具对象
@@ -210,14 +240,14 @@ export default {
     }
   },
   mounted() {
+    this.headers.Authorization = Vue.ls.get(ACCESS_TOKEN)
     this.getList()
     this.initMap()
   },
   methods: {
     getList() {
       //河道列表
-      getRiverList()
-        .then(res => {
+      getRiverList().then(res => {
           let arr = res.data.data
           arr.forEach(v => {
             v.lineData = v.region
@@ -412,13 +442,34 @@ export default {
       this.drawAllRiver()
       // this.setBounds(value.lineData)
     },
-    // 上传按钮
-    addUploadRiver() {
-      console.log('123')
-      console.log(currentDistance)
-      console.log(allPolylines)
-      this.$refs.addRiver.add()
-      this.addRiverShow = false
+    uploadChange(file, fileList) {
+      if (this.upload =='0') {
+        this.$refs.addRiver.add1()
+        this.fileList = fileList
+        this.upload = '1'
+      } else {
+        this.upload = '0'
+        this.fileList = []
+      }
+    },
+    uploadSave(data){
+      // this.spotList = data
+      // console.log(this.spotList);
+      this.$refs.upload.submit()
+    },
+    del1(){
+      this.fileList = []
+    },
+    handleSuccess(response, file, fileList) {
+      this.getList()
+      this.$message.success('保存成功')
+      this.fileList = []
+    },
+    handleRemove(file, fileList) {
+      
+    },
+    handlePreview(file) {
+      
     }
   }
 }

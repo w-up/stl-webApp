@@ -261,6 +261,7 @@ export default {
       headers: {
         authorization: 'authorization-text'
       },
+      save:'1',
       options: [],
       cityList:[],
       areaList:[],
@@ -281,10 +282,20 @@ export default {
   },
   methods: {
     add(currentLnglats) {
+      this.save = '1'
       this.visible = true
       if (currentLnglats != undefined) {
         this.coordinate=currentLnglats
       } 
+      regionList('100000').then(res => {
+        this.options = res.data
+      }).catch(err => {
+
+      })
+    },
+    add1(){
+      this.save = '2'
+      this.visible = true
       regionList('100000').then(res => {
         this.options = res.data
       }).catch(err => {
@@ -327,13 +338,19 @@ export default {
           data.region = data.region +  this.coordinate[i].lng +','+ this.coordinate[i].lat + '|'
         }
       }
-      getSaveRiver(data).then(res => {
-        this.$message.success('保存成功')
-        this.$parent.getList();
+      if (this.save == '1') {
+        getSaveRiver(data).then(res => {
+          this.$message.success('保存成功')
+          this.$parent.getList();
+          this.handleCancel()
+        }).catch(err => {
+          this.$message.error(err.response.data.message)
+        })
+      }else{
+        this.$parent.uploadSave(data);
         this.handleCancel()
-      }).catch(err => {
-         this.$message.error(err.response.data.message)
-      })
+      }
+      
     },
     //省市选择
     getCity(value,){
@@ -496,6 +513,7 @@ export default {
       this.list.areaList1=[],
       this.coordinate=[],
       this.visible = false
+      this.$parent.del1()
     },
     // 选择地址
     onChange(value, selectedOptions) {
