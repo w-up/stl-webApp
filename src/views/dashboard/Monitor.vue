@@ -7,19 +7,26 @@
           <div id="map" class="map" ></div>
           <div class="leftShow" v-if="noTitleKey === 'addPlan' || nosuperKey === 'taskCard'">
             <div class="left-date">
-              <el-date-picker v-model="picker" type="date" placeholder="选择日期"  style="width:360px" value-format="yyyy-MM-dd" @change="selectData"></el-date-picker>
+              <el-date-picker v-model="picker" type="date" placeholder="选择日期"  style="width:400px" value-format="yyyy-MM-dd" @change="selectData"></el-date-picker>
             </div>
             <!-- 天气 -->
             <div class="weather">
               <img src="../../assets/sun.png" alt="天气" />
-              <h3>29</h3>
-              <div class="text" style="margin-left:4px;">
-                <h5>℃ 晴(实时)</h5>
-                <p>晴转多云 24~29℃</p>
+              <h3>30</h3>
+              <div class="text">
+                <div class="top">
+                  <span class="degree_logo">℃</span>
+                  <span class="weather_detail">晴(实时)</span>
+                  <span class="date">9月16日 星期一</span>
+                </div>
+                <p class="degree">晴转多云 24～29℃</p>
               </div>
-              <div class="text" style="margin-left:10px;">
-                <h5>2019/10/01</h5>
-                <p>星期一</p>
+              <div class="weather_right">
+                <a-icon class="right_icon" type="caret-left" />
+                <!-- 天气弹窗 -->
+                <div class="weather_alert">
+                  <div class="weather_content">12356</div>
+                </div>
               </div>
             </div>
             <!-- 新建计划时展示 -->
@@ -779,7 +786,6 @@ import {
   locusManual,
   inspectTaskDetail
 } from '@/api/login'
-import '../../assets/css/monitor.less'
 import 'ol/ol.css'
 // import Map from "ol/Map"
 import View from 'ol/View'
@@ -800,6 +806,7 @@ import situtionInfo from './modules/situtionInfo'
 import updateTime from './modules/updateTime'
 import communication from './modules/communication'
 
+import '../../assets/css/monitor.less'
 
 const personInfo = [
   {
@@ -1714,6 +1721,8 @@ export default {
       let zoom = 14
       that.map = new T.Map('map')
       that.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+      //添加比例尺控件
+      this.map.addControl(new T.Control.Scale())
       //openlayers引入天地图进行地图初始化渲染
       // var vec_c = this.getTdLayer("vec_w");
       // var cva_c = this.getTdLayer("cva_w");
@@ -2644,6 +2653,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+// @import '../../assets/css/monitor.less';
 .mouse_alert {
   position: absolute;
   z-index: 999;
@@ -2666,45 +2676,5 @@ export default {
 }
 .splitter-pane splitter-paneR vertical {
   width: 28%;
-}
-.weather {
-  position: absolute;
-  left: 10px;
-  top: 85px;
-  width: 360px;
-  height: 60px;
-  background-color: rgba(255, 255, 255, 1);
-  opacity: 0.9;
-  overflow: hidden;
-  z-index: 999;
-  border-radius: 4px;
-  border: 1px solid rgb(204, 204, 204);
-  display: flex;
-  display: -webkit-flex;
-  img {
-    width: 60px;
-    height: 60px;
-  }
-  h3 {
-    font-size: 50px;
-    line-height: 60px;
-    margin: 0;
-  }
-  .text {
-    h5 {
-      line-height: 30px;
-      font-size: 15px;
-      font-weight: 600;
-      margin: 0;
-    }
-    p {
-      line-height: 30px;
-      font-size: 15px;
-      margin: 0;
-    }
-  }
-  .tdt-infowindow-content {
-    margin: 0;
-  }
 }
 </style>
