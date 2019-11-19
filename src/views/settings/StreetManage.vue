@@ -238,17 +238,15 @@ export default {
   },
   methods: {
     getList() {
-      getStreetList()
-        .then(res => {
-          let arr = res.data.data
-          arr.forEach(v => {
-            v.lineData = v.region
-            v.clicked = false
-          })
-          this.riverList = arr
-          this.drawAllRiver()
+      getStreetList().then(res => {
+        let arr = res.data.data
+        arr.forEach(v => {
+          v.lineData = v.region
+          v.clicked = false
         })
-        .catch(err => {})
+        this.riverList = arr
+        this.drawAllRiver()
+      }).catch(err => {})
     },
     initMap() {
       //初始化地图控件
