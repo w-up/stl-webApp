@@ -63,7 +63,25 @@
         <a-popover title trigger="click" v-model="addRiverShow" class="bottom_add">
           <template slot="content">
             <a-button block @click="addDrawRiver">绘制</a-button>
-            <a-button block @click="addUploadRiver" style="margin-top: 10px;">上传KMZ</a-button>
+            <el-upload
+              class="upload-demo"
+              ref="upload"
+              :data="spotList"
+              name="kmz"
+              :headers="headers"
+              action="/server/data/admin/street/save"
+              :on-preview="handlePreview"
+              :on-success="handleSuccess"
+              :on-change="uploadChange"
+              :show-file-list="false"
+              :on-remove="handleRemove"
+              :file-list="fileList"
+              accept=".kmz, .kml"
+              :limit="1"
+              :auto-upload="false"
+            >
+              <a-button  block style="margin-top: 10px;">上传KMZ</a-button>
+            </el-upload>
           </template>
           <a-button type="primary" block>添加街道</a-button>
         </a-popover>
@@ -84,6 +102,8 @@
 
 <script>
 // import WorldMap from "../../components/map/WorldMap.vue";
+import Vue from 'vue'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 import AddStreet from './modules/AddStreet.vue'
 import { getStreetList, delStreet } from '@/api/login'
 export default {
@@ -94,10 +114,23 @@ export default {
   },
   data() {
     return {
+      upload:'0',
+      fileList:[],
       alertLeft: -1000,
+      spotList:{
+        projectId:'',
+        name:'',
+        controller:'',
+        job:'',
+        tel:'',
+      },
+      headers: {
+        Authorization: '',
+        'X-TENANT-ID': 'jl:jlgis@2019'
+      },
       alertTop: -1000,
       alertShow: false,
-      defaultRiver: '南京东路',
+      defaultRiver: '',
       riverList: [
         // {
         //   id: 0,
@@ -198,6 +231,7 @@ export default {
     }
   },
   mounted() {
+    this.headers.Authorization = Vue.ls.get(ACCESS_TOKEN)
     this.initMap()
     this.getList()
     // this.drawAllRiver()
@@ -356,8 +390,8 @@ export default {
       this.$refs.addStreet.add()
       console.log(index)
       for (const item of this.riverList) {
-        this.$refs.addStreet.getStreet(item.id)
         if (item.id == index.target.options.id) {
+          this.$refs.addStreet.getStreet(item.id)
           item.clicked = true
         } else {
           item.clicked = false
@@ -396,9 +430,39 @@ export default {
       this.drawAllRiver()
     },
     // 上传按钮
-    addUploadRiver() {
-      this.$refs.addStreet.add()
-      this.addRiverShow = false
+    uploadChange(file, fileList) {
+      if (this.upload =='0') {
+        this.$refs.addStreet.add1()
+        this.fileList = fileList
+        this.upload = '1'
+      } else {
+        this.upload = '0'
+        this.fileList = []
+      }
+    },
+    uploadSave(data){
+      this.spotList.projectId = data.projectId
+      this.spotList.job = data.job
+      this.spotList.name = data.name
+      this.spotList.tel = data.tel
+      this.spotList.controller = data.controller
+      this.$refs.upload.submit()
+    },
+    del1(){
+      this.fileList = []
+    },
+    handleSuccess(response, file, fileList) {
+      this.getList()
+      console.log('111');
+      
+      this.$message.success('保存成功')
+      this.fileList = []
+    },
+    handleRemove(file, fileList) {
+      
+    },
+    handlePreview(file) {
+      
     }
   }
 }

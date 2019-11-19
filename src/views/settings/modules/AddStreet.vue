@@ -61,6 +61,7 @@ import { informationStreet,getSaveStreet } from '@/api/login'
 export default {
   data() {
     return {
+      save:'1',
       list:{
         id:'',
         name:'',
@@ -93,10 +94,15 @@ export default {
   },
   methods: {
     add(currentLnglats) {
+      this.save = '1'
       this.visible = true
       if (currentLnglats!=undefined) {
         this.region=currentLnglats
       }
+    },
+    add1() {
+      this.save = '2'
+      this.visible = true
     },
     //街道详情
     getStreet(id){
@@ -132,14 +138,20 @@ export default {
           data.region = data.region +  this.region[i].lng +','+ this.region[i].lat + '|'
         }
       }
-      getSaveStreet(data).then(res => {
-        this.$message.success('保存成功')
+      if (this.save == '1') {
+        getSaveStreet(data).then(res => {
+          this.$message.success('保存成功')
+          this.handleCancel()
+          this.$parent.getList();
+          
+        }).catch(err => {
+          this.$message.error(err.response.data.message)
+        })
+      }else{
+        this.$parent.uploadSave(data);
         this.handleCancel()
-        this.$parent.getList();
-        
-      }).catch(err => {
-        this.$message.error(err.response.data.message)
-      })
+      }
+      
     },
     //关闭取消输入框
     handleCancel(){
