@@ -938,7 +938,7 @@ export default {
       startDateRight: '', // 开始日期
       endDateRight: '', // 结束日期
       mapType: 'a',
-      roadWordChange: false, // 道路标注
+      roadWordChange: true, // 道路标注
       mapLayerWord: '', // 道路层级
       // checked: false,
       sharedChecked: false,
@@ -1274,15 +1274,16 @@ export default {
     let zoom = 14
     let twoDimensionURL =
       'http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-    this.mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 18 })
+    this.mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 18, zIndex: 10 })
     let satelliteURL = 'http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-    this.mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 18 })
+    this.mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 18, zIndex: 10 })
     //创建自定义图层对象
     let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-    this.mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 18 })
+    this.mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 18, zIndex: 11 })
     this.map = new T.Map('map', {
-      layers: [this.mapLayer2d]
+      layers: [this.mapLayer2d, this.mapLayerWord]
     })
+    // this.onChangeSwitch() // 道路标注
     this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
     //添加比例尺控件
     this.map.addControl(new T.Control.Scale())
@@ -1660,34 +1661,29 @@ export default {
     onExpand() {
       console.log('Trigger Expand')
     },
-    // 道路开关
-    onChangeSwitch() {
-      console.log(this.roadWordChange)
-      if (this.roadWordChange) {
-        console.log('111')
-        this.map.addLayer(this.mapLayerWord, {
-          zIndex: 555
-        })
-      } else {
-        console.log('222')
-        this.map.removeLayer(this.mapLayerWord)
-      }
-    },
-
     // 图像
     onMapChange(e) {
       if (e.target.value == 'a') {
         console.log(`checked = ${e.target.value}`)
         this.map.addLayer(this.mapLayer2d, {
-          zIndex: 554
+          zIndex: 500
         })
         this.map.removeLayer(this.mapLayerSatellite)
       } else if (e.target.value == 'b') {
         console.log(`checked = ${e.target.value}`)
         this.map.addLayer(this.mapLayerSatellite, {
-          zIndex: 554
+          zIndex: 500
         })
         this.map.removeLayer(this.mapLayer2d)
+      }
+    },
+    // 道路开关
+    onChangeSwitch() {
+      console.log(this.roadWordChange)
+      if (this.roadWordChange) {
+        this.map.addLayer(this.mapLayerWord)
+      } else {
+        this.map.removeLayer(this.mapLayerWord)
       }
     },
     printImage() {
@@ -1777,13 +1773,6 @@ export default {
     // 多边形点击事件
     polygonClick(index) {
       console.log(index)
-      for (const item of this.riverShowList) {
-        if (item.id == index.target.options.id) {
-          item.clicked = true
-        } else {
-          item.clicked = false
-        }
-      }
     },
     // 多边形移入事件
     polygonMouseover(index) {
@@ -1792,11 +1781,7 @@ export default {
       }
       for (const item of this.riverShowList) {
         if (item.id == index.target.options.id) {
-          item.clicked = true
           this.defaultRiver = item.name
-          console.log(this.defaultRiver)
-        } else {
-          item.clicked = false
         }
       }
       this.once++
@@ -1811,9 +1796,6 @@ export default {
     polygonMouseout() {
       this.once--
       this.alertShow = false
-      for (const item of this.riverShowList) {
-        item.clicked = false
-      }
     },
     // 街道显示
     onStreetShow() {
@@ -1840,13 +1822,6 @@ export default {
     // 多边形点击事件
     polygonStreetClick(index) {
       console.log(index)
-      for (const item of this.streetShowList) {
-        if (item.id == index.target.options.id) {
-          item.clicked = true
-        } else {
-          item.clicked = false
-        }
-      }
     },
     // 多边形移入事件
     polygonStreetMouseover(index) {
@@ -1855,11 +1830,7 @@ export default {
       }
       for (const item of this.streetShowList) {
         if (item.id == index.target.options.id) {
-          item.clicked = true
           this.defaultRiver = item.name
-          console.log(this.defaultRiver)
-        } else {
-          item.clicked = false
         }
       }
       this.once++
@@ -1874,9 +1845,6 @@ export default {
     polygonStreetMouseout() {
       this.once--
       this.alertShow = false
-      for (const item of this.streetShowList) {
-        item.clicked = false
-      }
     },
     // 手机照片
     onPhonePhoto() {
@@ -2153,10 +2121,10 @@ export default {
       this.toolDrawPolygon()
       // 历史数据
       this.onHistoryData()
-      // 河道显示
-      this.onRiverShow()
       // 街道显示
       this.onStreetShow()
+      // 河道显示
+      this.onRiverShow()
       // 手机照片
       this.onPhonePhoto()
       // 无人机照片
