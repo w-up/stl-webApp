@@ -940,9 +940,8 @@ export default {
       mapType: 'a',
       roadWordChange: true, // 道路标注
       mapLayerWord: '', // 道路层级
-      // checked: false,
-      sharedChecked: false,
-      swipeChecked: false,
+      sharedChecked: false, // 双球
+      swipeChecked: false, // 卷帘
       showView: true,
       customStyle: 'background: #fff;margin: 0;overflow: hidden', // 折叠面板样式
       canDownload: true, // 是否可以图片截图下载
@@ -951,7 +950,7 @@ export default {
         hex: '#F32C11'
       },
       colorAlertShow: false, // 拾色器显隐
-      colorIndex: 1, // 选哪个
+      colorIndex: 1, // 颜色选哪个
       borderColor: '#F32C11', // 边框颜色
       fullColor: '#F32C11', // 填充颜色
       borderOpacity: 80, // 边框透明度
@@ -1017,38 +1016,83 @@ export default {
       phonePhotoPoints: [
         {
           id: 0,
-          name: '监测点1',
+          name: '手机照片1',
           clicked: false,
-          imgUrl: require('../../assets/loginBg.jpg'),
+          imgUrl: require('./img/phonePhoto1.jpg'),
+          direction: 0,
           latlng: { lat: 31.22493, lng: 121.51566 }
         },
         {
           id: 1,
-          name: '监测点2',
+          name: '手机照片2',
           clicked: false,
-          imgUrl: require('../../assets/loginBg.jpg'),
+          imgUrl: require('./img/phonePhoto2.jpg'),
+          direction: 0,
           latlng: { lat: 31.24344, lng: 121.49892 }
         },
         {
           id: 2,
-          name: '监测点3',
+          name: '手机照片3',
           clicked: false,
-          imgUrl: require('../../assets/loginBg.jpg'),
+          imgUrl: require('./img/phonePhoto3.jpg'),
+          direction: 0,
           latlng: { lat: 31.22649, lng: 121.49712 }
         },
         {
           id: 3,
-          name: '监测点4',
+          name: '手机照片4',
           clicked: false,
-          imgUrl: require('../../assets/loginBg.jpg'),
+          imgUrl: require('./img/phonePhoto4.jpg'),
+          direction: 0,
           latlng: { lat: 31.19482, lng: 121.46819 }
         },
         {
           id: 4,
-          name: '监测点5',
+          name: '手机照片5',
           clicked: false,
-          imgUrl: require('../../assets/loginBg.jpg'),
+          imgUrl: require('./img/phonePhoto5.jpg'),
+          direction: 0,
           latlng: { lat: 31.19649, lng: 121.45995 }
+        },
+        {
+          id: 5,
+          name: '手机照片6',
+          clicked: false,
+          imgUrl: require('./img/phonePhoto6.jpg'),
+          direction: 0,
+          latlng: { lat: 31.20649, lng: 121.47995 }
+        },
+        {
+          id: 6,
+          name: '手机照片7',
+          clicked: false,
+          imgUrl: require('./img/phonePhoto7.jpg'),
+          direction: 0,
+          latlng: { lat: 31.21049, lng: 121.48495 }
+        },
+        {
+          id: 7,
+          name: '手机照片8',
+          clicked: false,
+          imgUrl: require('./img/phonePhoto8.jpg'),
+          direction: 0,
+          latlng: { lat: 31.21549, lng: 121.49195 }
+        },
+        {
+          id: 8,
+          name: '手机照片9',
+          clicked: false,
+          imgUrl: require('./img/phonePhoto9.jpg'),
+          direction: 0,
+          latlng: { lat: 31.21509, lng: 121.47056 }
+        },
+        {
+          id: 9,
+          name: '手机照片10',
+          clicked: false,
+          imgUrl: require('./img/phonePhoto10.jpg'),
+          direction: 0,
+          latlng: { lat: 31.20969, lng: 121.49023 }
         }
       ],
       UAVPhotoPoints: [
@@ -1134,11 +1178,43 @@ export default {
           ]
         }
       ],
-      waterQuality: false, // 水质
+      waterQuality: false, // 水质监测点
       waterQualityPoints: [
-        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.24235, lng: 121.52235 } },
-        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.25335, lng: 121.50335 } },
-        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.23435, lng: 121.50445 } }
+        {
+          id: 0,
+          name: '水质监测点1',
+          clicked: false,
+          imgUrl: require('./img/waterQualityIcon1.png'),
+          latlng: { lat: 31.21935, lng: 121.50035 }
+        },
+        {
+          id: 1,
+          name: '水质监测点2',
+          clicked: false,
+          imgUrl: require('./img/waterQualityIcon2.png'),
+          latlng: { lat: 31.2163, lng: 121.49885 }
+        },
+        {
+          id: 2,
+          name: '水质监测点3',
+          clicked: false,
+          imgUrl: require('./img/waterQualityIcon3.png'),
+          latlng: { lat: 31.20945, lng: 121.49645 }
+        },
+        {
+          id: 3,
+          name: '水质监测点4',
+          clicked: false,
+          imgUrl: require('./img/waterQualityIcon4.png'),
+          latlng: { lat: 31.21405, lng: 121.49157 }
+        },
+        {
+          id: 4,
+          name: '水质监测点5',
+          clicked: false,
+          imgUrl: require('./img/waterQualityIcon2.png'),
+          latlng: { lat: 31.21945, lng: 121.50605 }
+        }
       ],
       waterFlotage: false, // 水质漂浮物
       waterFlotagePoints: [
@@ -1178,9 +1254,34 @@ export default {
       ],
       surveyPoint: false, // 专项调查点
       surveyPointPoints: [
-        { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.23941, lng: 121.50384 } },
-        { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24682, lng: 121.49964 } },
-        { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.25364, lng: 121.51648 } }
+        {
+          id: 0,
+          name: '专项调查点1',
+          clicked: false,
+          imgUrl: require('./img/surveyPointIcon.png'),
+          latlng: { lat: 31.22041, lng: 121.50384 }
+        },
+        {
+          id: 1,
+          name: '专项调查点2',
+          clicked: false,
+          imgUrl: require('./img/surveyPointIcon.png'),
+          latlng: { lat: 31.21682, lng: 121.48964 }
+        },
+        {
+          id: 2,
+          name: '专项调查点3',
+          clicked: false,
+          imgUrl: require('./img/surveyPointIcon.png'),
+          latlng: { lat: 31.21564, lng: 121.48648 }
+        },
+        {
+          id: 3,
+          name: '专项调查点4',
+          clicked: false,
+          imgUrl: require('./img/surveyPointIcon.png'),
+          latlng: { lat: 31.22664, lng: 121.49048 }
+        }
       ],
 
       riverLink: false, // 河道连通性
@@ -1269,22 +1370,23 @@ export default {
   },
   mounted() {
     let that = this
-    // this.initMap()
     // 初始化地图控件
     let zoom = 14
     let twoDimensionURL =
       'http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-    this.mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 18, zIndex: 10 })
+    this.mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 23, zIndex: 10 })
     let satelliteURL = 'http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-    this.mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 18, zIndex: 10 })
+    this.mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 23, zIndex: 10 })
     //创建自定义图层对象
     let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-    this.mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 18, zIndex: 11 })
+    this.mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 23, zIndex: 11 })
     this.map = new T.Map('map', {
       layers: [this.mapLayer2d, this.mapLayerWord]
     })
     // this.onChangeSwitch() // 道路标注
     this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+    this.map.setMinZoom(4)
+    this.map.setMaxZoom(23)
     //添加比例尺控件
     this.map.addControl(new T.Control.Scale())
 
@@ -1315,38 +1417,6 @@ export default {
         .catch(err => {})
     },
     initMap() {
-      // 初始化地图控件
-      let zoom = 14
-
-      // this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
-
-      let twoDimensionURL =
-        'http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-      // let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-      // let orthoimageURL =
-      //   'http://jleco.jl-shgroup.com/geoserver/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3Ageotools_coverage&bbox=1.352549935951375E7%2C3672157.4765674216%2C1.352795117129847E7%2C3673089.8299487336&width=768&height=330&srs=EPSG%3A3857&format=application/openlayers'
-      // //创建自定义图层对象
-      let mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 18 })
-      // let orthoimageLayer = new T.TileLayer(orthoimageURL, { minZoom: 4, maxZoom: 18 })
-      // this.map.addLayer(mapLayer2d)
-      // this.map.addLayer(orthoimageLayer)
-      this.map = new T.Map('map', {
-        layers: [mapLayer2d]
-      })
-      this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
-
-      //将图层增加到地图上
-      // let mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 18 })
-      // this.map.addLayer(mapLayerSatellite)
-      // let mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 18 })
-      // this.map.addLayer(mapLayerWord)
-
-      //添加比例尺控件
-      this.map.addControl(new T.Control.Scale())
-      // this.markerToolInit()
-      // this.lineToolInit()
-      // this.polygonToolInit()
-      // this.lineToolNumInit()
       // this.map = new Map({
       //   target: 'map',
       //   view: new View({
@@ -1664,22 +1734,15 @@ export default {
     // 图像
     onMapChange(e) {
       if (e.target.value == 'a') {
-        console.log(`checked = ${e.target.value}`)
-        this.map.addLayer(this.mapLayer2d, {
-          zIndex: 500
-        })
+        this.map.addLayer(this.mapLayer2d)
         this.map.removeLayer(this.mapLayerSatellite)
       } else if (e.target.value == 'b') {
-        console.log(`checked = ${e.target.value}`)
-        this.map.addLayer(this.mapLayerSatellite, {
-          zIndex: 500
-        })
+        this.map.addLayer(this.mapLayerSatellite)
         this.map.removeLayer(this.mapLayer2d)
       }
     },
     // 道路开关
     onChangeSwitch() {
-      console.log(this.roadWordChange)
       if (this.roadWordChange) {
         this.map.addLayer(this.mapLayerWord)
       } else {
@@ -2053,7 +2116,16 @@ export default {
     // 水质
     onWaterQuality() {
       if (this.waterQuality) {
-        this.allPointTask(this.waterQualityPoints)
+        for (const item of this.waterQualityPoints) {
+          let icon = new T.Icon({
+            iconUrl: item.imgUrl,
+            iconSize: new T.Point(41, 40),
+            iconAnchor: new T.Point(21, 40)
+          })
+          let marker = new T.Marker(item.latlng, { icon: icon, id: item.id, title: item.name })
+          this.map.addOverLay(marker)
+          marker.addEventListener('click', this.taskPointClick)
+        }
       }
     },
     // 水质漂浮物
@@ -2095,7 +2167,16 @@ export default {
     // 专项调查点
     onSurveyPoint() {
       if (this.surveyPoint) {
-        this.allPointTask(this.surveyPointPoints)
+        for (const item of this.surveyPointPoints) {
+          let icon = new T.Icon({
+            iconUrl: item.imgUrl,
+            iconSize: new T.Point(41, 40),
+            iconAnchor: new T.Point(21, 40)
+          })
+          let marker = new T.Marker(item.latlng, { icon: icon, id: item.id, title: item.name })
+          this.map.addOverLay(marker)
+          marker.addEventListener('click', this.taskPointClick)
+        }
       }
     },
     // 河道连通性
@@ -2154,7 +2235,6 @@ export default {
       // 水陆分布
       this.onLandAndWater()
     },
-
     allPointTask(pointLists) {
       for (const item of pointLists) {
         this.drawAllPoint(item.latlng, item.name, item.id)
@@ -2179,18 +2259,7 @@ export default {
     },
     // 绘制图片
     allImageTask(pointLists) {
-      // this.map.clearOverLays()
       console.log(pointLists)
-      // let arr = []
-      // for (const item of pointLists) {
-      //   // arr.push(item.latlng)
-      //   this.drawAllImage(item.latlng, item.imgUrl, item.name)
-      // }
-      this.drawAllImage(pointLists)
-      // this.map.setViewport(arr)
-    },
-    // 添加手机照片
-    drawAllImage(pointLists) {
       let arrayObj = new Array()
       let styles = new Array()
       for (const item of pointLists) {
@@ -2209,18 +2278,11 @@ export default {
             range: [0, 50]
           }
         ]
-        let marker = new T.Marker(item.latlng, { icon: icon, id: item.id, name: item.name })
+        let marker = new T.Marker(item.latlng, { icon: icon, id: item.id, title: item.name })
         arrayObj.push(marker)
         marker.addEventListener('click', this.taskImageClick)
       }
       var markers = new T.MarkerClusterer(this.map, { markers: arrayObj, styles: styles })
-      // document.getElementsByClassName("tdt-cluster0")[0].addEventListener(click, this.taskImageClick)
-      setTimeout(() => {
-        $('.tdt-cluster0').click(function(params) {
-          console.log(123)
-        })
-      }, 1000)
-      // markers.addEventListener('click', this.taskImageClick)
     },
     // 任务照片点击
     taskImageClick(index) {
