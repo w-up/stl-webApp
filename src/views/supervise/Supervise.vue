@@ -140,7 +140,7 @@
           class="custom_list"
         >
           <a-upload name="file" :multiple="true" action :headers="headers" @change="phoneUpload">
-            <a-button style="width:178px;" block>
+            <a-button style="width:198px;" block>
               <a-icon type="upload" />上传照片
             </a-button>
           </a-upload>
@@ -277,6 +277,21 @@
         </a-collapse-panel>
       </a-collapse>
     </div>
+    <!-- 河岸风险源 -->
+    <div class="river_risk_alert" v-show="riverRisk">
+      <a-list size="small" style="padding:0 10px; max-height:240px; overflow: auto;">
+        <a-list-item v-for="item in 15" :key="item">
+          <a-row style="width:100%" type="flex" justify="space-between" align="middle">
+            <a-col :span="18">
+              <p style="margin:0;">风险源{{item}}</p>
+            </a-col>
+            <a-col :span="6">
+              <a-switch size="small" />
+            </a-col>
+          </a-row>
+        </a-list-item>
+      </a-list>
+    </div>
     <!-- 双球 -->
     <div class="showMap" id="showmap">
       <div class="half">
@@ -316,8 +331,8 @@
               <a-col :span="16">
                 <span>道路标注</span>
               </a-col>
-              <a-col :span="8">
-                <a-switch size="small" v-model="checked" @click="onChangeSwitch" />
+              <a-col :span="8" style="text-align: right;">
+                <a-switch size="small" v-model="roadWordChange" @click="onChangeSwitch" />
               </a-col>
             </a-row>
           </template>
@@ -388,7 +403,6 @@
                           <a-switch size="small" v-model="sharedChecked" @click="sharedView" />
                         </a-col>
                       </a-row>
-                      <!-- <p style="margin:0;">双球对比</p> -->
                     </a-list-item>
                     <a-list-item>
                       <a-row style="width:160px" type="flex" justify="space-between" align="middle">
@@ -399,7 +413,6 @@
                           <a-switch size="small" v-model="swipeChecked" @click="layerSwipe" />
                         </a-col>
                       </a-row>
-                      <!-- <p style="margin:0;">卷帘对比</p> -->
                     </a-list-item>
                   </a-list>
                 </template>
@@ -455,48 +468,16 @@
               <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
                 <template slot="content">
                   <a-list size="small">
-                    <a-popover placement="left" trigger="click">
-                      <template slot="content">
-                        <a-list
-                          size="small"
-                          style="max-height: calc(100vh - 260px); overflow: auto;"
-                        >
-                          <a-list-item v-for="item in 5" :key="item">
-                            <a-row
-                              style="width:160px"
-                              type="flex"
-                              justify="space-between"
-                              align="middle"
-                            >
-                              <a-col :span="18">
-                                <p style="margin:0;">风险源{{item}}</p>
-                              </a-col>
-                              <a-col :span="6">
-                                <a-switch size="small" v-model="riskMap" @click="onRiskMap" />
-                              </a-col>
-                            </a-row>
-                          </a-list-item>
-                        </a-list>
-                      </template>
-                      <template slot="title">
-                        <span>河岸风险源</span>
-                      </template>
-                      <a-list-item>
-                        <a-row
-                          style="width:160px"
-                          type="flex"
-                          justify="space-between"
-                          align="middle"
-                        >
-                          <a-col :span="18">
-                            <p style="margin:0;">河岸风险源</p>
-                          </a-col>
-                          <a-col :span="6">
-                            <a-switch size="small" v-model="riverRisk" @click="onRiverRisk" />
-                          </a-col>
-                        </a-row>
-                      </a-list-item>
-                    </a-popover>
+                    <a-list-item>
+                      <a-row style="width:160px" type="flex" justify="space-between" align="middle">
+                        <a-col :span="18">
+                          <p style="margin:0;">河岸风险源</p>
+                        </a-col>
+                        <a-col :span="6">
+                          <a-switch size="small" v-model="riverRisk" @click="onRiverRisk" />
+                        </a-col>
+                      </a-row>
+                    </a-list-item>
                     <a-list-item>
                       <a-row style="width:160px" type="flex" justify="space-between" align="middle">
                         <a-col :span="18">
@@ -957,7 +938,9 @@ export default {
       startDateRight: '', // 开始日期
       endDateRight: '', // 结束日期
       mapType: 'a',
-      checked: false,
+      roadWordChange: false, // 道路标注
+      mapLayerWord: '', // 道路层级
+      // checked: false,
       sharedChecked: false,
       swipeChecked: false,
       showView: true,
@@ -982,6 +965,9 @@ export default {
 
       // 地图对象
       map: null,
+      mapLayer2d: '', // 2D影像图
+      mapLayerSatellite: '', // 卫星影像图
+      mapLayerWord: '', // 道路标注
 
       toolsCard: false, //工具卡片
       toolCard: false, //选中工具卡片
@@ -1283,7 +1269,24 @@ export default {
   },
   mounted() {
     let that = this
-    this.initMap()
+    // this.initMap()
+    // 初始化地图控件
+    let zoom = 14
+    let twoDimensionURL =
+      'http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
+    this.mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 18 })
+    let satelliteURL = 'http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
+    this.mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 18 })
+    //创建自定义图层对象
+    let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
+    this.mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 18 })
+    this.map = new T.Map('map', {
+      layers: [this.mapLayer2d]
+    })
+    this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+    //添加比例尺控件
+    this.map.addControl(new T.Control.Scale())
+
     this.getRiverStreeList()
     this.getTimeQuantum() // 获取时间段
   },
@@ -1313,8 +1316,30 @@ export default {
     initMap() {
       // 初始化地图控件
       let zoom = 14
-      this.map = new T.Map('map')
+
+      // this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+
+      let twoDimensionURL =
+        'http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
+      // let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
+      // let orthoimageURL =
+      //   'http://jleco.jl-shgroup.com/geoserver/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3Ageotools_coverage&bbox=1.352549935951375E7%2C3672157.4765674216%2C1.352795117129847E7%2C3673089.8299487336&width=768&height=330&srs=EPSG%3A3857&format=application/openlayers'
+      // //创建自定义图层对象
+      let mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 18 })
+      // let orthoimageLayer = new T.TileLayer(orthoimageURL, { minZoom: 4, maxZoom: 18 })
+      // this.map.addLayer(mapLayer2d)
+      // this.map.addLayer(orthoimageLayer)
+      this.map = new T.Map('map', {
+        layers: [mapLayer2d]
+      })
       this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
+
+      //将图层增加到地图上
+      // let mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 18 })
+      // this.map.addLayer(mapLayerSatellite)
+      // let mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 18 })
+      // this.map.addLayer(mapLayerWord)
+
       //添加比例尺控件
       this.map.addControl(new T.Control.Scale())
       // this.markerToolInit()
@@ -1635,34 +1660,35 @@ export default {
     onExpand() {
       console.log('Trigger Expand')
     },
-    // 开关
-    onChangeSwitch(checked) {
-      console.log(this.checked)
-      console.log(`a-switch to ${checked}`)
+    // 道路开关
+    onChangeSwitch() {
+      console.log(this.roadWordChange)
+      if (this.roadWordChange) {
+        console.log('111')
+        this.map.addLayer(this.mapLayerWord, {
+          zIndex: 555
+        })
+      } else {
+        console.log('222')
+        this.map.removeLayer(this.mapLayerWord)
+      }
     },
 
     // 图像
     onMapChange(e) {
-      this.map.clearLayers()
-      let twoDimensionURL =
-        'http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-      let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-      let satelliteURL =
-        'http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-      //创建自定义图层对象
       if (e.target.value == 'a') {
         console.log(`checked = ${e.target.value}`)
-        let mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 18 })
-        this.map.addLayer(mapLayer2d)
+        this.map.addLayer(this.mapLayer2d, {
+          zIndex: 554
+        })
+        this.map.removeLayer(this.mapLayerSatellite)
       } else if (e.target.value == 'b') {
         console.log(`checked = ${e.target.value}`)
-        //将图层增加到地图上
-        let mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 18 })
-        this.map.addLayer(mapLayerSatellite)
+        this.map.addLayer(this.mapLayerSatellite, {
+          zIndex: 554
+        })
+        this.map.removeLayer(this.mapLayer2d)
       }
-      let mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 18 })
-      this.map.addLayer(mapLayerWord)
-      this.map.clearLayers()
     },
     printImage() {
       let that = this
@@ -2630,6 +2656,16 @@ export default {
 }
 .time_line_right {
   right: 0;
+}
+.river_risk_alert {
+  position: absolute;
+  right: 220px;
+  top: 10px;
+  width: 180px;
+  background-color: white;
+  z-index: 889;
+  border-radius: 4px;
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.5);
 }
 .accordion_alert {
   position: absolute;
