@@ -19,15 +19,12 @@
         <div>{{list.lng}}</div>
       </el-form-item>
       <el-form-item label="查看时间">
-        <el-date-picker
-          type="daterange"
-          range-separator="至"
-          @change="onChange"
+        <a-range-picker
           v-model="list.date"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          format="yyyy-MM-dd">
-        </el-date-picker>
+          :defaultValue="[moment(startDate, dateFormat), moment(endDate, dateFormat)]"
+          :format="dateFormat"
+          @change="onChange"
+        />
       </el-form-item>
       <el-form-item label="">
         <a-button>导入最新水质数据</a-button>
@@ -73,6 +70,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 // 基于准备好的dom，初始化echarts实例
 // 引入 ECharts 主模块
 var echarts = require('echarts/lib/echarts');
@@ -87,11 +85,14 @@ export default {
   },
   data() {
     return {
+      startDate:'',
+      dateFormat: 'YYYY-MM-DD',
+      endDate: '', // 结束日期
       list:{
         number:'001',
         lat:'21',
         lng:'11.11',
-        date:'',
+        date:[],
       },
       main1:false,
       main2:false,
@@ -119,7 +120,9 @@ export default {
 
   },
   methods: {
+    moment,
     add() {
+      moment
       this.visible = true
     },
     handleSubmit() {
@@ -128,20 +131,14 @@ export default {
     handleCancel() {
       this.visible = false
     },
-    onChange(date){
-      function formatDate(now) { 
-        var year=now.getFullYear() //取得4位数的年份
-        var month=now.getMonth()+1  //取得日期中的月份，其中0表示1月，11表示12月
-        var date=now.getDate()      //返回日期月份中的天数（1到31）
-        var hour=now.getHours()     //返回日期中的小时数（0到23）
-        var minute=now.getMinutes() //返回日期中的分钟数（0到59）
-        var second=now.getSeconds() //返回日期中的秒数（0到59）
-        return year+"/"+month+"/"+date
-      }
-      this.time = this.getAll(formatDate(date[0]),formatDate(date[1])) 
+    onChange(date, dateString) {
+      this.time = this.getAll(dateString[0],dateString[1]) 
+
       this.changeCheckbox()
     },
     changeCheckbox(){
+      console.log(this.list.date);
+      
       if (this.list.date != '') {
         this.drawLine()
       }else{
@@ -232,8 +229,8 @@ export default {
      
     },
     getAll(begin, end) {
-      let arr1= begin.split("/");
-      let arr2= end.split("/");
+      let arr1= begin.split("-");
+      let arr2= end.split("-");
       let arr1_= new Date();
       let arrTime = [];
       arr1_.setUTCFullYear(arr1[0], arr1[1] - 1, arr1[2]);
@@ -242,7 +239,7 @@ export default {
       let unixDb = arr1_.getTime();
       let unixDe = arr2_.getTime();
       for (let k = unixDb; k <= unixDe;) {
-        arrTime.push(this.datetimeparse(k, 'MM/DD'));
+        arrTime.push(this.datetimeparse(k, 'MM-DD'));
         k = k + 24 * 60 * 60 * 1000;
       }
       return arrTime;
