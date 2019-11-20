@@ -1,5 +1,6 @@
 <template>
   <div style="width:100%;height:calc(100vh - 64px);">
+    <waterquality ref="waterquality"></waterquality>
     <split-pane :min-percent="25" :default-percent="81.5" split="vertical">
       <template slot="paneL">
         <div class="left-info">
@@ -31,7 +32,7 @@
             </div>
             <!-- 新建计划时展示 -->
             <div class="left-patrol" v-if="noTitleKey === 'addPlan' || nosuperKey === 'taskCard'">
-              <p class="left-patrol-title">推荐巡河方案</p>
+              <p class="left-patrol-title" @click="asdasdsadsa">推荐巡河方案</p>
               <div class="patrol-plan">
                 <!-- <a-tree defaultExpandAll v-model="checkedPlan" @select="selectPatrol" :treeData="patrolPlanInfo"/> -->
                 <a-collapse v-model="activeKey">
@@ -495,7 +496,7 @@
                     <div class="btn_group">
                       <a-row type="flex" justify="space-around">
                         <a-col :span="10">
-                          <!-- <a-button class="groupBtn" @click="detailPlan(item.plan.id)">详情</a-button> -->
+                          <a-button class="groupBtn" @click="detailPlan(item.plan.id)">详情</a-button>
                         </a-col>
                         <a-col :span="10">
                           <a-button class="groupBtn" @click="supervision_btn(item.plan.id)" v-show="hidingJudgment1">监管</a-button>
@@ -711,6 +712,7 @@
     <sitution-info ref="situtionInfo"></sitution-info>
     <update-time ref="updateTime"></update-time>
     <communication ref="communication"></communication>
+    
     <!-- 河道信息弹框 -->
     <a-modal :visible="infoVisible" :closable="false" :mask="false" :width="400" class="cmModal">
         <template slot="title">
@@ -761,6 +763,7 @@
     >
       <span>{{defaultLineTask}}</span>
     </div>
+    
   </div>
 </template>
 
@@ -805,7 +808,7 @@ import planDetail from '../modals/planDetail'
 import situtionInfo from './modules/situtionInfo'
 import updateTime from './modules/updateTime'
 import communication from './modules/communication'
-
+import waterquality from '../supervise/modules/waterQualityData'
 import '../../assets/css/monitor.less'
 
 const personInfo = [
@@ -931,7 +934,8 @@ export default {
     planDetail,
     situtionInfo,
     updateTime,
-    communication
+    communication,
+    waterquality
   },
   data() {
     return {
@@ -2279,6 +2283,9 @@ export default {
       // //描绘河道
       // this.searchMap()
       // this.addTaskPoint();
+    },
+    asdasdsadsa(){
+      this.$refs.waterquality.add()
     },
     //添加任务点
     addTaskPoint(riverData) {

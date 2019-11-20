@@ -680,7 +680,15 @@ export function deviceInspectPage(id) {
     method: 'get',
   })
 }
-export function asdasdasdasd(id) {
+//成员分页
+export function staffPage(id) {
+  return axios({
+    url: '/server/data/admin/inspect/staff/page?teamId='+id,
+    method: 'get',
+  })
+}
+//设备分页
+export function devicePage(id) {
   return axios({
     url: '/server/data/admin/inspect/device/page?teamId='+id,
     method: 'get',

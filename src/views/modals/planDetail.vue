@@ -1,18 +1,20 @@
 <template>
-    <a-modal title="计划" :width="1200" :visible="visible" @ok="submitPlan" @cancel="cancleBtn" class="palnDetail_modal">
+    <a-modal :title="name" :width="1200" :visible="visible" @ok="submitPlan" @cancel="cancleBtn" class="palnDetail_modal">
+
             <span class="editIcon" @click="editModalTitle" v-if="editShow"><a-icon type="edit" /></span>
-            <span style="position:absolute;top:12px;left:60px;" v-if="!editShow"><a-input placeholder="计划A" style="width:150px;margin-left:20px;"/></span>
+            <span style="position:absolute;top:12px;left:200px;" v-if="!editShow"><a-input placeholder="" style="width:150px;margin-left:20px;"/></span>
             <div class="planDetail_info">
                 <a-row style="padding-bottom:10px;">
-                    <a-col :span="4" style="font-size:15px;">下发时间:</a-col>
+                    <a-col :span="3" style="font-size:15px;">下发时间:</a-col>
                     <a-col :span="20">{{date}}</a-col>
                 </a-row>
                 <a-row>
-                    <a-col :span="4" style="font-size:15px;">下发人:</a-col>
-                    <a-col :span="20">{{name}}</a-col>
+                    <a-col :span="3" style="font-size:15px;">下发人:</a-col>
+                    <a-col :span="20"></a-col>
                 </a-row>
             </div>
-            <div class="modal-body">
+            <a-spin size="large" :spinning="spinning">
+           <div class="modal-body">
                 <a-tabs  type="card" :animated="true">
                     <a-tab-pane v-for="option in planTab" :tab="option.name" :key="option.id"   >
                         <div class="card-info">
@@ -39,14 +41,16 @@
                     </a-tab-pane>
                 </a-tabs>
             </div>
+            </a-spin>
         </a-modal>
 </template>
 <script>
-import { staffInspectPage,planDetail,targetPage,groupingPage,asdasdasdasd,memberRiverSave,equipmentRiverSave,planPublish} from '@/api/login'
+import { staffInspectPage,planDetail,groupingPage,staffPage,memberRiverSave,equipmentRiverSave,deviceInspectPage,devicePage} from '@/api/login'
 export default {
     name:'planDetail',
     data(){
         return{
+            spinning:true,
             date:'',
             name:'',
             visible:false,
@@ -72,45 +76,103 @@ export default {
         show(id){
             this.visible = true;
             this.id = id
-            planDetail(id).then(res=>{
-                console.log(res.data);
-                this.name = res.data.creator.name
-                this.date = res.data.date
-            })
-            asdasdasdasd(id).then(res=>{
-                console.log(res.data);
-                
-            })
             groupingPage(id).then(res=>{
                 var arr = res.data
                 for (const item of arr) {
                     item.roles = []
                     item.devices=[]
-                    asdasdasdasd(item.id).then(res=>{
-                        var arrr= res.data.data
-                        arrr.forEach(v => {
-                           v. workerId = []
-                        });
-                        item.devices=arrr  
+                    
+                    devicePage(item.id).then(res=>{
+                        var device = res.data.data
+                        deviceInspectPage(item.id).then(res=>{
+                            var arrr= res.data
+                            arrr.forEach(v => {
+                                v. workerId = []
+                                v.name = v.deviceType.name
+                                v.id = v.deviceType.id
+                                for (const item of v.devices) {
+                                    v. workerId.push(item.device.id)
+                                    for(const qq of device){
+                                        if (item.device.id == qq.device.id) {
+                                            item.amount1 = qq.amount
+                                        }
+                                    }
+                                }
+                                
+                            })
+                            item.devices=arrr  
+                        })
                     })
-                    // staffInspectPage(item.id).then(res=>{
-                    //     var ar= res.data
-                    //     ar.forEach(v => {
-                    //        v. workerId = []
-                    //        v.name = v.role.name
-                    //     });
-                    //     item.roles = ar
-                    // })
-                 }
+                    staffPage(item.id).then(res=>{
+                        var staff = res.data.data
+                        staffInspectPage(item.id).then(res=>{
+                            var ar= res.data
+                            ar.forEach(v => {
+                            v. workerId = []
+                            v.name = v.role.name
+                            for(const ss of staff){
+                                if (v.role.id == ss.role.id) {
+                                    v.workerId.push(ss.worker.id)
+                                }
+                            }
+                            });
+                            item.roles = ar
+                        })
+                    })
+                }
                 this.planTab = arr
-                // this.spinning=false
+                this.spinning=false
+            })
+            planDetail(id).then(res=>{
+                this.name = res.data.name
+                this.date = res.data.date
             })
             this.teamId = id
         },
         submitPlan(){
+            // var worker =''
+            // var amount = ''
+            // console.log( this.planTab);
+            // for(const item of this.planTab){
+            //     worker =''
+            //     amount = ''
+            //     for(const role of item.roles){
+            //         var data ={
+            //             id:'',
+            //             teamId:item.id,
+            //             roleId:role.role.id,
+            //             workerId:role.workerId.join(',')
+            //         }
+            //         memberRiverSave(data).then(res=>{
+
+            //         })
+
+            //     }
+            //     for(const devices of item.devices){
+            //         for(const am of devices.workerId){
+            //             // worker.push(am.workerId)
+            //             worker = worker +am+','
+            //         }
+            //         for( const devi of devices.devices){
+            //             amount = amount +devi.amount+','
+            //             // amount.push(devi.amount)
+            //         }
+            //     }
+            //     var arr ={
+            //         id:'',
+            //         teamId:item.id,
+            //         deviceId:worker,
+            //         amount:amount
+            //     }
+            //     equipmentRiverSave(arr).then(res=>{
+
+            //     })
+            // }
+            this.spinning=true
             this.visible = false;
         },
         cancleBtn(){
+            this.spinning=true
             this.visible = false;
         },
         //卡片改变
@@ -159,7 +221,7 @@ export default {
     // margin-bottom:0;
 }
 .editIcon{
-    position:absolute;top:18px;left:82px;
+    position:absolute;top:18px;left:200px;
     cursor: pointer;
 }
 .editIcon:hover{
