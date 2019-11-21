@@ -724,7 +724,7 @@
 </template>
 
 <script>
-import { getRiverList, getStreetList } from '@/api/login'
+import { getRiverList, getStreetList , getWaterQualityList} from '@/api/login'
 import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
 import PhotoEdit from './modules/PhotoEdit'
@@ -1189,7 +1189,7 @@ export default {
       ],
       waterQuality: false, // 水质监测点
       waterQualityPoints: [
-        {
+        /*{
           id: 0,
           name: '水质监测点1',
           clicked: false,
@@ -1223,7 +1223,7 @@ export default {
           clicked: false,
           imgUrl: require('./img/waterQualityIcon2.png'),
           latlng: { lat: 31.21945, lng: 121.50605 }
-        }
+        }*/
       ],
       waterFlotage: false, // 水质漂浮物
       waterFlotagePoints: [
@@ -1387,7 +1387,7 @@ export default {
       'http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
     this.mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 23, zIndex: 10 })
     let satelliteURL = 'http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-    this.mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 23, zIndex: 10 })
+    this.mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 18, zIndex: 10 })
     // 创建自定义图层对象
     let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
     this.mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 23, zIndex: 11 })
@@ -1396,18 +1396,18 @@ export default {
       'http://jleco.jl-shgroup.com/server/data/admin/regulator/uav/data/mbtiles?year=&month&day&x={x}&y={y}&z={z}&X-TENANT-ID=jl:jlgis@2019&Authorization=' + token
     this.mapLayerImage = new T.TileLayer(mapImage, { minZoom: 4, maxZoom: 23, zIndex: 12 })
     this.map = new T.Map('map', {
-      projection: 'EPSG:4326',
       minZoom: 4,
       maxZoom: 23,
       layers: [this.mapLayer2d, this.mapLayerWord, this.mapLayerImage]
     })
 
-    this.map.centerAndZoom(new T.LngLat(121.44133, -57.17362), zoom)
+    this.map.centerAndZoom(new T.LngLat(121.53978, 31.2771), zoom)
     //添加比例尺控件
     this.map.addControl(new T.Control.Scale())
 
     this.getRiverStreeList()
     this.getTimeQuantum() // 获取时间段
+    this.getWaterQualityPoints()
   },
   methods: {
     getRiverStreeList() {
@@ -1429,6 +1429,17 @@ export default {
             v.clicked = false
           })
           this.riverShowList = arr
+        })
+        .catch(err => {})
+    },
+    getWaterQualityPoints(){
+      let parameter = {projectId:'',type:''}
+      parameter.projectId = '5da7d092ea6c156d792df816'
+      parameter.type = '5db055a739fc3819607d93e3'
+      getWaterQualityList(parameter)
+        .then(res => {
+          let arr = res.data.data
+          this.waterQualityPoints = arr
         })
         .catch(err => {})
     },
