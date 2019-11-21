@@ -712,6 +712,8 @@
     <risk-source-info ref="riskInfo"></risk-source-info>
     <!-- 添加风险源 -->
     <add-risk-source ref="addRisk"></add-risk-source>
+    <!-- 水质监测点 -->
+    <water-quality ref="waterQualityAlert"></water-quality>
     <!-- 照片编辑 -->
     <photo-edit ref="photoEdit"></photo-edit>
     <!-- 排口 -->
@@ -728,6 +730,7 @@ import AddRiskSource from './modules/AddRiskSource'
 import PhotoEdit from './modules/PhotoEdit'
 import AddOutlet from './modules/AddOutlet'
 import LookPanorama from './modules/LookPanorama'
+import WaterQuality from './modules/waterQualityData'
 
 import moment from 'moment' // 时间格式
 
@@ -742,6 +745,10 @@ import OSM from 'ol/source/OSM'
 
 // 拖拽缩放
 // import { defaults as defaultInteractions, DragRotateAndZoom } from 'ol/interaction'
+
+import Vue from 'vue'
+// token
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 // 截图
 import htmlToImage from 'html-to-image'
@@ -768,6 +775,7 @@ export default {
     // 'world-map': WorldMap
     'risk-source-info': RiskSourceInfo,
     'add-risk-source': AddRiskSource,
+    'water-quality': WaterQuality,
     'photo-edit': PhotoEdit,
     'add-outlet': AddOutlet,
     'look-panorama': LookPanorama,
@@ -967,6 +975,7 @@ export default {
       mapLayer2d: '', // 2D影像图
       mapLayerSatellite: '', // 卫星影像图
       mapLayerWord: '', // 道路标注
+      mapLayerImage: '', // 正射影像
 
       toolsCard: false, //工具卡片
       toolCard: false, //选中工具卡片
@@ -1370,6 +1379,8 @@ export default {
   },
   mounted() {
     let that = this
+    let token = Vue.ls.get(ACCESS_TOKEN)
+    console.log(token)
     // 初始化地图控件
     let zoom = 14
     let twoDimensionURL =
@@ -1377,16 +1388,21 @@ export default {
     this.mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 23, zIndex: 10 })
     let satelliteURL = 'http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
     this.mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 23, zIndex: 10 })
-    //创建自定义图层对象
+    // 创建自定义图层对象
     let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
     this.mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 23, zIndex: 11 })
+    // 正射影像
+    let mapImage =
+      'http://jleco.jl-shgroup.com/server/data/admin/regulator/uav/data/mbtiles?year=&month&day&x={x}&y={y}&z={z}&X-TENANT-ID=jl:jlgis@2019&Authorization=' + token
+    this.mapLayerImage = new T.TileLayer(mapImage, { minZoom: 4, maxZoom: 23, zIndex: 12 })
     this.map = new T.Map('map', {
-      layers: [this.mapLayer2d, this.mapLayerWord]
+      projection: 'EPSG:4326',
+      minZoom: 4,
+      maxZoom: 23,
+      layers: [this.mapLayer2d, this.mapLayerWord, this.mapLayerImage]
     })
-    // this.onChangeSwitch() // 道路标注
-    this.map.centerAndZoom(new T.LngLat(121.495505, 31.21098), zoom)
-    this.map.setMinZoom(4)
-    this.map.setMaxZoom(23)
+
+    this.map.centerAndZoom(new T.LngLat(121.44133, -57.17362), zoom)
     //添加比例尺控件
     this.map.addControl(new T.Control.Scale())
 
@@ -2124,9 +2140,13 @@ export default {
           })
           let marker = new T.Marker(item.latlng, { icon: icon, id: item.id, title: item.name })
           this.map.addOverLay(marker)
-          marker.addEventListener('click', this.taskPointClick)
+          marker.addEventListener('click', this.waterQualityClick)
         }
       }
+    },
+    // 水质监测点点击
+    waterQualityClick() {
+      this.$refs.waterQualityAlert.add()
     },
     // 水质漂浮物
     onWaterFlotage() {
