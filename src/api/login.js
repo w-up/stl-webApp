@@ -315,6 +315,17 @@ export function getSaveStreet (parameter) {
     data:parameter
   })
 }
+export function getWaterQualityList(parameter) {
+  console.log(parameter)
+  let url = 'server/data/admin/monitor/page?projectId=' + parameter.projectId;
+  if(parameter.type){
+    url = url + '&type=' + parameter.type
+  }
+  return axios({
+    url: url,
+    method: 'get',
+  })
+}
 //任务列表
 export function taskList(type) {
   return axios({
