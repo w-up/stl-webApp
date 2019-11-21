@@ -945,7 +945,7 @@ export default {
       ],
       startDateRight: '', // 开始日期
       endDateRight: '', // 结束日期
-      mapType: 'a',
+      mapType: 'b',
       roadWordChange: true, // 道路标注
       mapLayerWord: '', // 道路层级
       sharedChecked: false, // 双球
@@ -1385,23 +1385,23 @@ export default {
     let zoom = 14
     let twoDimensionURL =
       'http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-    this.mapLayer2d = new T.TileLayer(twoDimensionURL, { zIndex: 10 })
+    this.mapLayer2d = new T.TileLayer(twoDimensionURL, { minZoom: 4, maxZoom: 18, zIndex: 10 })
     let satelliteURL = 'http://t0.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
     this.mapLayerSatellite = new T.TileLayer(satelliteURL, { minZoom: 4, maxZoom: 18, zIndex: 10 })
     // 创建自定义图层对象
     let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
-    this.mapLayerWord = new T.TileLayer(wordLabel, { zIndex: 11 })
+    this.mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 18, zIndex: 15 })
     // 正射影像
     let mapImage = `http://jleco.jl-shgroup.com/server/data/admin/regulator/uav/data/mbtiles?year=&month&day&x={x}&y={y}&z={z}&X-TENANT-ID=jl:jlgis@2019&Authorization=${token}`
     this.mapLayerImage = new T.TileLayer(mapImage, { minZoom: 4, maxZoom: 23, zIndex: 12 })
     this.map = new T.Map('map', {
       minZoom: 4,
       maxZoom: 23,
-      layers: [this.mapLayer2d, this.mapLayerWord, this.mapLayerImage]
+      layers: [this.mapLayerSatellite, this.mapLayerWord, this.mapLayerImage]
     })
     this.map.addEventListener('zoomend', this.mapZoomChange)
 
-    this.map.centerAndZoom(new T.LngLat(121.53978, 31.2771), zoom)
+    this.map.centerAndZoom(new T.LngLat(121.43429, 31.15847), zoom)
     //添加比例尺控件
     this.map.addControl(new T.Control.Scale())
 
