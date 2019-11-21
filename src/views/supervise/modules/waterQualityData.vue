@@ -78,6 +78,7 @@ var echarts = require('echarts/lib/echarts');
 require('echarts/lib/chart/line');
 // 引入提示框和标题组件
 require('echarts/lib/component/tooltip');
+require('echarts/lib/component/dataZoom');
 require('echarts/lib/component/title');
 export default {
   name:'waterQualityData',
@@ -122,7 +123,6 @@ export default {
   methods: {
     moment,
     add() {
-      moment
       this.visible = true
     },
     handleSubmit() {
@@ -214,16 +214,28 @@ export default {
           },
           tooltip: {},
           xAxis: {
-              data: this.time
+             data: this.time
           },
           yAxis: {
 
           },
           series: [{
-              name: text,
-              type: 'line',
-              data:[5, 20, 40, ]
-          }]
+            name: text,
+            type: 'line',
+            data:[5, 20, 40, ]
+          }],
+          dataZoom: [
+            {
+                type: 'slider',
+                yAxisIndex: 0,
+                filterMode: 'empty'
+            },
+            {
+                type: 'inside',
+                yAxisIndex: 0,
+                filterMode: 'empty'
+            }
+        ],
         });
       }
      
