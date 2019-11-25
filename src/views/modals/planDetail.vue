@@ -75,6 +75,7 @@ export default {
 
         show(id){
             this.visible = true;
+            this.id = id
             var sdsd ={
                 projectId:this.$store.state.id,
                 id:this.id
