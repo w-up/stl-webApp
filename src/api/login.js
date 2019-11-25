@@ -258,9 +258,9 @@ export function regionList (id) {
   })
 }
 //河道列表
-export function getRiverList () {
+export function getRiverList (id) {
   return axios({
-    url: '/server/data/admin/river/page?projectId=5da7d092ea6c156d792df816',
+    url: '/server/data/admin/river/page?projectId='+id,
     method: 'get',
   })
 }
@@ -287,9 +287,9 @@ export function getSaveRiver (parameter) {
   })
 }
 //街道列表
-export function getStreetList () {
+export function getStreetList (id) {
   return axios({
-    url: '/server/data/admin/street/page?projectId=5da7d092ea6c156d792df816',
+    url: '/server/data/admin/street/page?projectId='+id,
     method: 'get',
   })
 }
@@ -316,7 +316,7 @@ export function getSaveStreet (parameter) {
   })
 }
 export function getWaterQualityList(parameter) {
-  console.log(parameter)
+  // console.log(parameter)
   let url = 'server/data/admin/monitor/page?projectId=' + parameter.projectId;
   if(parameter.type){
     url = url + '&type=' + parameter.type
@@ -327,9 +327,9 @@ export function getWaterQualityList(parameter) {
   })
 }
 //任务列表
-export function taskList(type) {
+export function taskList(data) {
   return axios({
-    url: '/server/data/admin/task/page?projectId=5da7d092ea6c156d792df816&type='+type,
+    url: '/server/data/admin/task/page?projectId='+data.id+'&type='+data.type,
     method: 'get',
   })
 }
@@ -404,9 +404,9 @@ export function taskPointDel(id) {
   })
 }
 //方案分页
-export function programmeList(id) {
+export function programmeList(data) {
   return axios({
-    url: '/server/data/admin/scheme/page?projectId=5da7d092ea6c156d792df816&riverId='+id,
+    url: '/server/data/admin/scheme/page?projectId='+data.prid+'&riverId='+data.id,
     method: 'get',
   })
 }
@@ -441,9 +441,9 @@ export function programmePrimary(parameter) {
   })
 }
 //水质监测分页
-export function testingPage(id) {
+export function testingPage(data) {
   return axios({
-    url: '/server/data/admin/monitor/page?projectId=5da7d092ea6c156d792df816&type='+id,
+    url: '/server/data/admin/monitor/page?projectId='+data.prid+'&type='+data.id,
     method: 'get',
   })
 }
@@ -470,9 +470,9 @@ export function testingDel(id) {
   })
 }
 //督办单分页
-export function SupervisePage() {
+export function SupervisePage(id) {
   return axios({
-    url: '/server/data/admin/supervision/page?projectId=5da7d092ea6c156d792df816',
+    url: '/server/data/admin/supervision/page?projectId='+id,
     method: 'get',
   })
 }
@@ -505,7 +505,7 @@ export function planPage(data) {
     url: '/server/data/admin/inspect/plan/day/task',
     method: 'get',
     params:{
-      projectId:'5da7d092ea6c156d792df816',
+      projectId:data.projectId,
       status:data.status,
       year:data.year,
       month:data.month,
@@ -518,7 +518,7 @@ export function planPageList(data) {
     url: '/server/data/admin/inspect/plan/list',
     method: 'get',
     params:{
-      projectId:'5da7d092ea6c156d792df816',
+      projectId:data.projectId,
       status:data.status,
       year:data.year,
       month:data.month,
@@ -576,7 +576,7 @@ export function targetPage(data) {
     url: '/server/data/admin/inspect/target/page',
     method: 'get',
     params:{
-      projectId:'5da7d092ea6c156d792df816',
+      projectId:data.projectId,
       planId:data.id,
       teamId:data.teamId
     }
@@ -639,13 +639,13 @@ export function targetSetTeam(data) {
   })
 }
 //分组列表
-export function groupingPage(id) {
+export function groupingPage(data) {
   return axios({
     url: '/server/data/admin/inspect/team/list',
     method: 'get',
     params:{
-      projectId:'5da7d092ea6c156d792df816',
-      planId:id
+      projectId:data.projectId,
+      planId:data.id
     }
   })
 }
@@ -670,7 +670,7 @@ export function taskInspectPage(data) {
     url: '/server/data/admin/inspect/task/page',
     method: 'get',
     params:{
-      projectId:'5da7d092ea6c156d792df816',
+      projectId:data.projectId,
       planId:data.id,
       Object:data.Object,
       objectId:data.objectId
@@ -745,7 +745,7 @@ export function locusManual(data) {
     url: '/server/data/admin/inspect/plan/day/locus',
     method: 'get',
     params:{
-      // projectId:'5da7d092ea6c156d792df816',
+      // projectId:this.$store.state.id,
       status:data.status,
       year:data.year,
       month:data.month,
@@ -753,6 +753,29 @@ export function locusManual(data) {
     }
   })
 }
+//基础绘制数据列表
+export function mapdrawPage(data) {
+  return axios({
+    url: '/server/data/admin/mapdraw/data/list',
+    method: 'get',
+    params:data
+  })
+}
+//基础绘制数据保存
+export function mapdrawSave(data) {
+  return axios({
+    url: '/server/data/admin/mapdraw/data/save',
+    method: 'post',
+    params:data
+  })
+}
+
+
+
+
+
+
+
 export function getSmsCaptcha (parameter) {
   return axios({
     url: api.SendSms,

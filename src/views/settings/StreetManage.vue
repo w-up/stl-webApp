@@ -238,7 +238,7 @@ export default {
   },
   methods: {
     getList() {
-      getStreetList().then(res => {
+      getStreetList(this.$store.state.id).then(res => {
         let arr = res.data.data
         arr.forEach(v => {
           v.lineData = v.region

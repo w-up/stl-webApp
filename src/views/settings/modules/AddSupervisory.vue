@@ -119,7 +119,7 @@ export default {
       file:false,
       list:{
         id:'',
-        projectId:'5da7d092ea6c156d792df816',
+        projectId:this.$store.state.id,
         name:'',
         streetId:'',
         riverId:'',

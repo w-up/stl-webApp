@@ -522,7 +522,7 @@ export default {
       //线任务数据
       lineList: {
         id: '',
-        projectId: '5da7d092ea6c156d792df816',
+        projectId: this.$store.state.id,
         type: 'line',
         title: '',
         content: '',
@@ -550,7 +550,7 @@ export default {
         //点任务数据
         title: '',
         id: '',
-        projectId: '5da7d092ea6c156d792df816',
+        projectId: this.$store.state.id,
         type: 'dot',
         content: '',
         altitude: '',
@@ -695,8 +695,11 @@ export default {
   methods: {
     //点线列表
     getList() {
-      taskList('dot')
-        .then(res => {
+      var data = {
+        type:'dot',
+        id:this.$store.state.id
+      }
+      taskList(data).then(res => {
           var arr = res.data.data
           arr.forEach(v => {
             v.name = v.title
@@ -708,8 +711,11 @@ export default {
         .catch(err => {})
     },
     getLineList() {
-      taskList('line')
-        .then(res => {
+      var data = {
+        type:'line',
+        id:this.$store.state.id
+      }
+      taskList(data).then(res => {
           var arr = res.data.data
           arr.forEach(v => {
             v.clicked = false
@@ -765,7 +771,7 @@ export default {
     },
     //河道列表
     riverListGet() {
-      getRiverList()
+      getRiverList(this.$store.state.id)
         .then(res => {
           var arr = res.data.data
           this.riverList = arr

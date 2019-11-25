@@ -131,7 +131,11 @@ export default {
   methods: {
     //固定监测分页
     getFixedList() {
-      testingPage('fixed')
+      var data ={
+        id:'fixed',
+        prid:this.$store.state.id,
+      }
+      testingPage(data)
         .then(res => {
           var arr = res.data.data
           arr.forEach(v => {
@@ -147,7 +151,11 @@ export default {
     },
     //人工监测分页
     getManualList() {
-      testingPage('manual')
+      var data ={
+        id:'manual',
+        prid:this.$store.state.id,
+      }
+      testingPage(data)
         .then(res => {
           var arr = res.data.data
           arr.forEach(v => {

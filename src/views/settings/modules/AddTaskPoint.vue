@@ -141,7 +141,7 @@ export default {
   },
   methods: {
     getRiver(){
-      getRiverList().then(res => {
+      getRiverList(this.$store.state.id).then(res => {
           var arr = res.data.data
           this.riverList = arr
       }).catch(err => {})

@@ -398,7 +398,7 @@ export default {
     return {
       list: {
         id: '',
-        projectId: '5da7d092ea6c156d792df816',
+        projectId: this.$store.state.id,
         name: '',
         lineId: [],
         pointId: [],
@@ -501,7 +501,7 @@ export default {
   },
   methods: {
     getList() {
-      getRiverList()
+      getRiverList(this.$store.state.id)
         .then(res => {
           var arr = res.data.data
           arr.forEach(v => {
@@ -783,7 +783,11 @@ export default {
     // 关联河道
     chooseRiver(index) {
       console.log(`selected ${index}`)
-      programmeList(this.defaultRiver)
+      var data = {
+        id:this.defaultRiver,
+        prid:this.$store.state.id
+      }
+      programmeList(data)
         .then(res => {
           var arr = res.data.data
           for (let a = 0; a < arr.length; a++) {

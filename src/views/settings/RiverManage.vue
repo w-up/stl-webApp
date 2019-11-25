@@ -269,7 +269,7 @@ export default {
   methods: {
     getList() {
       //河道列表
-      getRiverList().then(res => {
+      getRiverList(this.$store.state.id).then(res => {
           let arr = res.data.data
           arr.forEach(v => {
             v.lineData = v.region

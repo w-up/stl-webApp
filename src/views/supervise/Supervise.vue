@@ -664,11 +664,8 @@
       <a-row style="width:100%">
         <a-col :span="24">绘制类型</a-col>
         <a-col :span="24">
-          <a-select default-value="1" style="width:100%;">
-            <a-select-option value="1">风险源</a-select-option>
-            <a-select-option value="2">水面漂浮物</a-select-option>
-            <a-select-option value="3">排口</a-select-option>
-            <a-select-option value="4">其他</a-select-option>
+          <a-select  style="width:100%;" v-model="drawTypeId">
+            <a-select-option :value="item.id" v-for="item in paramPage" :key="item.id">{{item.name}}</a-select-option>
           </a-select>
         </a-col>
       </a-row>
@@ -724,7 +721,7 @@
 </template>
 
 <script>
-import { getRiverList, getStreetList , getWaterQualityList} from '@/api/login'
+import { getRiverList, getStreetList , getWaterQualityList,paramList,mapdrawSave,mapdrawPage} from '@/api/login'
 import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
 import PhotoEdit from './modules/PhotoEdit'
@@ -787,6 +784,10 @@ export default {
         // 文件上传
         authorization: 'authorization-text'
       },
+      drawTypeId:'',//绘制类型
+      paramPage:[],//绘制类型列表
+      polygonList:[],//绘制面坐标
+      pointList:{},//绘制点坐标
       timeSetShow: false, // 时间弹窗显隐
       timeSetShowRight: false, // 右侧时间弹窗显隐
       timeData: [
@@ -1380,7 +1381,7 @@ export default {
   mounted() {
     let that = this
     let token = Vue.ls.get(ACCESS_TOKEN)
-    console.log(token)
+    // console.log(token)
     // 初始化地图控件
     let zoom = 14
     let twoDimensionURL =
@@ -1408,15 +1409,49 @@ export default {
     this.getRiverStreeList()
     this.getTimeQuantum() // 获取时间段
     this.getWaterQualityPoints()
+    this.getParamList()
+    // this.getMapdrawPage()
+    console.log( this.$store.state.id,'ssasasa'); 
+    
+   
   },
   methods: {
+    //获取绘制类型
+    getParamList(){
+      var data = {
+        type:'draw_type'
+      }
+      paramList(data).then(res=>{
+        this.paramPage = res.data
+      })
+      
+    },
+    getMapdrawPage(){
+      var time = '2019-11-25'
+      var picker = time.split('-')
+      var arr = {
+        projectId:this.$store.state.id,
+        year: picker[0],
+        month: picker[1],
+        day: picker[2],
+      }
+      mapdrawPage(arr).then(res=>{
+        console.log(res.data)
+        res.data.forEach(v => {
+          v.shapePellucidity = v.shapePellucidity /100
+          v.framePellucidity = v.framePellucidity /100
+        });
+        this.toolIndexPolygonData = res.data
+        this.toolDrawPolygon()
+      })
+    },
     mapZoomChange() {
-      console.log(this.map.getZoom())
+      // console.log(this.map.getZoom())
       if (this.map.getZoom() > 18) {
       }
     },
     getRiverStreeList() {
-      getStreetList()
+      getStreetList(this.$store.state.id)
         .then(res => {
           let arr = res.data.data
           arr.forEach(v => {
@@ -1426,7 +1461,7 @@ export default {
           this.streetShowList = arr
         })
         .catch(err => {})
-      getRiverList()
+      getRiverList(this.$store.state.id)
         .then(res => {
           let arr = res.data.data
           arr.forEach(v => {
@@ -1439,7 +1474,7 @@ export default {
     },
     getWaterQualityPoints(){
       let parameter = {projectId:'',type:''}
-      parameter.projectId = '5da7d092ea6c156d792df816'
+      parameter.projectId = this.$store.state.id
       parameter.type = '5db055a739fc3819607d93e3'
       getWaterQualityList(parameter)
         .then(res => {
@@ -1537,8 +1572,27 @@ export default {
     // 绘制保存
     toolCradSave() {
       this.toolCard = false
+      var time = '2019-11-25'
+      var picker = time.split('-')
       console.log(this.isToolEdit)
       if (this.toolIndex === 1) {
+        let data ={
+          id:'',
+          projectId:this.$store.state.id,
+          year: picker[0],
+          month: picker[1],
+          day: picker[2],
+          locationType:'point ',
+          point:this.pointList.lng + ','+this.pointList.lat,
+          pointRadius:'0.4',
+          drawTypeId:this.drawTypeId
+        }
+        mapdrawSave(data).then( res=>{
+          this.$message.success('保存成功')
+          this.drawTypeId = ''
+        }).catch(err => {
+          this.$message.error(err.response.data.message)
+        })
       } else if (this.toolIndex === 2) {
         // 工具-线
         this.lineTool.clear()
@@ -1549,6 +1603,27 @@ export default {
         this.toolIndexLineData[result].borderOpacity = this.borderOpacity / 100
         console.log(result)
         console.log(this.toolIndexLineData)
+        var polygon = ''
+        for ( const index of this.polygonList) {
+          polygon = polygon + index.lng +','+index.lat +'|'
+        }
+        let data ={
+          id:'',
+          projectId:this.$store.state.id,
+          year: picker[0],
+          month: picker[1],
+          day: picker[2],
+          locationType:'line ',
+          line:polygon,
+          frameColor:this.borderColor,
+          framePellucidity:this.borderOpacity ,
+          drawTypeId:this.drawTypeId
+        }
+        mapdrawSave(data).then( res=>{
+          this.$message.success('保存成功')
+        }).catch(err => {
+          this.$message.error(err.response.data.message)
+        })
         if (this.isToolEdit) {
           this.watchAllSwitch()
           return
@@ -1568,6 +1643,30 @@ export default {
         })
         console.log(result)
         console.log(this.toolIndexPolygonData)
+        var polygon = ''
+        for ( const index of this.polygonList) {
+          polygon = polygon + index.lng +','+index.lat +'|'
+        }
+        let data ={
+          id:'',
+          projectId:this.$store.state.id,
+          year: picker[0],
+          month: picker[1],
+          day: picker[2],
+          locationType:'polygon',
+          polygon:polygon,
+          frameColor:this.borderColor,
+          shapeColor: this.fullColor,
+          shapePellucidity:this.fullOpacity ,
+          framePellucidity:this.borderOpacity ,
+          drawTypeId:this.drawTypeId
+        }
+        mapdrawSave(data).then( res=>{
+          this.$message.success('保存成功')
+          this.getMapdrawPage()
+        }).catch(err => {
+          this.$message.error(err.response.data.message)
+        })
         this.toolIndexPolygonData[result].borderColor = this.borderColor
         this.toolIndexPolygonData[result].fullColor = this.fullColor
         this.toolIndexPolygonData[result].borderOpacity = this.borderOpacity / 100
@@ -1619,9 +1718,12 @@ export default {
       this.colorAlertShow = false
       let id = new Date().valueOf()
       this.toolIndexId = id
+      console.log(e);
+      
       if (this.toolIndex === 1) {
         this.toolCard = true
         this.markerTool.close()
+        this.pointList =e.currentLnglat
         this.toolIndexPointData.push({
           id: id,
           latlng: e.currentLnglat
@@ -1634,6 +1736,7 @@ export default {
         console.log(e)
         this.toolCard = true
         this.lineTool.close()
+        this.polygonList = e.currentLnglats
         this.toolIndexLineData.push({
           id: id,
           lineData: e.currentLnglats
@@ -1642,6 +1745,9 @@ export default {
         // 工具-面
         this.toolCard = true
         this.polygonTool.close()
+        this.polygonList = e.currentLnglats
+        console.log(e.currentLnglats);
+        
         this.toolIndexPolygonData.push({
           id: id,
           lineData: e.currentLnglats
@@ -1689,12 +1795,12 @@ export default {
       if (this.toolIndexPolygonData.length !== 0) {
         for (const item of this.toolIndexPolygonData) {
           this.setPolylineFn(
-            item.lineData,
-            item.borderColor,
+            item.polygon,
+            item.frameColor,
             3,
-            item.borderOpacity,
-            item.fullColor,
-            item.fullOpacity,
+            item.framePellucidity,
+            item.shapeColor,
+            item.shapePellucidity,
             '',
             item.id
           )
@@ -1731,7 +1837,7 @@ export default {
       this.startDate = `${starty}-${startm}-${endd}`
       this.endDate = `${endy}-${endm}-${endd}`
       this.timeQuantum = `${this.startDate} ~ ${this.endDate}`
-      console.log(this.timeQuantum)
+      // console.log(this.timeQuantum)
     },
     // 时间轴
     timeLineItem(mouth, index) {

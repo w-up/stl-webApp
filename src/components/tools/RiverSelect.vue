@@ -30,10 +30,13 @@ export default {
       }]
     }
   },
-
+  mounted(){
+    // this.$store.commit('show','5555')
+  },
   methods: {
     
     onChange(value) {
+      // this.$store.commit('show',value)
       console.log(value);
     }
   }

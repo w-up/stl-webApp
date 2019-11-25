@@ -105,8 +105,11 @@ export default {
     methods:{
         getstaffInspectPage(id){
             this.visible = true;
-            this.id = id
-            groupingPage(id).then(res=>{
+            var sdsd ={
+                projectId:this.$store.state.id,
+                id:this.id
+            }
+            groupingPage(sdsd).then(res=>{
                 var arr = res.data
                 for (const item of arr) {
                     item.roles = []

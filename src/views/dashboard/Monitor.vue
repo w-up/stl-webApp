@@ -1135,6 +1135,7 @@ export default {
       var picker = this.picker.split('-')
       var data = {
         status: 'publish',
+        projectId:this.$store.state.id,
         year: picker[0],
         month: picker[1],
         day: picker[2]
@@ -1147,7 +1148,7 @@ export default {
     },
     getList() {
       //河道列表
-      getRiverList()
+      getRiverList(this.$store.state.id)
         .then(res => {
           let arr = res.data.data
           arr.forEach(v => {
@@ -1299,7 +1300,11 @@ export default {
     },
     //任务点列表
     getTask() {
-      taskList('dot').then(res => {
+      var data = {
+        type:'dot',
+        id:this.$store.state.id
+      }
+      taskList(data).then(res => {
         var arr = res.data.data
         arr.forEach(v => {
           v.name = v.content
@@ -1312,6 +1317,7 @@ export default {
       var picker = this.picker.split('-') 
       var data = {
         status: 'publish',
+        projectId:this.$store.state.id,
         year: picker[0],
         month: picker[1],
         day: picker[2]
@@ -1398,7 +1404,7 @@ export default {
       var picker = this.picker.split('-')
       var data = {
         id: '',
-        projectId: '5da7d092ea6c156d792df816',
+        projectId: this.$store.state.id,
         name: '',
         year: picker[0],
         month: picker[1],
@@ -1434,7 +1440,8 @@ export default {
             var data = {
               id: this.planList1.id,
               object: arr[a].object.code,
-              objectId: arr[a].objectId
+              objectId: arr[a].objectId,
+              projectId:this.$store.state.id,
             }
             taskInspectPage(data).then(res => {
               var ar = res.data.data
@@ -2210,7 +2217,7 @@ export default {
       var ne = bounds.getNorthEast()
       var lngSpan = Math.abs(sw.lng - ne.lng)
       var latSpan = Math.abs(ne.lat - sw.lat)
-      dataManual('5da7d092ea6c156d792df816').then(res=>{
+      dataManual(this.$store.state.id).then(res=>{
         var arr = res.data.data
         for (const item of arr) {
           var marker = new T.Marker(item.coordinate,{id:item.id})
@@ -2232,7 +2239,7 @@ export default {
       }
       var picker = this.picker.split('-')
       var data = {
-        projectId: '5da7d092ea6c156d792df816',
+        projectId: this.$store.state.id,
         year: picker[0],
         month: picker[1],
         day: picker[2],

@@ -123,7 +123,7 @@ export default {
     SaveStreet(){
       var data = {
         id:this.list.id,
-        projectId:'5da7d092ea6c156d792df816',
+        projectId:this.$store.state.id,
         name:this.list.name,
         controller:this.list.controller,
         job:this.list.job,

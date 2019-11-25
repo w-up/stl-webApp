@@ -80,6 +80,7 @@ export default {
             this.id = id
             var data = {
                 id:this.id,
+                projectId:this.$store.state.id,
                 teamId:'no'
             }
             targetPage(data).then(res=>{
@@ -110,14 +111,19 @@ export default {
         },
         //分组列表
         getList(){
-            groupingPage(this.id).then(res=>{
+            var sdsd ={
+                projectId:this.$store.state.id,
+                id:this.id
+            }
+            groupingPage(sdsd).then(res=>{
                 var arr = res.data
                 // arr[0].taskList =taskList
                 arr.forEach(v => {
                     v.taskList = []
                     let data = {
                         id:this.id,
-                        teamId:v.id
+                        teamId:v.id,
+                        projectId:this.$store.state.id,
                     }
                     targetPage(data).then(res=>{
                         v.taskList = res.data.data
