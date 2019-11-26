@@ -1577,6 +1577,11 @@ export default {
       var picker = time.split('-')
       console.log(this.isToolEdit)
       if (this.toolIndex === 1) {
+        let result = this.toolIndexPointData.findIndex(item => {
+          return this.toolIndexId == item.id
+        })
+        let geocode = new T.Geocoder()
+        geocode.getLocation(this.toolIndexPointData[result].latlng, this.searchResult)
         // let data = {
         //   id: '',
         //   projectId: this.$store.state.id,
@@ -1698,15 +1703,6 @@ export default {
       }
       // this.getDrawId()
     },
-    // 获取地理位置
-    // searchResult(result) {
-    //   if (result.status == 0) {
-    //     console.log("1111")
-    //     console.log(result)
-    //   } else {
-    //     this.$message.error('获取地址失败')
-    //   }
-    // },
     //风险源，排口弹窗
     searchResult(result) {
       if (result.status == 0) {
@@ -1764,8 +1760,6 @@ export default {
           id: id,
           latlng: e.currentLnglat
         })
-        let geocode = new T.Geocoder()
-        geocode.getLocation(e.currentLnglat, this.searchResult)
       } else if (this.toolIndex === 2) {
         // 工具-线
         console.log((e.currentDistance / 1000).toFixed(3)) //获取距离 km
