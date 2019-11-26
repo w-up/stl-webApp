@@ -715,6 +715,8 @@
     <photo-edit ref="photoEdit"></photo-edit>
     <!-- 排口 -->
     <add-outlet ref="addOutlet"></add-outlet>
+    <!-- 水面漂浮物 -->
+    <add-floatage ref="AddFloatage"></add-floatage>
     <!-- 360全景图 -->
     <look-panorama ref="panorama"></look-panorama>
   </div>
@@ -724,6 +726,7 @@
 import { getRiverList, getStreetList , getWaterQualityList,paramList,mapdrawSave,mapdrawPage} from '@/api/login'
 import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
+import AddFloatage from './modules/AddFloatage'
 import PhotoEdit from './modules/PhotoEdit'
 import AddOutlet from './modules/AddOutlet'
 import LookPanorama from './modules/LookPanorama'
@@ -776,7 +779,8 @@ export default {
     'photo-edit': PhotoEdit,
     'add-outlet': AddOutlet,
     'look-panorama': LookPanorama,
-    'chrome-picker': Chrome
+    'chrome-picker': Chrome,
+    'add-floatage': AddFloatage,
   },
   data() {
     return {
@@ -1575,115 +1579,127 @@ export default {
       var time = '2019-11-25'
       var picker = time.split('-')
       console.log(this.isToolEdit)
-      if (this.toolIndex === 1) {
-        let data ={
-          id:'',
-          projectId:this.$store.state.id,
-          year: picker[0],
-          month: picker[1],
-          day: picker[2],
-          locationType:'point ',
-          point:this.pointList.lng + ','+this.pointList.lat,
-          pointRadius:'0.4',
-          drawTypeId:this.drawTypeId
-        }
-        mapdrawSave(data).then( res=>{
-          this.$message.success('保存成功')
-          this.drawTypeId = ''
-        }).catch(err => {
-          this.$message.error(err.response.data.message)
-        })
-      } else if (this.toolIndex === 2) {
-        // 工具-线
-        this.lineTool.clear()
-        let result = this.toolIndexLineData.findIndex(item => {
-          return this.toolIndexId == item.id
-        })
-        this.toolIndexLineData[result].borderColor = this.borderColor
-        this.toolIndexLineData[result].borderOpacity = this.borderOpacity / 100
-        console.log(result)
-        console.log(this.toolIndexLineData)
-        var polygon = ''
-        for ( const index of this.polygonList) {
-          polygon = polygon + index.lng +','+index.lat +'|'
-        }
-        let data ={
-          id:'',
-          projectId:this.$store.state.id,
-          year: picker[0],
-          month: picker[1],
-          day: picker[2],
-          locationType:'line ',
-          line:polygon,
-          frameColor:this.borderColor,
-          framePellucidity:this.borderOpacity ,
-          drawTypeId:this.drawTypeId
-        }
-        mapdrawSave(data).then( res=>{
-          this.$message.success('保存成功')
-        }).catch(err => {
-          this.$message.error(err.response.data.message)
-        })
-        if (this.isToolEdit) {
-          this.watchAllSwitch()
-          return
-        }
-        this.polyline = new T.Polyline(this.toolIndexLineData[result].lineData, {
-          id: this.toolIndexId
-        })
-        this.map.addOverLay(this.polyline)
-        this.polyline.setColor(this.borderColor)
-        this.polyline.setOpacity(this.borderOpacity / 100)
-        this.polyline.addEventListener('click', this.lineClick)
-      } else if (this.toolIndex === 3) {
-        // 工具-面
-        this.polygonTool.clear()
-        let result = this.toolIndexPolygonData.findIndex(item => {
-          return this.toolIndexId == item.id
-        })
-        console.log(result)
-        console.log(this.toolIndexPolygonData)
-        var polygon = ''
-        for ( const index of this.polygonList) {
-          polygon = polygon + index.lng +','+index.lat +'|'
-        }
-        let data ={
-          id:'',
-          projectId:this.$store.state.id,
-          year: picker[0],
-          month: picker[1],
-          day: picker[2],
-          locationType:'polygon',
-          polygon:polygon,
-          frameColor:this.borderColor,
-          shapeColor: this.fullColor,
-          shapePellucidity:this.fullOpacity ,
-          framePellucidity:this.borderOpacity ,
-          drawTypeId:this.drawTypeId
-        }
-        mapdrawSave(data).then( res=>{
-          this.$message.success('保存成功')
-          this.getMapdrawPage()
-        }).catch(err => {
-          this.$message.error(err.response.data.message)
-        })
-        this.toolIndexPolygonData[result].borderColor = this.borderColor
-        this.toolIndexPolygonData[result].fullColor = this.fullColor
-        this.toolIndexPolygonData[result].borderOpacity = this.borderOpacity / 100
-        this.toolIndexPolygonData[result].fullOpacity = this.fullOpacity / 100
-        if (this.isToolEdit) {
-          this.watchAllSwitch()
-          return
-        }
-        this.polygon = new T.Polygon(this.toolIndexPolygonData[result].lineData, {
-          id: this.toolIndexId
-        })
-        this.map.addOverLay(this.polygon)
-        this.polygon.setColor(this.borderColor)
-        this.polygon.setFillColor(this.fullColor)
-        this.polygon.setOpacity(this.borderOpacity / 100)
-        this.polygon.setFillOpacity(this.fullOpacity / 100)
-        this.polygon.addEventListener('click', this.polygonClick)
+      // if (this.toolIndex === 1) {
+      //   let data ={
+      //     id:'',
+      //     projectId:this.$store.state.id,
+      //     year: picker[0],
+      //     month: picker[1],
+      //     day: picker[2],
+      //     locationType:'point',
+      //     point:this.pointList.lng + ','+this.pointList.lat,
+      //     pointRadius:'0.4',
+      //     drawTypeId:this.drawTypeId
+      //   }
+      //   mapdrawSave(data).then( res=>{
+      //     this.$message.success('保存成功')
+      //     this.drawTypeId = ''
+          
+      //   }).catch(err => {
+      //     this.$message.error(err.response.data.message)
+      //   })
+      // } else if (this.toolIndex === 2) {
+      //   // 工具-线
+      //   this.lineTool.clear()
+      //   let result = this.toolIndexLineData.findIndex(item => {
+      //     return this.toolIndexId == item.id
+      //   })
+      //   this.toolIndexLineData[result].borderColor = this.borderColor
+      //   this.toolIndexLineData[result].borderOpacity = this.borderOpacity / 100
+      //   console.log(result)
+      //   console.log(this.toolIndexLineData)
+      //   var polygon = ''
+      //   for ( const index of this.polygonList) {
+      //     polygon = polygon + index.lng +','+index.lat +'|'
+      //   }
+      //   let data ={
+      //     id:'',
+      //     projectId:this.$store.state.id,
+      //     year: picker[0],
+      //     month: picker[1],
+      //     day: picker[2],
+      //     locationType:'line',
+      //     line:polygon,
+      //     frameColor:this.borderColor,
+      //     framePellucidity:this.borderOpacity ,
+      //     drawTypeId:this.drawTypeId
+      //   }
+      //   mapdrawSave(data).then( res=>{
+      //     this.$message.success('保存成功')
+      //   }).catch(err => {
+      //     this.$message.error(err.response.data.message)
+      //   })
+      //   if (this.isToolEdit) {
+      //     this.watchAllSwitch()
+      //     return
+      //   }
+      //   this.polyline = new T.Polyline(this.toolIndexLineData[result].lineData, {
+      //     id: this.toolIndexId
+      //   })
+      //   this.map.addOverLay(this.polyline)
+      //   this.polyline.setColor(this.borderColor)
+      //   this.polyline.setOpacity(this.borderOpacity / 100)
+      //   this.polyline.addEventListener('click', this.lineClick)
+      // } else if (this.toolIndex === 3) {
+      //   // 工具-面
+      //   this.polygonTool.clear()
+      //   let result = this.toolIndexPolygonData.findIndex(item => {
+      //     return this.toolIndexId == item.id
+      //   })
+      //   console.log(result)
+      //   console.log(this.toolIndexPolygonData)
+      //   var polygon = ''
+      //   for ( const index of this.polygonList) {
+      //     polygon = polygon + index.lng +','+index.lat +'|'
+      //   }
+      //   let data ={
+      //     id:'',
+      //     projectId:this.$store.state.id,
+      //     year: picker[0],
+      //     month: picker[1],
+      //     day: picker[2],
+      //     locationType:'polygon',
+      //     polygon:polygon,
+      //     frameColor:this.borderColor,
+      //     shapeColor: this.fullColor,
+      //     shapePellucidity:this.fullOpacity ,
+      //     framePellucidity:this.borderOpacity ,
+      //     drawTypeId:this.drawTypeId
+      //   }
+      //   mapdrawSave(data).then( res=>{
+      //     this.$message.success('保存成功')
+      //     this.getMapdrawPage()
+      //   }).catch(err => {
+      //     this.$message.error(err.response.data.message)
+      //   })
+      //   this.toolIndexPolygonData[result].borderColor = this.borderColor
+      //   this.toolIndexPolygonData[result].fullColor = this.fullColor
+      //   this.toolIndexPolygonData[result].borderOpacity = this.borderOpacity / 100
+      //   this.toolIndexPolygonData[result].fullOpacity = this.fullOpacity / 100
+      //   if (this.isToolEdit) {
+      //     this.watchAllSwitch()
+      //     return
+      //   }
+      //   this.polygon = new T.Polygon(this.toolIndexPolygonData[result].lineData, {
+      //     id: this.toolIndexId
+      //   })
+      //   this.map.addOverLay(this.polygon)
+      //   this.polygon.setColor(this.borderColor)
+      //   this.polygon.setFillColor(this.fullColor)
+      //   this.polygon.setOpacity(this.borderOpacity / 100)
+      //   this.polygon.setFillOpacity(this.fullOpacity / 100)
+      //   this.polygon.addEventListener('click', this.polygonClick)
+      // }
+      this.getDrawId()
+    },
+    //风险源，排口弹窗
+    getDrawId(){
+      if (this.drawTypeId == '5da8374dea6c157d2d61007c') {
+        this.$refs.addRisk.add()
+      }else if(this.drawTypeId == '5da8389eea6c157d2d61007f'){
+        this.$refs.addOutlet.add()
+      }else if(this.drawTypeId == '5dafe6c8ea6c159999a0549c'){
+        this.$refs.AddFloatage.add()
       }
     },
     // 绘制取消
@@ -1729,8 +1745,8 @@ export default {
           latlng: e.currentLnglat
         })
         console.log(e)
-        // this.$refs.addRisk.add()
-        // this.$refs.addOutlet.add()
+       
+        //
       } else if (this.toolIndex === 2) {
         // 工具-线
         console.log(e)
