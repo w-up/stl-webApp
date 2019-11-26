@@ -16,7 +16,7 @@
         </div> -->
 
         <!-- 弹框 -->
-        <a-modal title="计划" :width="1200" :visible="visible" @ok="submitPlan" @cancel="cancleBtn" class="modal_plan">
+        <a-modal title="计划" :width="1100" :visible="visible" @ok="submitPlan" @cancel="cancleBtn" class="modal_plan">
             <span class="editIcon" @click="editModalTitle" v-if="editShow"><a-icon type="edit" /></span>
             <span style="position:absolute;top:12px;left:60px;" v-if="!editShow"><a-input placeholder="计划A" style="width:150px;margin-left:20px;"/></span>
             <a-spin size="large" :spinning="spinning">
@@ -105,6 +105,7 @@ export default {
     methods:{
         getstaffInspectPage(id){
             this.visible = true;
+            this.id = id
             var sdsd ={
                 projectId:this.$store.state.id,
                 id:this.id
