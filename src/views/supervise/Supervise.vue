@@ -664,7 +664,7 @@
       <a-row style="width:100%">
         <a-col :span="24">绘制类型</a-col>
         <a-col :span="24">
-          <a-select  style="width:100%;" v-model="drawTypeId">
+          <a-select style="width:100%;" v-model="drawTypeId">
             <a-select-option :value="item.id" v-for="item in paramPage" :key="item.id">{{item.name}}</a-select-option>
           </a-select>
         </a-col>
@@ -723,7 +723,7 @@
 </template>
 
 <script>
-import { getRiverList, getStreetList , getWaterQualityList,paramList,mapdrawSave,mapdrawPage} from '@/api/login'
+import { getRiverList, getStreetList, getWaterQualityList, paramList, mapdrawSave, mapdrawPage } from '@/api/login'
 import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
 import AddFloatage from './modules/AddFloatage'
@@ -780,7 +780,7 @@ export default {
     'add-outlet': AddOutlet,
     'look-panorama': LookPanorama,
     'chrome-picker': Chrome,
-    'add-floatage': AddFloatage,
+    'add-floatage': AddFloatage
   },
   data() {
     return {
@@ -788,10 +788,10 @@ export default {
         // 文件上传
         authorization: 'authorization-text'
       },
-      drawTypeId:'',//绘制类型
-      paramPage:[],//绘制类型列表
-      polygonList:[],//绘制面坐标
-      pointList:{},//绘制点坐标
+      drawTypeId: '', //绘制类型
+      paramPage: [], //绘制类型列表
+      polygonList: [], //绘制面坐标
+      pointList: {}, //绘制点坐标
       timeSetShow: false, // 时间弹窗显隐
       timeSetShowRight: false, // 右侧时间弹窗显隐
       timeData: [
@@ -1415,36 +1415,33 @@ export default {
     this.getWaterQualityPoints()
     this.getParamList()
     // this.getMapdrawPage()
-    console.log( this.$store.state.id,'ssasasa'); 
-    
-   
+    console.log(this.$store.state.id, 'ssasasa')
   },
   methods: {
     //获取绘制类型
-    getParamList(){
+    getParamList() {
       var data = {
-        type:'draw_type'
+        type: 'draw_type'
       }
-      paramList(data).then(res=>{
+      paramList(data).then(res => {
         this.paramPage = res.data
       })
-      
     },
-    getMapdrawPage(){
+    getMapdrawPage() {
       var time = '2019-11-25'
       var picker = time.split('-')
       var arr = {
-        projectId:this.$store.state.id,
+        projectId: this.$store.state.id,
         year: picker[0],
         month: picker[1],
-        day: picker[2],
+        day: picker[2]
       }
-      mapdrawPage(arr).then(res=>{
+      mapdrawPage(arr).then(res => {
         console.log(res.data)
         res.data.forEach(v => {
-          v.shapePellucidity = v.shapePellucidity /100
-          v.framePellucidity = v.framePellucidity /100
-        });
+          v.shapePellucidity = v.shapePellucidity / 100
+          v.framePellucidity = v.framePellucidity / 100
+        })
         this.toolIndexPolygonData = res.data
         this.toolDrawPolygon()
       })
@@ -1476,8 +1473,8 @@ export default {
         })
         .catch(err => {})
     },
-    getWaterQualityPoints(){
-      let parameter = {projectId:'',type:''}
+    getWaterQualityPoints() {
+      let parameter = { projectId: '', type: '' }
       parameter.projectId = this.$store.state.id
       parameter.type = '5db055a739fc3819607d93e3'
       getWaterQualityList(parameter)
@@ -1579,126 +1576,150 @@ export default {
       var time = '2019-11-25'
       var picker = time.split('-')
       console.log(this.isToolEdit)
-      // if (this.toolIndex === 1) {
-      //   let data ={
-      //     id:'',
-      //     projectId:this.$store.state.id,
-      //     year: picker[0],
-      //     month: picker[1],
-      //     day: picker[2],
-      //     locationType:'point',
-      //     point:this.pointList.lng + ','+this.pointList.lat,
-      //     pointRadius:'0.4',
-      //     drawTypeId:this.drawTypeId
-      //   }
-      //   mapdrawSave(data).then( res=>{
-      //     this.$message.success('保存成功')
-      //     this.drawTypeId = ''
-          
-      //   }).catch(err => {
-      //     this.$message.error(err.response.data.message)
-      //   })
-      // } else if (this.toolIndex === 2) {
-      //   // 工具-线
-      //   this.lineTool.clear()
-      //   let result = this.toolIndexLineData.findIndex(item => {
-      //     return this.toolIndexId == item.id
-      //   })
-      //   this.toolIndexLineData[result].borderColor = this.borderColor
-      //   this.toolIndexLineData[result].borderOpacity = this.borderOpacity / 100
-      //   console.log(result)
-      //   console.log(this.toolIndexLineData)
-      //   var polygon = ''
-      //   for ( const index of this.polygonList) {
-      //     polygon = polygon + index.lng +','+index.lat +'|'
-      //   }
-      //   let data ={
-      //     id:'',
-      //     projectId:this.$store.state.id,
-      //     year: picker[0],
-      //     month: picker[1],
-      //     day: picker[2],
-      //     locationType:'line',
-      //     line:polygon,
-      //     frameColor:this.borderColor,
-      //     framePellucidity:this.borderOpacity ,
-      //     drawTypeId:this.drawTypeId
-      //   }
-      //   mapdrawSave(data).then( res=>{
-      //     this.$message.success('保存成功')
-      //   }).catch(err => {
-      //     this.$message.error(err.response.data.message)
-      //   })
-      //   if (this.isToolEdit) {
-      //     this.watchAllSwitch()
-      //     return
-      //   }
-      //   this.polyline = new T.Polyline(this.toolIndexLineData[result].lineData, {
-      //     id: this.toolIndexId
-      //   })
-      //   this.map.addOverLay(this.polyline)
-      //   this.polyline.setColor(this.borderColor)
-      //   this.polyline.setOpacity(this.borderOpacity / 100)
-      //   this.polyline.addEventListener('click', this.lineClick)
-      // } else if (this.toolIndex === 3) {
-      //   // 工具-面
-      //   this.polygonTool.clear()
-      //   let result = this.toolIndexPolygonData.findIndex(item => {
-      //     return this.toolIndexId == item.id
-      //   })
-      //   console.log(result)
-      //   console.log(this.toolIndexPolygonData)
-      //   var polygon = ''
-      //   for ( const index of this.polygonList) {
-      //     polygon = polygon + index.lng +','+index.lat +'|'
-      //   }
-      //   let data ={
-      //     id:'',
-      //     projectId:this.$store.state.id,
-      //     year: picker[0],
-      //     month: picker[1],
-      //     day: picker[2],
-      //     locationType:'polygon',
-      //     polygon:polygon,
-      //     frameColor:this.borderColor,
-      //     shapeColor: this.fullColor,
-      //     shapePellucidity:this.fullOpacity ,
-      //     framePellucidity:this.borderOpacity ,
-      //     drawTypeId:this.drawTypeId
-      //   }
-      //   mapdrawSave(data).then( res=>{
-      //     this.$message.success('保存成功')
-      //     this.getMapdrawPage()
-      //   }).catch(err => {
-      //     this.$message.error(err.response.data.message)
-      //   })
-      //   this.toolIndexPolygonData[result].borderColor = this.borderColor
-      //   this.toolIndexPolygonData[result].fullColor = this.fullColor
-      //   this.toolIndexPolygonData[result].borderOpacity = this.borderOpacity / 100
-      //   this.toolIndexPolygonData[result].fullOpacity = this.fullOpacity / 100
-      //   if (this.isToolEdit) {
-      //     this.watchAllSwitch()
-      //     return
-      //   }
-      //   this.polygon = new T.Polygon(this.toolIndexPolygonData[result].lineData, {
-      //     id: this.toolIndexId
-      //   })
-      //   this.map.addOverLay(this.polygon)
-      //   this.polygon.setColor(this.borderColor)
-      //   this.polygon.setFillColor(this.fullColor)
-      //   this.polygon.setOpacity(this.borderOpacity / 100)
-      //   this.polygon.setFillOpacity(this.fullOpacity / 100)
-      //   this.polygon.addEventListener('click', this.polygonClick)
-      // }
-      this.getDrawId()
+      if (this.toolIndex === 1) {
+        // let data = {
+        //   id: '',
+        //   projectId: this.$store.state.id,
+        //   year: picker[0],
+        //   month: picker[1],
+        //   day: picker[2],
+        //   locationType: 'point',
+        //   point: this.pointList.lng + ',' + this.pointList.lat,
+        //   pointRadius: '0.4',
+        //   drawTypeId: this.drawTypeId
+        // }
+        // mapdrawSave(data)
+        //   .then(res => {
+        //     this.$message.success('保存成功')
+        //     this.drawTypeId = ''
+        //   })
+        //   .catch(err => {
+        //     this.$message.error(err.response.data.message)
+        //   })
+      } else if (this.toolIndex === 2) {
+        // 工具-线
+        this.lineTool.clear()
+        let result = this.toolIndexLineData.findIndex(item => {
+          return this.toolIndexId == item.id
+        })
+        this.toolIndexLineData[result].borderColor = this.borderColor
+        this.toolIndexLineData[result].borderOpacity = this.borderOpacity / 100
+        console.log(result)
+        console.log(this.toolIndexLineData)
+        var polygon = ''
+        for (const index of this.polygonList) {
+          polygon = polygon + index.lng + ',' + index.lat + '|'
+        }
+        // let data = {
+        //   id: '',
+        //   projectId: this.$store.state.id,
+        //   year: picker[0],
+        //   month: picker[1],
+        //   day: picker[2],
+        //   locationType: 'line',
+        //   line: polygon,
+        //   frameColor: this.borderColor,
+        //   framePellucidity: this.borderOpacity,
+        //   drawTypeId: this.drawTypeId
+        // }
+        // mapdrawSave(data)
+        //   .then(res => {
+        //     this.$message.success('保存成功')
+        //   })
+        //   .catch(err => {
+        //     this.$message.error(err.response.data.message)
+        //   })
+        // 获取地理位置
+        let geocode = new T.Geocoder()
+        geocode.getLocation(this.toolIndexLineData[result].lineData[0], this.searchResult)
+        if (this.isToolEdit) {
+          this.watchAllSwitch()
+          return
+        }
+        this.polyline = new T.Polyline(this.toolIndexLineData[result].lineData, {
+          id: this.toolIndexId
+        })
+        this.map.addOverLay(this.polyline)
+        this.polyline.setColor(this.borderColor)
+        this.polyline.setOpacity(this.borderOpacity / 100)
+        this.polyline.addEventListener('click', this.lineClick)
+      } else if (this.toolIndex === 3) {
+        // 工具-面
+        this.polygonTool.clear()
+        let result = this.toolIndexPolygonData.findIndex(item => {
+          return this.toolIndexId == item.id
+        })
+        console.log(result)
+        console.log(this.toolIndexPolygonData)
+        var polygon = ''
+        for (const index of this.polygonList) {
+          polygon = polygon + index.lng + ',' + index.lat + '|'
+        }
+        // let data ={
+        //   id:'',
+        //   projectId:this.$store.state.id,
+        //   year: picker[0],
+        //   month: picker[1],
+        //   day: picker[2],
+        //   locationType:'polygon',
+        //   polygon:polygon,
+        //   frameColor:this.borderColor,
+        //   shapeColor: this.fullColor,
+        //   shapePellucidity:this.fullOpacity ,
+        //   framePellucidity:this.borderOpacity ,
+        //   drawTypeId:this.drawTypeId
+        // }
+        // mapdrawSave(data).then( res=>{
+        //   this.$message.success('保存成功')
+        //   this.getMapdrawPage()
+        // }).catch(err => {
+        //   this.$message.error(err.response.data.message)
+        // })
+        this.toolIndexPolygonData[result].borderColor = this.borderColor
+        this.toolIndexPolygonData[result].fullColor = this.fullColor
+        this.toolIndexPolygonData[result].borderOpacity = this.borderOpacity / 100
+        this.toolIndexPolygonData[result].fullOpacity = this.fullOpacity / 100
+        // 获取地理位置
+        let geocode = new T.Geocoder()
+        geocode.getLocation(this.toolIndexPolygonData[result].lineData[0], this.searchResult)
+        if (this.isToolEdit) {
+          this.watchAllSwitch()
+          return
+        }
+        this.polygon = new T.Polygon(this.toolIndexPolygonData[result].lineData, {
+          id: this.toolIndexId
+        })
+        this.map.addOverLay(this.polygon)
+        this.polygon.setColor(this.borderColor)
+        this.polygon.setFillColor(this.fullColor)
+        this.polygon.setOpacity(this.borderOpacity / 100)
+        this.polygon.setFillOpacity(this.fullOpacity / 100)
+        this.polygon.addEventListener('click', this.polygonClick)
+      }
+      // this.getDrawId()
     },
+    // 获取地理位置
+    // searchResult(result) {
+    //   if (result.status == 0) {
+    //     console.log("1111")
+    //     console.log(result)
+    //   } else {
+    //     this.$message.error('获取地址失败')
+    //   }
+    // },
     //风险源，排口弹窗
-    getDrawId(){
+    searchResult(result) {
+      if (result.status == 0) {
+        console.log('1111')
+        console.log(result)
+      } else {
+        this.$message.error('获取地址失败')
+      }
       if (this.drawTypeId == '5da8374dea6c157d2d61007c') {
         this.$refs.addRisk.add()
-      }else if(this.drawTypeId == '5da8389eea6c157d2d61007f'){
+      } else if (this.drawTypeId == '5da8389eea6c157d2d61007f') {
         this.$refs.addOutlet.add()
-      }else if(this.drawTypeId == '5dafe6c8ea6c159999a0549c'){
+      } else if (this.drawTypeId == '5dafe6c8ea6c159999a0549c') {
         this.$refs.AddFloatage.add()
       }
     },
@@ -1734,22 +1755,20 @@ export default {
       this.colorAlertShow = false
       let id = new Date().valueOf()
       this.toolIndexId = id
-      console.log(e);
-      
+      console.log(e)
       if (this.toolIndex === 1) {
         this.toolCard = true
         this.markerTool.close()
-        this.pointList =e.currentLnglat
+        this.pointList = e.currentLnglat
         this.toolIndexPointData.push({
           id: id,
           latlng: e.currentLnglat
         })
-        console.log(e)
-       
-        //
+        let geocode = new T.Geocoder()
+        geocode.getLocation(e.currentLnglat, this.searchResult)
       } else if (this.toolIndex === 2) {
         // 工具-线
-        console.log(e)
+        console.log((e.currentDistance / 1000).toFixed(3)) //获取距离 km
         this.toolCard = true
         this.lineTool.close()
         this.polygonList = e.currentLnglats
@@ -1759,11 +1778,10 @@ export default {
         })
       } else if (this.toolIndex === 3) {
         // 工具-面
+        console.log((e.currentArea / 1000000).toFixed(3)) //获取面积 平方公里
         this.toolCard = true
         this.polygonTool.close()
         this.polygonList = e.currentLnglats
-        console.log(e.currentLnglats);
-        
         this.toolIndexPolygonData.push({
           id: id,
           lineData: e.currentLnglats
@@ -1811,12 +1829,12 @@ export default {
       if (this.toolIndexPolygonData.length !== 0) {
         for (const item of this.toolIndexPolygonData) {
           this.setPolylineFn(
-            item.polygon,
-            item.frameColor,
+            item.lineData,
+            item.borderColor,
             3,
-            item.framePellucidity,
-            item.shapeColor,
-            item.shapePellucidity,
+            item.borderOpacity,
+            item.fullColor,
+            item.fullOpacity,
             '',
             item.id
           )
@@ -1980,7 +1998,7 @@ export default {
           })
           //向地图上添加面
           this.map.addOverLay(polygon)
-          polygon.addEventListener('click', this.polygonClick)
+          polygon.addEventListener('click', this.polygonRiverClick)
           polygon.addEventListener('mouseover', this.polygonMouseover)
           polygon.addEventListener('mousemove', this.polygonMousemove)
           polygon.addEventListener('mouseout', this.polygonMouseout)
@@ -1988,7 +2006,7 @@ export default {
       }
     },
     // 多边形点击事件
-    polygonClick(index) {
+    polygonRiverClick(index) {
       console.log(index)
     },
     // 多边形移入事件
@@ -2198,7 +2216,7 @@ export default {
       this.polygonTool.close()
       this.riskPolygonData.push({
         id: id,
-        lineData: e.currentLnglats
+        lineData: e.currentLnglats,
       })
       this.isRiskSaveShow = true
     },
@@ -2256,6 +2274,7 @@ export default {
         this.colorIndex = 2
       }
     },
+    // 显示百分比
     formatter(value) {
       return `${value}%`
     },
