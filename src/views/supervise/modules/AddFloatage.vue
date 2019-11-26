@@ -90,7 +90,9 @@ export default {
     }
   },
   methods: {
-    add() {
+    add(id,currentArea,result) {
+      console.log(id,currentArea,result);
+      
       this.visible = true
     },
     handleSubmit() {

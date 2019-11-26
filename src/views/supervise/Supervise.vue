@@ -280,10 +280,10 @@
     <!-- 河岸风险源 -->
     <div class="river_risk_alert" v-show="riverRisk">
       <a-list size="small" style="padding:0 10px; max-height:240px; overflow: auto;">
-        <a-list-item v-for="item in 15" :key="item">
+        <a-list-item v-for="item in riskSourceList" :key="item.id">
           <a-row style="width:100%" type="flex" justify="space-between" align="middle">
             <a-col :span="18">
-              <p style="margin:0;">风险源{{item}}</p>
+              <p style="margin:0;">{{item.name}}</p>
             </a-col>
             <a-col :span="6">
               <a-switch size="small" />
@@ -540,17 +540,17 @@
               <a-popover placement="leftBottom" arrowPointAtCenter trigger="click">
                 <template slot="content">
                   <a-list size="small">
-                    <a-list-item>
+                    <a-list-item v-for="item in otherList" :key="item.id">
                       <a-row style="width:160px" type="flex" justify="space-between" align="middle">
                         <a-col :span="18">
-                          <p style="margin:0;">水土流失</p>
+                          <p style="margin:0;">{{item.name}}</p>
                         </a-col>
                         <a-col :span="6">
-                          <a-switch size="small" v-model="waterLandLoss" @click="onWaterLandLoss" />
+                          <a-switch size="small" v-model="waterLandLoss" @click="onWaterLandLoss(item.id)" />
                         </a-col>
                       </a-row>
                     </a-list-item>
-                    <a-list-item>
+                    <!-- <a-list-item>
                       <a-row style="width:160px" type="flex" justify="space-between" align="middle">
                         <a-col :span="18">
                           <p style="margin:0;">水面率</p>
@@ -589,7 +589,7 @@
                           <a-switch size="small" v-model="landAndWater" @click="onLandAndWater" />
                         </a-col>
                       </a-row>
-                    </a-list-item>
+                    </a-list-item> -->
                   </a-list>
                 </template>
                 <template slot="title">
@@ -788,7 +788,11 @@ export default {
         // 文件上传
         authorization: 'authorization-text'
       },
+      otherList:[],//其他
+      riskSourceList:[],//河岸风险源
+      currentArea:'',//面积
       drawTypeId: '', //绘制类型
+      mapdrawId:'5ddce6748e463f7bfe99875e',//基础绘制id
       paramPage: [], //绘制类型列表
       polygonList: [], //绘制面坐标
       pointList: {}, //绘制点坐标
@@ -1425,6 +1429,21 @@ export default {
       }
       paramList(data).then(res => {
         this.paramPage = res.data
+        var arr = []
+        for(const item of res.data){
+          if (item.id!='5da8374dea6c157d2d61007c'&&item.id!='5da8389eea6c157d2d61007f'&&item.id!='5dafe6c8ea6c159999a0549c') {
+            arr.push(item)
+          }
+        }
+        this.otherList = arr
+      })
+      var datarisk = {
+        type: 'risk_source_type'
+      }
+      paramList(datarisk).then(res => {
+        this.riskSourceList = res.data
+        // var arr = []
+        // this.otherList = arr
       })
     },
     getMapdrawPage() {
@@ -1588,12 +1607,10 @@ export default {
         //   pointRadius: '0.4',
         //   drawTypeId: this.drawTypeId
         // }
-        // mapdrawSave(data)
-        //   .then(res => {
+        // mapdrawSave(data) .then(res => {
         //     this.$message.success('保存成功')
-        //     this.drawTypeId = ''
-        //   })
-        //   .catch(err => {
+        //     this.mapdrawId = res.data.id
+        //   }).catch(err => {
         //     this.$message.error(err.response.data.message)
         //   })
       } else if (this.toolIndex === 2) {
@@ -1605,7 +1622,7 @@ export default {
         this.toolIndexLineData[result].borderColor = this.borderColor
         this.toolIndexLineData[result].borderOpacity = this.borderOpacity / 100
         console.log(result)
-        console.log(this.toolIndexLineData)
+        // console.log(this.toolIndexLineData)
         var polygon = ''
         for (const index of this.polygonList) {
           polygon = polygon + index.lng + ',' + index.lat + '|'
@@ -1625,6 +1642,7 @@ export default {
         // mapdrawSave(data)
         //   .then(res => {
         //     this.$message.success('保存成功')
+        //     this.mapdrawId = res.data.id
         //   })
         //   .catch(err => {
         //     this.$message.error(err.response.data.message)
@@ -1650,7 +1668,7 @@ export default {
           return this.toolIndexId == item.id
         })
         console.log(result)
-        console.log(this.toolIndexPolygonData)
+        // console.log(this.toolIndexPolygonData)
         var polygon = ''
         for (const index of this.polygonList) {
           polygon = polygon + index.lng + ',' + index.lat + '|'
@@ -1671,7 +1689,7 @@ export default {
         // }
         // mapdrawSave(data).then( res=>{
         //   this.$message.success('保存成功')
-        //   this.getMapdrawPage()
+        //   this.mapdrawId = res.data.id
         // }).catch(err => {
         //   this.$message.error(err.response.data.message)
         // })
@@ -1716,11 +1734,11 @@ export default {
         this.$message.error('获取地址失败')
       }
       if (this.drawTypeId == '5da8374dea6c157d2d61007c') {
-        this.$refs.addRisk.add()
+        this.$refs.addRisk.add(this.mapdrawId,this.currentArea,result)
       } else if (this.drawTypeId == '5da8389eea6c157d2d61007f') {
-        this.$refs.addOutlet.add()
+        this.$refs.addOutlet.add(this.mapdrawId,this.currentArea,result)
       } else if (this.drawTypeId == '5dafe6c8ea6c159999a0549c') {
-        this.$refs.AddFloatage.add()
+        this.$refs.AddFloatage.add(this.mapdrawId,this.currentArea,result)
       }
     },
     // 绘制取消
@@ -1757,6 +1775,7 @@ export default {
       this.toolIndexId = id
       console.log(e)
       if (this.toolIndex === 1) {
+        this.currentArea =  0
         this.toolCard = true
         this.markerTool.close()
         this.pointList = e.currentLnglat
@@ -1768,6 +1787,7 @@ export default {
         geocode.getLocation(e.currentLnglat, this.searchResult)
       } else if (this.toolIndex === 2) {
         // 工具-线
+        this.currentArea =  0
         console.log((e.currentDistance / 1000).toFixed(3)) //获取距离 km
         this.toolCard = true
         this.lineTool.close()
@@ -1778,6 +1798,7 @@ export default {
         })
       } else if (this.toolIndex === 3) {
         // 工具-面
+        this.currentArea = (e.currentArea / 1000000).toFixed(3)
         console.log((e.currentArea / 1000000).toFixed(3)) //获取面积 平方公里
         this.toolCard = true
         this.polygonTool.close()

@@ -337,7 +337,8 @@ export default {
       const dataSource = [...this.dataSource]
       this.dataSource = dataSource.filter(item => item.key !== key)
     },
-    add() {
+    add(id,currentArea,result) {
+      console.log(id,currentArea,result);
       this.visible = true
     },
     // 添加河流

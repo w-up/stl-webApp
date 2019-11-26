@@ -1176,7 +1176,7 @@ export default {
           this.showSurverPoint(this.riverMontion[i])
         }
         if (code == 'river') {
-          console.log(this.riverMontion[i].latlng)
+          // console.log(this.riverMontion[i].latlng)
           this.drawAllRiver(this.riverMontion[i])
         }
       }
@@ -1580,8 +1580,8 @@ export default {
     },
     // 绘制所有河流
     drawAllRiver(arr) {
-      console.log('------------------')
-      console.log(arr) 
+      // console.log('------------------')
+      // console.log(arr) 
       if (arr.clicked == true) {
         this.setPolylineFn(arr.latlng, 'red', 3, 1, 0, arr.objectName, arr.id)
       } else {
@@ -2296,7 +2296,9 @@ export default {
     },
     //添加任务点
     addTaskPoint(riverData) {
-      if (riverData.region.length != undefined) {
+       console.log(riverData);
+      
+      if (riverData.region != undefined) {
         for (var i = 0; i < riverData.region.length; i++) {
           var lnglat = new T.LngLat(riverData.region[i].lng, riverData.region[i].lat)
           var marker = new T.Marker(lnglat)
@@ -2306,7 +2308,7 @@ export default {
           this.showPosition(marker,riverData)
         }
       } else {
-        var lnglat = new T.LngLat(riverData.region.lng, riverData.region.lat)
+        var lnglat = new T.LngLat(riverData.lng, riverData.lat)
         var marker = new T.Marker(lnglat)
         this.map.addOverLay(marker)
         this.showPosition(marker,riverData)
