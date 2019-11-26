@@ -56,6 +56,18 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row style="width:100%">
+          <a-col :span="12">
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="左岸" has-feedback>
+              <a-button  block style="width:150px">上传KMZ</a-button>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="右岸" has-feedback>
+              <a-button  block style="width:150px">上传KMZ</a-button>
+            </a-form-item>
+          </a-col>
+        </a-row>
         <p style="margin-top: 10px;">起点</p>
         <a-row style="width:100%">
           <a-col :span="12">
