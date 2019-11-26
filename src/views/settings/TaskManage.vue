@@ -749,13 +749,13 @@ export default {
           .then(res => {
             var arr = res.data.data
             for (let a = 0; a < arr.length; a++) {
-              arr[a].latlng = {
-                lat: '',
-                lng: ''
-              }
+              // arr[a].latlng = {
+              //   lat: '',
+              //   lng: ''
+              // }
               arr[a].clicked = false
-              arr[a].latlng.lat = arr[a].coordinate[1]
-              arr[a].latlng.lng = arr[a].coordinate[0]
+              arr[a].latlng= arr[a].coordinate
+              // arr[a].latlng.lng = arr[a].coordinate[0]
             }
             for (let i = 0; i < this.pointTaskList.length; i++) {
               if (this.pointTaskList[i].id == key) {
