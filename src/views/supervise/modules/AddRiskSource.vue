@@ -133,12 +133,12 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="类别">
-              <a-select default-value="1" :allowClear="true" placeholder="选择风险源类别">
-                <a-select-option value="1">水土流失</a-select-option>
-                <a-select-option value="2">水面率</a-select-option>
-                <a-select-option value="3">河岸风险</a-select-option>
-                <a-select-option value="4">水面漂浮物</a-select-option>
-                <a-select-option value="5">底泥</a-select-option>
+              <a-select  :allowClear="true" placeholder="选择风险源类别">
+                <a-select-option value="soil_erosion">水土流失</a-select-option>
+                <a-select-option value="surface_ratio">水面率</a-select-option>
+                <a-select-option value="bank_risk">河岸风险</a-select-option>
+                <a-select-option value="surface_flotage">水面漂浮物</a-select-option>
+                <a-select-option value="bottom_sediment">底泥</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -164,11 +164,11 @@
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="风险等级">
-              <a-select default-value="1">
-                <a-select-option value="1">Ⅰ-红色</a-select-option>
-                <a-select-option value="2">Ⅱ-橙色</a-select-option>
-                <a-select-option value="3">Ⅲ-黄色</a-select-option>
-                <a-select-option value="4">Ⅳ-蓝色</a-select-option>
+              <a-select >
+                <a-select-option value="one">Ⅰ-红色</a-select-option>
+                <a-select-option value="two">Ⅱ-橙色</a-select-option>
+                <a-select-option value="three">Ⅲ-黄色</a-select-option>
+                <a-select-option value="four">Ⅳ-蓝色</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -225,6 +225,7 @@
 
 <script>
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+import { mapdrawDetail} from '@/api/login'
 export default {
   data() {
     return {
@@ -338,7 +339,11 @@ export default {
       this.dataSource = dataSource.filter(item => item.key !== key)
     },
     add(id,currentArea,result) {
-      console.log(id,currentArea,result);
+      console.log(id,currentArea,result)
+      mapdrawDetail(id).then(res=>{
+        console.log(res);
+        
+      })
       this.visible = true
     },
     // 添加河流
