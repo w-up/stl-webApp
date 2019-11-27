@@ -956,13 +956,13 @@ export default {
       }
     },
     // 添加标注图片
-    drawAllPoint(latlng, id, name, iconUrl) {
+    drawAllPoint(latlng, id, title, iconUrl) {
       let icon = new T.Icon({
         iconUrl: iconUrl,
-        iconSize: new T.Point(21, 30),
-        iconAnchor: new T.Point(11, 30)
+        iconSize: new T.Point(41, 40),
+        iconAnchor: new T.Point(21, 40)
       })
-      let marker = new T.Marker(latlng, { icon: icon, id: id, name: name })
+      let marker = new T.Marker(latlng, { icon: icon, id: id, title: title })
       this.map.addOverLay(marker)
       marker.addEventListener('click', this.taskPointClick)
       marker.addEventListener('mouseover', this.taskPointMouse)
@@ -1009,8 +1009,8 @@ export default {
         if (item.id == index) {
           let icon = new T.Icon({
             iconUrl: item.kmz,
-            iconSize: new T.Point(21, 30),
-            iconAnchor: new T.Point(11, 30)
+            iconSize: new T.Point(41, 40),
+            iconAnchor: new T.Point(21, 40)
           })
           let markerTool = new T.MarkTool(this.map, { icon: icon, follow: true })
           // this.markerTool.setIcon({icon: icon})
