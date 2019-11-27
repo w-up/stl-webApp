@@ -124,7 +124,33 @@
         <a-icon class="right_icon" type="caret-left" />
         <!-- 天气弹窗 -->
         <div class="weather_alert">
-          <div class="weather_content">12356</div>
+          <div class="weather_content">
+            <div class="weather_basic">
+              <div class="weather_basic_content">
+                <img src="./img/water.png" alt="" style="margin-right:5px;height:12px;width:12px">
+                <span>未来2小时无雨</span>
+              </div>
+              <div class="weather_basic_content">
+                <img src="./img/wind.png" alt="" style="margin-right:5px;height:12px;width:12px">
+                <span>东北风 3级</span>
+              </div>
+              <div class="weather_basic_content">
+                <img src="./img/cloudiness.png" alt="" style="margin-right:5px;height:12px;width:12px">
+                <span>云量数据</span>
+              </div>
+            </div>
+            <div class="weather24">
+              <!-- <div class="time24" v-for="item in weatherList" :key="item.id">
+                <div>{{item.temperature}}</div>
+
+              </div> -->
+              <div class="time24" v-for="item in weatherList" :key="item.id">
+                <div style="text-align:center;">{{item.temperature}}</div>
+                <img src="./img/fine.png" alt="" style="margin:12px 5px;height:19px;width:19px">
+                <div style="text-align:center;">{{item.time}}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -792,7 +818,7 @@ export default {
       riskSourceList:[],//河岸风险源
       currentArea:'',//面积
       drawTypeId: '', //绘制类型
-      mapdrawId:'5ddce6748e463f7bfe99875e',//基础绘制id
+      mapdrawId:'5dde340a9ff8c45790c6b938',//基础绘制id
       paramPage: [], //绘制类型列表
       polygonList: [], //绘制面坐标
       pointList: {}, //绘制点坐标
@@ -951,6 +977,32 @@ export default {
             { id: '01', title: '01', level: 1, clicked: false }
           ]
         }
+      ],
+      weatherList:[
+        {
+          temperature:'26°',
+          time:'10:00'
+        },
+        {
+          temperature:'27°',
+          time:'12:00'
+        },
+        {
+          temperature:'24°',
+          time:'14:00'
+        },
+        {
+          temperature:'20°',
+          time:'16:00'
+        },
+        {
+          temperature:'16°',
+          time:'18:00',
+        },
+        {
+          temperature:'15°',
+          time:'20:00',
+        },
       ],
       startDateRight: '', // 开始日期
       endDateRight: '', // 结束日期
@@ -1447,7 +1499,7 @@ export default {
       })
     },
     getMapdrawPage() {
-      var time = '2019-11-25'
+      var time = '2019-11-27'
       var picker = time.split('-')
       var arr = {
         projectId: this.$store.state.id,
@@ -1457,12 +1509,12 @@ export default {
       }
       mapdrawPage(arr).then(res => {
         console.log(res.data)
-        res.data.forEach(v => {
-          v.shapePellucidity = v.shapePellucidity / 100
-          v.framePellucidity = v.framePellucidity / 100
-        })
-        this.toolIndexPolygonData = res.data
-        this.toolDrawPolygon()
+        // res.data.forEach(v => {
+        //   v.shapePellucidity = v.shapePellucidity / 100
+        //   v.framePellucidity = v.framePellucidity / 100
+        // })
+        // this.toolIndexPolygonData = res.data
+        // this.toolDrawPolygon()
       })
     },
     mapZoomChange() {
@@ -1592,32 +1644,33 @@ export default {
     // 绘制保存
     toolCradSave() {
       this.toolCard = false
-      var time = '2019-11-25'
+      var time = '2019-11-27'
       var picker = time.split('-')
       console.log(this.isToolEdit)
       if (this.toolIndex === 1) {
+        // let data = {
+        //   id: '',
+        //   projectId: this.$store.state.id,
+        //   year: picker[0],
+        //   month: picker[1],
+        //   day: picker[2],
+        //   locationType: 'point',
+        //   point: this.pointList.lng + ',' + this.pointList.lat,
+        //   pointRadius: '0.4',
+        //   drawTypeId: this.drawTypeId
+        // }
+        // mapdrawSave(data) .then(res => {
+        //   this.$message.success('保存成功')
+        //   this.mapdrawId = res.data.id
+          
+        // }).catch(err => {
+        //   this.$message.error(err.response.data.message)
+        // })
         let result = this.toolIndexPointData.findIndex(item => {
           return this.toolIndexId == item.id
         })
         let geocode = new T.Geocoder()
         geocode.getLocation(this.toolIndexPointData[result].latlng, this.searchResult)
-        let data = {
-          id: '',
-          projectId: this.$store.state.id,
-          year: picker[0],
-          month: picker[1],
-          day: picker[2],
-          locationType: 'point',
-          point: this.pointList.lng + ',' + this.pointList.lat,
-          pointRadius: '0.4',
-          drawTypeId: this.drawTypeId
-        }
-        mapdrawSave(data) .then(res => {
-            this.$message.success('保存成功')
-            this.mapdrawId = res.data.id
-          }).catch(err => {
-            this.$message.error(err.response.data.message)
-          })
       } else if (this.toolIndex === 2) {
         // 工具-线
         this.lineTool.clear()
@@ -1732,7 +1785,7 @@ export default {
       if (this.drawTypeId == '5da8374dea6c157d2d61007c') {
         this.$refs.addRisk.add(this.mapdrawId,this.currentArea,result)
       } else if (this.drawTypeId == '5da8389eea6c157d2d61007f') {
-        this.$refs.addOutlet.add(this.mapdrawId,this.currentArea,result)
+        this.$refs.addOutlet.add(this.mapdrawId,result)
       } else if (this.drawTypeId == '5dafe6c8ea6c159999a0549c') {
         this.$refs.AddFloatage.add(this.mapdrawId,this.currentArea,result)
       }
@@ -2771,12 +2824,39 @@ export default {
     z-index: 888;
     padding-left: 20px;
     .weather_content {
+      
       width: 320px;
-      height: 320px;
+      height: 539px;
       background: rgba(255, 255, 255, 1);
       box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.4);
       border-radius: 10px;
       padding: 10px;
+      .weather_basic{
+        width:100%;
+        display: flex;
+        flex-wrap:wrap ;
+        .weather_basic_content{
+          width: 50%;
+          color: #595959;
+          font-size: 12px;
+          margin-bottom: 12px;
+        }
+      }
+      .weather24{
+        padding: 15px 9px;
+        box-sizing:border-box;
+        width: 100%;
+        border-top: 1px solid rgba(216,216,216,0.5);
+        border-bottom: 1px solid rgba(216,216,216,0.5);
+        font-size: 12px;
+        display: flex;
+        .time24{
+          width: 30px;
+          margin-right: 22px;
+          display: flex;
+          flex-direction:column;
+        }
+      }
     }
   }
 }
