@@ -808,6 +808,14 @@ export function mapdrawDischargeSave(data) {
     data:data
   })
 }
+//漂浮物数据保存
+export function floatageSave(data) {
+  return axios({
+    url: '/server/data/admin/mapdraw/detail/floatage/save',
+    method: 'post',
+    data:data
+  })
+}
 //绘制数据图片清单
 export function mediaList(id) {
   return axios({

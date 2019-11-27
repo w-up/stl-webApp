@@ -365,7 +365,6 @@ export default {
     },
     riverChange(value,option){
       informationRiver(value).then(res=>{
-        console.log(res.data);
          this.list.code = res.data.info.code
          this.list.controller = res.data.info.controller
          this.list.supervisoryLevel = res.data.info.supervisoryLevel.name
@@ -399,10 +398,9 @@ export default {
         innerName:this.list.innerName,
       }
       mapdrawRiskSave(data).then(res=>{
-        this.$message.success('保存成功');
-        
+        this.$message.success('保存成功')
+        this.$parent.getMapdrawPage()
         this.handleCancel()
-        
       }).catch(err => {
           this.$message.error(err.response.data.message);
       })

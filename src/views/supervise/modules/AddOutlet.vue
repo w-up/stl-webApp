@@ -487,7 +487,8 @@ export default {
     saveClick(){
       let data =this.list
       mapdrawDischargeSave(data).then(res=>{
-        this.$message.success('保存成功');
+        this.$message.success('保存成功')
+        this.$parent.getMapdrawPage()
         this.handleCancel()
       }).catch(err => {
           this.$message.error(err.response.data.message);

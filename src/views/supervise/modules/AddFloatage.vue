@@ -13,7 +13,7 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="名称">
-              <a-input placeholder />
+              <a-input placeholder  v-model="list.innerName"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -86,7 +86,7 @@
 
 <script>
 import moment from 'moment'
-import { getRiverList,getStreetList,mapdrawRiskSave} from '@/api/login'
+import { getRiverList,getStreetList,floatageSave} from '@/api/login'
 export default {
   data() {
     return {
@@ -101,6 +101,7 @@ export default {
       },
       list:{
         drawId:'',
+        innerName:'',
         address:'',
         riverId:'',
         streetId:'',
@@ -134,7 +135,14 @@ export default {
       this.visible = true
     },
     saveClick(){
-
+      let data = this.list
+      floatageSave(data).then(res=>{
+        this.$message.success('保存成功')
+        this.$parent.getMapdrawPage()
+        this.handleCancel()
+      }).catch(err => {
+        this.$message.error(err.response.data.message);
+      })
     },
     onChange(date, dateString) {
       this.list.discoveryTime = dateString
@@ -159,6 +167,13 @@ export default {
     },
     handleCancel() {
       this.visible = false
+      this.list.drawId=''
+      this.list.innerName=''
+      this.list.address=''
+      this.list.riverId=''
+      this.list.streetId=''
+      this.list.currentArea=''
+      this.list.discoveryTime=''
     },
   }
 }

@@ -765,7 +765,7 @@ export default {
             this.allPointTask()
           })
           .catch(err => {
-            this.$message.error('失败请重试')
+            
           })
       }
     },
