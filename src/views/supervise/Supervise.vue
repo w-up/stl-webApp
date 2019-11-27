@@ -1419,7 +1419,7 @@ export default {
     this.getWaterQualityPoints()
     this.getParamList()
     // this.getMapdrawPage()
-    console.log(this.$store.state.id, 'ssasasa')
+    // console.log(this.$store.state.id, 'ssasasa')
   },
   methods: {
     //获取绘制类型
@@ -1601,23 +1601,23 @@ export default {
         })
         let geocode = new T.Geocoder()
         geocode.getLocation(this.toolIndexPointData[result].latlng, this.searchResult)
-        // let data = {
-        //   id: '',
-        //   projectId: this.$store.state.id,
-        //   year: picker[0],
-        //   month: picker[1],
-        //   day: picker[2],
-        //   locationType: 'point',
-        //   point: this.pointList.lng + ',' + this.pointList.lat,
-        //   pointRadius: '0.4',
-        //   drawTypeId: this.drawTypeId
-        // }
-        // mapdrawSave(data) .then(res => {
-        //     this.$message.success('保存成功')
-        //     this.mapdrawId = res.data.id
-        //   }).catch(err => {
-        //     this.$message.error(err.response.data.message)
-        //   })
+        let data = {
+          id: '',
+          projectId: this.$store.state.id,
+          year: picker[0],
+          month: picker[1],
+          day: picker[2],
+          locationType: 'point',
+          point: this.pointList.lng + ',' + this.pointList.lat,
+          pointRadius: '0.4',
+          drawTypeId: this.drawTypeId
+        }
+        mapdrawSave(data) .then(res => {
+            this.$message.success('保存成功')
+            this.mapdrawId = res.data.id
+          }).catch(err => {
+            this.$message.error(err.response.data.message)
+          })
       } else if (this.toolIndex === 2) {
         // 工具-线
         this.lineTool.clear()

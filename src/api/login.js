@@ -769,6 +769,13 @@ export function mapdrawSave(data) {
     params:data
   })
 }
+//基础绘制数据保存
+export function mapdrawDetail(id) {
+  return axios({
+    url: '/server/data/admin/mapdraw/data/detail/'+id,
+    method: 'get',
+  })
+}
 
 
 
