@@ -124,7 +124,33 @@
         <a-icon class="right_icon" type="caret-left" />
         <!-- 天气弹窗 -->
         <div class="weather_alert">
-          <div class="weather_content">12356</div>
+          <div class="weather_content">
+            <div class="weather_basic">
+              <div class="weather_basic_content">
+                <img src="./img/water.png" alt="" style="margin-right:5px;height:12px;width:12px">
+                <span>未来2小时无雨</span>
+              </div>
+              <div class="weather_basic_content">
+                <img src="./img/wind.png" alt="" style="margin-right:5px;height:12px;width:12px">
+                <span>东北风 3级</span>
+              </div>
+              <div class="weather_basic_content">
+                <img src="./img/cloudiness.png" alt="" style="margin-right:5px;height:12px;width:12px">
+                <span>云量数据</span>
+              </div>
+            </div>
+            <div class="weather24">
+              <!-- <div class="time24" v-for="item in weatherList" :key="item.id">
+                <div>{{item.temperature}}</div>
+
+              </div> -->
+              <div class="time24" v-for="item in weatherList" :key="item.id">
+                <div style="text-align:center;">{{item.temperature}}</div>
+                <img src="./img/fine.png" alt="" style="margin:12px 5px;height:19px;width:19px">
+                <div style="text-align:center;">{{item.time}}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -792,7 +818,7 @@ export default {
       riskSourceList:[],//河岸风险源
       currentArea:'',//面积
       drawTypeId: '', //绘制类型
-      mapdrawId:'5ddce6748e463f7bfe99875e',//基础绘制id
+      mapdrawId:'5dde340a9ff8c45790c6b938',//基础绘制id
       paramPage: [], //绘制类型列表
       polygonList: [], //绘制面坐标
       pointList: {}, //绘制点坐标
@@ -951,6 +977,32 @@ export default {
             { id: '01', title: '01', level: 1, clicked: false }
           ]
         }
+      ],
+      weatherList:[
+        {
+          temperature:'26°',
+          time:'10:00'
+        },
+        {
+          temperature:'27°',
+          time:'12:00'
+        },
+        {
+          temperature:'24°',
+          time:'14:00'
+        },
+        {
+          temperature:'20°',
+          time:'16:00'
+        },
+        {
+          temperature:'16°',
+          time:'18:00',
+        },
+        {
+          temperature:'15°',
+          time:'20:00',
+        },
       ],
       startDateRight: '', // 开始日期
       endDateRight: '', // 结束日期
@@ -1313,7 +1365,8 @@ export default {
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.25031, lng: 121.51681 } },
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24304, lng: 121.49392 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.2645, lng: 121.49356 } }
-      ]
+      ],
+      drawPage:[]
     }
   },
   watch: {
@@ -1418,7 +1471,7 @@ export default {
     this.getTimeQuantum() // 获取时间段
     this.getWaterQualityPoints()
     this.getParamList()
-    // this.getMapdrawPage()
+    this.getMapdrawPage()
     // console.log(this.$store.state.id, 'ssasasa')
   },
   methods: {
@@ -1435,6 +1488,7 @@ export default {
             arr.push(item)
           }
         }
+        
         this.otherList = arr
       })
       var datarisk = {
@@ -1447,7 +1501,7 @@ export default {
       })
     },
     getMapdrawPage() {
-      var time = '2019-11-25'
+      var time = '2019-11-28'
       var picker = time.split('-')
       var arr = {
         projectId: this.$store.state.id,
@@ -1456,13 +1510,12 @@ export default {
         day: picker[2]
       }
       mapdrawPage(arr).then(res => {
-        console.log(res.data)
-        res.data.forEach(v => {
+        var data = res.data
+        data.forEach(v => {
           v.shapePellucidity = v.shapePellucidity / 100
           v.framePellucidity = v.framePellucidity / 100
         })
-        this.toolIndexPolygonData = res.data
-        this.toolDrawPolygon()
+        this.drawPage = data
       })
     },
     mapZoomChange() {
@@ -1592,15 +1645,10 @@ export default {
     // 绘制保存
     toolCradSave() {
       this.toolCard = false
-      var time = '2019-11-25'
+      var time = '2019-11-28'
       var picker = time.split('-')
       console.log(this.isToolEdit)
       if (this.toolIndex === 1) {
-        let result = this.toolIndexPointData.findIndex(item => {
-          return this.toolIndexId == item.id
-        })
-        let geocode = new T.Geocoder()
-        geocode.getLocation(this.toolIndexPointData[result].latlng, this.searchResult)
         let data = {
           id: '',
           projectId: this.$store.state.id,
@@ -1613,11 +1661,17 @@ export default {
           drawTypeId: this.drawTypeId
         }
         mapdrawSave(data) .then(res => {
-            this.$message.success('保存成功')
-            this.mapdrawId = res.data.id
-          }).catch(err => {
-            this.$message.error(err.response.data.message)
+          this.$message.success('保存成功')
+          this.mapdrawId = res.data.id
+          let result = this.toolIndexPointData.findIndex(item => {
+            return this.toolIndexId == item.id
           })
+          let geocode = new T.Geocoder()
+          geocode.getLocation(this.toolIndexPointData[result].latlng, this.searchResult)
+        }).catch(err => {
+          this.$message.error(err.response.data.message)
+        })
+        
       } else if (this.toolIndex === 2) {
         // 工具-线
         this.lineTool.clear()
@@ -1627,38 +1681,39 @@ export default {
         this.toolIndexLineData[result].borderColor = this.borderColor
         this.toolIndexLineData[result].borderOpacity = this.borderOpacity / 100
         console.log(result)
-        // console.log(this.toolIndexLineData)
+        console.log(this.toolIndexLineData)
         var polygon = ''
         for (const index of this.polygonList) {
           polygon = polygon + index.lng + ',' + index.lat + '|'
         }
-        // let data = {
-        //   id: '',
-        //   projectId: this.$store.state.id,
-        //   year: picker[0],
-        //   month: picker[1],
-        //   day: picker[2],
-        //   locationType: 'line',
-        //   line: polygon,
-        //   frameColor: this.borderColor,
-        //   framePellucidity: this.borderOpacity,
-        //   drawTypeId: this.drawTypeId
-        // }
-        // mapdrawSave(data)
-        //   .then(res => {
-        //     this.$message.success('保存成功')
-        //     this.mapdrawId = res.data.id
-        //   })
-        //   .catch(err => {
-        //     this.$message.error(err.response.data.message)
-        //   })
-        // 获取地理位置
-        let geocode = new T.Geocoder()
-        geocode.getLocation(this.toolIndexLineData[result].lineData[0], this.searchResult)
-        if (this.isToolEdit) {
-          this.watchAllSwitch()
-          return
+        let data = {
+          id: '',
+          projectId: this.$store.state.id,
+          year: picker[0],
+          month: picker[1],
+          day: picker[2],
+          locationType: 'line',
+          line: polygon,
+          frameColor: this.borderColor,
+          framePellucidity: this.borderOpacity,
+          drawTypeId: this.drawTypeId
         }
+        mapdrawSave(data)
+          .then(res => {
+            this.$message.success('保存成功')
+            this.mapdrawId = res.data.id
+            let geocode = new T.Geocoder()
+            geocode.getLocation(this.toolIndexLineData[result].lineData[0], this.searchResult)
+            if (this.isToolEdit) {
+              this.watchAllSwitch()
+              return
+            }
+          })
+          .catch(err => {
+            this.$message.error(err.response.data.message)
+          })
+        // 获取地理位置
+        
         this.polyline = new T.Polyline(this.toolIndexLineData[result].lineData, {
           id: this.toolIndexId
         })
@@ -1678,37 +1733,37 @@ export default {
         for (const index of this.polygonList) {
           polygon = polygon + index.lng + ',' + index.lat + '|'
         }
-        // let data ={
-        //   id:'',
-        //   projectId:this.$store.state.id,
-        //   year: picker[0],
-        //   month: picker[1],
-        //   day: picker[2],
-        //   locationType:'polygon',
-        //   polygon:polygon,
-        //   frameColor:this.borderColor,
-        //   shapeColor: this.fullColor,
-        //   shapePellucidity:this.fullOpacity ,
-        //   framePellucidity:this.borderOpacity ,
-        //   drawTypeId:this.drawTypeId
-        // }
-        // mapdrawSave(data).then( res=>{
-        //   this.$message.success('保存成功')
-        //   this.mapdrawId = res.data.id
-        // }).catch(err => {
-        //   this.$message.error(err.response.data.message)
-        // })
+        let data ={
+          id:'',
+          projectId:this.$store.state.id,
+          year: picker[0],
+          month: picker[1],
+          day: picker[2],
+          locationType:'polygon',
+          polygon:polygon,
+          frameColor:this.borderColor,
+          shapeColor: this.fullColor,
+          shapePellucidity:this.fullOpacity ,
+          framePellucidity:this.borderOpacity ,
+          drawTypeId:this.drawTypeId
+        }
+        mapdrawSave(data).then( res=>{
+          this.$message.success('保存成功')
+          this.mapdrawId = res.data.id
+          // 获取地理位置
+          let geocode = new T.Geocoder()
+          geocode.getLocation(this.toolIndexPolygonData[result].lineData[0], this.searchResult)
+          if (this.isToolEdit) {
+            this.watchAllSwitch()
+            return
+          }
+        }).catch(err => {
+          this.$message.error(err.response.data.message)
+        })
         this.toolIndexPolygonData[result].borderColor = this.borderColor
         this.toolIndexPolygonData[result].fullColor = this.fullColor
         this.toolIndexPolygonData[result].borderOpacity = this.borderOpacity / 100
         this.toolIndexPolygonData[result].fullOpacity = this.fullOpacity / 100
-        // 获取地理位置
-        let geocode = new T.Geocoder()
-        geocode.getLocation(this.toolIndexPolygonData[result].lineData[0], this.searchResult)
-        if (this.isToolEdit) {
-          this.watchAllSwitch()
-          return
-        }
         this.polygon = new T.Polygon(this.toolIndexPolygonData[result].lineData, {
           id: this.toolIndexId
         })
@@ -1732,7 +1787,7 @@ export default {
       if (this.drawTypeId == '5da8374dea6c157d2d61007c') {
         this.$refs.addRisk.add(this.mapdrawId,this.currentArea,result)
       } else if (this.drawTypeId == '5da8389eea6c157d2d61007f') {
-        this.$refs.addOutlet.add(this.mapdrawId,this.currentArea,result)
+        this.$refs.addOutlet.add(this.mapdrawId,result)
       } else if (this.drawTypeId == '5dafe6c8ea6c159999a0549c') {
         this.$refs.AddFloatage.add(this.mapdrawId,this.currentArea,result)
       }
@@ -2323,19 +2378,137 @@ export default {
     // 水质漂浮物
     onWaterFlotage() {
       if (this.waterFlotage) {
-        this.allPointTask(this.waterFlotagePoints)
+        let point = []
+        for(const item of this.drawPage){
+          if (item.drawType.id =='5dafe6c8ea6c159999a0549c') {
+            if (item.locationType.code == 'point') {
+              item.latlng={
+                lng:item.point[0],
+                lat:item.point[1]
+              }
+              point.push(item)
+            }
+            if (item.locationType.code == 'line') {
+              // line.push(item)
+              this.lineDraw(item.line, item.frameColor, 3, item.framePellucidity, item.id, '')
+            }
+            if (item.locationType.code == 'polygon') {
+              this.noodlesDraw(
+                item.polygon,
+                item.frameColor,
+                3,
+                item.framePellucidity,
+                item.shapeColor,
+                item.shapePellucidity,
+                '',
+                item.id
+              )
+            }
+          }
+        }   
+        this.spotDraw(point)
       }
     },
     // 排口
     onOutlet() {
       if (this.outlet) {
-        this.allPointTask(this.outletPoints)
+        let point = []
+        for(const item of this.drawPage){
+          if (item.drawType.id =='5da8389eea6c157d2d61007f') {
+            if (item.locationType.code == 'point') {
+              item.latlng={
+                lng:item.point[0],
+                lat:item.point[1]
+              }
+              point.push(item)
+            }
+            if (item.locationType.code == 'line') {
+              // line.push(item)
+              this.lineDraw(item.line, item.frameColor, 3, item.framePellucidity, item.id, '')
+            }
+            if (item.locationType.code == 'polygon') {
+              this.noodlesDraw(
+                item.polygon,
+                item.frameColor,
+                3,
+                item.framePellucidity,
+                item.shapeColor,
+                item.shapePellucidity,
+                '',
+                item.id
+              )
+            }
+          }
+        }   
+        this.spotDraw(point)
       }
+    },
+    //绘制点
+    spotDraw(pointLists) {
+      for (const item of pointLists) {
+        this.drawAllPoint(item.latlng, item.innerCode, item.id)
+      }
+    },
+    //绘制线
+    lineDraw(points, color, weight, opacity, id, name) {
+      let line = new T.Polyline(points, {
+        color: color, //线颜色
+        weight: weight, //线宽
+        opacity: opacity, //透明度
+        id: id,
+        name: name
+      })
+      //向地图上添加线
+      this.map.addOverLay(line)
+      // line.addEventListener('click', this.lineClick)
+    },
+    // 绘制面
+    noodlesDraw(lineData, color, weight, opacity, fillColor, fillOpacity, title, id) {
+      let polygon = new T.Polygon(lineData, {
+        color: color, //线颜色
+        weight: weight, //线宽
+        opacity: opacity, //透明度
+        fillColor: fillColor, //填充颜色
+        fillOpacity: fillOpacity, // 填充透明度
+        title: title, // 名字
+        id: id // id
+      })
+      //向地图上添加面
+      this.map.addOverLay(polygon)
+      // polygon.addEventListener('click', this.polygonClick)
     },
     // 河岸风险源
     onRiverRisk() {
       if (this.riverRisk) {
-        this.allPointTask(this.riverRiskPoints)
+        let point = []
+        for(const item of this.drawPage){
+          if (item.drawType.id =='5da8374dea6c157d2d61007c') {
+            if (item.locationType.code == 'point') {
+              item.latlng={
+                lng:item.point[0],
+                lat:item.point[1]
+              }
+              point.push(item)
+            }
+            if (item.locationType.code == 'line') {
+              // line.push(item)
+              this.lineDraw(item.line, item.frameColor, 3, item.framePellucidity, item.id, '')
+            }
+            if (item.locationType.code == 'polygon') {
+              this.noodlesDraw(
+                item.polygon,
+                item.frameColor,
+                3,
+                item.framePellucidity,
+                item.shapeColor,
+                item.shapePellucidity,
+                '',
+                item.id
+              )
+            }
+          }
+        }   
+        this.spotDraw(point)
       }
     },
     // 水土流失
@@ -2387,11 +2560,11 @@ export default {
     watchAllSwitch() {
       this.map.clearOverLays()
       // 绘制工具画的点
-      this.toolDrawPoint()
-      // 绘制工具画的线
-      this.toolDrawLine()
-      // 绘制工具画的面
-      this.toolDrawPolygon()
+      // this.toolDrawPoint()
+      // // 绘制工具画的线
+      // this.toolDrawLine()
+      // // 绘制工具画的面
+      // this.toolDrawPolygon()
       // 历史数据
       this.onHistoryData()
       // 街道显示
@@ -2771,12 +2944,39 @@ export default {
     z-index: 888;
     padding-left: 20px;
     .weather_content {
+      
       width: 320px;
-      height: 320px;
+      height: 539px;
       background: rgba(255, 255, 255, 1);
       box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.4);
       border-radius: 10px;
       padding: 10px;
+      .weather_basic{
+        width:100%;
+        display: flex;
+        flex-wrap:wrap ;
+        .weather_basic_content{
+          width: 50%;
+          color: #595959;
+          font-size: 12px;
+          margin-bottom: 12px;
+        }
+      }
+      .weather24{
+        padding: 15px 9px;
+        box-sizing:border-box;
+        width: 100%;
+        border-top: 1px solid rgba(216,216,216,0.5);
+        border-bottom: 1px solid rgba(216,216,216,0.5);
+        font-size: 12px;
+        display: flex;
+        .time24{
+          width: 30px;
+          margin-right: 22px;
+          display: flex;
+          flex-direction:column;
+        }
+      }
     }
   }
 }

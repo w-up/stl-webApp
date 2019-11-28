@@ -769,14 +769,60 @@ export function mapdrawSave(data) {
     params:data
   })
 }
-//基础绘制数据保存
+//基础绘制数据详情
 export function mapdrawDetail(id) {
   return axios({
     url: '/server/data/admin/mapdraw/data/detail/'+id,
     method: 'get',
   })
 }
-
+//风险源内部编码
+export function riskInner(data) {
+  return axios({
+    url: '/server/data/admin/mapdraw/detail/risk/inner',
+    method: 'get',
+    params:data
+  })
+}
+//风险源数据保存
+export function mapdrawRiskSave(data) {
+  return axios({
+    url: '/server/data/admin/mapdraw/detail/risk/save',
+    method: 'post',
+    data:data
+  })
+}
+//排口内部编码
+export function dischargeInner(data) {
+  return axios({
+    url: '/server/data/admin/mapdraw/detail/discharge/inner',
+    method: 'get',
+    params:data
+  })
+}
+//排口数据保存
+export function mapdrawDischargeSave(data) {
+  return axios({
+    url: '/server/data/admin/mapdraw/detail/discharge/save',
+    method: 'post',
+    data:data
+  })
+}
+//漂浮物数据保存
+export function floatageSave(data) {
+  return axios({
+    url: '/server/data/admin/mapdraw/detail/floatage/save',
+    method: 'post',
+    data:data
+  })
+}
+//绘制数据图片清单
+export function mediaList(id) {
+  return axios({
+    url: '/server/data/admin/mapdraw/media/list?drawId='+id,
+    method: 'get',
+  })
+}
 
 
 

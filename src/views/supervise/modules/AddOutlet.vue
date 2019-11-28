@@ -4,7 +4,7 @@
     :width="980"
     :visible="visible"
     :confirmLoading="confirmLoading"
-    @ok="handleSubmit"
+    @ok="saveClick"
     @cancel="handleCancel"
     :mask="true"
     :centered="true"
@@ -16,104 +16,130 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="内部编码">
-              <a-input placeholder />
+              <a-input placeholder disabled v-model="list.innerCode"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="标准编码">
-              <a-input placeholder />
+              <a-input placeholder  v-model="list.standardCode" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="内部名称">
-              <a-input placeholder />
+              <a-input placeholder disabled v-model="list.innerName"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="标准名称">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.standardName"/>
             </a-form-item>
           </a-col>
         </a-row>
         <h3 style="margin-top: 10px;">位置</h3>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="排入水体名称">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属河道">
+              <a-select                
+                :allowClear="true"
+                placeholder="请输入河流"
+                optionFilterProp="children"
+                style="width: 100%"
+                v-model="list.riverId"
+                @change="riverChange"
+              >
+                <a-select-option
+                  :value="item.id"
+                  v-for="(item, index) in riverList"
+                  :key="index"
+                >{{item.name}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="排入水体功能区名称">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.functionName"/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="河道序号">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.code" disabled/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="河道管理等级">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.supervisoryLevel" disabled/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="河道等级">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.priority" disabled/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属街道">
-              <a-input placeholder />
+              <a-select
+                :allowClear="true"
+                placeholder="请输入街道"
+                optionFilterProp="children"
+                style="width: 100%"
+                v-model="list.streetId"
+                @change="streetChange"
+              >
+                <a-select-option
+                  :value="item.id"
+                  v-for="(item, index) in streetList"
+                  :key="index"
+                >{{item.name}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="一级河长">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.controller" disabled/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="二级河长">
-              <a-input placeholder />
+              <a-input placeholder  v-model="list.tworiver" disabled/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="地标位置">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.landmarkLocation"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="地址">
-              <a-input placeholder />
+               <a-input placeholder v-model="list.address" disabled/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="经度">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.lng" disabled/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="纬度">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.lat" disabled/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="准确位置">
-              <a-input placeholder />
+              <a-input placeholder  v-model="list.accurateLocation"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -121,143 +147,142 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="类别">
-              <a-select default-value="1" :allowClear="true" placeholder="请选择类别">
-                <a-select-option value="1">雨水</a-select-option>
-                <a-select-option value="2">生活</a-select-option>
-                <a-select-option value="3">混合</a-select-option>
-                <a-select-option value="4">工业</a-select-option>
-                <a-select-option value="5">电厂温排水</a-select-option>
+              <a-select  :allowClear="true" placeholder="请选择类别"  @change="typeChange" v-model="list.type">
+                <a-select-option value="rainwater">雨水</a-select-option>
+                <a-select-option value="life">生活</a-select-option>
+                <a-select-option value="mix">混合</a-select-option>
+                <a-select-option value="industrial">工业</a-select-option>
+                <a-select-option value="powerplant">电厂温排水</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="排放方式">
-              <a-select default-value="1" :allowClear="true" placeholder="请选择">
-                <a-select-option value="1">连续</a-select-option>
-                <a-select-option value="2">间接</a-select-option>
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="排放方式">
+              <a-select  :allowClear="true" placeholder="请选择" v-model="list.letway">
+                <a-select-option value="sequence">连续</a-select-option>
+                <a-select-option value="interrupt">间接</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="入河方式">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="入河方式">
+              <a-input placeholder v-model="list.enterRiverWay"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="大小">
-              <a-input placeholder />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row style="width:100%">
-          <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="实际年排放总量(万吨)">
-              <a-input placeholder />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="主要污染物">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="大小">
+              <a-input placeholder v-model="list.enterRiverSize"/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="设置单位">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="实际年排放总量(万吨)">
+              <a-input placeholder v-model="list.yearLetSize"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="单位地址">
-              <a-input placeholder />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row style="width:100%">
-          <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="联系人">
-              <a-input placeholder />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="联系地址">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="主要污染物">
+              <a-input placeholder v-model="list.pollutant"/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="封堵状态">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="设置单位">
+              <a-input placeholder v-model="list.settingUnit"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="情况说明">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="单位地址">
+              <a-input placeholder v-model="list.unitAddress"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row style="width:100%">
+          <a-col :span="12">
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="联系人">
+              <a-input placeholder v-model="list.linkman"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="联系地址">
+              <a-input placeholder v-model="list.linktel"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row style="width:100%">
+          <a-col :span="12">
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="封堵状态">
+              <a-input placeholder v-model="list.blockoffStatus"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="情况说明">
+              <a-input placeholder v-model="list.statement"/>
             </a-form-item>
           </a-col>
         </a-row>
         <h3 style="margin-top: 10px;">等级情况</h3>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="建成时间">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="建成时间">
+              <a-input placeholder v-model="list.activateTime"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="登记情况">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="登记情况">
+              <a-input placeholder v-model="list.registrationState"/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="批准情况">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="批准情况">
+              <a-input placeholder v-model="list.approveState"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="批准单位">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="批准单位">
+              <a-input placeholder v-model="list.approveUnit"/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="排污许可">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="排污许可">
+              <a-input placeholder v-model="list.dischargeLicense"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="许可证号">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"   label="许可证号">
+              <a-input placeholder v-model="list.licenseNo"/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="排污许可">
-              <a-input placeholder />
+            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol"  label="影像">
+              <el-upload
+                class="upload-demo"
+                :data="upload"
+                name="media"
+                :headers="headers"
+                action="/server/data/admin/mapdraw/media/save"
+                :on-preview="handlePreview"
+                :on-success="handleSuccess"
+                :on-errore="handleRemove"
+                :file-list="fileList"
+                :limit='1'>
+                <a-button type="primary" icon="plus" >上传</a-button>
+              </el-upload>
+              <viewer >
+                <img v-for="item in attachmentJpg" :key="item.id" :src="item.media" alt="" style="height:70px;">
+              </viewer >
             </a-form-item>
           </a-col>
-          <a-col :span="12">
-            <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="许可证号">
-              <a-input placeholder />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row style="width:100%">
-          <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="影像">
-            <a-col :span="24">
-              <img
-                src="../../../assets/loginBg.jpg"
-                style="width:100%;height:100px;border-radius:4px;"
-                alt
-              />
-            </a-col>
-          </a-form-item>
         </a-row>
       </a-form>
       <a-divider orientation="left"></a-divider>
@@ -266,7 +291,7 @@
           <a-button block @click="handleCancel">取消</a-button>
         </a-col>
         <a-col :span="3">
-          <a-button block>保存</a-button>
+          <a-button block @click="saveClick">保存</a-button>
         </a-col>
       </a-row>
     </a-spin>
@@ -274,10 +299,64 @@
 </template>
 
 <script>
-const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+import moment from 'moment'
+import Vue from 'vue'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { getRiverList,getStreetList,informationStreet,informationRiver,dischargeInner,mapdrawDischargeSave,mediaList} from '@/api/login'
 export default {
   data() {
     return {
+      fileList:[],
+      file:false,
+      headers: {
+        Authorization: '',
+        'X-TENANT-ID': 'jl:jlgis@2019' 
+      },
+      list:{
+        riverId:'',
+        streetId:'',
+        tworiver:'',
+        supervisoryLevel:'',
+        controller:'',
+        priority:'',
+        lat:'',
+        lng:'',
+        type:'',
+        waterName:'苏州',
+        landmarkLocation:'',
+        accurateLocation:'',
+        innerCode:'',
+        innerName:'',
+        drawId:'',
+        letway:'',
+        enterRiverWay:'',
+        enterRiverSize:'',
+        yearLetSize:'',
+        pollutant:'',
+        settingUnit:'',
+        unitAddress:'',
+        linkman:'',
+        linktel:'',
+        blockoffStatus:'',
+        statement:'',
+        activateTime:'',
+        registrationState:'',
+        approveState:'',
+        approveUnit:'',
+        dischargeLicense:'',
+        licenseNo:'',
+        innerCode:'',
+        innerName:'',
+        functionName:'',
+      },
+      attachmentJpg:[],
+      riverList:[],
+      streetList:[],
+      upload:{
+        title:'1',
+        drawId:'',
+        id:'',
+      },
       labelCol: {
         xs: { span: 18 },
         sm: { span: 6 }
@@ -289,142 +368,66 @@ export default {
       visible: false,
       confirmLoading: false,
 
-      selectedItems: [], //风险源类型
-      headers: {
-        authorization: 'authorization-text'
-      },
-
-      options: [
-        {
-          value: 'zhejiang',
-          label: 'Zhejiang',
-          children: [
-            {
-              value: 'hangzhou',
-              label: 'Hangzhou',
-              children: [
-                {
-                  value: 'xihu',
-                  label: 'West Lake'
-                },
-                {
-                  value: 'xiasha',
-                  label: 'Xia Sha',
-                  disabled: true
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: 'jiangsu',
-          label: 'Jiangsu',
-          children: [
-            {
-              value: 'nanjing',
-              label: 'Nanjing',
-              children: [
-                {
-                  value: 'zhonghuamen',
-                  label: 'Zhong Hua men'
-                }
-              ]
-            }
-          ]
-        }
-      ],
-
-      form: this.$form.createForm(this),
-
-      dataSource: [
-        {
-          key: '0',
-          insideNum: '黄浦江',
-          officialNum: 'HPJ1213',
-          date: '2019-12-13'
-        },
-        {
-          key: '1',
-          insideNum: '长江',
-          officialNum: 'CJ1212',
-          date: '2019-12-12'
-        }
-      ],
-      count: 2,
-      columns: [
-        {
-          title: '序号',
-          dataIndex: 'key',
-          width: '10%',
-          scopedSlots: { customRender: 'key' }
-        },
-        {
-          title: '内部编号',
-          dataIndex: 'insideNum'
-        },
-        {
-          title: '官方编号',
-          dataIndex: 'officialNum'
-        },
-        {
-          title: '调查日期',
-          dataIndex: 'date'
-        },
-        {
-          title: '操作',
-          dataIndex: 'operation',
-          scopedSlots: { customRender: 'operation' }
-        }
-      ]
     }
   },
   computed: {
-    filteredOptions() {
-      return OPTIONS.filter(o => !this.selectedItems.includes(o))
-    }
+  },
+  mounted(){
+    this.headers.Authorization=Vue.ls.get(ACCESS_TOKEN)
   },
   methods: {
-    onCellChange(key, dataIndex, value) {
-      const dataSource = [...this.dataSource]
-      const target = dataSource.find(item => item.key === key)
-      if (target) {
-        target[dataIndex] = value
-        this.dataSource = dataSource
+    moment,
+    getList(){
+      getRiverList(this.$store.state.id).then(res=>{
+        this.riverList = res.data.data
+      })
+      getStreetList(this.$store.state.id).then(res=>{
+        this.streetList = res.data.data
+      })
+    },
+    typeChange(value,option){
+      if (this.list.riverId!='') {
+        let data={
+          riverId:this.list.riverId,
+          type:value
+        }
+        dischargeInner(data).then(res=>{
+          this.list.innerCode = res.data.innerCode
+          this.list.innerName = res.data.innerName
+        })
+      }else{
+        this.$message.warning('请先选择河道');
       }
     },
-    onDelete(key) {
-      const dataSource = [...this.dataSource]
-      this.dataSource = dataSource.filter(item => item.key !== key)
+    riverChange(value,option){
+      informationRiver(value).then(res=>{
+        console.log(res.data);
+         this.list.code = res.data.info.code
+         this.list.controller = res.data.info.controller
+         this.list.supervisoryLevel = res.data.info.supervisoryLevel.name
+         if (res.data.info.priority == true) {
+           this.list.priority='重点'
+         }else if(res.data.info.priority == false){
+           this.list.priority='非重点'
+         }
+      })
     },
-    add(id,currentArea,result) {
-      console.log(id,currentArea,result);
-      
+    streetChange(value,option){
+      informationStreet(value).then(res=>{
+        this.list.tworiver = res.data.controller
+      })
+    },
+    add(id,result) {
+      this.headers.Authorization=Vue.ls.get(ACCESS_TOKEN)
       this.visible = true
+      this.list.drawId =id
+      this.upload.drawId =id
+      this.list.address = result.formatted_address
+      this.list.lat =  result.resultObj.location.lat
+      this.list.lng =  result.resultObj.location.lon
+      this.getList()
     },
     // 添加河流
-    addRiver(value) {
-      console.log(value)
-    },
-    // 风险源类型
-    handleChange(selectedItems) {
-      this.selectedItems = selectedItems
-      console.log(selectedItems)
-    },
-    // 文件上传
-    fileUpload(info) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList)
-      }
-      if (info.file.status === 'done') {
-        this.$message.success(`${info.file.name} file uploaded successfully`)
-      } else if (info.file.status === 'error') {
-        this.$message.error(`${info.file.name} file upload failed.`)
-      }
-    },
-    // 标签
-    handleChangeTag(value) {
-      console.log(`selected ${value}`)
-    },
     handleSubmit() {
       const {
         form: { validateFields }
@@ -445,16 +448,71 @@ export default {
     },
     handleCancel() {
       this.visible = false
+      this.list.riverId=''
+      this.list.streetId=''
+      this.list.tworiver=''
+      this.list.supervisoryLevel=''
+      this.list.controller=''
+      this.list.priority=''
+      this.list.lat=''
+      this.list.lng=''
+      this.list.type=''
+      this.list.landmarkLocation=''
+      this.list.accurateLocation=''
+      this.list.innerCode=''
+      this.list.innerName=''
+      this.list.drawId=''
+      this.list.letway=''
+      this.list.enterRiverWay=''
+      this.list.enterRiverSize=''
+      this.list.yearLetSize=''
+      this.list.pollutant=''
+      this.list.settingUnit=''
+      this.list.unitAddress=''
+      this.list.linkman=''
+      this.list.linktel=''
+      this.list.blockoffStatus=''
+      this.list.statement=''
+      this.list.activateTime=''
+      this.list.registrationState=''
+      this.list.approveState=''
+      this.list.approveUnit=''
+      this.list.dischargeLicense=''
+      this.list.licenseNo=''
+      this.list.innerCode=''
+      this.list.innerName=''
+      this.list.functionName=''
+      this.upload.id = ''
     },
-    onChangeDate(date, dateString) {
-      console.log(date, dateString)
+    saveClick(){
+      let data =this.list
+      mapdrawDischargeSave(data).then(res=>{
+        this.$message.success('保存成功')
+        this.$parent.getMapdrawPage()
+        this.handleCancel()
+      }).catch(err => {
+          this.$message.error(err.response.data.message);
+      })
     },
-    // 选择地址
-    onChange(value, selectedOptions) {
-      console.log(value, selectedOptions)
+    handleSuccess(response, file, fileList){
+     this.$message.success('上传成功');
+     this.fileList=[]
+     mediaList(this.list.drawId).then(res=>{
+       console.log(res.data);
+       this.attachmentJpg = res.data
+     })
     },
-    filter(inputValue, path) {
-      return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+    handleRemove(err) {
+      console.log(err);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    handleExceed(files, fileList) {
+      
+    },
+    beforeRemove(file, fileList) {
+      
     }
   }
 }

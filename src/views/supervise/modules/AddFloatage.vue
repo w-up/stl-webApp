@@ -4,11 +4,8 @@
     :width="980"
     :visible="visible"
     :confirmLoading="confirmLoading"
-    @ok="handleSubmit"
-    @cancel="handleCancel"
-    :mask="true"
-    :centered="true"
-    :footer="null"
+    @ok="saveClick"
+    @click="handleCancel"
   >
     <a-spin :spinning="confirmLoading">
       <a-form class="from">
@@ -16,57 +13,84 @@
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="名称">
-              <a-input placeholder />
+              <a-input placeholder  v-model="list.innerName"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="河道">
-              <a-input placeholder />
+              <a-select                
+                :allowClear="true"
+                placeholder="请输入河流"
+                optionFilterProp="children"
+                style="width: 100%"
+                v-model="list.riverId"
+              >
+                <a-select-option
+                  :value="item.id"
+                  v-for="(item, index) in riverList"
+                  :key="index"
+                >{{item.name}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="街道">
-              <a-input placeholder />
+               <a-select
+                :allowClear="true"
+                placeholder="请输入街道"
+                optionFilterProp="children"
+                style="width: 100%"
+                v-model="list.streetId"
+              >
+                <a-select-option
+                  :value="item.id"
+                  v-for="(item, index) in streetList"
+                  :key="index"
+                >{{item.name}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="位置">
-              <a-input placeholder />
+              <a-input placeholder v-model="list.address" disabled/>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row style="width:100%">
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="面积">
-              <a-input placeholder />
+              <a-input placeholder  v-model="list.currentArea" disabled/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="创建时间">
-              <a-input placeholder />
+              <a-date-picker style="width:100%"  :format="dateFormat" @change="onChange"/>
             </a-form-item>
           </a-col>
         </a-row>
       </a-form>
       <a-divider orientation="left"></a-divider>
-      <a-row style="width:100%; margin-top:10px;" type="flex" justify="space-around">
+      <!-- <a-row style="width:100%; margin-top:10px;" type="flex" justify="space-around">
         <a-col :span="3">
           <a-button block @click="handleCancel">取消</a-button>
         </a-col>
         <a-col :span="3">
           <a-button block>保存</a-button>
         </a-col>
-      </a-row>
+      </a-row> -->
     </a-spin>
   </a-modal>
 </template>
 
 <script>
+import moment from 'moment'
+import { getRiverList,getStreetList,floatageSave} from '@/api/login'
 export default {
   data() {
     return {
+      dateFormat: 'YYYY-MM-DD',
       labelCol: {
         xs: { span: 18 },
         sm: { span: 6 }
@@ -75,25 +99,53 @@ export default {
         xs: { span: 18 },
         sm: { span: 16 }
       },
+      list:{
+        drawId:'',
+        innerName:'',
+        address:'',
+        riverId:'',
+        streetId:'',
+        currentArea:'',
+        discoveryTime:''
+      },
       visible: false,
       confirmLoading: false,
-
-      selectedItems: [], //风险源类型
-
-      form: this.$form.createForm(this),
-      count: 2,
+      riverList:[],
+      streetList:[]
     }
   },
   computed: {
-    filteredOptions() {
-      return OPTIONS.filter(o => !this.selectedItems.includes(o))
-    }
   },
   methods: {
+    moment,
+    getList(){
+      getRiverList(this.$store.state.id).then(res=>{
+        this.riverList = res.data.data
+      })
+      getStreetList(this.$store.state.id).then(res=>{
+        this.streetList = res.data.data
+      })
+    },
     add(id,currentArea,result) {
-      console.log(id,currentArea,result);
-      
+      // console.log(id,currentArea,result);
+      this.getList()
+      this.list.drawId =id
+      this.list.address = result.formatted_address
+      this.list.currentArea = currentArea
       this.visible = true
+    },
+    saveClick(){
+      let data = this.list
+      floatageSave(data).then(res=>{
+        this.$message.success('保存成功')
+        this.$parent.getMapdrawPage()
+        this.handleCancel()
+      }).catch(err => {
+        this.$message.error(err.response.data.message);
+      })
+    },
+    onChange(date, dateString) {
+      this.list.discoveryTime = dateString
     },
     handleSubmit() {
       const {
@@ -115,10 +167,14 @@ export default {
     },
     handleCancel() {
       this.visible = false
+      this.list.drawId=''
+      this.list.innerName=''
+      this.list.address=''
+      this.list.riverId=''
+      this.list.streetId=''
+      this.list.currentArea=''
+      this.list.discoveryTime=''
     },
-    filter(inputValue, path) {
-      return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
-    }
   }
 }
 </script>

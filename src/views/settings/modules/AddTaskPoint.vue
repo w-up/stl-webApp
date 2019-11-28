@@ -195,6 +195,7 @@ export default {
       this.$parent.allPointTask()
       this.visible = false
       this.list.taskId=''
+      this.list.id=''
       this.list.name=''
       this.list.coordinate=''
       this.list.altitude=''
