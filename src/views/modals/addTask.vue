@@ -146,17 +146,21 @@ export default {
             console.log(this.polygonDate)
         },
         addPlanInfo(){
-            console.log(this);
             var data = this.list
             if (data.locationType == 'point') {
+                console.log(this.markLnglat);
+                
                 data.region = this.markLnglat.lng +','+this.markLnglat.lat
             }
             if (data.locationType == 'line') {
+                console.log(this.lineLnglats);
                 for (const item of this.lineLnglats) {
+                    
                     data.region = data.region + item.lng +','+item.lat+'|'
                 }
             }
             if (data.locationType == 'surface') {
+                console.log(this.polygonDate);
                 for (const item of this.polygonDate) {
                     data.region = data.region +item.lng +','+item.lat+'|'
                 }

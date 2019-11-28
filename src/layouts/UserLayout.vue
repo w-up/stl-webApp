@@ -4,10 +4,10 @@
     <div class="container">
       <div class="top">
         <div class="header">
-          <a href="/">
+          <!-- <a href="/">
             <img src="./../assets/logo.png" class="logo" alt="logo" />
             <p class="title">聚隆城市河道水质风险评估系统</p>
-          </a>
+          </a> -->
         </div>
       </div>
 

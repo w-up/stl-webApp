@@ -8,19 +8,19 @@
     </div>
     <div class="time_line">
       <ul class="time_ul">
-        <li v-for="item in timeData" :key="item.id">
-          <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6>
+         <li ><!--v-for="item in timeData" :key="item.id" -->
+          <!-- <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6> -->
           <a-tooltip
             placement="right"
             class="time_item"
             trigger="hover"
-            v-for="day in item.month"
-            :key="day.id"
-            @click="timeLineItem(item.title, day.title)"
+            v-for="day in timeData"
+            :key="day.date"
+            @click="timeLineItem(day.date)"
             :class="{'time_item_clicked':day.clicked == true}"
           >
             <template slot="title">
-              <span>{{item.title}}.{{day.title}}</span>
+              <span>{{day.date}}</span>
             </template>
             <div class="line_style">
               <div
@@ -61,7 +61,7 @@
     <div class="time_line time_line_right" v-show="sharedChecked || swipeChecked">
       <ul class="time_ul">
         <li v-for="item in timeDataRight" :key="item.id">
-          <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6>
+          <!-- <h6 style="font-size:12px;text-align:center;margin:0;">{{item.title}}</h6> -->
           <a-tooltip
             placement="right"
             class="time_item"
@@ -749,7 +749,7 @@
 </template>
 
 <script>
-import { getRiverList, getStreetList, getWaterQualityList, paramList, mapdrawSave, mapdrawPage } from '@/api/login'
+import { getRiverList, getStreetList, getWaterQualityList, paramList, mapdrawSave, mapdrawPage,daydataList } from '@/api/login'
 import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
 import AddFloatage from './modules/AddFloatage'
@@ -1924,6 +1924,9 @@ export default {
       this.startDate = dateString[0]
       this.endDate = dateString[1]
       this.timeQuantum = `${dateString[0]} ~ ${dateString[1]}`
+      var start =  dateString[0].split('-')
+      var end =  dateString[1].split('-')
+      this.getdaydataList(start[0]+start[1]+start[2],end[0]+end[1]+end[2])
     },
     getTimeQuantum() {
       let myDate = new Date()
@@ -1938,29 +1941,59 @@ export default {
         starty = endy
         startm = endm - 3
       }
+      if (startm <10) {
+        var startm1 = '0'+startm
+        var start = starty+''+startm1 +''+endd
+      }else{
+        var start = starty+''+startm +''+endd
+      }
+      if (endm <10) {
+        var endm1 = '0'+endm
+        var end = endy+''+endm1+''+endd 
+      }else{
+        var end = endy+''+endm+''+endd 
+      }
       this.startDate = `${starty}-${startm}-${endd}`
       this.endDate = `${endy}-${endm}-${endd}`
       this.timeQuantum = `${this.startDate} ~ ${this.endDate}`
-      // console.log(this.timeQuantum)
+      this.getdaydataList(start,end)
+    },
+    getdaydataList(start,end){
+      let data = {
+        projectId: this.$store.state.id,
+        start:start,
+        end:end
+      }
+      daydataList(data).then(res=>{
+        for(const item of res.data){
+          if (item.uavData != 0) {
+            item.level = 1
+          }else if(item.manualData !=0&&item.manualLocus !=0&&item.mapdrawData !=0&&item.panoramaData !=0){
+            item.level = 0
+          }else{
+            item.level = 2
+          }
+          item.title = item.date.substring(item.date.length-2,item.date.length);
+          item.clicked = false
+        }
+        this.timeData = res.data   
+      })
+
     },
     // 时间轴
-    timeLineItem(mouth, index) {
-      console.log(mouth, index)
+    timeLineItem(mouth) {
+      console.log(mouth)
       for (const item of this.timeData) {
-        if (mouth == item.title) {
-          for (const value of item.month) {
-            if (value.level != 2) {
-              if (value.title == index) {
-                value.clicked = true
-              } else {
-                value.clicked = false
-              }
+        if (mouth == item.date) {
+          if (item.level!= 2) {
+            if (item.date == mouth) {
+              item.clicked = true
+            } else {
+              item.clicked = false
             }
           }
         } else {
-          for (const value of item.month) {
-            value.clicked = false
-          }
+          item.clicked = false
         }
       }
     },
@@ -2946,7 +2979,7 @@ export default {
     .weather_content {
       
       width: 320px;
-      height: 539px;
+      height: 300px;
       background: rgba(255, 255, 255, 1);
       box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.4);
       border-radius: 10px;

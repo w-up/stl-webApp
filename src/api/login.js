@@ -823,7 +823,18 @@ export function mediaList(id) {
     method: 'get',
   })
 }
-
+//时间轴
+export function daydataList(data) {
+  return axios({
+    url: '/server/data/admin/calendar/daydata/',
+    method: 'get',
+    params:{
+      projectId:data.projectId,
+      start:data.start,
+      end:data.end
+    }
+  })
+}
 
 
 
