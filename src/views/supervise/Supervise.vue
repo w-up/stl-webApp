@@ -1501,7 +1501,7 @@ export default {
       })
     },
     getMapdrawPage() {
-      var time = '2019-11-27'
+      var time = '2019-11-28'
       var picker = time.split('-')
       var arr = {
         projectId: this.$store.state.id,
@@ -1645,7 +1645,7 @@ export default {
     // 绘制保存
     toolCradSave() {
       this.toolCard = false
-      var time = '2019-11-27'
+      var time = '2019-11-28'
       var picker = time.split('-')
       console.log(this.isToolEdit)
       if (this.toolIndex === 1) {
