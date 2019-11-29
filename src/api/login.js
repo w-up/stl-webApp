@@ -835,7 +835,17 @@ export function daydataList(data) {
     }
   })
 }
-
+//日天气
+export function weatherList(data) {
+  return axios({
+    url: '/server/data/admin/weather/daydata',
+    method: 'get',
+    params:{
+      date:data.date,
+      coor:data.coor,
+    }
+  })
+}
 
 
 

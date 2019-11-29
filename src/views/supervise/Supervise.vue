@@ -630,7 +630,7 @@
           <template slot="title">
             <span>更多</span>
           </template>
-          <img src="../../assets/img/more.png" alt="更多" title="更多" />
+          <img src="../../assets/img/more.png" alt="更多" title="更多"  @click="getMapdrawPage(gengduo)"/>
         </a-popover>
       </li>
     </ul>
@@ -749,7 +749,7 @@
 </template>
 
 <script>
-import { getRiverList, getStreetList, getWaterQualityList, paramList, mapdrawSave, mapdrawPage,daydataList } from '@/api/login'
+import { getRiverList, getStreetList, getWaterQualityList, paramList, mapdrawSave, mapdrawPage,daydataList,weatherList } from '@/api/login'
 import RiskSourceInfo from './modules/RiskSourceInfo'
 import AddRiskSource from './modules/AddRiskSource'
 import AddFloatage from './modules/AddFloatage'
@@ -814,6 +814,7 @@ export default {
         // 文件上传
         authorization: 'authorization-text'
       },
+      defaultTime:'',//默认日期
       otherList:[],//其他
       riskSourceList:[],//河岸风险源
       currentArea:'',//面积
@@ -1353,7 +1354,7 @@ export default {
           latlng: { lat: 31.22664, lng: 121.49048 }
         }
       ],
-
+      gengduo:'1',
       riverLink: false, // 河道连通性
       riverLinkPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.23841, lng: 121.516833 } },
@@ -1466,12 +1467,12 @@ export default {
     this.map.centerAndZoom(new T.LngLat(121.43429, 31.15847), zoom)
     //添加比例尺控件
     this.map.addControl(new T.Control.Scale())
-
-    this.getRiverStreeList()
     this.getTimeQuantum() // 获取时间段
+    this.getRiverStreeList()
+    
     this.getWaterQualityPoints()
     this.getParamList()
-    this.getMapdrawPage()
+    // this.getMapdrawPage()
     // console.log(this.$store.state.id, 'ssasasa')
   },
   methods: {
@@ -1500,23 +1501,26 @@ export default {
         // this.otherList = arr
       })
     },
-    getMapdrawPage() {
-      var time = '2019-11-28'
-      var picker = time.split('-')
-      var arr = {
-        projectId: this.$store.state.id,
-        year: picker[0],
-        month: picker[1],
-        day: picker[2]
-      }
-      mapdrawPage(arr).then(res => {
-        var data = res.data
-        data.forEach(v => {
-          v.shapePellucidity = v.shapePellucidity / 100
-          v.framePellucidity = v.framePellucidity / 100
+    getMapdrawPage(id) {
+      if (id == '1') {
+        var time = this.defaultTime
+        var picker = time.split('-')
+        var arr = {
+          projectId: this.$store.state.id,
+          year: picker[0],
+          month: picker[1],
+          day: picker[2]
+        }
+        mapdrawPage(arr).then(res => {
+          var data = res.data
+          data.forEach(v => {
+            v.shapePellucidity = v.shapePellucidity / 100
+            v.framePellucidity = v.framePellucidity / 100
+          })
+          this.drawPage = data
         })
-        this.drawPage = data
-      })
+        this.gengduo = '2'
+      } 
     },
     mapZoomChange() {
       // console.log(this.map.getZoom())
@@ -1645,7 +1649,7 @@ export default {
     // 绘制保存
     toolCradSave() {
       this.toolCard = false
-      var time = '2019-11-28'
+      var time = this.defaultTime
       var picker = time.split('-')
       console.log(this.isToolEdit)
       if (this.toolIndex === 1) {
@@ -1965,6 +1969,17 @@ export default {
         end:end
       }
       daydataList(data).then(res=>{
+        var arr = res.data.reverse()
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].manualData !=0&&arr[i].manualLocus !=0&&arr[i].mapdrawData !=0&&arr[i].panoramaData !=0&&arr[i].uavData != 0) {
+            this.defaultTime=arr[i].date.substring(0, 4) + "-" + arr[i].date.substring(4, 6) + "-" + arr[i].date.substring(6, 8)
+            break
+          }else{
+            if( i == arr.length - 1){
+              this.defaultTime=this.endDate
+            }
+          }
+        }
         for(const item of res.data){
           if (item.uavData != 0) {
             item.level = 1
@@ -1977,16 +1992,29 @@ export default {
           item.clicked = false
         }
         this.timeData = res.data   
+        // this.getWeatherList()
       })
-
     },
+    //获取天气
+    // getWeatherList(){
+    //   var date =  this.defaultTime.split('-')
+    //   let data = {
+    //     date:date[0]+date[1]+date[2],
+    //     coor:'31.15847:121.43429',
+    //   }
+    //   weatherList(data).then(res=>{
+    //     let arr = res.data
+    //   })
+    // },
     // 时间轴
     timeLineItem(mouth) {
-      console.log(mouth)
+      console.log(mouth.substring(0, 4) + "-" + mouth.substring(4, 6) + "-" + mouth.substring(6, 8))
+
       for (const item of this.timeData) {
         if (mouth == item.date) {
           if (item.level!= 2) {
             if (item.date == mouth) {
+              this.defaultTime=mouth.substring(0, 4) + "-" + mouth.substring(4, 6) + "-" + mouth.substring(6, 8)
               item.clicked = true
             } else {
               item.clicked = false
@@ -1997,6 +2025,8 @@ export default {
         }
       }
     },
+    //获取天气
+
     // 时间格式
     moment,
     // 更多
@@ -2491,9 +2521,10 @@ export default {
         id: id,
         name: name
       })
+      
       //向地图上添加线
       this.map.addOverLay(line)
-      // line.addEventListener('click', this.lineClick)
+      line.addEventListener('click', this.sourceRiskClick)
     },
     // 绘制面
     noodlesDraw(lineData, color, weight, opacity, fillColor, fillOpacity, title, id) {
@@ -2508,7 +2539,11 @@ export default {
       })
       //向地图上添加面
       this.map.addOverLay(polygon)
-      // polygon.addEventListener('click', this.polygonClick)
+      polygon.addEventListener('click', this.sourceRiskClick )
+    },
+    //排口水面漂浮物风险源弹窗
+    sourceRiskClick(){
+      this.$refs.riskInfo.riskInfo()
     },
     // 河岸风险源
     onRiverRisk() {
