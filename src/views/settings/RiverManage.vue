@@ -268,6 +268,7 @@ export default {
             v.clicked = false
           })
           this.riverShowList = arr
+          this.defaultRiver = this.riverShowList[0].name
           this.drawAllRiver()
         })
         .catch(err => {})
@@ -307,11 +308,10 @@ export default {
     },
     // 检测所有开关
     watchAllSwitch() {
-      // this.map.clearOverLays()
       // 街道显示
       if (this.streetShow) {
         for (const item of this.streetShowList) {
-          this.polygonStreet = new T.Polygon(item.lineData, {
+          let polygonStreet = new T.Polygon(item.lineData, {
             color: 'blue', //线颜色
             weight: 3, //线宽
             opacity: 0.5, //透明度
@@ -321,12 +321,13 @@ export default {
             id: item.id // id
           })
           //向地图上添加面
-          this.map.addOverLay(this.polygonStreet)
-          this.polygonStreet.addEventListener('click', this.polygonStreetClick)
-          this.polygonStreet.addEventListener('mouseover', this.polygonStreetMouseover)
-          this.polygonStreet.addEventListener('mousemove', this.polygonStreetMousemove)
-          this.polygonStreet.addEventListener('mouseout', this.polygonStreetMouseout)
+          this.map.addOverLay(polygonStreet)
+          polygonStreet.addEventListener('click', this.polygonStreetClick)
+          polygonStreet.addEventListener('mouseover', this.polygonStreetMouseover)
+          polygonStreet.addEventListener('mousemove', this.polygonStreetMousemove)
+          polygonStreet.addEventListener('mouseout', this.polygonStreetMouseout)
         }
+        this.drawAllRiver()
       } else {
         for (const overlay of this.map.getOverlays()) {
           for (const item of this.streetShowList) {
@@ -365,11 +366,16 @@ export default {
       this.alertShow = false
     },
     // 绘制所有河流
-    drawAllRiver(index) {
-      this.map.clearOverLays() //将之前绘制的清除
+    drawAllRiver() {
+      for (const overlay of this.map.getOverlays()) {
+        for (const item of this.riverShowList) {
+          if (item.id == overlay.options.id) {
+            this.map.removeOverLay(overlay)
+          }
+        }
+      }
       for (const item of this.riverShowList) {
         if (item.clicked == true) {
-          // this.setBounds(item.lineData)
           this.setPolylineFn(item.lineData, 'red', 3, 0.5, 0, item.name, item.id)
         } else {
           this.setPolylineFn(item.lineData, 'blue', 3, 0.5, 0, item.name, item.id)
