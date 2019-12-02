@@ -156,6 +156,8 @@ export default {
         show(id){
             inspectTaskDetail(id).then(res=>{
                 var arr = res.data
+                console.log(arr);
+                
                 this.sitution = arr.template.code
                 function formatDate(now) { 
                     var year=now.getFullYear();  //取得4位数的年份

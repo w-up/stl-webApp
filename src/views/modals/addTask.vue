@@ -132,17 +132,20 @@ export default {
         },
         //获取绘制线坐标
         getLineDate(currentLnglats){
-            this.lineLnglats = currentLnglats
+            var _this = this
+            _this.lineLnglats = currentLnglats
             console.log(this.lineLnglats)
         },
         //获取绘制点坐标
         getMarkDate(currentLnglat){
-            this.markLnglat = currentLnglat
+            var _this = this
+            _this.markLnglat = currentLnglat
             console.log(this.markLnglat)
         },
         //获取绘制面坐标
         getPolygonDate(currentLnglats){
-            this.polygonDate = currentLnglats
+            var _this = this
+            _this.polygonDate = currentLnglats
             console.log(this.polygonDate)
         },
         addPlanInfo(){

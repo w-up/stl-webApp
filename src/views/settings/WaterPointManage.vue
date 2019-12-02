@@ -310,20 +310,6 @@ export default {
         })
         .catch(err => {})
     },
-    // 人工监测点
-    peoplePoint(index) {
-      this.defaultRiver = index
-      this.peoplePointList.forEach(value => {
-        if (value.name === index) {
-          value.clicked = true
-          let arr = []
-          arr.push(value.latlng)
-          this.map.setViewport(arr)
-        } else {
-          value.clicked = false
-        }
-      })
-    },
     cancelDelete(e) {
       // this.$message.error('Click on No')
     },
