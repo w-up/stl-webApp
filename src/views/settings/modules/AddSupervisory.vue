@@ -36,7 +36,7 @@
             showSearch
             mode="multiple"
             :allowClear="true"
-            placeholder="请输入河流"
+            placeholder="请输入河流" 
             optionFilterProp="children"
             style="width: 100%"
             @change="handleChange2"
@@ -217,8 +217,6 @@ export default {
       this.streetList.forEach(value => {
         if (value.name === index) {
           value.clicked = true
-          this.map.setViewport(value.lineData)
-          this.drawAllRiver()
         } else {
           value.clicked = false
         }
@@ -229,8 +227,6 @@ export default {
       this.riverList.forEach(value => {
         if (value.name === index) {
           value.clicked = true
-          this.map.setViewport(value.lineData)
-          this.drawAllRiver()
         } else {
           value.clicked = false
         }
@@ -241,8 +237,6 @@ export default {
       this.labelList.forEach(value => {
         if (value.name === index) {
           value.clicked = true
-          this.map.setViewport(value.lineData)
-          this.drawAllRiver()
         } else {
           value.clicked = false
         }

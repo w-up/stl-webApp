@@ -39,7 +39,7 @@
             </div>
             <!-- 新建计划时展示 -->
             <div class="left-patrol" v-if="noTitleKey === 'addPlan' || nosuperKey === 'taskCard'">
-              <p class="left-patrol-title" @click="asdasdsadsa">推荐巡河方案</p>
+              <p class="left-patrol-title">推荐巡河方案</p>
               <div class="patrol-plan">
                 <!-- <a-tree defaultExpandAll v-model="checkedPlan" @select="selectPatrol" :treeData="patrolPlanInfo"/> -->
                 <a-collapse v-model="activeKey">
@@ -440,7 +440,7 @@
                   class="active_plan"
                   v-for=" item in planListPage"
                   :key="item.plan.id"
-                >
+                  >
                   <a-collapse-panel :key="item.plan.id" class="collapse_header">
                     <template slot="header">
                       <a-row type="flex" justify="space-between" align="middle">
@@ -585,9 +585,9 @@
                 <a-collapse
                   v-model="activePlanKey"
                   class="active_plan"
-                  v-for=" item in planListPage1"
+                  v-for=" item in planListPage"
                   :key="item.plan.id"
-                >
+                  >
                   <a-collapse-panel :key="item.plan.id" class="collapse_header">
                     <template slot="header">
                       <a-row type="flex" justify="space-between" align="middle">
@@ -625,13 +625,30 @@
                             >
                               <a-collapse-panel :key="targetId.target.id" class="collapse_river">
                                 <template slot="header">
-                                  <div>{{targetId.target.objectName}}</div>
+                                  <a-row type="flex" justify="space-between" align="middle">
+                                    <a-col :span="16">
+                                      <div
+                                        @click="choosePointTask1(targetId.target.id)"
+                                      >{{targetId.target.objectName}}</div>
+                                    </a-col>
+                                    <a-col :span="8">
+                                      <a-popconfirm
+                                        :title="'是否确认删除'+targetId.target.objectName+'?'"
+                                        okText="确认"
+                                        cancelText="取消"
+                                        @confirm="del(targetId.target.id)"
+                                      >
+                                        <a>删除</a>
+                                      </a-popconfirm>
+                                    </a-col>
+                                  </a-row>
                                 </template>
                                 <div style="padding:10px 10px;">
                                   <div>
                                     <div class="riverGroup_info">未完成</div>
                                     <a-tree
                                       v-model="checkedKeys"
+                                      @select="onSelect"
                                       :selectedKeys="selectedKeys"
                                       :treeData="targetId.incomplete"
                                     ></a-tree>
@@ -640,12 +657,16 @@
                                     <div class="riverGroup_success">已完成</div>
                                     <a-tree
                                       v-model="checkedKeys"
+                                      @select="onSelect"
                                       :selectedKeys="selectedKeys"
                                       :treeData="targetId.complete"
                                       class="tree_succ"
                                     >
                                       <template slot="custom" slot-scope="item">
                                         <span>{{ item.name }}</span>
+                                        <span class>
+                                          <a-button class="but_type" @click="searchItme(item.id)">查看</a-button>
+                                        </span>
                                       </template>
                                     </a-tree>
                                   </div>
@@ -653,20 +674,12 @@
                                     <div class="riverGroup_warning">已取消</div>
                                     <a-tree
                                       v-model="checkedKeys"
+                                      @select="onSelect"
                                       :selectedKeys="selectedKeys"
                                       :treeData="targetId.anomalous"
                                     ></a-tree>
                                   </div>
                                 </div>
-                                <!-- <div class="addTaskBtn">
-                                  <a-button
-                                    class="addTask_btn commBtn"
-                                    icon="plus"
-                                    @click="addTaskBtn1(item.plan.id,targetId.target.objectId,targetId.target.objectName,targetId.target.object.code)"
-                                    v-show="cBtn"
-                                  >追加任务</a-button>
-                                  <add-task ref="addTask" @chooseLocation="addLineTool" @cancleBtn="cancelAddTask" @addPoint="addPoint" @addLineTool="addLineTool" @addPolygonTool="addPolygonTool"></add-task>
-                                </div>-->
                               </a-collapse-panel>
                             </a-collapse>
                           </div>
@@ -736,7 +749,7 @@
                                 </a-col>
                               </a-row>
                             </a-checkbox-group>
-                          </div>>
+                          </div>
                         </a-collapse-panel>
                       </a-collapse>
                     </div>
@@ -1277,37 +1290,132 @@ export default {
     },
     getList() {
       //河道列表
-      getRiverList(this.$store.state.id)
-        .then(res => {
-          let arr = res.data.data
-          arr.forEach(v => {
-            v.lineData = v.region
-            v.clicked = false
-          })
-          this.riverList = arr
+      getRiverList(this.$store.state.id).then(res => {
+        let arr = res.data.data
+        arr.forEach(v => {
+          v.lineData = v.region
+          v.clicked = false
         })
-        .catch(err => {})
+        this.riverList = arr
+      }).catch(err => {})
+    },
+    //目标列表
+    getinspectPointPage() {
+      var list = {
+        id: this.planList1.id
+      }
+      targetPage(list).then(res => {
+        var arr = res.data.data
+        if (arr.length > 0) {
+          for (let a = 0; a < arr.length; a++) {
+             arr[a].taskChoose = []
+            if (arr[a].object.code != 'river') {
+              arr[a].latlng =arr[a].coordinate
+            }else{
+              arr[a].latlng = arr[a].region
+            }
+            arr[a].taskPage = []
+              arr[a].clicked = false
+              arr[a].code = arr[a].object.code
+            var data = {
+              id: this.planList1.id,
+              object: arr[a].object.code,
+              objectId: arr[a].objectId,
+              projectId:this.$store.state.id,
+            }
+            taskInspectPage(data).then(res => {
+              var ar = res.data.data
+              ar.forEach(v => {
+                v.key = v.id
+                v.title = v.name
+                v.latlng = v.region[0]
+                v.code =v.status.code
+                if (v.status.code != 'hold') {
+                  arr[a].taskChoose.push(v.id)
+                }else{
+                  v.clicked = false
+                }        
+              })
+              arr[a].taskPage = ar
+            })
+          }
+          this.riverMontion = arr
+          if (this.noTitleKey == 'nowPlan') {
+            this.planDayDraw()
+          }else{
+            this.judgeDate()
+          }
+        }
+      })
     },
     //显示河道或调查点
     judgeDate() {
-      // console.log('length' + riverMontion.length)
-      for (var i = 0; i < this.riverMontion.length; i++) {
-        var code = this.riverMontion[i].code
-        // console.log('code: ' + code)
-        console.log(this.riverMontion[i].clicked)
+      this.map.clearOverLays()//将之前绘制的清除
+      var sss=this.riverMontion
+      for (var i = 0; i < sss.length; i++) {
+        var code = sss[i].code
         if (code == 'point') {
-          if (this.riverMontion[i].taskPage) {
-            for (var pageMarker of this.riverMontion[i].taskPage) {
-              this.addTaskPoint(pageMarker.latlng)
-            }
-          }
-          // this.showSurverPoint(riverMontion[i].latlng,riverMontion[i].id)
-          this.showSurverPoint(this.riverMontion[i])
+          this.renderingTarget(sss[i])
         }
         if (code == 'river') {
-          // console.log(this.riverMontion[i].latlng)
-          this.drawAllRiver(this.riverMontion[i])
+          this.drawAllRiver(sss[i])
+        } 
+      }
+    },
+    //绘制目标调查点
+    renderingTarget(taskl){
+      let icon = new T.Icon({
+        iconUrl: 'http://api.tianditu.gov.cn/img/map/markerA.png',
+        iconSize: new T.Point(19, 27),
+        iconAnchor: new T.Point(10, 25)
+      })
+      let marker = new T.Marker(new T.LngLat(taskl.latlng.lng, taskl.latlng.lat), { icon: icon })
+      this.map.addOverLay(marker)
+      if (taskl.clicked == true) {
+        let circle = new T.Circle(taskl.latlng, 2000, {
+          color: 'red',
+          weight: 2,
+          opacity: 0.5,
+          fillColor: '#FFFFFF',
+          fillOpacity: 0.4,
+          lineStyle: 'solid'
+        })
+        circle.disableEdit()
+        this.map.addOverLay(circle)
+        this.pointTarget(taskl.taskPage)
+      }else{
+        let circle = new T.Circle(taskl.latlng, 2000, {
+          color: 'blue',
+          weight: 2,
+          opacity: 0.5,
+          fillColor: '#FFFFFF',
+          fillOpacity: 0.4,
+          lineStyle: 'solid'
+        })
+        circle.disableEdit()
+        this.map.addOverLay(circle)
+      }
+      // this.pointTarget(data.taskPage)
+    }, 
+    pointTarget(taskPage){
+      console.log(taskPage);
+      
+      for(const item of taskPage){
+        if(item.region.length ==1){
+          let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
+          this.map.addOverLay(markerTool)
+        }else{
+          let line = new T.Polyline(item.region, {
+            color: 'blue', //线颜色
+            weight: 3, //线宽
+            opacity: 0.5, //透明度
+            id: item.id,
+            name: item.name
+          })
+          //向地图上添加线
+          this.map.addOverLay(line)
         }
+        // markerTool.addEventListener('click', this.taskPointClick)
       }
     },
     judgeDate1(id) {
@@ -1327,7 +1435,6 @@ export default {
     },
     showSurverPoint1(arr) {
       console.log(arr)
-
       let icon = new T.Icon({
         iconUrl: 'http://api.tianditu.gov.cn/img/map/markerA.png',
         iconSize: new T.Point(19, 27),
@@ -1340,12 +1447,12 @@ export default {
       this.map.addOverLay(marker)
       var data = {
         coordinate: this.lng + ',' + this.lat,
-        radius: '1000'
+        radius: '4'
       }
       if (arr.clicked == true) {
-        this.addCircle(this.lng, this.lat, 1000, 'red', 2, arr.id)
+        this.addCircle(this.lng, this.lat, 2000, 'red', 2, arr.id)
       } else {
-        this.addCircle(this.lng, this.lat, 1000, 'blue', 2, arr.id)
+        this.addCircle(this.lng, this.lat, 2000, 'blue', 2, arr.id)
       }
     },
     showSurverPoint(arr) {
@@ -1362,12 +1469,12 @@ export default {
       marker.addEventListener('click', this.clickCircle)
       var data = {
         coordinate: this.lng + ',' + this.lat,
-        radius: '1000'
+        radius: '4'
       }
       if (arr.clicked == true) {
-        this.addCircle(this.lng, this.lat, 1000, 'red', 2, arr.id)
+        this.addCircle(this.lng, this.lat, 2000, 'red', 2, arr.id)
       } else {
-        this.addCircle(this.lng, this.lat, 1000, 'blue', 2, arr.id)
+        this.addCircle(this.lng, this.lat, 2000, 'blue', 2, arr.id)
       }
       //向地图上添加圆
       // this.circle = new T.Circle(new T.LngLat(this.lng, this.lat), 1000, {
@@ -1440,6 +1547,7 @@ export default {
         this.spotTaskList = arr
       })
     },
+    //--------------------------------------------------------------------------------------------当日计划---------------------------------------
     //计划列表
     getPage() {
       var picker = this.picker.split('-')
@@ -1454,11 +1562,8 @@ export default {
         var oDate1 = new Date(date1)
         var oDate2 = new Date()
         if (oDate1.getTime() > oDate2.getTime()) {
-          console.log(true)
-
           return true
         } else {
-          console.log(false)
           return false
         }
       }
@@ -1466,66 +1571,272 @@ export default {
         var oDate1 = new Date(date1)
         var oDate2 = new Date()
         if (oDate1.getTime() > oDate2.getTime()) {
-          console.log(true)
           return false
         } else {
-          console.log(false)
-
           return true
         }
       }
       var hidingJudgment = tab(this.picker)
       this.hidingJudgment1 = tab1(this.picker)
       this.planListPage = []
-      planPage(data)
-        .then(res => {
-          var arr = res.data
-          // if (arr.length>0) {
-          //   this.hidingJudgment = false
-          // }else{
-          //   this.hidingJudgment = true
-          // }
-          var k = 0
-          for (const item of arr) {
-            k = k + 1
-            item.plan.name = item.plan.name.slice(0, 2) + '-' + k
-            for (const a of item.teams) {
-              for (const b of a.targets) {
-                b.clicked = false
-                b.code = b.target.object.code
-                if (b.target.object.code == 'point') {
-                  b.latlng = b.target.coordinate
-                } else {
-                  b.latlng = b.target.region
-                }
-                for (const c of b.incomplete) {
-                  c.key = c.id
-                  c.title = c.name
-                  c.latlng = c.region[0]
-                  c.scopedSlots = {
-                    title: 'custom'
-                  }
+      planPage(data).then(res => {
+        var arr = res.data
+        var k = 0
+        for (const item of arr) {
+          k = k + 1
+          item.plan.name = item.plan.name.slice(0, 2) + '-' + k
+          for (const a of item.teams) {
+            for (const b of a.targets) {
+              b.clicked = false
+              b.code = b.target.object.code
+              if (b.target.object.code == 'point') {
+                b.latlng = b.target.coordinate
+              } else {
+                b.latlng = b.target.region
+              }
+              for (const c of b.incomplete) {
+                c.key = c.id
+                c.title = c.name
+                c.latlng = c.region[0]
+                c.scopedSlots = {
+                  title: 'custom'
                 }
               }
             }
           }
-          this.planListPage = arr
-          if (this.planListPage.length == 0 && hidingJudgment == true) {
+        }
+        this.planListPage = arr
+        if (this.planListPage.length == 0 && hidingJudgment == true) {
+          this.hidingJudgment = true
+        } else {
+          this.hidingJudgment = false
+        }
+      }).catch(err => {
+        if (err.response != undefined) {
+          if (err.response.data.success == false && hidingJudgment == true) {
             this.hidingJudgment = true
           } else {
             this.hidingJudgment = false
           }
-        })
-        .catch(err => {
-          if (err.response != undefined) {
-            if (err.response.data.success == false && hidingJudgment == true) {
-              this.hidingJudgment = true
-            } else {
-              this.hidingJudgment = false
-            }
-          }
-        })
+        }
+      })
     },
+    //当日计划绘制
+    planDayDraw(){
+      this.map.clearOverLays()//将之前绘制的清除
+      for (const item of this.planListPage) {
+        for (const a of item.teams) {
+          for (const b of a.targets) {
+            // if (b.target.id == id) {
+              // b.clicked = true
+              if (b.code == 'point') {
+                this.planDayDrawTarget(b)
+              }
+              if (b.code == 'river') {
+                this.planDayDrawRiver(b)
+              }
+            // } else {
+            //   b.clicked = false
+            // }
+          }
+        }
+      }
+    },
+    //当日计划绘制目标调查点
+    planDayDrawTarget(task){
+      let icon = new T.Icon({
+        iconUrl: 'http://api.tianditu.gov.cn/img/map/markerA.png',
+        iconSize: new T.Point(19, 27),
+        iconAnchor: new T.Point(10, 25)
+      })
+      let marker = new T.Marker(new T.LngLat(task.latlng.lng, task.latlng.lat), { icon: icon })
+      this.map.addOverLay(marker)
+      if (task.clicked == true) {
+        let circle = new T.Circle(task.latlng, 2000, {
+          color: 'red',
+          weight: 2,
+          opacity: 0.5,
+          fillColor: '#FFFFFF',
+          fillOpacity: 0.4,
+          lineStyle: 'solid'
+        })
+        circle.disableEdit()
+        this.map.addOverLay(circle)
+      }else{
+        let circle = new T.Circle(task.latlng, 2000, {
+          color: 'blue',
+          weight: 2,
+          opacity: 0.5,
+          fillColor: '#FFFFFF',
+          fillOpacity: 0.4,
+          lineStyle: 'solid'
+        })
+        circle.disableEdit()
+        
+        this.map.addOverLay(circle)
+      }
+      this.planDayDrawSpot(task)
+    }, 
+    //当日计划绘制河道，调查点内的任务
+    planDayDrawSpot(taskPage){
+      for(const item of taskPage.anomalous){
+        if(item.region.length ==1){
+          let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
+          this.map.addOverLay(markerTool)
+          markerTool.addEventListener('click', this.planDayDrawClick)
+        }else{
+          if (taskPage.clicked ==true) {
+            let line = new T.Polyline(item.region, {
+              color: 'red', //线颜色
+              weight: 3, //线宽
+              opacity: 0.5, //透明度
+              id: item.id,
+              name: item.name
+            })
+            //向地图上添加线
+            this.map.addOverLay(line)
+          }else{
+            let line = new T.Polyline(item.region, {
+              color: 'blue', //线颜色
+              weight: 3, //线宽
+              opacity: 0.5, //透明度
+              id: item.id,
+              name: item.name
+            })
+            //向地图上添加线
+            this.map.addOverLay(line)
+            line.addEventListener('click', this.planDayDrawClick)
+          }
+        }
+
+      }
+      for(const item of taskPage.complete){
+        if(item.region.length ==1){
+          let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
+          this.map.addOverLay(markerTool)
+          markerTool.addEventListener('click', this.planDayDrawClick)
+        }else{
+          if (taskPage.clicked ==true) {
+            let line = new T.Polyline(item.region, {
+              color: 'red', //线颜色
+              weight: 3, //线宽
+              opacity: 0.5, //透明度
+              id: item.id,
+              name: item.name
+            })
+            //向地图上添加线
+            this.map.addOverLay(line)
+          }else{
+            let line = new T.Polyline(item.region, {
+              color: 'blue', //线颜色
+              weight: 3, //线宽
+              opacity: 0.5, //透明度
+              id: item.id,
+              name: item.name
+            })
+            //向地图上添加线
+            this.map.addOverLay(line)
+            line.addEventListener('click', this.planDayDrawClick)
+          }
+          
+        }
+        // markerTool.addEventListener('click', this.taskPointClick)
+      }
+      for(const item of taskPage.incomplete){
+        if(item.region.length ==1){
+          let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
+          this.map.addOverLay(markerTool)
+          markerTool.addEventListener('click', this.planDayDrawClick)
+        }else{
+          if (taskPage.clicked ==true) {
+            let line = new T.Polyline(item.region, {
+              color: 'red', //线颜色
+              weight: 3, //线宽
+              opacity: 0.5, //透明度
+              id: item.id,
+              name: item.name
+            })
+            //向地图上添加线
+            this.map.addOverLay(line)
+          }else{
+            let line = new T.Polyline(item.region, {
+              color: 'blue', //线颜色
+              weight: 3, //线宽
+              opacity: 0.5, //透明度
+              id: item.id,
+              name: item.name
+            })
+            //向地图上添加线
+            this.map.addOverLay(line)
+            line.addEventListener('click', this.planDayDrawClick)
+          }
+          
+        }
+        // markerTool.addEventListener('click', this.taskPointClick)
+      }
+      for(const item of taskPage.inprogress){
+        if(item.region.length ==1){
+          let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
+          this.map.addOverLay(markerTool)
+          markerTool.addEventListener('click', this.planDayDrawClick)
+        }else{
+          if (taskPage.clicked ==true) {
+            let line = new T.Polyline(item.region, {
+              color: 'red', //线颜色
+              weight: 3, //线宽
+              opacity: 0.5, //透明度
+              id: item.id,
+              name: item.name
+            })
+            //向地图上添加线
+            this.map.addOverLay(line)
+          }else{
+            let line = new T.Polyline(item.region, {
+              color: 'blue', //线颜色
+              weight: 3, //线宽
+              opacity: 0.5, //透明度
+              id: item.id,
+              name: item.name
+            })
+            //向地图上添加线
+            this.map.addOverLay(line)
+            line.addEventListener('click', this.planDayDrawClick)
+          }
+          
+        }
+        // markerTool.addEventListener('click', this.taskPointClick)
+      }
+    },
+    //当日计划绘制河道，调查点内的任务点击事件
+    planDayDrawClick(arr){
+      console.log(arr);
+      this.$refs.situtionInfo.show(arr.target.options.id)
+    },
+    //当日计划绘制河道
+    planDayDrawRiver(arr) {
+      if (arr.clicked == true) {
+        this.planDayDrawlineFn(arr.latlng, 'red', 3, 1, 0, arr.target.objectName, arr.target.id)
+      } else {
+        this.planDayDrawlineFn(arr.latlng, 'blue', 3, 1, 0, arr.target.objectName, arr.target.id)
+      }
+      this.planDayDrawSpot(arr)
+    },
+    // 设置绘制的多边形
+    planDayDrawlineFn(lineData, color, weight, opacity, fillOpacity, title, id) {
+      this.polygon = new T.Polygon(lineData, {
+        color: color, //线颜色
+        weight: weight, //线宽
+        opacity: 0.5, //透明度
+        fillColor: '#FFFFFF', //填充颜色
+        fillOpacity: fillOpacity, // 填充透明度
+        title: title,
+        id: id
+      })
+      //向地图上添加面
+      this.map.addOverLay(this.polygon, {})
+      // this.polygon.addEventListener('click', this.polylineClick)
+    },
+    //--------------------------------------------------------------------------------------------当日计划---------------------------------------
     //计划保存
     getPlanSave() {
       var picker = this.picker.split('-')
@@ -1546,53 +1857,6 @@ export default {
         })
         .catch(err => {})
     },
-    //目标列表
-    getinspectPointPage() {
-      var list = {
-        id: this.planList1.id
-      }
-      targetPage(list).then(res => {
-        var arr = res.data.data
-        if (arr.length > 0) {
-          for (let a = 0; a < arr.length; a++) {
-            arr[a].taskChoose = []
-            if (arr[a].object.code != 'river') {
-              arr[a].latlng = arr[a].coordinate
-            } else {
-              arr[a].latlng = arr[a].region
-            }
-            arr[a].taskPage = []
-            arr[a].clicked = false
-            arr[a].code = arr[a].object.code
-            var data = {
-              id: this.planList1.id,
-              object: arr[a].object.code,
-              objectId: arr[a].objectId,
-              projectId: this.$store.state.id
-            }
-            taskInspectPage(data).then(res => {
-              var ar = res.data.data
-              ar.forEach(v => {
-                v.key = v.id
-                v.title = v.name
-                v.latlng = v.region[0]
-                v.code = v.status.code
-                if (v.status.code != 'hold') {
-                  arr[a].taskChoose.push(v.id)
-                } else {
-                  v.clicked = false
-                }
-                console.log(v.clicked)
-              })
-              arr[a].taskPage = ar
-            })
-          }
-          console.log(arr)
-          this.riverMontion = arr
-          this.judgeDate(arr)
-        }
-      })
-    },
     //调查点保存
     handleOk() {
       if (this.inspectPointId == true) {
@@ -1603,7 +1867,7 @@ export default {
           planId: this.planList1.id,
           name: '',
           coordinate: this.lng + ',' + this.lat,
-          radius: '1000',
+          radius: '4',
           fromTaskId: this.taskId
         }
         inspectPointSave(data).then(res => {
@@ -1615,7 +1879,7 @@ export default {
             object: 'point',
             objectId: arr.id,
             objectName: arr.name,
-            coordinate: this.lng + ',' + this.lat
+            // coordinate: this.lng + ',' + this.lat
           }
           targetSave(ar).then(res => {
             console.log(res.data)
@@ -1654,50 +1918,47 @@ export default {
           this.$message.error(err.response.data.message)
         })
     },
+    //当日计划显示河道调查点
     choosePointTask1(id) {
-      console.log(id)
       for (const item of this.planListPage) {
         for (const a of item.teams) {
           for (const b of a.targets) {
             if (b.target.id == id) {
-              console.log(b.id)
-              b.clicked = true
 
-              if (b.code == 'point') {
-                console.log(item.latlng)
+              b.clicked = true
+              if (b.code == "point") {
+                let arr = []
+                arr.push(b.latlng)
+                this.map.setViewport(arr)
+              }else{
                 this.map.setViewport(b.latlng)
               }
-              if (item.code == 'river') {
-                this.drawAllRiver(item)
-              }
+              this.map.setZoom('14')
             } else {
               b.clicked = false
             }
           }
         }
-        this.judgeDate1(id)
       }
+      this.planDayDraw()
     },
     choosePointTask(id) {
-      console.log(id)
       for (const item of this.riverMontion) {
         if (item.id === id) {
+          if (item.code == "point") {
+            let arr = []
+            arr.push(item.latlng)
+            this.map.setViewport(arr)
+          }else{
+            this.map.setViewport(item.latlng)
+          }
+          this.map.setZoom('14')
           item.clicked = true
-          // let arr = []
-          // arr.push(item.latlng)
-          this.map.setViewport(item.latlng)
-          // if (item.code == 'point') {
-          //   console.log(item.latlng)
-          //   this.showSurverPoint(item)
-          // }
-          // if (item.code == 'river') {
-          //   this.drawAllRiver(item)
-          // }
         } else {
           item.clicked = false
         }
-        this.judgeDate()
       }
+      this.judgeDate() 
     },
     allPointTask(arr) {
       this.map.clearOverLays()
@@ -1709,6 +1970,7 @@ export default {
     drawAllRiver(arr) {
       if (arr.clicked == true) {
         this.setPolylineFn(arr.latlng, 'red', 3, 1, 0, arr.objectName, arr.id)
+        this.pointTarget(arr.taskPage)
       } else {
         this.setPolylineFn(arr.latlng, 'blue', 3, 1, 0, arr.objectName, arr.id)
       }
@@ -1820,11 +2082,14 @@ export default {
     },
     //选中添加河道或今日计划面板
     onTabChange(key, type) {
+      console.log(key);
       this[type] = key
       if (key == 'addPlan') {
         this.ishidden = 1
+        this.judgeDate()
       }
       if (key == 'nowPlan') {
+        this.planDayDraw()
         // //判断子节点
         // var sutree = this.sutreeData
         // console.log(this.sutreeData.length)
@@ -1845,6 +2110,8 @@ export default {
       }
     },
     onsuperChange(key, type) {
+      
+      
       this[type] = key
       if (key == 'taskCard') {
         this.loadPoint()
@@ -1864,8 +2131,8 @@ export default {
     },
     //日期选择
     selectData(date) {
+       this.map.clearOverLays()//将之前绘制的清除
       this.riverMontion = []
-      console.log(date, this.picker)
       this.getPage()
       this.getPlanSave()
     },
@@ -1914,8 +2181,6 @@ export default {
       // this.$refs.planList.getstaffInspectPage(this.planList1.id)
     },
     showPlanJudge(list) {
-      console.log(list)
-
       if (list.lenght != 0) {
         for (let i = 0; i < list.length; i++) {
           if (list[i].taskList.length != 0) {
@@ -1928,13 +2193,6 @@ export default {
             }
           }
         }
-        // for (const item of list) {
-        //   if (item.taskList.length !=0) {
-
-        //   }else{
-        //     this.$message.warning('请往分组添加调查点或河道');
-        //   }
-        // }
       } else {
         this.$message.warning('请先创建分组')
       }
@@ -1985,8 +2243,6 @@ export default {
     },
     searchItme(id) {
       this.$refs.situtionInfo.show(id)
-      // console.log(e.key)
-      // console.log('选中查看按钮' + val)
     },
     //今日计划模块修改时间
     updateTime() {
@@ -2013,17 +2269,17 @@ export default {
       // arrInfo.clicked = false
       // console.log(arrInfo)
       // this.drawOneRiver(arrInfo)
-      var reh = ''
-      for (const item of this.asasd.region) {
-        reh = reh + item.lng + ',' + item.lat + '|'
-      }
+      // var reh = ''
+      // for (const item of this.asasd.region) {
+      //   reh = reh + item.lng + ',' + item.lat + '|'
+      // }
       var ar = {
         id: '',
         planId: this.planList1.id,
         object: 'river',
         objectId: this.asasd.id,
         objectName: this.asasd.name,
-        region: reh
+        // region: reh
       }
       targetSave(ar).then(res => {
         this.$message.success('成功')
@@ -2072,29 +2328,6 @@ export default {
           }
         }
       }
-      // for (var i = 0; i < this.personInfo.length; i++) {
-      //   var item = this.personInfo[i]
-      //   if (this.isExistInArr(vals, item.id)) {
-      //     //当前节点被选中
-      //     //判断当前节点是否已经存在于地图上
-      //     if (!this.mapMarkers.has(item.id)) {
-      //       //new一个marker，并以键值形式存储，以备后续操作
-      //       var lnglat = new T.LngLat(item.point.lng, item.point.lat)
-      //       var marker = new T.Marker(lnglat)
-      //       this.map.addOverLay(marker)
-      //       //存放当前marker
-      //       this.mapMarkers.set(item.id, marker)
-      //     }
-      //   } else {
-      //     //当前节点被取消勾选
-      //     if (this.mapMarkers.has(item.id)) {
-      //       //从地图删除
-      //       this.map.removeOverLay(this.mapMarkers.get(item.id))
-      //       //同时从暂存的mapMarkers中删除
-      //       this.mapMarkers.delete(item.id)
-      //     }
-      //   }
-      // }
       console.log('当前markers=================：', this.mapMarkers.keys())
       console.log('当前markers000000000000000000：', this.mapMarkers.values())
     },
@@ -2304,9 +2537,6 @@ export default {
       this.drawRiver()
       this.$refs.selectPatrol.show(this.riverList)
       this.$refs.addSurvey.close()
-      // //描绘河道
-      // this.searchMap()
-      // this.addTaskPoint();
     },
     asdasdsadsa() {
       this.$refs.waterquality.add()
@@ -2314,17 +2544,15 @@ export default {
     //添加任务点
     addTaskPoint(riverData) {
       console.log(riverData)
-
-      if (riverData.region != undefined) {
+      if (riverData.region.length != undefined) {
         for (var i = 0; i < riverData.region.length; i++) {
           var lnglat = new T.LngLat(riverData.region[i].lng, riverData.region[i].lat)
           var marker = new T.Marker(lnglat)
-          this.map.addOverLay(marker)
-          // marker.addEventListener('mouseover', this.mouseOverTask)
-          // marker.addEventListener('mousedown', this.mouseOverTask)
           this.showPosition(marker, riverData)
         }
       } else {
+        console.log(riverData.lng, riverData.lat);
+        
         var lnglat = new T.LngLat(riverData.lng, riverData.lat)
         var marker = new T.Marker(lnglat)
         this.map.addOverLay(marker)
@@ -2387,6 +2615,8 @@ export default {
     },
     //河道计划点击事件
     onSelect(selectedKeys, info) {
+      console.log(selectedKeys, info);
+      
       this.selectedKeys = selectedKeys
       this.treeinfo = info.node.dataRef
       var info = info.node.dataRef
@@ -2432,6 +2662,7 @@ export default {
     },
     //添加调查点
     addSurveyPoint() {
+      this.map.clearOverLays()//将之前绘制的清除
       this.addSurveyPoints()
     },
     // 添加调查点
@@ -2448,7 +2679,7 @@ export default {
     // 添加调查点后
     addPointed(e) {
       console.log(e)
-      let circle = new T.Circle(e.currentLnglat, 1000, {
+      let circle = new T.Circle(e.currentLnglat, 2000, {
         color: 'blue',
         weight: 2,
         opacity: 0.5,
@@ -2459,15 +2690,20 @@ export default {
       circle.disableEdit()
       this.map.addOverLay(circle)
       this.inspectVisible = true
-      this.$refs.selectPatrol.close()
-      this.$refs.addSurvey.show()
-      // var data = {
-      //   coordinate: e.currentLnglat.lng + ',' + e.currentLnglat.lat,
-      //   radius: '1000'
-      // }
-      // taskSpotList(data).then(res => {
-      //   console.log(res, '周围的点')
-      // })
+      this.lat = e.currentLnglat.lat
+      this.lng = e.currentLnglat.lng
+      var data = {
+        coordinate: e.currentLnglat.lng + ',' + e.currentLnglat.lat,
+        radius: '2'
+      }
+      taskSpotList(data).then(res => {
+        console.log(res.data, '周围的点')
+        var arr = res.data
+        arr.forEach(v => {
+          v.latlng =v.coordinate
+        });
+        this.pointTarget(arr)
+      })
     },
     //画点
     addPoint(clickPoint) {

@@ -10,15 +10,14 @@
             <a-button shape="circle" icon="search" class="searchRiverBtn"/> -->
             <a-select
                 showSearch
+                mode="multiple"
                 :value="value"
                 placeholder="请选择"
                 style="width: 90%"
-                :showArrow="false"
-                :defaultActiveFirstOption="false"
-                :filterOption="false"
+                :allowClear="true"
+                :filterOption="filterOption"
                 @search="handleSearch"
                 @change="handleChange"
-                :notFoundContent="null"
             >
                 <!-- <a-spin v-if="loading" size="small" /> -->
                 <a-select-option v-for="d in riverList" :key="d.id">{{d.name}}</a-select-option>
@@ -52,17 +51,25 @@ export default {
             this.visible = false;
         },
         searchRiver(value){
-            console.log(value);
             this.visible = false;
+        },
+        filterOption(input, option) {
+            return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
         },
         handleSearch(value) {
             console.log('fetching user', value);
             this.riverData = this.riverData;
         },
         handleChange(id) {
-            console.log(name);
-            
-            this.$parent.$parent.$parent.chooseRiver(id)
+            this.riverList.forEach(value => { 
+                if (value.id == id) {
+                    value.clicked = true
+                    this.$parent.$parent.$parent.chooseRiver(id)
+                } else {
+                    value.clicked = false
+                }
+            })
+           
             // this.riverData = this.riverData;
         }
     }
