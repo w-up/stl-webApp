@@ -4,22 +4,25 @@
             <div>外勤反馈</div>
             <!-- <span style="background-color:#EBF5FF;border:1px solid #e8e8e8;border-radius: 50%;padding:8px 10px;">张</span> -->
         </template>
-        <div>
+        <div style="margin-top:20px;border-top:1px solid #e8e8e8;" v-for="item in list" :key="item.id">
             <div class="header">
                 <a-row>
                     <a-col :span="8">
-                        <span style="background-color:#EBF5FF;border:1px solid #e8e8e8;border-radius: 50%;padding:8px 10px;">张</span>
+                        <span style="background-color:#EBF5FF;border:1px solid #e8e8e8;border-radius: 50%;padding:8px 10px;">{{item.creator.name}}</span>
                     </a-col>
                     <a-col :span="16" class="nowdate">
-                        <div>2019-9-9 15:00</div>
+                        <div>{{item.date}}</div>
                     </a-col>
                 </a-row>
             </div>
+            <div class="header">{{item.remark}}</div>
             <div class="player">
-                <video-player class="video-player vjs-custom-skin" ref="videoPlayer" :options="playerOptions" :playsinline="true"></video-player>
+                <!-- <video-player class="video-player vjs-custom-skin" ref="videoPlayer" :options="playerOptions" :playsinline="true"></video-player> -->
+                <img :src="item.media" alt="" style="width:100%">
+                <!-- <audio src="https://www.w3school.com.cn/i/horse.ogg" controls="controls"></audio> -->
             </div>
         </div>
-        <div style="margin-top:20px;border-top:1px solid #e8e8e8;">
+        <!-- <div style="margin-top:20px;border-top:1px solid #e8e8e8;">
             <div class="header">
                 <a-row>
                     <a-col :span="8">
@@ -33,11 +36,11 @@
             <div class="audio">
                 <audio src="https://www.w3school.com.cn/i/horse.ogg" controls="controls"></audio>
             </div>
-        </div> 
+        </div>  -->
     </a-modal>
 </template>
 <script>
-import { dataDetails} from '@/api/login'
+import { dataManual} from '@/api/login'
 export default {
     name:'',
     data(){
@@ -57,7 +60,8 @@ export default {
                     // src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
                 }],
                 poster: "https://surmon-china.github.io/vue-quill-editor/static/images/surmon-1.jpg",
-            }
+            },
+            list:[]
         }
     },
      mounted(){
@@ -72,15 +76,28 @@ export default {
         }
     },
     methods:{
-        show(index){
-            dataDetails(index.target.options.id).then(res=>{
-                console.log(res);
+        show(index,picker){
+            var data = {
+                projectId: this.$store.state.id,
+                coordinate:index.target.options.coordinate.lng+','+index.target.options.coordinate.lat,
+                radius:'0.05',
+                // year: '2019',
+                // month: '11',
+                // day: '28'
+                year: picker[0],
+                month: picker[1],
+                day: picker[2]
+            }            
+            dataManual(data).then(res=>{
+                let arr = res.data.data
+                this.list = arr
             })
             
             
             this.visible = true;
         },
         cmtHandle(){
+            this.list = []
             this.visible = false;
         }
     }

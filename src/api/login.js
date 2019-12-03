@@ -723,12 +723,17 @@ export function memberRiverSave(data) {
 }
 //监管
 //人工数据分页
-export function dataManual(projectId) {
+export function dataManual(data) {
   return axios({
     url: '/server/data/admin/regulator/manual/data/page',
     method: 'get',
-    data:{
-      projectId:projectId
+    params:{
+      projectId:data.projectId,
+      year:data.year,
+      month:data.month,
+      coordinate:data.coordinate,
+      radius:data.radius,
+      day:data.day
     }
   })
 }

@@ -256,7 +256,7 @@ export default {
         minMouthWidth:'',
         mouthDimension:'',
         normalWaterLevel:'',
-        
+        inspectTimes:''
       },
       coordinate:[],
       labelCol: {

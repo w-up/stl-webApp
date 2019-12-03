@@ -627,9 +627,7 @@
                                 <template slot="header">
                                   <a-row type="flex" justify="space-between" align="middle">
                                     <a-col :span="16">
-                                      <div
-                                        @click="choosePointTask1(targetId.target.id)"
-                                      >{{targetId.target.objectName}}</div>
+                                      <div>{{targetId.target.objectName}}</div>
                                     </a-col>
                                     <a-col :span="8">
                                       <a-popconfirm
@@ -1586,23 +1584,28 @@ export default {
           k = k + 1
           item.plan.name = item.plan.name.slice(0, 2) + '-' + k
           for (const a of item.teams) {
-            for (const b of a.targets) {
-              b.clicked = false
-              b.code = b.target.object.code
-              if (b.target.object.code == 'point') {
-                b.latlng = b.target.coordinate
-              } else {
-                b.latlng = b.target.region
-              }
-              for (const c of b.incomplete) {
-                c.key = c.id
-                c.title = c.name
-                c.latlng = c.region[0]
-                c.scopedSlots = {
-                  title: 'custom'
+            if (a.targets != undefined) {
+              for (const b of a.targets) {
+                b.clicked = false
+                b.code = b.target.object.code
+                if (b.target.object.code == 'point') {
+                  b.latlng = b.target.coordinate
+                } else {
+                  b.latlng = b.target.region
+                }
+                for (const c of b.incomplete) {
+                  c.key = c.id
+                  c.title = c.name
+                  c.latlng = c.region[0]
+                  c.scopedSlots = {
+                    title: 'custom'
+                  }
                 }
               }
+            }else{
+              a.targets=[]
             }
+            
           }
         }
         this.planListPage = arr
@@ -1624,6 +1627,8 @@ export default {
     //当日计划绘制
     planDayDraw(){
       this.map.clearOverLays()//将之前绘制的清除
+      console.log('1');
+      
       for (const item of this.planListPage) {
         for (const a of item.teams) {
           for (const b of a.targets) {
@@ -2109,9 +2114,7 @@ export default {
         }
       }
     },
-    onsuperChange(key, type) {
-      
-      
+    onsuperChange(key, type) {  
       this[type] = key
       if (key == 'taskCard') {
         this.loadPoint()
@@ -2131,10 +2134,15 @@ export default {
     },
     //日期选择
     selectData(date) {
-       this.map.clearOverLays()//将之前绘制的清除
+      this.map.clearOverLays()//将之前绘制的清除
       this.riverMontion = []
-      this.getPage()
-      this.getPlanSave()
+      if (this.firstShow == true) {
+        this.getPage()
+        this.getPlanSave()
+      }else{
+        this.loadPoint()
+      }
+      
     },
     //选中巡河方案
     selectPatrol() {},
@@ -2226,12 +2234,7 @@ export default {
     },
     //今日计划模块监管按钮
     supervision_btn(key) {
-      this.planListPage1 = []
-      for (const item of this.planListPage) {
-        if (item.plan.id == key) {
-          this.planListPage1.push(item)
-        }
-      }
+      this.map.clearOverLays()//将之前绘制的清除
       this.firstShow = !this.firstShow
       if (this.firstShow == false) {
         this.ishidden = 4
@@ -2463,22 +2466,31 @@ export default {
     //任务模块任务点
     loadPoint() {
       //随机标注点
-      var bounds = this.map.getBounds()
-      var sw = bounds.getSouthWest()
-      var ne = bounds.getNorthEast()
-      var lngSpan = Math.abs(sw.lng - ne.lng)
-      var latSpan = Math.abs(ne.lat - sw.lat)
-      dataManual(this.$store.state.id).then(res => {
+      var picker = this.picker.split('-')
+      var data = {
+        id: '',
+        projectId: this.$store.state.id,
+        name: '',
+        // year: '2019',
+        // month: '11',
+        // day: '28'
+        year: picker[0],
+        month: picker[1],
+        day: picker[2]
+      }
+      dataManual(data).then(res => {
         var arr = res.data.data
+        console.log(arr);
         for (const item of arr) {
-          var marker = new T.Marker(item.coordinate, { id: item.id })
+          var marker = new T.Marker(item.coordinate, { id: item.id ,coordinate: item.coordinate})
           this.map.addOverLay(marker)
           marker.addEventListener('click', this.taskPointClick)
         }
       })
     },
     taskPointClick(index) {
-      this.$refs.communication.show(index)
+
+      this.$refs.communication.show(index,this.picker.split('-'))
     },
     //车辆轴迹
     cardTrack() {
