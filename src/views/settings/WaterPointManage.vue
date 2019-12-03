@@ -16,7 +16,9 @@
       </div>
     </div>
     <div class="right">
-      <h3 style="font-size: 16px; font-weight: 600; margin:10px 0 0 10px; text-align:center;">水质监测点管理</h3>
+      <h3
+        style="font-size: 16px; font-weight: 600; margin:10px 0 0 10px; text-align:center;"
+      >水质监测点管理</h3>
       <a-divider style="margin: 10px 0 0;" />
       <div style="padding: 0 10px">
         <a-tabs defaultActiveKey="1" @change="callback" v-model="actionTab" class="custom_tabs">
@@ -27,7 +29,7 @@
                   slot="renderItem"
                   slot-scope="item, index"
                   :key="index"
-                   @click="fixedPoint(item.name)"
+                  @click="fixedPoint(item.name, item.id)"
                   :class="{active_item: item.clicked}"
                 >
                   <a-row style="width:100%">
@@ -55,7 +57,7 @@
                   slot="renderItem"
                   slot-scope="item, index"
                   :key="index"
-                  @click="peoplePoint(item.name)"
+                  @click="peoplePoint(item.name, item.id)"
                   :class="{active_item: item.clicked}"
                 >
                   <a-row style="width:100%">
@@ -131,9 +133,9 @@ export default {
   methods: {
     //固定监测分页
     getFixedList() {
-      var data ={
-        id:'fixed',
-        prid:this.$store.state.id,
+      var data = {
+        id: 'fixed',
+        prid: this.$store.state.id
       }
       testingPage(data)
         .then(res => {
@@ -151,9 +153,9 @@ export default {
     },
     //人工监测分页
     getManualList() {
-      var data ={
-        id:'manual',
-        prid:this.$store.state.id,
+      var data = {
+        id: 'manual',
+        prid: this.$store.state.id
       }
       testingPage(data)
         .then(res => {
@@ -176,22 +178,33 @@ export default {
     allPointTask(pointLists) {
       this.map.clearOverLays()
       for (const item of pointLists) {
-        this.drawAllPoint(item.latlng)
+        this.drawAllPoint(item.latlng, item.id, item.name)
       }
     },
     // 添加标注图片
-    drawAllPoint(latlng) {
-      let marker = new T.Marker(latlng)
+    drawAllPoint(latlng, id, title) {
+      let iconUrl
+      if (this.actionTab == 1) {
+        iconUrl = require('../../assets/img/fixedIcon.png')
+      } else {
+        iconUrl = require('../../assets/img/peopleIcon.png')
+      }
+      let icon = new T.Icon({
+        iconUrl: iconUrl,
+        iconSize: new T.Point(41, 40),
+        iconAnchor: new T.Point(21, 40)
+      })
+      let marker = new T.Marker(latlng, { icon: icon , id: id, title: title})
       this.map.addOverLay(marker)
       marker.addEventListener('click', this.taskPointClick)
       marker.addEventListener('mouseover', this.taskPointMouse)
       marker.addEventListener('mouseout	', this.taskPointMouse)
     },
     // 任务点点击移入移出事件
-    taskPointMouse(index) {
+    taskPointMouse(e) {
       if (this.actionTab == 1) {
         for (const item of this.fixedPointList) {
-          if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+          if (e.target.options.id === item.id) {
             item.clicked = true
           } else {
             item.clicked = false
@@ -199,7 +212,7 @@ export default {
         }
       } else {
         for (const item of this.peoplePointList) {
-          if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+          if (e.target.options.id === item.id) {
             item.clicked = true
           } else {
             item.clicked = false
@@ -208,12 +221,10 @@ export default {
       }
     },
     // 任务点点击事件
-    taskPointClick(index) {
-      // console.log(index)
-      // this.$refs.addWaterPoint.add()
+    taskPointClick(e) {
       if (this.actionTab == 1) {
         for (const item of this.fixedPointList) {
-          if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+          if (e.target.options.id === item.id) {
             item.clicked = true
             this.pointInfo = item
             this.$refs.addWaterPoint.add1(item.id)
@@ -223,7 +234,7 @@ export default {
         }
       } else {
         for (const item of this.peoplePointList) {
-          if (index.lnglat.lat === item.latlng.lat && index.lnglat.lng === item.latlng.lng) {
+          if (e.target.options.id === item.id) {
             item.clicked = true
             this.$refs.addWaterPoint.add1(item.id)
             this.pointInfo = item
@@ -233,14 +244,36 @@ export default {
         }
       }
     },
-    // 注册添加点击事件
-    addTaskPoint() {
-      this.markerTool.open()
-      this.markerTool.getMarkers()
-      this.markerTool.addEventListener('mouseup', this.addTaskPointed)
+    // 注册添加固定监测点击事件
+    addTaskFixedPoint() {
+      let icon = new T.Icon({
+        iconUrl: require('../../assets/img/fixedIcon.png'),
+        iconSize: new T.Point(41, 40),
+        iconAnchor: new T.Point(21, 40)
+      })
+      let markerTool = new T.MarkTool(this.map, { icon: icon, follow: true })
+      markerTool.open()
+      markerTool.getMarkers()
+      markerTool.addEventListener('mouseup', this.addTaskFixedPointed)
+    },
+    addTaskFixedPointed(e) {
+      this.$refs.addWaterPoint.add(e.currentLnglat, this.type)
+      console.log(e)
+    },
+    // 注册添加固定监测点击事件
+    addTaskPeoplePoint() {
+      let icon = new T.Icon({
+        iconUrl: require('../../assets/img/peopleIcon.png'),
+        iconSize: new T.Point(41, 40),
+        iconAnchor: new T.Point(21, 40)
+      })
+      let markerTool = new T.MarkTool(this.map, { icon: icon, follow: true })
+      markerTool.open()
+      markerTool.getMarkers()
+      markerTool.addEventListener('mouseup', this.addTaskPeoplePointed)
     },
     // 返回标注点的坐标
-    addTaskPointed(e) {
+    addTaskPeoplePointed(e) {
       this.$refs.addWaterPoint.add(e.currentLnglat, this.type)
       console.log(e)
     },
@@ -270,10 +303,10 @@ export default {
       console.log(`checked = ${e.target.checked}`)
     },
     // 固定监测点
-    fixedPoint(index) {
+    fixedPoint(index, id) {
       this.defaultRiver = index
       this.fixedPointList.forEach(value => {
-        if (value.name === index) {
+        if (value.id === id) {
           value.clicked = true
           let arr = []
           arr.push(value.latlng)
@@ -284,10 +317,10 @@ export default {
       })
     },
     // 人工监测点
-    peoplePoint(index) {
+    peoplePoint(index, id) {
       this.defaultRiver = index
       this.peoplePointList.forEach(value => {
-        if (value.name === index) {
+        if (value.id === id) {
           value.clicked = true
           let arr = []
           arr.push(value.latlng)
@@ -297,7 +330,6 @@ export default {
         }
       })
     },
-    
     del(index) {
       testingDel(index)
         .then(res => {
@@ -310,29 +342,15 @@ export default {
         })
         .catch(err => {})
     },
-    // 人工监测点
-    peoplePoint(index) {
-      this.defaultRiver = index
-      this.peoplePointList.forEach(value => {
-        if (value.name === index) {
-          value.clicked = true
-          let arr = []
-          arr.push(value.latlng)
-          this.map.setViewport(arr)
-        } else {
-          value.clicked = false
-        }
-      })
-    },
     cancelDelete(e) {
       // this.$message.error('Click on No')
     },
     // 添加任务按钮
     addTask() {
       if (this.actionTab == 1) {
-        this.addTaskPoint()
+        this.addTaskFixedPoint()
       } else {
-        this.addTaskPoint()
+        this.addTaskPeoplePoint()
       }
     }
   }
