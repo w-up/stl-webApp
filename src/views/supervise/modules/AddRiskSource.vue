@@ -139,11 +139,11 @@
           <a-col :span="12">
             <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="类别">
               <a-select  :allowClear="true" placeholder="选择风险源类别"  @change="typeChange" v-model="list.type">
-                <a-select-option value="soil_erosion">水土流失</a-select-option>
-                <a-select-option value="surface_ratio">水面率</a-select-option>
+                <a-select-option :value="item.id" v-for="item in typeList" :key="item.id">{{item.name}}</a-select-option>
+                <!-- <a-select-option value="surface_ratio">水面率</a-select-option>
                 <a-select-option value="bank_risk">河岸风险</a-select-option>
                 <a-select-option value="surface_flotage">水面漂浮物</a-select-option>
-                <a-select-option value="bottom_sediment">底泥</a-select-option>
+                <a-select-option value="bottom_sediment">底泥</a-select-option> -->
               </a-select>
             </a-form-item>
           </a-col>
@@ -247,7 +247,7 @@ import moment from 'moment'
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { mapdrawDetail,getRiverList,getStreetList,informationStreet,informationRiver,riskInner,mapdrawRiskSave} from '@/api/login'
+import { mapdrawDetail,getRiverList,getStreetList,informationStreet,informationRiver,riskInner,mapdrawRiskSave,paramList} from '@/api/login'
 export default {
   data() {
     return {
@@ -282,6 +282,7 @@ export default {
         statement:'',
         drawId:'',
       },
+      typeList:[],
       headers: {
         Authorization: '',
         'X-TENANT-ID': 'jl:jlgis@2019' 
@@ -348,12 +349,20 @@ export default {
       getStreetList(this.$store.state.id).then(res=>{
         this.streetList = res.data.data
       })
+      let data = {
+        type:'risk_source_type'
+      }
+      paramList(data).then(res=>{
+        console.log(res.data.data);
+        
+        this.typeList = res.data
+      })
     },
     typeChange(value,option){
       if (this.list.riverId!='') {
         let data={
           riverId:this.list.riverId,
-          type:value
+          typeId:value
         }
         riskInner(data).then(res=>{
           this.list.innerCode = res.data.innerCode
