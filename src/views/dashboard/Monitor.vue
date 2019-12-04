@@ -825,30 +825,30 @@
     <communication ref="communication"></communication>
 
     <!-- 河道信息弹框 -->
-    <a-modal :visible="infoVisible" :closable="false" :mask="false" :width="400" class="cmModal">
+    <a-modal :visible="infoVisible" :closable="false" :mask="false" :width="400" class="cmModal"
+      @ok="showOk"
+      :confirmLoading="confirmLoading"
+      @cancel="showCancel"
+      >
       <template slot="title">
         <span>河道信息</span>
       </template>
       <div>
         <p>河道名称：{{asasd.name}} {{asasd.objectName}}</p>
       </div>
-      <template slot="footer">
-        <a-button key @click="showCancel">取消</a-button>
-        <a-button key="submit" type="primary" @click="showOk">添加</a-button>
-      </template>
     </a-modal>
     <!-- 推荐巡河方案 -->
-    <a-modal :visible="infoVisibleRecommend" :closable="false" :mask="false" :width="400" class="cmModal">
+    <a-modal :visible="infoVisibleRecommend" :closable="false" :mask="false" :width="400" class="cmModal"
+      @ok="recommendOk"
+      :confirmLoading="confirmLoading"
+      @cancel="recommendCancel"
+    >
       <template slot="title">
         <span>河道信息</span>
       </template>
       <div>
         <p>河道名称：{{recommend.name}}</p>
       </div>
-      <template slot="footer">
-        <a-button key @click="recommendCancel">取消</a-button>
-        <a-button key="submit" type="primary" @click="recommendOk">添加</a-button>
-      </template>
     </a-modal>
     <!-- 添加调查点信息弹框 -->
     <a-modal
@@ -857,6 +857,7 @@
       :mask="false"
       :width="400"
       @ok="handleOk"
+      :confirmLoading="confirmLoading"
       @cancel="handleCancel"
      >
       <template slot="title">
@@ -1071,6 +1072,7 @@ export default {
   },
   data() {
     return {
+      confirmLoading:false,
       hidingJudgment: true, //计划显示方案
       hidingJudgment1: true,
       regulatoryPage: [], //监管列表
@@ -1349,6 +1351,7 @@ export default {
       this.infoVisibleRecommend = true
     },
     recommendOk() {
+      this.confirmLoading = true;
       var ar = {
         id: '',
         planId: this.planList1.id,
@@ -1358,7 +1361,11 @@ export default {
       }
       targetSave(ar).then(res => {
         this.$message.success('成功')
+        this.confirmLoading = false;
         this.recommendCancel()
+      }).catch(err => {
+        this.confirmLoading = false;
+        this.$message.error(err.response.data.message)
       })
     },
     recommendCancel(){
@@ -1421,7 +1428,7 @@ export default {
                   v.clicked = false
                 }  
                 for (const hh of v.children) {
-                  hh.key = hh.name
+                  hh.key = hh.id
                   hh.title = hh.name
                   
                 }      
@@ -1969,6 +1976,7 @@ export default {
       if (this.inspectPointId == true) {
         this.handleCancel()
       } else {
+        this.confirmLoading = true;
         var data = {
           id: '',
           planId: this.planList1.id,
@@ -1989,8 +1997,11 @@ export default {
             // coordinate: this.lng + ',' + this.lat
           }
           targetSave(ar).then(res => {
-            console.log(res.data)
+            this.confirmLoading = false;
             this.handleCancel()
+          }).catch(err => {
+            this.confirmLoading = false;
+            this.$message.error(err.response.data.message)
           })
           // this.getinspectPointPage()
         })
@@ -2369,7 +2380,6 @@ export default {
       this.$refs.creatGroup.planGeneration(id)
     },
     showOk() {
-      this.infoVisible = false
       // var arrInfo =  this.asasd
       // arrInfo.clicked = false
       // console.log(arrInfo)
@@ -2378,6 +2388,7 @@ export default {
       // for (const item of this.asasd.region) {
       //   reh = reh + item.lng + ',' + item.lat + '|'
       // }
+      this.confirmLoading = true;
       var ar = {
         id: '',
         planId: this.planList1.id,
@@ -2389,7 +2400,11 @@ export default {
         this.$message.success('成功')
         console.log(res.data)
         this.infoVisible = false
+        this.confirmLoading = false;
         this.handleCancel()
+      }).catch(err => {
+        this.confirmLoading = false;
+        this.$message.error(err.response.data.message)
       })
     },
     showCancel() {
