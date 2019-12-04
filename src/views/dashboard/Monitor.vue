@@ -408,12 +408,14 @@
                       :selectedKeys="selectedKeys"
                       :treeData="item.taskPage"
                     ></a-tree>
+                    <div  v-show="hidingJudgment2">
                     <a-button
                       class="addTask_btn commBtn"
                       icon="plus"
                       @click="addTaskBtn(item.objectId,item.objectName,item.code)"
                       v-show="cBtn"
                     >追加任务</a-button>
+                    </div>
                     <add-task
                       ref="addTask"
                       @chooseLocation="addLineTool"
@@ -434,6 +436,7 @@
               </div>
               <!-- 今日计划 -->
               <div v-if="noTitleKey === 'nowPlan'">
+                <a-spin size="large" :spinning="spinning">
                 <a-collapse
                   v-model="activePlanKey"
                   class="active_plan"
@@ -532,7 +535,7 @@
                                     ></a-tree>
                                   </div>
                                 </div>
-                                <div class="addTaskBtn">
+                                <div class="addTaskBtn"  v-show="hidingJudgment2">
                                   <!-- <a-button class="addTask_btn" icon="plus" @click="addNewTask">追加任务</a-button> -->
                                   <a-button
                                     class="addTask_btn commBtn"
@@ -572,6 +575,7 @@
                     </div>
                   </a-collapse-panel>
                 </a-collapse>
+                </a-spin>
               </div>
             </a-card>
             <a-card
@@ -1361,7 +1365,7 @@ export default {
       }
       targetSave(ar).then(res => {
         this.$message.success('成功')
-        this.confirmLoading = false;
+        
         this.recommendCancel()
       }).catch(err => {
         this.confirmLoading = false;
@@ -1372,6 +1376,7 @@ export default {
       this.infoVisibleRecommend = false
       this.recommend.id=''
       this.recommend.name = ''
+      this.confirmLoading = false;
       this.getinspectPointPage()
     },
     //-----------------------------------------------推荐巡河方案*-------------------------------------------------------
@@ -1468,8 +1473,6 @@ export default {
     },
     //绘制目标调查点
     renderingTarget(task){
-      console.log(task);
-      
       let icon = new T.Icon({
         iconUrl: 'http://api.tianditu.gov.cn/img/map/markerA.png',
         iconSize: new T.Point(19, 27),
@@ -1506,6 +1509,11 @@ export default {
     pointTarget(taskPage){
       for(const item of taskPage){
         if(item.type.code =='dot'){
+          for(const hh of item.children){
+            let markerTool = new T.Marker(hh.coordinate, { title: hh.name, id: hh.id })
+            this.map.addOverLay(markerTool)
+          }
+        }else if(item.type.code =="plan"){
           for(const hh of item.children){
             let markerTool = new T.Marker(hh.coordinate, { title: hh.name, id: hh.id })
             this.map.addOverLay(markerTool)
@@ -1653,6 +1661,7 @@ export default {
         this.spotTaskList = arr
       })
     },
+    
     //--------------------------------------------------------------------------------------------当日计划---------------------------------------
     //计划列表
     getPage() {
@@ -1663,6 +1672,12 @@ export default {
         year: picker[0],
         month: picker[1],
         day: picker[2]
+      }
+      function formatDate(now) { 
+        var year=now.getFullYear();  //取得4位数的年份
+        var month=now.getMonth()+1;  //取得日期中的月份，其中0表示1月，11表示12月
+        var date=now.getDate();      //返回日期月份中的天数（1到31）
+        return year+"-"+month+"-"+date
       }
       function tab(date1) {
         var oDate1 = new Date(date1)
@@ -1676,14 +1691,24 @@ export default {
       function tab1(date1) {
         var oDate1 = new Date(date1)
         var oDate2 = new Date()
-        if (oDate1.getTime() > oDate2.getTime()) {
+        if (oDate1.getTime() < oDate2.getTime()) {
           return false
         } else {
           return true
         }
       }
-      var hidingJudgment = tab(this.picker)
+      function tab2(date1,date2) {   
+        var oDate1 = new Date(date1)
+        var oDate2 = new Date(date2)
+        if (oDate1.getTime() >= oDate2.getTime()) {
+          return true 
+        } else {
+          return false
+        }
+      }
+      this.hidingJudgment = tab(this.picker)
       this.hidingJudgment1 = tab1(this.picker)
+      this.hidingJudgment2 = tab2(this.picker,formatDate(new Date()))
       this.planListPage = []
       planPage(data).then(res => {
         var arr = res.data
@@ -2000,7 +2025,7 @@ export default {
             // coordinate: this.lng + ',' + this.lat
           }
           targetSave(ar).then(res => {
-            this.confirmLoading = false;
+            
             this.handleCancel()
           }).catch(err => {
             this.confirmLoading = false;
@@ -2014,6 +2039,7 @@ export default {
     handleCancel() {
       this.getinspectPointPage()
       this.taskId = ''
+      this.confirmLoading = false;
       this.inspectPointId = false
       this.inspectVisible = false
     },
@@ -2250,6 +2276,7 @@ export default {
     },
     //日期选择
     selectData(date) {
+      this.spinning = true
       this.map.clearOverLays()//将之前绘制的清除
       this.riverMontion = []
       if (this.firstShow == true) {
@@ -2334,6 +2361,8 @@ export default {
     },
     //底部返回上一级按钮
     returnPre() {
+      this.getinspectPointPage()
+      this.getPage()
       this.firstShow = true
       this.nosuperKey = 'taskCard'
     },
@@ -2403,7 +2432,6 @@ export default {
         this.$message.success('成功')
         console.log(res.data)
         this.infoVisible = false
-        this.confirmLoading = false;
         this.handleCancel()
       }).catch(err => {
         this.confirmLoading = false;
