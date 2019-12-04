@@ -199,6 +199,7 @@ export default {
                 this.$message.success('成功');
                 this.spinning=true
                 this.$parent.$parent.$parent.$parent.getPage()
+                this.$parent.$parent.$parent.$parent.getinspectPointPage()
                 this.$parent.$parent.$parent.$parent.getNowPlan()
             })
             this.visible = false;

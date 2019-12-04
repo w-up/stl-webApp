@@ -42,11 +42,8 @@
               <p class="left-patrol-title">推荐巡河方案</p>
               <div class="patrol-plan">
                 <!-- <a-tree defaultExpandAll v-model="checkedPlan" @select="selectPatrol" :treeData="patrolPlanInfo"/> -->
-                <a-collapse v-model="activeKey">
-                  <a-collapse-panel header="黄浦江" key="1" style="text-align: left">
-                    <p style="margin:0;">{{text}}</p>
-                  </a-collapse-panel>
-                  <a-collapse-panel header="鸭绿江" key="2" :disabled="false" style="text-align: left">
+                <a-collapse v-model="activeKey" @change="changeCollapse" accordion>
+                  <a-collapse-panel :header="item.river.name"  style="text-align: left" v-for="item in patrolPlanInfo" :key="item.river.id">
                     <p style="margin:0;">{{text}}</p>
                   </a-collapse-panel>
                 </a-collapse>
@@ -365,6 +362,7 @@
             >
               <!-- 新建计划 -->
               <div v-if="noTitleKey === 'addPlan'">
+                <a-spin size="large" :spinning="spinning">
                 <!-- 判断显示内容 -->
                 <div v-if="ishidden == 1">
                   <a-row
@@ -432,6 +430,7 @@
                 <div v-show="ishidden == 3">
                   <plan-list ref="planList"></plan-list>
                 </div>
+                </a-spin>
               </div>
               <!-- 今日计划 -->
               <div v-if="noTitleKey === 'nowPlan'">
@@ -838,6 +837,19 @@
         <a-button key="submit" type="primary" @click="showOk">添加</a-button>
       </template>
     </a-modal>
+    <!-- 推荐巡河方案 -->
+    <a-modal :visible="infoVisibleRecommend" :closable="false" :mask="false" :width="400" class="cmModal">
+      <template slot="title">
+        <span>河道信息</span>
+      </template>
+      <div>
+        <p>河道名称：{{recommend.name}}</p>
+      </div>
+      <template slot="footer">
+        <a-button key @click="recommendCancel">取消</a-button>
+        <a-button key="submit" type="primary" @click="recommendOk">添加</a-button>
+      </template>
+    </a-modal>
     <!-- 添加调查点信息弹框 -->
     <a-modal
       :visible="inspectVisible"
@@ -846,7 +858,7 @@
       :width="400"
       @ok="handleOk"
       @cancel="handleCancel"
-    >
+     >
       <template slot="title">
         <span>调查点编辑/添加</span>
       </template>
@@ -902,7 +914,8 @@ import {
   joinPlanTask,
   dataManual,
   locusManual,
-  inspectTaskDetail
+  inspectTaskDetail,
+  recommendFangan
 } from '@/api/login'
 import 'ol/ol.css'
 // import Map from "ol/Map"
@@ -1093,6 +1106,10 @@ export default {
           tab: '轨迹'
         }
       ],
+      recommend:{
+        name:'',
+        id:'',
+      },//推荐巡河方案内容
       taskPage: [],
       noTitleKey: 'addPlan',
       nosuperKey: 'taskCard',
@@ -1110,7 +1127,7 @@ export default {
       activePlanKey: ['1'],
       activeGroupKey: ['11'],
       activeRiverKey: ['111'],
-      activeKey: ['1'],
+      activeKey: [],
       activeTwo: [],
       personInfo,
       mapType: 'a',
@@ -1131,6 +1148,7 @@ export default {
       markerInfo: '', //任务弹出框
       treenfo: [],
       infoVisible: false,
+      infoVisibleRecommend:false,//推荐训和方案
       firstShow: true,
       childNode: '',
       checked: false,
@@ -1143,6 +1161,7 @@ export default {
       alertLeft: -1000,
       alertTop: -1000,
       alertShow: false,
+      spinning:true,
       defaultLineTask: '',
       riskMapPoints: [
         { id: 0, name: '监测点1', clicked: false, latlng: { lat: 31.23493, lng: 121.51566 } },
@@ -1185,23 +1204,7 @@ export default {
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24315, lng: 121.49606 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.23668, lng: 121.49656 } }
       ],
-      patrolPlanInfo: [
-        {
-          title: '黄浦江',
-          key: '1',
-          children: [{ title: '当前河道方位内出现红色风险源,推荐加入巡查计划', key: '1' }]
-        },
-        {
-          title: '鸭绿江',
-          key: '2',
-          children: [
-            {
-              title: '当前河道预设任务完成度滞后！其中360未完成3个、正射影像线路：A1+B2+C3未执行，推荐加入调查计划',
-              key: '2'
-            }
-          ]
-        }
-      ],
+      patrolPlanInfo: [],
       riverList: [],
       asasd: {}
     }
@@ -1270,6 +1273,7 @@ export default {
     // this.getinspectPointPage()
     this.getList()
     this.getPage()
+    this.getRecommendFangan()
   },
   methods: {
     getplanPageList() {
@@ -1286,6 +1290,84 @@ export default {
         this.planExisting = res.data
       })
     },
+    //-----------------------------------------------推荐巡河方案*-------------------------------------------------------
+    //推荐巡河方案
+    getRecommendFangan(){
+      let picker = this.picker.split('-')
+      let data = {
+        projectId: this.$store.state.id,
+        year: picker[0],
+        month: picker[1],
+        day: picker[2]
+      }
+      recommendFangan(data).then(res=>{
+        console.log(res.data);
+        this.patrolPlanInfo = res.data
+      })
+    },
+    //选择推荐训和方案
+    changeCollapse(key){
+      this.map.clearOverLays()//将之前绘制的清除
+      // 设置绘制的多边形
+      for(const item of this.patrolPlanInfo){
+        if (key == item.river.id) {
+          let polygon = new T.Polygon(item.river.region, {
+            color: 'red', //线颜色
+            weight: '3', //线宽
+            opacity: 0.5, //透明度
+            fillColor: '#FFFFFF', //填充颜色
+            fillOpacity: '0', // 填充透明度
+            title: item.river.name,
+            id: item.river.id
+          })
+          //向地图上添加面
+          this.map.setViewport(item.river.region)
+          this.map.addOverLay(polygon)
+          polygon.addEventListener('click', this.recommendClick)
+          for(const index of item.taskLines){
+            let line = new T.Polyline(index.line, {
+              color: 'blue', //线颜色
+              weight: 3, //线宽
+              opacity: 0.5, //透明度
+              id: index.id,
+              name: index.name
+            })
+            //向地图上添加线
+            this.map.addOverLay(line)
+          }
+          for(const points of item.taskPoints){
+            let markerTool = new T.Marker(points.coordinate, { title: points.name, id: points.id })
+            this.map.addOverLay(markerTool)
+          }
+        }
+      }
+    },
+    //推荐巡河方案点击事件
+    recommendClick(index){
+      this.recommend.id=index.target.options.id
+      this.recommend.name = index.target.options.title
+      this.infoVisibleRecommend = true
+    },
+    recommendOk() {
+      var ar = {
+        id: '',
+        planId: this.planList1.id,
+        object: 'river',
+        objectId: this.recommend.id,
+        objectName: this.recommend.name,
+      }
+      targetSave(ar).then(res => {
+        this.$message.success('成功')
+        this.recommendCancel()
+      })
+    },
+    recommendCancel(){
+      this.infoVisibleRecommend = false
+      this.recommend.id=''
+      this.recommend.name = ''
+      this.getinspectPointPage()
+    },
+    //-----------------------------------------------推荐巡河方案*-------------------------------------------------------
     getList() {
       //河道列表
       getRiverList(this.$store.state.id).then(res => {
@@ -1321,20 +1403,31 @@ export default {
               objectId: arr[a].objectId,
               projectId:this.$store.state.id,
             }
+            console.log('111');
+            
             taskInspectPage(data).then(res => {
               var ar = res.data.data
+              console.log(ar);
               ar.forEach(v => {
                 v.key = v.id
                 v.title = v.name
                 v.latlng = v.region[0]
                 v.code =v.status.code
+                v.children = v.points
+
                 if (v.status.code != 'hold') {
                   arr[a].taskChoose.push(v.id)
                 }else{
                   v.clicked = false
-                }        
+                }  
+                for (const hh of v.children) {
+                  hh.key = hh.name
+                  hh.title = hh.name
+                  
+                }      
               })
               arr[a].taskPage = ar
+              this.spinning = false
             })
           }
           this.riverMontion = arr
@@ -1343,6 +1436,9 @@ export default {
           }else{
             this.judgeDate()
           }
+        }else{
+         this.spinning = false
+          
         }
       })
     },
@@ -1361,16 +1457,18 @@ export default {
       }
     },
     //绘制目标调查点
-    renderingTarget(taskl){
+    renderingTarget(task){
+      console.log(task);
+      
       let icon = new T.Icon({
         iconUrl: 'http://api.tianditu.gov.cn/img/map/markerA.png',
         iconSize: new T.Point(19, 27),
         iconAnchor: new T.Point(10, 25)
       })
-      let marker = new T.Marker(new T.LngLat(taskl.latlng.lng, taskl.latlng.lat), { icon: icon })
+      let marker = new T.Marker(new T.LngLat(task.latlng.lng, task.latlng.lat), { icon: icon })
       this.map.addOverLay(marker)
-      if (taskl.clicked == true) {
-        let circle = new T.Circle(taskl.latlng, 2000, {
+      if (task.clicked == true) {
+        let circle = new T.Circle(task.latlng, 2000, {
           color: 'red',
           weight: 2,
           opacity: 0.5,
@@ -1380,9 +1478,9 @@ export default {
         })
         circle.disableEdit()
         this.map.addOverLay(circle)
-        this.pointTarget(taskl.taskPage)
+        this.pointTarget(task.taskPage)
       }else{
-        let circle = new T.Circle(taskl.latlng, 2000, {
+        let circle = new T.Circle(task.latlng, 2000, {
           color: 'blue',
           weight: 2,
           opacity: 0.5,
@@ -1396,12 +1494,12 @@ export default {
       // this.pointTarget(data.taskPage)
     }, 
     pointTarget(taskPage){
-      console.log(taskPage);
-      
       for(const item of taskPage){
-        if(item.region.length ==1){
-          let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
-          this.map.addOverLay(markerTool)
+        if(item.type.code =='dot'){
+          for(const hh of item.children){
+            let markerTool = new T.Marker(hh.coordinate, { title: hh.name, id: hh.id })
+            this.map.addOverLay(markerTool)
+          }
         }else{
           let line = new T.Polyline(item.region, {
             color: 'blue', //线颜色
@@ -1627,7 +1725,6 @@ export default {
     //当日计划绘制
     planDayDraw(){
       this.map.clearOverLays()//将之前绘制的清除
-      console.log('1');
       
       for (const item of this.planListPage) {
         for (const a of item.teams) {
@@ -1685,14 +1782,20 @@ export default {
     //当日计划绘制河道，调查点内的任务
     planDayDrawSpot(taskPage){
       for(const item of taskPage.anomalous){
-        if(item.region.length ==1){
-          let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
-          this.map.addOverLay(markerTool)
-          markerTool.addEventListener('click', this.planDayDrawClick)
+        if(item.type.code =='dot'){
+          for(const hh of item.children){
+            let markerTool = new T.Marker(hh.coordinate, { title: hh.name, id: hh.id })
+            this.map.addOverLay(markerTool)
+            markerTool.addEventListener('click', this.planDayDrawClick)
+          }
+        // if(item.region.length ==1){
+        //   let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
+        //   this.map.addOverLay(markerTool)
+        //   markerTool.addEventListener('click', this.planDayDrawClick)
         }else{
           if (taskPage.clicked ==true) {
             let line = new T.Polyline(item.region, {
-              color: 'red', //线颜色
+              color: 'blue', //线颜色
               weight: 3, //线宽
               opacity: 0.5, //透明度
               id: item.id,
@@ -1723,7 +1826,7 @@ export default {
         }else{
           if (taskPage.clicked ==true) {
             let line = new T.Polyline(item.region, {
-              color: 'red', //线颜色
+              color: 'blue', //线颜色
               weight: 3, //线宽
               opacity: 0.5, //透明度
               id: item.id,
@@ -1755,7 +1858,7 @@ export default {
         }else{
           if (taskPage.clicked ==true) {
             let line = new T.Polyline(item.region, {
-              color: 'red', //线颜色
+              color: 'blue', //线颜色
               weight: 3, //线宽
               opacity: 0.5, //透明度
               id: item.id,
@@ -1787,7 +1890,7 @@ export default {
         }else{
           if (taskPage.clicked ==true) {
             let line = new T.Polyline(item.region, {
-              color: 'red', //线颜色
+              color: 'blue', //线颜色
               weight: 3, //线宽
               opacity: 0.5, //透明度
               id: item.id,
@@ -1853,14 +1956,13 @@ export default {
         month: picker[1],
         day: picker[2]
       }
-      planSave(data)
-        .then(res => {
-          // console.log(res.data.id);
-          this.planList1.id = res.data.id
-          this.planList1.name = res.data.name
-          this.getinspectPointPage()
-        })
-        .catch(err => {})
+      planSave(data).then(res => {
+        // console.log(res.data.id);
+        this.planList1.id = res.data.id
+        this.planList1.name = res.data.name
+        this.getinspectPointPage()
+      })
+      .catch(err => {})
     },
     //调查点保存
     handleOk() {
@@ -2282,7 +2384,6 @@ export default {
         object: 'river',
         objectId: this.asasd.id,
         objectName: this.asasd.name,
-        // region: reh
       }
       targetSave(ar).then(res => {
         this.$message.success('成功')

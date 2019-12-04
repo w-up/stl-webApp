@@ -851,7 +851,19 @@ export function weatherList(data) {
     }
   })
 }
-
+//当日巡河推荐
+export function recommendFangan(data) {
+  return axios({
+    url: '/server/data/admin/inspect/recommend/list',
+    method: 'get',
+    params:{
+      projectId:data.projectId,
+      year:data.year,
+      month:data.month,
+      day:data.day
+    }
+  })
+}
 
 
 
