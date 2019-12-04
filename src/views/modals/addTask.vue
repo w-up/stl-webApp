@@ -182,8 +182,8 @@ export default {
                 this.list.region=''
                 this.list.roleId=[]
                 this.isShow = false
-                this.$parent.$parent.$parent.$parent.getinspectPointPage()
-                this.$parent.$parent.$parent.$parent.getPage()
+                this.$parent.$parent.$parent.$parent.$parent.getinspectPointPage()
+                this.$parent.$parent.$parent.$parent.$parent.getPage()
                 this.$emit('cancleBtn')
                 
             })
