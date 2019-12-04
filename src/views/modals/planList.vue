@@ -127,6 +127,10 @@ export default {
                            }
                         });
                         item.devices=arrr  
+                        this.spinning=false
+                    }).catch(err => {
+                        this.spinning=false
+                        this.$message.error('加载数据失败')
                     })
                     staffInspectPage(item.id).then(res=>{
                         var ar= res.data
@@ -135,10 +139,14 @@ export default {
                            v.name = v.role.name
                         });
                         item.roles = ar
+                        
                     })
                 }
                 this.planTab = arr
+               
+            }).catch(err => {
                 this.spinning=false
+                this.$message.error('加载数据失败')
             })
             this.teamId = id
             

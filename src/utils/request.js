@@ -63,7 +63,10 @@ service.interceptors.request.use(config => {
 // response interceptor 响应拦截
 service.interceptors.response.use((response) => {
   return response.data
-}, err)
+}, err=>{
+  console.log(err);
+  
+})
 
 const installer = {
   vm: {},

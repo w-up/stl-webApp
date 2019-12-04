@@ -1410,11 +1410,8 @@ export default {
               objectId: arr[a].objectId,
               projectId:this.$store.state.id,
             }
-            console.log('111');
-            
             taskInspectPage(data).then(res => {
               var ar = res.data.data
-              console.log(ar);
               ar.forEach(v => {
                 v.key = v.id
                 v.title = v.name
@@ -1435,6 +1432,9 @@ export default {
               })
               arr[a].taskPage = ar
               this.spinning = false
+            }).catch(err => {
+              this.spinning=false
+              this.$message.error('加载数据失败')
             })
           }
           this.riverMontion = arr
@@ -1447,6 +1447,9 @@ export default {
          this.spinning = false
           
         }
+      }).catch(err => {
+        this.spinning=false
+        this.$message.error('加载数据失败')
       })
     },
     //显示河道或调查点
