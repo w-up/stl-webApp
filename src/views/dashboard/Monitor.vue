@@ -1422,17 +1422,10 @@ export default {
                 v.title = v.name
                 v.latlng = v.region[0]
                 v.code =v.status.code
-                v.children = v.points
-
                 if (v.status.code != 'hold') {
                   arr[a].taskChoose.push(v.id)
                 }else{
                   v.clicked = false
-                }  
-                for (const hh of v.children) {
-                  hh.key = hh.id
-                  hh.title = hh.name
-                  
                 }      
               })
               arr[a].taskPage = ar
@@ -1481,7 +1474,7 @@ export default {
       let marker = new T.Marker(new T.LngLat(task.latlng.lng, task.latlng.lat), { icon: icon })
       this.map.addOverLay(marker)
       if (task.clicked == true) {
-        let circle = new T.Circle(task.latlng, 2000, {
+        let circle = new T.Circle(task.latlng, 1000, {
           color: 'red',
           weight: 2,
           opacity: 0.5,
@@ -1493,7 +1486,7 @@ export default {
         this.map.addOverLay(circle)
         this.pointTarget(task.taskPage)
       }else{
-        let circle = new T.Circle(task.latlng, 2000, {
+        let circle = new T.Circle(task.latlng, 1000, {
           color: 'blue',
           weight: 2,
           opacity: 0.5,
@@ -1507,17 +1500,15 @@ export default {
       // this.pointTarget(data.taskPage)
     }, 
     pointTarget(taskPage){
+      console.log(taskPage);
+      
       for(const item of taskPage){
         if(item.type.code =='dot'){
-          for(const hh of item.children){
-            let markerTool = new T.Marker(hh.coordinate, { title: hh.name, id: hh.id })
-            this.map.addOverLay(markerTool)
-          }
+          let markerTool = new T.Marker(item.region[0], { title: item.name, id: item.id })
+          this.map.addOverLay(markerTool)
         }else if(item.type.code =="plan"){
-          for(const hh of item.children){
-            let markerTool = new T.Marker(hh.coordinate, { title: hh.name, id: hh.id })
-            this.map.addOverLay(markerTool)
-          }
+          let markerTool = new T.Marker(item.region[0], { title: item.name, id: item.id })
+          this.map.addOverLay(markerTool)
         }else{
           let line = new T.Polyline(item.region, {
             color: 'blue', //线颜色
@@ -1564,9 +1555,9 @@ export default {
         radius: '4'
       }
       if (arr.clicked == true) {
-        this.addCircle(this.lng, this.lat, 2000, 'red', 2, arr.id)
+        this.addCircle(this.lng, this.lat, 1000, 'red', 2, arr.id)
       } else {
-        this.addCircle(this.lng, this.lat, 2000, 'blue', 2, arr.id)
+        this.addCircle(this.lng, this.lat, 1000, 'blue', 2, arr.id)
       }
     },
     showSurverPoint(arr) {
@@ -1586,9 +1577,9 @@ export default {
         radius: '4'
       }
       if (arr.clicked == true) {
-        this.addCircle(this.lng, this.lat, 2000, 'red', 2, arr.id)
+        this.addCircle(this.lng, this.lat, 1000, 'red', 2, arr.id)
       } else {
-        this.addCircle(this.lng, this.lat, 2000, 'blue', 2, arr.id)
+        this.addCircle(this.lng, this.lat, 1000, 'blue', 2, arr.id)
       }
       //向地图上添加圆
       // this.circle = new T.Circle(new T.LngLat(this.lng, this.lat), 1000, {
@@ -1734,6 +1725,30 @@ export default {
                     title: 'custom'
                   }
                 }
+                for (const c of b.inprogress) {
+                  c.key = c.id
+                  c.title = c.name
+                  c.latlng = c.region[0]
+                  c.scopedSlots = {
+                    title: 'custom'
+                  }
+                }
+                for (const c of b.complete) {
+                  c.key = c.id
+                  c.title = c.name
+                  c.latlng = c.region[0]
+                  c.scopedSlots = {
+                    title: 'custom'
+                  }
+                }
+                for (const c of b.anomalous) {
+                  c.key = c.id
+                  c.title = c.name
+                  c.latlng = c.region[0]
+                  c.scopedSlots = {
+                    title: 'custom'
+                  }
+                }
               }
             }else{
               a.targets=[]
@@ -1789,7 +1804,7 @@ export default {
       let marker = new T.Marker(new T.LngLat(task.latlng.lng, task.latlng.lat), { icon: icon })
       this.map.addOverLay(marker)
       if (task.clicked == true) {
-        let circle = new T.Circle(task.latlng, 2000, {
+        let circle = new T.Circle(task.latlng, 1000, {
           color: 'red',
           weight: 2,
           opacity: 0.5,
@@ -1800,7 +1815,7 @@ export default {
         circle.disableEdit()
         this.map.addOverLay(circle)
       }else{
-        let circle = new T.Circle(task.latlng, 2000, {
+        let circle = new T.Circle(task.latlng, 1000, {
           color: 'blue',
           weight: 2,
           opacity: 0.5,
@@ -1817,12 +1832,10 @@ export default {
     //当日计划绘制河道，调查点内的任务
     planDayDrawSpot(taskPage){
       for(const item of taskPage.anomalous){
-        if(item.type.code =='dot'){
-          for(const hh of item.children){
-            let markerTool = new T.Marker(hh.coordinate, { title: hh.name, id: hh.id })
-            this.map.addOverLay(markerTool)
-            markerTool.addEventListener('click', this.planDayDrawClick)
-          }
+        if(item.region.length ==1){
+          let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
+          this.map.addOverLay(markerTool)
+          markerTool.addEventListener('click', this.planDayDrawClick)
         // if(item.region.length ==1){
         //   let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
         //   this.map.addOverLay(markerTool)
@@ -1886,8 +1899,8 @@ export default {
         // markerTool.addEventListener('click', this.taskPointClick)
       }
       for(const item of taskPage.incomplete){
-        if(item.region.length ==1){
-          let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
+       if(item.region.length ==1){
+         let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
           this.map.addOverLay(markerTool)
           markerTool.addEventListener('click', this.planDayDrawClick)
         }else{
@@ -1918,6 +1931,7 @@ export default {
         // markerTool.addEventListener('click', this.taskPointClick)
       }
       for(const item of taskPage.inprogress){
+        
         if(item.region.length ==1){
           let markerTool = new T.Marker(item.latlng, { title: item.name, id: item.id })
           this.map.addOverLay(markerTool)
@@ -2833,12 +2847,12 @@ export default {
       })
       let markerTool = new T.MarkTool(this.map, { icon: icon, follow: true })
       markerTool.open()
-      markerTool.addEventListener('mouseup', this.addPointed)
+      markerTool.addEventListener('mouseup', this.addPointed) 
     },
     // 添加调查点后
     addPointed(e) {
       console.log(e)
-      let circle = new T.Circle(e.currentLnglat, 2000, {
+      let circle = new T.Circle(e.currentLnglat, 1000, {
         color: 'blue',
         weight: 2,
         opacity: 0.5,
@@ -2853,7 +2867,7 @@ export default {
       this.lng = e.currentLnglat.lng
       var data = {
         coordinate: e.currentLnglat.lng + ',' + e.currentLnglat.lat,
-        radius: '2'
+        radius: '1'
       }
       taskSpotList(data).then(res => {
         console.log(res.data, '周围的点')

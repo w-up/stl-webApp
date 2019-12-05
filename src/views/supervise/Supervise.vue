@@ -1455,7 +1455,7 @@ export default {
     let wordLabel = 'http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=a659a60049b130a5d1fececfd5a6b822'
     this.mapLayerWord = new T.TileLayer(wordLabel, { minZoom: 4, maxZoom: 18, zIndex: 15 })
     // 正射影像
-    let mapImage = `http://jleco.jl-shgroup.com/server/data/admin/regulator/uav/data/mbtiles?year=&month&day&x={x}&y={y}&z={z}&X-TENANT-ID=jl:jlgis@2019&Authorization=${token}`
+    let mapImage = `http://jleco.jl-shgroup.com/server/data/admin/regulator/uav/data/mbtiles?year&month&day&x={x}&y={y}&z={z}&X-TENANT-ID=jl:jlgis@2019&Authorization=${token}`
     this.mapLayerImage = new T.TileLayer(mapImage, { minZoom: 4, maxZoom: 23, zIndex: 12 })
     this.map = new T.Map('map', {
       minZoom: 4,
@@ -2009,12 +2009,12 @@ export default {
     // 时间轴
     timeLineItem(mouth) {
       console.log(mouth.substring(0, 4) + "-" + mouth.substring(4, 6) + "-" + mouth.substring(6, 8))
-
       for (const item of this.timeData) {
         if (mouth == item.date) {
           if (item.level!= 2) {
             if (item.date == mouth) {
               this.defaultTime=mouth.substring(0, 4) + "-" + mouth.substring(4, 6) + "-" + mouth.substring(6, 8)
+              this.getMapdrawPage('1')
               item.clicked = true
             } else {
               item.clicked = false

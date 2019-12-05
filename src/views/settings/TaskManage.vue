@@ -815,7 +815,12 @@ export default {
           arr.forEach(v => {
             v.clicked = false
             v.name = v.title
-            v.lineData = v.coordinate
+            if (v.coordinate == null) {
+              v.lineData=[]
+            }else{
+              v.lineData = v.coordinate
+            }
+            
           })
           this.lineTaskList = arr
           this.drawAllLine()
@@ -887,8 +892,6 @@ export default {
     // 线路任务
     chooseLineTask(index) {
       this.defaultLineTask = index
-      console.log(index)
-
       for (const item of this.lineTaskList) {
         if (item.id === index) {
           item.clicked = true
@@ -1097,6 +1100,7 @@ export default {
       for (const item of this.pointTaskList) {
         if (item.id == index) {
           let icon = new T.Icon({
+            
             iconUrl: item.kmz,
             iconSize: new T.Point(41, 40),
             iconAnchor: new T.Point(21, 40)
