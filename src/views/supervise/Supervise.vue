@@ -3012,7 +3012,6 @@ export default {
     z-index: 888;
     padding-left: 20px;
     .weather_content {
-      
       width: 320px;
       height: 300px;
       background: rgba(255, 255, 255, 1);

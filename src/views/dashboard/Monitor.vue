@@ -33,7 +33,33 @@
                 <a-icon class="right_icon" type="caret-left" />
                 <!-- 天气弹窗 -->
                 <div class="weather_alert">
-                  <div class="weather_content">12356</div>
+                  <div class="weather_content">
+                    <div class="weather_basic">
+                      <div class="weather_basic_content">
+                        <img src="../supervise/img/water.png" alt="" style="margin-right:5px;height:12px;width:12px">
+                        <span>未来2小时无雨</span>
+                      </div>
+                      <div class="weather_basic_content">
+                        <img src="../supervise/img/wind.png" alt="" style="margin-right:5px;height:12px;width:12px">
+                        <span>东北风 3级</span>
+                      </div>
+                      <div class="weather_basic_content">
+                        <img src="../supervise/img/cloudiness.png" alt="" style="margin-right:5px;height:12px;width:12px">
+                        <span>云量数据</span>
+                      </div>
+                    </div>
+                    <div class="weather24">
+                      <!-- <div class="time24" v-for="item in weatherList" :key="item.id">
+                        <div>{{item.temperature}}</div>
+
+                      </div> -->
+                      <div class="time24" v-for="item in weatherList" :key="item.id">
+                        <div style="text-align:center;">{{item.temperature}}</div>
+                        <img src="../supervise/img/fine.png" alt="" style="margin:12px 5px;height:19px;width:19px">
+                        <div style="text-align:center;">{{item.time}}</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1210,6 +1236,32 @@ export default {
         { id: 1, name: '监测点2', clicked: false, latlng: { lat: 31.24315, lng: 121.49606 } },
         { id: 2, name: '监测点3', clicked: false, latlng: { lat: 31.23668, lng: 121.49656 } }
       ],
+      weatherList:[
+        {
+          temperature:'26°',
+          time:'10:00'
+        },
+        {
+          temperature:'27°',
+          time:'12:00'
+        },
+        {
+          temperature:'24°',
+          time:'14:00'
+        },
+        {
+          temperature:'20°',
+          time:'16:00'
+        },
+        {
+          temperature:'16°',
+          time:'18:00',
+        },
+        {
+          temperature:'15°',
+          time:'20:00',
+        },
+      ],
       patrolPlanInfo: [],
       riverList: [],
       asasd: {}
@@ -1400,7 +1452,7 @@ export default {
         var arr = res.data.data
         if (arr.length > 0) {
           for (let a = 0; a < arr.length; a++) {
-             arr[a].taskChoose = []
+            arr[a].taskChoose = []
             if (arr[a].object.code != 'river') {
               arr[a].latlng =arr[a].coordinate
             }else{
@@ -3076,6 +3128,48 @@ export default {
   span {
     color: rgba(255, 0, 0, 0.8);
     font-size: 14px;
+  }
+}
+.weather_alert {
+  display: none;
+  position: absolute;
+  left: 50px;
+  top: -13px;
+  z-index: 888;
+  padding-left: 20px;
+  .weather_content {
+    width: 320px;
+    height: 300px;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 10px;
+    .weather_basic{
+      width:100%;
+      display: flex;
+      flex-wrap:wrap ;
+      .weather_basic_content{
+        width: 50%;
+        color: #595959;
+        font-size: 12px;
+        margin-bottom: 12px;
+      }
+    }
+    .weather24{
+      padding: 15px 9px;
+      box-sizing:border-box;
+      width: 100%;
+      border-top: 1px solid rgba(216,216,216,0.5);
+      border-bottom: 1px solid rgba(216,216,216,0.5);
+      font-size: 12px;
+      display: flex;
+      .time24{
+        width: 30px;
+        margin-right: 22px;
+        display: flex;
+        flex-direction:column;
+      }
+    }
   }
 }
 .splitter-pane splitter-paneL vertical {
